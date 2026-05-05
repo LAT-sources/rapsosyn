@@ -684,7 +684,7 @@ async function loadFromCloud() {
     const snapshot = await db.ref('/').once('value');
     const record = snapshot.val() || {};
 
-    // Firebase peut renvoyer un tableau ou un objet indexé → on uniformise en tableau
+    // Helper : Firebase peut renvoyer un tableau ou un objet indexé
     const toArray = (val) => {
       if (!val) return [];
       if (Array.isArray(val)) return val;
@@ -696,10 +696,6 @@ async function loadFromCloud() {
     users   = toArray(record.users);
 
     nextCanId  = canevas.length ? Math.max(...canevas.map(c => c.id)) + 1 : 1;
-    nextUserId = users.length   ? Math.max(...u.map(u => u.id)) + 1 : 1;   // petit piège : `u` est un objet, pas un tableau
-    // correction : Math.max(...users.map(u => u.id))
-    
-    // On recalcule correctement pour les utilisateurs
     nextUserId = users.length   ? Math.max(...users.map(u => u.id)) + 1 : 1;
 
     localStorage.setItem('rs_canevas', JSON.stringify(canevas));
@@ -716,7 +712,6 @@ async function loadFromCloud() {
     return false;
   }
 }
-
 async function saveToCloud() {
   localStorage.setItem('rs_canevas', JSON.stringify(canevas));
   localStorage.setItem('rs_users',   JSON.stringify(users));
