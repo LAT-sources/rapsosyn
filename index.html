@@ -623,18 +623,19 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 // ══════════════════════════════════════════════════════
 // ═══ CONFIGURATION FIREBASE ═══
 const firebaseConfig = {
-  apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",               // ← copiez votre apiKey
+  apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
   authDomain: "rapsosyn.firebaseapp.com",
   databaseURL: "https://rapsosyn-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "rapsosyn",
-  storageBucket: "rapsosyn.firebasestorage.app",
+  storageBucket: "rapsosyn.appspot.com",
   messagingSenderId: "351086396148",
   appId: "1:351086396148:web:d3070d8e5bee2efb4294a1"
 };
 
-// Initialiser Firebase
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database(); 
+const db = firebase.database();
+console.log('Firebase connecté');
+
 // ══════════════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════════════
@@ -677,24 +678,23 @@ function toast(msg, type = 'g') {
 // ══════════════════════════════════════════════════════
 //  STOCKAGE DISTANT (JSONBIN)
 // ══════════════════════════════════════════════════════
-// Ajoutez cette ligne au début de votre <script>
- 
+// ═══ STOCKAGE ═══
 async function loadFromCloud() {
   try {
     const snapshot = await db.ref('/').once('value');
     const record = snapshot.val() || {};
     canevas = Array.isArray(record.canevas) ? record.canevas : [];
-    users = Array.isArray(record.users) ? record.users : [];
-    nextCanId = canevas.length ? Math.max(...canevas.map(c => c.id)) + 1 : 1;
-    nextUserId = users.length ? Math.max(...u => u.id) + 1 : 1;
+    users   = Array.isArray(record.users)   ? record.users   : [];
+    nextCanId  = canevas.length ? Math.max(...canevas.map(c => c.id)) + 1 : 1;
+    nextUserId = users.length   ? Math.max(...u => u.id) + 1 : 1;
     localStorage.setItem('rs_canevas', JSON.stringify(canevas));
-    localStorage.setItem('rs_users', JSON.stringify(users));
+    localStorage.setItem('rs_users',   JSON.stringify(users));
     isOnline = true;
     return true;
   } catch (err) {
-    console.warn('Mode hors ligne – chargement depuis le stockage local');
+    console.warn('Mode hors ligne – données locales');
     canevas = JSON.parse(localStorage.getItem('rs_canevas') || '[]');
-    users = JSON.parse(localStorage.getItem('rs_users') || '[]');
+    users   = JSON.parse(localStorage.getItem('rs_users')   || '[]');
     isOnline = false;
     return false;
   }
@@ -702,12 +702,12 @@ async function loadFromCloud() {
 
 async function saveToCloud() {
   localStorage.setItem('rs_canevas', JSON.stringify(canevas));
-  localStorage.setItem('rs_users', JSON.stringify(users));
+  localStorage.setItem('rs_users',   JSON.stringify(users));
   try {
     await db.ref('/').set({ canevas, users });
     isOnline = true;
   } catch (err) {
-    console.warn('Sauvegarde cloud échouée – données en local');
+    console.warn('Sauvegarde cloud échouée');
     isOnline = false;
   }
 }
@@ -721,9 +721,10 @@ document.querySelectorAll('.modal-bd').forEach(bd => bd.addEventListener('click'
 // ══════════════════════════════════════════════════════
 //  LOGIN / LOGOUT
 // ══════════════════════════════════════════════════════
+// ═══ LOGIN ═══
 function doLogin() {
   const email = gv('lEmail').trim().toLowerCase();
-  const pwd = gv('lPwd');
+  const pwd   = gv('lPwd');
   const u = users.find(x => x.email.toLowerCase() === email && x.pwd === pwd && x.actif !== false);
   document.getElementById('loginErr').style.display = u ? 'none' : 'block';
   if (!u) return;
@@ -734,9 +735,8 @@ function doLogin() {
   document.getElementById('sbRole').textContent = u.role === 'admin' ? '⚡ Administrateur' : '👤 Intervenant';
   const isAdmin = u.role === 'admin';
   document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
-  document.getElementById('navUsers').style.display = isAdmin ? '' : 'none';
-  document.getElementById('adminNav').style.display = isAdmin ? '' : 'none';
-
+  document.getElementById('navUsers').style.display  = isAdmin ? '' : 'none';
+  document.getElementById('adminNav').style.display  = isAdmin ? '' : 'none';
   show('scApp'); hide('scLogin'); hide('scSynthese');
   showPage('canevas');
 }
@@ -1124,11 +1124,11 @@ document.querySelectorAll('.modal-bd').forEach(bd => {
 
 window.addEventListener('load', async () => {
   await loadFromCloud();
-  // Créer un admin par défaut si aucun utilisateur n'existe
   if (users.length === 0) {
-    users = [
-      { id: 1, prenom: 'Admin', nom: 'Socotec', email: 'admin@socotec.lu', pwd: 'admin123', role: 'admin', initiales: 'AS', color: '#1a56db', actif: true }
-    ];
+    users = [{
+      id: 1, prenom: 'Admin', nom: 'Socotec', email: 'admin@socotec.lu',
+      pwd: 'admin123', role: 'admin', initiales: 'AS', color: '#1a56db', actif: true
+    }];
     nextUserId = 2;
     saveToCloud();
   }
