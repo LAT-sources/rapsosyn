@@ -984,7 +984,7 @@ async function openSynthese(id) {
   document.getElementById('synRoleChip').textContent = c.archived ? '🔒 Archivé – lecture seule' : '✏️ Édition';
 
   // Charger le template
-  const response = await fetch('caneva_temp.html?v=' + Date.now());
+  const response = await fetch('caneva_temp.html?v=' + Date.now(), { cache: 'no-store' });
   let templateHTML = await response.text();
 
   // Injecter les métadonnées et données préalables
