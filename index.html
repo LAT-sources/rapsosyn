@@ -619,10 +619,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 // ══════════════════════════════════════════════════════
 //  CONFIGURATION JSONBIN
 // ══════════════════════════════════════════════════════
-const JSONBIN_API_KEY = '$2a$10$VPnwH.ERHj5rhapkeJZZ7.shfmzuSXdiUd0SdttBeVEUFaVDvFN1y'; // ← Remplacez par votre clé
-const JSONBIN_BIN_ID = '69f98d2e36566621a827c25c';               // ← Remplacez par l'ID de votre bin
-const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
-
+const STORE_URL = 'https://api.npoint.io/5fa3f0dfc7ef1a4b8cff'; 
 // ══════════════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════════════
@@ -667,12 +664,9 @@ function toast(msg, type = 'g') {
 // ══════════════════════════════════════════════════════
 async function loadFromCloud() {
   try {
-    const response = await fetch(JSONBIN_URL, {
-      headers: { 'X-Master-Key': JSONBIN_API_KEY }
-    });
-    if (!response.ok) throw new Error('Erreur chargement cloud');
-    const json = await response.json();
-    const record = json.record;
+    const response = await fetch(STORE_URL);
+    if (!response.ok) throw new Error('Erreur chargement');
+    const record = await response.json();
     canevas = Array.isArray(record.canevas) ? record.canevas : [];
     users = Array.isArray(record.users) ? record.users : [];
     nextCanId = canevas.length ? Math.max(...canevas.map(c => c.id)) + 1 : 1;
@@ -682,7 +676,7 @@ async function loadFromCloud() {
     isOnline = true;
     return true;
   } catch (err) {
-    console.warn('Mode hors ligne – chargement depuis le stockage local');
+    console.warn('Mode hors ligne – chargement local');
     canevas = JSON.parse(localStorage.getItem('rs_canevas') || '[]');
     users = JSON.parse(localStorage.getItem('rs_users') || '[]');
     isOnline = false;
@@ -691,18 +685,13 @@ async function loadFromCloud() {
 }
 
 async function saveToCloud() {
-  // Sauvegarde locale toujours
   localStorage.setItem('rs_canevas', JSON.stringify(canevas));
   localStorage.setItem('rs_users', JSON.stringify(users));
   try {
-    const payload = { canevas, users };
-    await fetch(JSONBIN_URL, {
+    await fetch(STORE_URL, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': JSONBIN_API_KEY
-      },
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ canevas, users })
     });
     isOnline = true;
   } catch (err) {
