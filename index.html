@@ -253,6 +253,8 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--g300);border-radius:3px;}
 </style>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -619,7 +621,20 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 // ══════════════════════════════════════════════════════
 //  CONFIGURATION JSONBIN
 // ══════════════════════════════════════════════════════
-const STORE_URL = 'https://api.npoint.io/5fa3f0dfc7ef1a4b8cff'; 
+// ═══ CONFIGURATION FIREBASE ═══
+const firebaseConfig = {
+  apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",               // ← copiez votre apiKey
+  authDomain: "rapsosyn.firebaseapp.com",
+  databaseURL: "https://rapsosyn-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "rapsosyn",
+  storageBucket: "rapsosyn.firebasestorage.app",
+  messagingSenderId: "351086396148",
+  appId: "1:351086396148:web:d3070d8e5bee2efb4294a1"
+};
+
+// Initialiser Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database(); 
 // ══════════════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════════════
@@ -662,11 +677,12 @@ function toast(msg, type = 'g') {
 // ══════════════════════════════════════════════════════
 //  STOCKAGE DISTANT (JSONBIN)
 // ══════════════════════════════════════════════════════
+// Ajoutez cette ligne au début de votre <script>
+ 
 async function loadFromCloud() {
   try {
-    const response = await fetch(STORE_URL);
-    if (!response.ok) throw new Error('Erreur chargement');
-    const record = await response.json();
+    const snapshot = await db.ref('/').once('value');
+    const record = snapshot.val() || {};
     canevas = Array.isArray(record.canevas) ? record.canevas : [];
     users = Array.isArray(record.users) ? record.users : [];
     nextCanId = canevas.length ? Math.max(...canevas.map(c => c.id)) + 1 : 1;
@@ -676,7 +692,7 @@ async function loadFromCloud() {
     isOnline = true;
     return true;
   } catch (err) {
-    console.warn('Mode hors ligne – chargement local');
+    console.warn('Mode hors ligne – chargement depuis le stockage local');
     canevas = JSON.parse(localStorage.getItem('rs_canevas') || '[]');
     users = JSON.parse(localStorage.getItem('rs_users') || '[]');
     isOnline = false;
@@ -688,11 +704,7 @@ async function saveToCloud() {
   localStorage.setItem('rs_canevas', JSON.stringify(canevas));
   localStorage.setItem('rs_users', JSON.stringify(users));
   try {
-    await fetch(STORE_URL, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ canevas, users })
-    });
+    await db.ref('/').set({ canevas, users });
     isOnline = true;
   } catch (err) {
     console.warn('Sauvegarde cloud échouée – données en local');
