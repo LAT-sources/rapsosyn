@@ -636,8 +636,15 @@ function saveRow(){
   if(data[currentTab][gi].rd6&&!data[currentTab][gi].num.includes('/RD6'))data[currentTab][gi].num+='/RD6';
   else if(!data[currentTab][gi].rd6)data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
   applyFilters();document.getElementById('saveFeedback').classList.add('show');setTimeout(()=>document.getElementById('saveFeedback').classList.remove('show'),1800);persistLocal();
+  // ⬇️ AJOUTEZ CES 5 LIGNES CI-DESSOUS ⬇️
+  if (window.parent) {
+    const raw = localStorage.getItem('rapsotracker');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
+    }
+  }
 }
-function deleteRow(){if(editingIdx===null)return;if(!confirm(`Supprimer "${filteredRows[editingIdx].num}" ?`))return;data[currentTab]=data[currentTab].filter(x=>x.id!==filteredRows[editingIdx].id);closePanel();applyFilters();persistLocal();}
 
 // ═══════════════════════ PA MODAL ═══════════════════════
 function openPAModal(){['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>document.getElementById(id).checked=false);['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>document.getElementById(id).value='');document.getElementById('paFeedback').style.opacity='0';document.getElementById('paModal').classList.add('open');}
@@ -714,8 +721,17 @@ function rapideSave(){
 // ═══════════════════════ ADD ═══════════════════════
 function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>document.getElementById(id).value='');document.getElementById('addModal').classList.add('open');}
 function closeAddModal(){document.getElementById('addModal').classList.remove('open');}
-function addRow(){data[currentTab].push(makeRow({num:document.getElementById('a_num').value,ref:document.getElementById('a_ref').value,date:document.getElementById('a_date').value,inter:document.getElementById('a_inter').value,disp:document.getElementById('a_disp').value,avis:document.getElementById('a_avis').value,desc:document.getElementById('a_desc').value,obs:document.getElementById('a_obs').value,docs:document.getElementById('a_docs').value,lots:document.getElementById('a_lots').value}));closeAddModal();applyFilters();persistLocal();}
-
+function addRow(){data[currentTab].push(makeRow({num:document.getElementById('a_num').value,ref:document.getElementById('a_ref').value,date:document.getElementById('a_date').value,inter:document.getElementById('a_inter').value,disp:document.getElementById('a_disp').value,avis:document.getElementById('a_avis').value,desc:document.getElementById('a_desc').value,obs:document.getElementById('a_obs').value,docs:document.getElementById('a_docs').value,lots:document.getElementById('a_lots').value}));closeAddModal();applyFilters();persistLocal();
+  // ⬇️ AJOUTEZ CES 5 LIGNES CI-DESSOUS ⬇️
+  if (window.parent) {
+    const raw = localStorage.getItem('rapsotracker');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
+    }
+  }
+}
+  
 // ═══════════════════════ STATS ═══════════════════════
 function openStatsModal(){
   const rows=getRows();
@@ -811,22 +827,32 @@ loadLocal();applyFilters();
 </script>
 <script>
 (function() {
-  // Sauvegarde automatique toutes les 30 secondes
-  setInterval(function() {
+  // Fonction qui pousse les données vers le parent TOUT DE SUITE
+  function pushToParent() {
     const raw = localStorage.getItem('rapsotracker');
-    if (raw && window.parent) {
+    if (!raw || !window.parent) return;
+    try {
       const data = JSON.parse(raw).data;
+      // Écriture directe dans le localStorage du parent (même origine via blob)
       window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: data }, '*');
-    }
-  }, 30000);
+    } catch(e) {}
+  }
 
-  window.addEventListener('beforeunload', function() {
-    const raw = localStorage.getItem('rapsotracker');
-    if (raw && window.parent) {
-      const data = JSON.parse(raw).data;
-      window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: data }, '*');
+  // Sauvegarde automatique toutes les 5 secondes (plus réactif)
+  setInterval(pushToParent, 5000);
+
+  // Sauvegarde immédiate à chaque modification du localStorage
+  const originalSetItem = localStorage.setItem;
+  localStorage.setItem = function(key, value) {
+    originalSetItem.apply(this, arguments);
+    if (key === 'rapsotracker') {
+      clearTimeout(window._saveTimeout);
+      window._saveTimeout = setTimeout(pushToParent, 300);
     }
-  });
+  };
+
+  // Sauvegarde avant fermeture
+  window.addEventListener('beforeunload', pushToParent);
 })();
 </script>
 </body>
