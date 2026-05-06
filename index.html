@@ -988,10 +988,17 @@ async function openSynthese(id) {
     cache: 'no-store',
     headers: { 'Cache-Control': 'no-cache' }
   });
-  let templateHTML = await response.text();  // ← AJOUTEZ CETTE LIGNE ICI
+  let templateHTML = await response.text();
 
   // Injecter les métadonnées et données préalables
-  const metaScript = `...`;
+  const metaScript = `
+    <script>
+      window.RAPSO_AFFAIRE = ${JSON.stringify(c.chrono)};
+      window.RAPSO_DOSSIER = ${JSON.stringify(c.nom)};
+      window.CANEVAS_ID = ${c.id};
+      window.RAPSO_SYNTH_DATA = ${c.synthData ? JSON.stringify(c.synthData) : 'null'};
+    <\/script>`;
+  
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
 
   // Afficher dans l'iframe
