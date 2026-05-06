@@ -990,16 +990,37 @@ async function openSynthese(id) {
   });
   let templateHTML = await response.text();
 
-  // Injecter les métadonnées et données préalables
+  // Injecter les métadonnées ET les données de synthèse
   const metaScript = `
     <script>
       window.RAPSO_AFFAIRE = ${JSON.stringify(c.chrono)};
       window.RAPSO_DOSSIER = ${JSON.stringify(c.nom)};
       window.CANEVAS_ID = ${c.id};
-      window.RAPSO_SYNTH_DATA = ${c.synthData ? JSON.stringify(c.synthData) : 'null'};
     <\/script>`;
   
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
+
+  // Si des données de synthèse existent, les injecter directement dans le localStorage de l'iframe
+  if (c.synthData && c.synthData.v2) {
+    const dataScript = `
+    <script>
+      localStorage.setItem('rapsotracker', JSON.stringify({
+        meta: { affaire: ${JSON.stringify(c.chrono)}, dossier: ${JSON.stringify(c.nom)} },
+        data: ${JSON.stringify(c.synthData)}
+      }));
+    <\/script>`;
+    templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', dataScript);
+  } else {
+    // Si pas de données, injecter une base vide mais avec les métadonnées
+    const emptyScript = `
+    <script>
+      localStorage.setItem('rapsotracker', JSON.stringify({
+        meta: { affaire: ${JSON.stringify(c.chrono)}, dossier: ${JSON.stringify(c.nom)} },
+        data: { v2: [], v1: [] }
+      }));
+    <\/script>`;
+    templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', emptyScript);
+  }
 
   // Afficher dans l'iframe
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
