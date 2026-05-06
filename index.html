@@ -8,12 +8,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
   --blue:#1a56db;--blue-d:#1447c0;--blue-l:#e8f0fe;--blue-ll:#f0f5ff;
-  --teal:#0d9488;--teal-l:#ccfbf1;
-  --gold:#f59e0b;--gold-l:#fef3c7;
-  --red:#ef4444;--red-l:#fee2e2;
-  --green:#22c55e;--green-l:#dcfce7;
-  --purple:#7c3aed;--purple-l:#ede9fe;
-  --orange:#f97316;--orange-l:#ffedd5;
+  --teal:#0d9488;--teal-l:#ccfbf1;--gold:#f59e0b;--gold-l:#fef3c7;
+  --red:#ef4444;--red-l:#fee2e2;--green:#22c55e;--green-l:#dcfce7;
+  --purple:#7c3aed;--purple-l:#ede9fe;--orange:#f97316;--orange-l:#ffedd5;
   --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g300:#cbd5e1;
   --g400:#94a3b8;--g500:#64748b;--g600:#475569;--g700:#334155;
   --g800:#1e293b;--g900:#0f172a;
@@ -648,7 +645,7 @@ let users = [];
 let canevas = [];
 let nextUserId = 1;
 let nextCanId = 1;
-let isOnline = true; // supposé vrai, géré par les erreurs réseau
+let isOnline = true;
 
 // ══════════════════════════════════════════════════════
 //  UTILS
@@ -684,11 +681,9 @@ async function loadFromCloud() {
     const snapshot = await db.ref('/').once('value');
     const record = snapshot.val() || {};
 
-    // Helper : Firebase peut renvoyer un tableau ou un objet indexé
     const toArray = (val) => {
       if (!val) return [];
       if (Array.isArray(val)) return val;
-      // Transformation d'un objet {0: ..., 1: ...} en tableau
       return Object.values(val);
     };
 
@@ -990,17 +985,16 @@ async function openSynthese(id) {
   });
   let templateHTML = await response.text();
 
-  // Injecter les métadonnées ET les données de synthèse
+  // Injecter les métadonnées
   const metaScript = `
     <script>
       window.RAPSO_AFFAIRE = ${JSON.stringify(c.chrono)};
       window.RAPSO_DOSSIER = ${JSON.stringify(c.nom)};
       window.CANEVAS_ID = ${c.id};
     <\/script>`;
-  
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
 
-  // Si des données de synthèse existent, les injecter directement dans le localStorage de l'iframe
+  // Injecter les données de synthèse existantes si disponibles
   if (c.synthData && c.synthData.v2) {
     const dataScript = `
     <script>
@@ -1011,7 +1005,7 @@ async function openSynthese(id) {
     <\/script>`;
     templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', dataScript);
   } else {
-    // Si pas de données, injecter une base vide mais avec les métadonnées
+    // Base vide avec métadonnées
     const emptyScript = `
     <script>
       localStorage.setItem('rapsotracker', JSON.stringify({
@@ -1022,7 +1016,6 @@ async function openSynthese(id) {
     templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', emptyScript);
   }
 
-  // Afficher dans l'iframe
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
   document.getElementById('synFrame').src = URL.createObjectURL(blob);
 
@@ -1030,13 +1023,12 @@ async function openSynthese(id) {
 }
 
 function closeSynthese() {
-  // Récupération éventuelle via postMessage (gérée dans le template)
   document.getElementById('synFrame').src = '';
   hide('scSynthese'); show('scApp');
   renderCanevas();
 }
 
-// Réception des messages de sauvegarde depuis la synthèse
+// Réception des messages de sauvegarde depuis la synthèse (ne fait plus rien car la synthèse sauvegarde directement)
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'rapso_save') {
     const c = canevas.find(x => x.id === e.data.canId);
@@ -1158,10 +1150,9 @@ document.querySelectorAll('.modal-bd').forEach(bd => {
 window.addEventListener('load', async () => {
   await loadFromCloud();
   if (users.length === 0) {
-    users = [{
-      id: 1, prenom: 'Admin', nom: 'Socotec', email: 'admin@socotec.lu',
-      pwd: 'admin123', role: 'admin', initiales: 'AS', color: '#1a56db', actif: true
-    }];
+    users = [
+      { id: 1, prenom: 'Admin', nom: 'Socotec', email: 'admin@socotec.lu', pwd: 'admin123', role: 'admin', initiales: 'AS', color: '#1a56db', actif: true }
+    ];
     nextUserId = 2;
     saveToCloud();
   }
