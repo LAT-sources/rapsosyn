@@ -2,7 +2,6 @@
 <html lang="fr">
 <head>
 <!-- RAPSO_META -->
-<!-- RAPSO_DATA -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RapsoSynthèse – Suivi d'avis SOCOTEC</title>
@@ -226,6 +225,8 @@
     .filter-row{display:none!important;}
   }
 </style>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -502,6 +503,76 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+  
+// ═══ Configuration Firebase ═══
+const firebaseConfig = {
+  apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
+  authDomain: "rapsosyn.firebaseapp.com",
+  databaseURL: "https://rapsosyn-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "rapsosyn",
+  storageBucket: "rapsosyn.appspot.com",
+  messagingSenderId: "351086396148",
+  appId: "1:351086396148:web:d3070d8e5bee2efb4294a1"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ═══ Données ═══
+let currentTab='v2', data={v2:[],v1:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='';
+
+function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
+function getRows(){return data[currentTab];}
+
+// ═══ Sauvegarde directe dans Firebase ═══
+function saveToCloud() {
+  if (!window.CANEVAS_ID) return;
+  const raw = localStorage.getItem('rapsotracker');
+  if (!raw) return;
+  try {
+    const parsed = JSON.parse(raw);
+    db.ref('/').once('value').then(snapshot => {
+      const record = snapshot.val() || {};
+      let canevas = Array.isArray(record.canevas) ? record.canevas : Object.values(record.canevas||{});
+      const idx = canevas.findIndex(c => c.id == window.CANEVAS_ID);
+      if (idx >= 0) {
+        canevas[idx].synthData = parsed.data;
+        db.ref('/').update({ canevas });
+      }
+    });
+  } catch(e) {}
+}
+
+// Sauvegarde automatique toutes les 10 secondes
+setInterval(saveToCloud, 10000);
+
+// ═══ Persistance locale ═══
+function persistLocal(){
+  try {
+    localStorage.setItem('rapsotracker', JSON.stringify({
+      meta: { affaire: document.getElementById('affaireInput').value, dossier: document.getElementById('dossierInput').value },
+      data
+    }));
+  } catch(e) {}
+}
+['affaireInput','dossierInput'].forEach(id => document.getElementById(id).addEventListener('input', persistLocal));
+
+// ═══ Chargement initial ═══
+function loadLocal() {
+  try {
+    const r = localStorage.getItem('rapsotracker');
+    if (!r) return;
+    const o = JSON.parse(r);
+    if (o.meta) {
+      document.getElementById('affaireInput').value = o.meta.affaire || '';
+      document.getElementById('dossierInput').value = o.meta.dossier || '';
+    }
+    if (o.data) {
+      data.v2 = (o.data.v2 || []).map(makeRow);
+      data.v1 = (o.data.v1 || []).map(makeRow);
+    }
+  } catch(e) {}
+}
+    
 // ═══════════════════════ THEME ═══════════════════════
 function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('rapso_theme',document.body.classList.contains('dark')?'dark':'light');}
 (()=>{if((localStorage.getItem('rapso_theme')||'light')==='dark')document.body.classList.add('dark');})();
@@ -854,6 +925,10 @@ loadLocal();applyFilters();
   // Sauvegarde avant fermeture
   window.addEventListener('beforeunload', pushToParent);
 })();
+  
+// ═══ Initialisation ═══
+loadLocal();
+applyFilters();
 </script>
 </body>
 </html>
