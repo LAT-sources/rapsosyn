@@ -984,8 +984,10 @@ async function openSynthese(id) {
   document.getElementById('synRoleChip').textContent = c.archived ? '🔒 Archivé – lecture seule' : '✏️ Édition';
 
   // Charger le template
-  const response = await fetch('canevas_temp_v2.html?t=' + Date.now(), { cache: 'no-store' });
-  let templateHTML = await response.text();
+const response = await fetch('canevas_temp.html?ts=' + Date.now(), {
+  cache: 'no-store',
+  headers: { 'Cache-Control': 'no-cache' }
+});
 
   // Injecter les métadonnées et données préalables
   const metaScript = `
