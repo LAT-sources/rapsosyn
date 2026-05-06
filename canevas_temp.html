@@ -508,6 +508,24 @@ function toggleTheme(){document.body.classList.toggle('dark');localStorage.setIt
 
 // ═══════════════════════ DATA ═══════════════════════
 let currentTab='v2',data={v2:[],v1:[]},filteredRows=[],sortKey=null,sortDir=1,editingIdx=null,currentSuivi='';
+// ═══════════════════════ CHARGEMENT DONNÉES SAUVEGARDÉES ═══════════════════════
+(function() {
+  // Vérifier si des données de synthèse sont passées depuis le portail
+  if (window.RAPSO_SYNTH_DATA && window.RAPSO_SYNTH_DATA !== 'null') {
+    try {
+      const parsed = JSON.parse(window.RAPSO_SYNTH_DATA);
+      if (parsed && parsed.v2 && parsed.v1) {
+        data = parsed;
+        localStorage.setItem('rapsotracker', JSON.stringify({
+          meta: { affaire: window.RAPSO_AFFAIRE || '', dossier: window.RAPSO_DOSSIER || '' },
+          data: parsed
+        }));
+      }
+    } catch(e) {
+      console.warn('Impossible de charger les données de synthèse');
+    }
+  }
+})();
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
 
