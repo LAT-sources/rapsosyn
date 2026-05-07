@@ -508,22 +508,34 @@ function toggleTheme(){document.body.classList.toggle('dark');localStorage.setIt
 
 // ═══════════════════════ DATA ═══════════════════════
 let currentTab='v2',data={v2:[],v1:[]},filteredRows=[],sortKey=null,sortDir=1,editingIdx=null,currentSuivi='';
-
 // ═══════════════════════ CHARGEMENT DONNÉES SAUVEGARDÉES ═══════════════════════
+// IMPORTANT : window.RAPSO_SYNTH_DATA est injectée par index.html AVANT ce script.
+// Elle prend TOUJOURS la priorité sur le localStorage (qui appartient au blob URL,
+// pas au portail, et qui peut donc contenir des données d'un autre canevas).
 (function() {
   if (typeof window.RAPSO_SYNTH_DATA !== 'undefined' && window.RAPSO_SYNTH_DATA) {
     try {
       const parsed = JSON.parse(window.RAPSO_SYNTH_DATA);
       if (parsed && typeof parsed === 'object') {
+        // Normaliser : s'assurer que v2 et v1 sont des tableaux
         data.v2 = Array.isArray(parsed.v2) ? parsed.v2 : [];
         data.v1 = Array.isArray(parsed.v1) ? parsed.v1 : [];
+        // Synchroniser le localStorage du blob avec ces données
+        // afin que persistLocal() et pushToParent() soient cohérents
         localStorage.setItem('rapsotracker', JSON.stringify({
-          meta: { affaire: window.RAPSO_AFFAIRE || '', dossier: window.RAPSO_DOSSIER || '' },
+          meta: {
+            affaire: window.RAPSO_AFFAIRE || '',
+            dossier: window.RAPSO_DOSSIER || ''
+          },
           data: { v2: data.v2, v1: data.v1 }
         }));
+        console.log('[RapsoSyn] Données injectées via RAPSO_SYNTH_DATA :', data.v2.length, 'avis V2,', data.v1.length, 'avis V1');
       }
-    } catch(e) { console.warn('[RapsoSyn] Erreur parsing RAPSO_SYNTH_DATA:', e); }
+    } catch(e) {
+      console.warn('[RapsoSyn] Impossible de parser RAPSO_SYNTH_DATA :', e);
+    }
   }
+  // Si le champ affaire/dossier est vide après injection, remplir depuis les meta window
   setTimeout(() => {
     const affEl = document.getElementById('affaireInput');
     const dosEl = document.getElementById('dossierInput');
@@ -531,7 +543,6 @@ let currentTab='v2',data={v2:[],v1:[]},filteredRows=[],sortKey=null,sortDir=1,ed
     if (dosEl && !dosEl.value && window.RAPSO_DOSSIER) dosEl.value = window.RAPSO_DOSSIER;
   }, 0);
 })();
-
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
 
@@ -642,19 +653,34 @@ function saveRow(){
   if(data[currentTab][gi].rd6&&!data[currentTab][gi].num.includes('/RD6'))data[currentTab][gi].num+='/RD6';
   else if(!data[currentTab][gi].rd6)data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
   applyFilters();document.getElementById('saveFeedback').classList.add('show');setTimeout(()=>document.getElementById('saveFeedback').classList.remove('show'),1800);persistLocal();
-  if (window.parent) { const raw = localStorage.getItem('rapsotracker'); if (raw) { const parsed = JSON.parse(raw); window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*'); } }
+  // ⬇️ AJOUTEZ CES 5 LIGNES CI-DESSOUS ⬇️
+  if (window.parent) {
+    const raw = localStorage.getItem('rapsotracker');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
+    }
+  }
 }
-function deleteRow(){if(editingIdx===null)return;if(!confirm(`Supprimer "${filteredRows[editingIdx].num}" ?`))return;data[currentTab]=data[currentTab].filter(x=>x.id!==filteredRows[editingIdx].id);closePanel();applyFilters();persistLocal();}
 
 // ═══════════════════════ PA MODAL ═══════════════════════
 function openPAModal(){['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>document.getElementById(id).checked=false);['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>document.getElementById(id).value='');document.getElementById('paFeedback').style.opacity='0';document.getElementById('paModal').classList.add('open');}
 function closePAModal(){document.getElementById('paModal').classList.remove('open');}
-function paCheck(v){['F','S','D','PM'].forEach(k=>{if(k!==v)document.getElementById('pa_'+k).checked=false;});}
+function paCheck(v){
+  ['F','S','D','PM'].forEach(k=>{if(k!==v)document.getElementById('pa_'+k).checked=false;});
+}
 function addPA(){
   const cat=document.getElementById('pa_F').checked?'F':document.getElementById('pa_S').checked?'S':document.getElementById('pa_D').checked?'D':document.getElementById('pa_PM').checked?'PM':'';
   if(!cat){document.getElementById('paFeedback').style.opacity='1';setTimeout(()=>document.getElementById('paFeedback').style.opacity='0',2500);return;}
-  const rows=getRows();let maxPA=0;rows.forEach(r=>{if((r.num||'').startsWith('PA')){const n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
-  const newRow=makeRow({num:'PA'+(maxPA+1),date:new Date().toISOString().slice(0,10),disp:document.getElementById('pa_disp').value,avis:cat,obs:document.getElementById('pa_obs').value,repK:document.getElementById('pa_repK').value,repL:document.getElementById('pa_repL').value,lots:document.getElementById('pa_lots').value});
+  const rows=getRows();let maxPA=0;
+  rows.forEach(r=>{if((r.num||'').startsWith('PA')){const n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
+  const newRow=makeRow({
+    num:'PA'+(maxPA+1),date:new Date().toISOString().slice(0,10),
+    disp:document.getElementById('pa_disp').value,avis:cat,
+    obs:document.getElementById('pa_obs').value,
+    repK:document.getElementById('pa_repK').value,repL:document.getElementById('pa_repL').value,
+    lots:document.getElementById('pa_lots').value
+  });
   data[currentTab].push(newRow);closePAModal();applyFilters();persistLocal();
 }
 
@@ -713,7 +739,14 @@ function rapideSave(){
 function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>document.getElementById(id).value='');document.getElementById('addModal').classList.add('open');}
 function closeAddModal(){document.getElementById('addModal').classList.remove('open');}
 function addRow(){data[currentTab].push(makeRow({num:document.getElementById('a_num').value,ref:document.getElementById('a_ref').value,date:document.getElementById('a_date').value,inter:document.getElementById('a_inter').value,disp:document.getElementById('a_disp').value,avis:document.getElementById('a_avis').value,desc:document.getElementById('a_desc').value,obs:document.getElementById('a_obs').value,docs:document.getElementById('a_docs').value,lots:document.getElementById('a_lots').value}));closeAddModal();applyFilters();persistLocal();
-  if (window.parent) { const raw = localStorage.getItem('rapsotracker'); if (raw) { const parsed = JSON.parse(raw); window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*'); } }
+  // ⬇️ AJOUTEZ CES 5 LIGNES CI-DESSOUS ⬇️
+  if (window.parent) {
+    const raw = localStorage.getItem('rapsotracker');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
+    }
+  }
 }
   
 // ═══════════════════════ STATS ═══════════════════════
@@ -806,20 +839,27 @@ function loadJSON(){const i=document.createElement('input');i.type='file';i.acce
 function persistLocal(){
   try {
     localStorage.setItem('rapsotracker', JSON.stringify({
-      meta: { affaire: document.getElementById('affaireInput').value, dossier: document.getElementById('dossierInput').value },
+      meta: {
+        affaire: document.getElementById('affaireInput').value,
+        dossier: document.getElementById('dossierInput').value
+      },
       data
     }));
   } catch(e) {}
 }
 
 function loadLocal(){
+  // NE PAS charger depuis le localStorage si les données viennent déjà de RAPSO_SYNTH_DATA
+  // (la variable est définie par le portail avant l'exécution de ce script)
   if (typeof window.RAPSO_SYNTH_DATA !== 'undefined' && window.RAPSO_SYNTH_DATA) {
+    // Les données ont déjà été injectées dans data{} ci-dessus, on ne les écrase pas
     const affEl = document.getElementById('affaireInput');
     const dosEl = document.getElementById('dossierInput');
     if (affEl && window.RAPSO_AFFAIRE) affEl.value = window.RAPSO_AFFAIRE;
     if (dosEl && window.RAPSO_DOSSIER) dosEl.value = window.RAPSO_DOSSIER;
     return;
   }
+  // Mode standalone (ouvert directement sans portail) : charger depuis localStorage
   try {
     const r = localStorage.getItem('rapsotracker');
     if (!r) return;
@@ -838,28 +878,34 @@ function loadLocal(){
 
 loadLocal();applyFilters();
 
-// ═══ RÉCEPTION INJECTION DEPUIS LE PORTAIL (rafraîchir sans recharger) ═══
+// ══ RÉCEPTION INJECTION DEPUIS LE PORTAIL (rafraîchir sans recharger) ══
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
 
-  // Le portail envoie de nouvelles données (rapso_inject)
+  // Le portail demande une injection de nouvelles données (rafraîchir depuis Firebase)
   if (e.data.type === 'rapso_inject') {
     try {
       const inj = e.data.data || { v2: [], v1: [] };
       data.v2 = Array.isArray(inj.v2) ? inj.v2.map(makeRow) : [];
       data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
 
+      // Mettre à jour affaire / dossier si fournis
       if (e.data.affaire) document.getElementById('affaireInput').value = e.data.affaire;
       if (e.data.dossier) document.getElementById('dossierInput').value = e.data.dossier;
 
+      // Synchroniser localStorage
       localStorage.setItem('rapsotracker', JSON.stringify({
-        meta: { affaire: document.getElementById('affaireInput').value, dossier: document.getElementById('dossierInput').value },
+        meta: {
+          affaire: document.getElementById('affaireInput').value,
+          dossier: document.getElementById('dossierInput').value
+        },
         data: { v2: data.v2, v1: data.v1 }
       }));
 
+      // Réappliquer les filtres et rafraîchir le tableau
       applyFilters();
 
-      // Confirmer la réception au portail ← CECI est le handler rapso_inject_ack
+      // Confirmer la réception au portail
       if (window.parent && window.parent !== window) {
         window.parent.postMessage({
           type: 'rapso_inject_ack',
@@ -870,23 +916,14 @@ window.addEventListener('message', function(e) {
       console.warn('[RapsoSyn] rapso_inject error:', err);
     }
   }
-
-  // Le portail demande une sauvegarde forcée (avant fermeture)
-  if (e.data.type === 'rapso_request_save') {
-    const raw = localStorage.getItem('rapsotracker');
-    if (raw && window.CANEVAS_ID !== undefined && window.CANEVAS_ID !== null) {
-      try {
-        const parsed = JSON.parse(raw);
-        window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
-      } catch(e) {}
-    }
-  }
 });
 </script>
 <script>
 (function() {
+  // ── Envoi des données vers le portail parent ──
   function pushToParent() {
     if (!window.parent || window.parent === window) return;
+    // CANEVAS_ID doit être défini (injecté par le portail via RAPSO_META)
     const canId = window.CANEVAS_ID;
     if (canId === undefined || canId === null) return;
     try {
@@ -894,12 +931,20 @@ window.addEventListener('message', function(e) {
       if (!raw) return;
       const parsed = JSON.parse(raw);
       if (!parsed || !parsed.data) return;
-      window.parent.postMessage({ type: 'rapso_save', canId: canId, data: parsed.data }, '*');
-    } catch(e) {}
+      window.parent.postMessage({
+        type: 'rapso_save',
+        canId: canId,
+        data: parsed.data
+      }, '*');
+    } catch(e) {
+      console.warn('[RapsoSyn] pushToParent error:', e);
+    }
   }
 
+  // Sauvegarde automatique toutes les 4 secondes
   setInterval(pushToParent, 4000);
 
+  // Sauvegarde immédiate après chaque écriture dans localStorage
   const _origSet = localStorage.setItem.bind(localStorage);
   localStorage.setItem = function(key, value) {
     _origSet(key, value);
@@ -909,8 +954,10 @@ window.addEventListener('message', function(e) {
     }
   };
 
+  // Sauvegarde avant fermeture de l'onglet / navigation
   window.addEventListener('beforeunload', pushToParent);
 
+  // Réponse à la demande de sauvegarde forcée émise par le portail lors du retour
   window.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'rapso_request_save') {
       pushToParent();
