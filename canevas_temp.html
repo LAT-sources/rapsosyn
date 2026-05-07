@@ -877,6 +877,46 @@ function loadLocal(){
 ['affaireInput','dossierInput'].forEach(id=>document.getElementById(id).addEventListener('input',persistLocal));
 
 loadLocal();applyFilters();
+
+// ══ RÉCEPTION INJECTION DEPUIS LE PORTAIL (rafraîchir sans recharger) ══
+window.addEventListener('message', function(e) {
+  if (!e.data || typeof e.data !== 'object') return;
+
+  // Le portail demande une injection de nouvelles données (rafraîchir depuis Firebase)
+  if (e.data.type === 'rapso_inject') {
+    try {
+      const inj = e.data.data || { v2: [], v1: [] };
+      data.v2 = Array.isArray(inj.v2) ? inj.v2.map(makeRow) : [];
+      data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
+
+      // Mettre à jour affaire / dossier si fournis
+      if (e.data.affaire) document.getElementById('affaireInput').value = e.data.affaire;
+      if (e.data.dossier) document.getElementById('dossierInput').value = e.data.dossier;
+
+      // Synchroniser localStorage
+      localStorage.setItem('rapsotracker', JSON.stringify({
+        meta: {
+          affaire: document.getElementById('affaireInput').value,
+          dossier: document.getElementById('dossierInput').value
+        },
+        data: { v2: data.v2, v1: data.v1 }
+      }));
+
+      // Réappliquer les filtres et rafraîchir le tableau
+      applyFilters();
+
+      // Confirmer la réception au portail
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({
+          type: 'rapso_inject_ack',
+          data: { v2: data.v2, v1: data.v1 }
+        }, '*');
+      }
+    } catch(err) {
+      console.warn('[RapsoSyn] rapso_inject error:', err);
+    }
+  }
+});
 </script>
 <script>
 (function() {
