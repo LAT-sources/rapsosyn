@@ -154,7 +154,7 @@
     font-size:0.57rem;font-weight:700;font-family:var(--mono);margin-left:2px;
   }
 
-  /* EDIT PANEL (frmEditionCell transposé) */
+  /* EDIT PANEL */
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;backdrop-filter:blur(2px);}
   .overlay.open{display:block;}
   .edit-panel{
@@ -185,7 +185,6 @@
   }
   .form-row textarea{min-height:55px;}
   .form-row input:focus,.form-row textarea:focus{border-color:var(--accent);}
-  .id-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;}
   .suivi-opts{display:flex;gap:4px;}
   .suivi-opt{
     flex:1;border:2px solid var(--border);border-radius:5px;padding:5px 4px;
@@ -281,15 +280,15 @@
   <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fRd6" onchange="applyFilters()" style="accent-color:var(--accent2)">RD6</label>
   <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fPA" onchange="applyFilters()" style="accent-color:var(--green)">PA</label>
 
-  <!-- Multi-sélection Intervenants -->
-  <div class="mf-select" id="mfInterSelect">
-    <div class="mf-select-button" onclick="toggleMfSelect('mfInter')">Intervenants <span id="mfInterCount">(0)</span></div>
+  <!-- mf-select Intervenants -->
+  <div class="mf-select">
+    <div class="mf-select-button" onclick="toggleMfSelect('inter')">Intervenants <span id="mfInterCount">(0)</span></div>
     <div class="mf-select-dropdown" id="mfInterDropdown"></div>
   </div>
 
-  <!-- Multi-sélection Lots -->
-  <div class="mf-select" id="mfLotSelect">
-    <div class="mf-select-button" onclick="toggleMfSelect('mfLot')">Lots <span id="mfLotCount">(0)</span></div>
+  <!-- mf-select Lots -->
+  <div class="mf-select">
+    <div class="mf-select-button" onclick="toggleMfSelect('lot')">Lots <span id="mfLotCount">(0)</span></div>
     <div class="mf-select-dropdown" id="mfLotDropdown"></div>
   </div>
 
@@ -306,7 +305,7 @@
   <button class="tb-btn" onclick="window.print()">🖨️</button>
 </div>
 
-<!-- TABLE -->
+<!-- TABLE (pas de ligne de filtres par colonne) -->
 <div class="main">
   <div class="table-wrap">
     <table id="mainTable">
@@ -335,7 +334,7 @@
   </div>
 </div>
 
-<!-- EDIT PANEL (frmEditionCell transposé) -->
+<!-- EDIT PANEL -->
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="edit-panel" id="editPanel">
   <div class="panel-hdr">
@@ -346,27 +345,20 @@
     <button class="tb-btn" onclick="closePanel()">✕</button>
   </div>
   <div class="panel-body">
-    <!-- Dispositions examinées (comme lblColE) -->
     <div class="form-section">
       <div class="section-title">Dispositions examinées</div>
-      <div style="font-size:0.78rem;color:var(--text);white-space:pre-wrap;" id="e_lblColE">—</div>
+      <div style="font-size:0.78rem;white-space:pre-wrap;" id="e_lblColE">—</div>
     </div>
-
-    <!-- Observations (txtCellValue) -->
     <div class="form-section">
       <div class="section-title">Observations</div>
       <textarea id="e_obs" style="min-height:150px;height:150px;"></textarea>
     </div>
-
-    <!-- Réponses (txtColK, txtColL, txtColM) -->
     <div class="form-section">
       <div class="section-title">Réponses</div>
       <div class="form-row"><label>Réponses ENT / MOE</label><textarea id="e_repK" style="min-height:70px;"></textarea></div>
       <div class="form-row"><label>Observations SOCOTEC</label><textarea id="e_repL" style="min-height:70px;"></textarea></div>
       <div class="form-row"><label>Lots concernés</label><input type="text" id="e_lots"></div>
     </div>
-
-    <!-- Statut et RD6 -->
     <div class="form-section">
       <div class="section-title">Statut de suivi</div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
@@ -390,7 +382,7 @@
   </div>
 </div>
 
-<!-- MODAL PA (point d'action) -->
+<!-- MODAL PA -->
 <div class="modal-overlay" id="paModal">
   <div class="modal" style="width:550px;">
     <div class="modal-hdr"><span style="font-weight:700;">Ajouter un Point d'Action (PA)</span><button class="tb-btn" onclick="closePAModal()">✕</button></div>
@@ -417,7 +409,7 @@
   </div>
 </div>
 
-<!-- RAPIDE -->
+<!-- RAPIDE MODAL -->
 <div class="modal-overlay" id="rapideOverlay">
   <div class="modal" style="width:960px;max-width:97vw;height:85vh;max-height:700px;">
     <div class="modal-hdr"><span style="font-weight:700;">⚡ Version rapide</span><span style="flex:1;font-size:0.72rem;color:var(--muted);font-family:var(--mono);" id="rapideInfo">Nbr.Avis : S=0 / D=0 / F=0</span><button class="tb-btn" onclick="closeRapide()">✕</button></div>
@@ -518,17 +510,20 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// ═══════════════════════ THEME ═══════════════════════
+// ██████████████████████████████████████████████████████████████████████████
+//  RAPSOSYNTHÈSE – VERSION CORRIGÉE (filtres multi-sélection fonctionnels)
+// ██████████████████████████████████████████████████████████████████████████
+
+// ----- Thème -----
 function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('rapso_theme',document.body.classList.contains('dark')?'dark':'light');}
 (()=>{if((localStorage.getItem('rapso_theme')||'light')==='dark')document.body.classList.add('dark');})();
 
-// ═══════════════════════ DATA ═══════════════════════
-let currentTab='v2',data={v2:[],v1:[]},filteredRows=[],sortKey=null,sortDir=1,editingIdx=null,currentSuivi='';
-// Filtres multi-sélection
+// ----- Données globales -----
+let currentTab='v2', data={v2:[], v1:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='';
 let selectedIntervenants = new Set();
 let selectedLots = new Set();
 
-// ═══════════════════════ CHARGEMENT DONNÉES SAUVEGARDÉES ═══════════════════════
+// ----- Initialisation / injection parent -----
 (function() {
   if (typeof window.RAPSO_SYNTH_DATA !== 'undefined' && window.RAPSO_SYNTH_DATA) {
     try {
@@ -537,13 +532,9 @@ let selectedLots = new Set();
         data.v2 = Array.isArray(parsed.v2) ? parsed.v2 : [];
         data.v1 = Array.isArray(parsed.v1) ? parsed.v1 : [];
         localStorage.setItem('rapsotracker', JSON.stringify({
-          meta: {
-            affaire: window.RAPSO_AFFAIRE || '',
-            dossier: window.RAPSO_DOSSIER || ''
-          },
+          meta: { affaire: window.RAPSO_AFFAIRE || '', dossier: window.RAPSO_DOSSIER || '' },
           data: { v2: data.v2, v1: data.v1 }
         }));
-        console.log('[RapsoSyn] Données injectées :', data.v2.length, 'avis V2,', data.v1.length, 'avis V1');
       }
     } catch(e) { console.warn(e); }
   }
@@ -552,47 +543,51 @@ let selectedLots = new Set();
     const dosEl = document.getElementById('dossierInput');
     if (affSpan && !affSpan.innerText && window.RAPSO_AFFAIRE) affSpan.innerText = window.RAPSO_AFFAIRE;
     if (dosEl && !dosEl.value && window.RAPSO_DOSSIER) dosEl.value = window.RAPSO_DOSSIER;
-    // Construire les listes après chargement
-    buildMfSelectOptions();
+    applyFilters(); // buildMfSelectOptions sera appelé dans applyFilters
   }, 0);
 })();
 
-function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
-function getRows(){return data[currentTab];}
+function makeRow(o={}) {
+  return {
+    id: o.id || crypto.randomUUID(),
+    num: o.num || '', ref: o.ref || '', date: o.date || '', inter: o.inter || '',
+    disp: o.disp || '', avis: o.avis || '', desc: o.desc || '', obs: o.obs || '',
+    docs: o.docs || '', suivi: o.suivi || '', repK: o.repK || '', repL: o.repL || '',
+    lots: o.lots || '', rd6: o.rd6 || false
+  };
+}
+function getRows() { return data[currentTab]; }
 
-// ═══════════════════════ GESTION MULTI-SELECTIONS ═══════════════════════
+// ----- Construction des listes déroulantes (intervenants / lots) -----
 function buildMfSelectOptions() {
   const rows = getRows();
-  console.log('buildMfSelectOptions - rows count:', rows.length);
-  
   // Intervenants
   const intervenants = [...new Set(rows.map(r => r.inter?.trim()).filter(v => v && v !== ''))];
-  console.log('Intervenants trouvés:', intervenants);
   const interDiv = document.getElementById('mfInterDropdown');
   if (interDiv) {
     interDiv.innerHTML = intervenants.map(inter => `
-      <label><input type="checkbox" value="${escAttr(inter)}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', '${escAttr(inter)}', this.checked)"> ${esc(inter)}</label>
+      <label><input type="checkbox" value="${escapeHtmlAttr(inter)}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', '${escapeHtmlAttr(inter)}', this.checked)"> ${escapeHtml(inter)}</label>
     `).join('');
   }
   document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
-  
+
   // Lots (splittés par virgule, point-virgule ou espace)
   const allLots = rows.flatMap(r => {
     if (!r.lots) return [];
     return String(r.lots).split(/[,; ]+/).map(l => l.trim()).filter(l => l !== '');
   });
   const lots = [...new Set(allLots)];
-  console.log('Lots trouvés:', lots);
   const lotDiv = document.getElementById('mfLotDropdown');
   if (lotDiv) {
     lotDiv.innerHTML = lots.map(lot => `
-      <label><input type="checkbox" value="${escAttr(lot)}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', '${escAttr(lot)}', this.checked)"> ${esc(lot)}</label>
+      <label><input type="checkbox" value="${escapeHtmlAttr(lot)}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', '${escapeHtmlAttr(lot)}', this.checked)"> ${escapeHtml(lot)}</label>
     `).join('');
   }
   document.getElementById('mfLotCount').innerText = `(${selectedLots.size})`;
 }
 
-function escAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;'); }
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeHtmlAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
 
 function toggleMultiFilter(type, value, checked) {
   if (type === 'inter') {
@@ -606,11 +601,13 @@ function toggleMultiFilter(type, value, checked) {
 }
 
 function toggleMfSelect(which) {
-  const dropdown = document.getElementById(`mf${which.charAt(0).toUpperCase()+which.slice(1)}Dropdown`);
+  const dropdownId = which === 'inter' ? 'mfInterDropdown' : 'mfLotDropdown';
+  const dropdown = document.getElementById(dropdownId);
   dropdown.classList.toggle('show');
-  const other = which === 'mfInter' ? 'mfLotDropdown' : 'mfInterDropdown';
-  const otherDrop = document.getElementById(other);
-  if (otherDrop && otherDrop !== dropdown) otherDrop.classList.remove('show');
+  // fermer l'autre
+  const otherId = which === 'inter' ? 'mfLotDropdown' : 'mfInterDropdown';
+  const other = document.getElementById(otherId);
+  if (other && other !== dropdown) other.classList.remove('show');
 }
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.mf-select')) {
@@ -618,159 +615,202 @@ document.addEventListener('click', function(e) {
   }
 });
 
-// ═══════════════════════ FILTERS ═══════════════════════
-function gcf(id){return(document.getElementById(id)?.value||'').toLowerCase();}
-function matchDate(stored,q){
-  if(!q)return true;q=q.trim();const p=q.split('/');
-  if(p.length>=2&&stored&&/^\d{4}-\d{2}-\d{2}$/.test(stored)){
-    const[y,m,d]=stored.split('-'),fr=d+'/'+m+'/'+y;
-    if(p.length>=3){let yy=p[2];if(yy.length===2)yy='20'+yy;return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0')+'/'+yy);}
+// ----- Filtres -----
+function gcf(id){ return (document.getElementById(id)?.value || '').toLowerCase(); }
+function matchDate(stored, q) {
+  if (!q) return true;
+  q = q.trim();
+  const p = q.split('/');
+  if (p.length >= 2 && stored && /^\d{4}-\d{2}-\d{2}$/.test(stored)) {
+    const [y,m,d] = stored.split('-'), fr = d+'/'+m+'/'+y;
+    if (p.length >= 3) {
+      let yy = p[2];
+      if (yy.length === 2) yy = '20'+yy;
+      return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0')+'/'+yy);
+    }
     return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0'));
-  }return String(stored||'').toLowerCase().includes(q.toLowerCase());
+  }
+  return String(stored||'').toLowerCase().includes(q.toLowerCase());
 }
 
-function applyFilters(){
-  // Reconstruire les listes déroulantes à partir des données brutes (non filtrées)
+function applyFilters() {
+  // 1) Reconstruire les listes déroulantes à partir des données brutes (non filtrées)
   buildMfSelectOptions();
-  
-  const qsNum=gcf('qs_num'),qsDate=document.getElementById('qs_date')?.value||'',qsDisp=gcf('qs_disp'),qsObs=gcf('qs_obs'),qsDocs=gcf('qs_docs');
-  const qsF=document.getElementById('qs_F').checked,qsS=document.getElementById('qs_S').checked,qsD=document.getElementById('qs_D').checked,qsPM=document.getElementById('qs_PM').checked,qsSO=document.getElementById('qs_SO').checked;
-  const anyQS=qsF||qsS||qsD||qsPM||qsSO;
-  const fOui=document.getElementById('fOui').checked,fPar=document.getElementById('fPar').checked,fNon=document.getElementById('fNon').checked,fRd6=document.getElementById('fRd6').checked,fPA=document.getElementById('fPA').checked;
-  const anySt=fOui||fPar||fNon;
-  
+
+  const qsNum = gcf('qs_num');
+  const qsDate = document.getElementById('qs_date')?.value || '';
+  const qsDisp = gcf('qs_disp');
+  const qsObs = gcf('qs_obs');
+  const qsDocs = gcf('qs_docs');
+  const qsF = document.getElementById('qs_F').checked;
+  const qsS = document.getElementById('qs_S').checked;
+  const qsD = document.getElementById('qs_D').checked;
+  const qsPM = document.getElementById('qs_PM').checked;
+  const qsSO = document.getElementById('qs_SO').checked;
+  const anyQS = qsF || qsS || qsD || qsPM || qsSO;
+  const fOui = document.getElementById('fOui').checked;
+  const fPar = document.getElementById('fPar').checked;
+  const fNon = document.getElementById('fNon').checked;
+  const fRd6 = document.getElementById('fRd6').checked;
+  const fPA = document.getElementById('fPA').checked;
+  const anySt = fOui || fPar || fNon;
+
   let rows = getRows(); // données brutes
-  
-  rows = rows.filter(r=>{
-    if(qsNum&&!String(r.num||'').toLowerCase().includes(qsNum))return false;
-    if(qsDate&&!matchDate(r.date,qsDate))return false;
-    if(qsDisp&&!String(r.disp||'').toLowerCase().includes(qsDisp))return false;
-    if(qsObs&&!String(r.obs||'').toLowerCase().includes(qsObs))return false;
-    if(qsDocs&&!String(r.docs||'').toLowerCase().includes(qsDocs))return false;
-    if(anyQS){const a=(r.avis||'').toUpperCase().trim();if(!((qsF&&a==='F')||(qsS&&a==='S')||(qsD&&a==='D')||(qsPM&&a==='PM')||(qsSO&&a==='SO')))return false;}
-    if(anySt){if(!((fOui&&r.suivi==='Oui')||(fPar&&r.suivi==='Par')||(fNon&&r.suivi==='Non')))return false;}
-    if(fRd6&&!r.rd6)return false;
-    if(fPA && !(r.num||'').toUpperCase().startsWith('PA'))return false;
+
+  // Filtres textuels
+  rows = rows.filter(r => {
+    if (qsNum && !String(r.num||'').toLowerCase().includes(qsNum)) return false;
+    if (qsDate && !matchDate(r.date, qsDate)) return false;
+    if (qsDisp && !String(r.disp||'').toLowerCase().includes(qsDisp)) return false;
+    if (qsObs && !String(r.obs||'').toLowerCase().includes(qsObs)) return false;
+    if (qsDocs && !String(r.docs||'').toLowerCase().includes(qsDocs)) return false;
+    if (anyQS) {
+      const a = (r.avis||'').toUpperCase().trim();
+      if (!((qsF && a==='F') || (qsS && a==='S') || (qsD && a==='D') || (qsPM && a==='PM') || (qsSO && a==='SO'))) return false;
+    }
+    if (anySt) {
+      if (!((fOui && r.suivi==='Oui') || (fPar && r.suivi==='Par') || (fNon && r.suivi==='Non'))) return false;
+    }
+    if (fRd6 && !r.rd6) return false;
+    if (fPA && !(r.num||'').toUpperCase().startsWith('PA')) return false;
     return true;
   });
-  
-  // Appliquer multi-sélection
-  if(selectedIntervenants.size > 0) {
+
+  // Filtres multi-sélection
+  if (selectedIntervenants.size > 0) {
     rows = rows.filter(r => selectedIntervenants.has(r.inter?.trim()));
   }
-  if(selectedLots.size > 0) {
+  if (selectedLots.size > 0) {
     rows = rows.filter(r => {
-      const lotsRow = (r.lots||'').split(',').map(l => l.trim()).filter(l => l);
+      const lotsRow = (r.lots||'').split(/[,; ]+/).map(l => l.trim()).filter(l => l);
       return lotsRow.some(l => selectedLots.has(l));
     });
   }
-  
-  if(sortKey){
-    rows.sort((a,b)=>{
-      const av=String(a[sortKey]||''), bv=String(b[sortKey]||'');
-      return av<bv ? -sortDir : av>bv ? sortDir : 0;
+
+  // Tri
+  if (sortKey) {
+    rows.sort((a,b) => {
+      const av = String(a[sortKey]||''), bv = String(b[sortKey]||'');
+      return av < bv ? -sortDir : av > bv ? sortDir : 0;
     });
   }
   filteredRows = rows;
   render();
   updateStats();
 }
-function sortBy(k){sortKey===k?sortDir*=-1:(sortKey=k,sortDir=1);applyFilters();}
-function resetFilters(){
-  ['qs_num','qs_date','qs_disp','qs_obs','qs_docs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['qs_F','qs_S','qs_D','qs_PM','qs_SO','fOui','fPar','fNon','fRd6','fPA'].forEach(id=>document.getElementById(id).checked=false);
+
+function sortBy(k) { sortKey === k ? sortDir *= -1 : (sortKey = k, sortDir = 1); applyFilters(); }
+function resetFilters() {
+  ['qs_num','qs_date','qs_disp','qs_obs','qs_docs'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['qs_F','qs_S','qs_D','qs_PM','qs_SO','fOui','fPar','fNon','fRd6','fPA'].forEach(id => document.getElementById(id).checked = false);
   selectedIntervenants.clear();
   selectedLots.clear();
-  sortKey=null;sortDir=1;
+  sortKey = null; sortDir = 1;
   applyFilters();
 }
 
-// ═══════════════════════ RENDER ═══════════════════════
-function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
-function fmtDate(d){if(!d)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}return d;}
-function render(){
-  const tbody=document.getElementById('tableBody'),empty=document.getElementById('emptyState');
-  if(!filteredRows.length){tbody.innerHTML='';empty.style.display='flex';return;}
-  empty.style.display='none';
-  tbody.innerHTML=filteredRows.map((r,i)=>{
-    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✅ Oui</span>':r.suivi==='Par'?'<span class="badge badge-par">⚠️ Par.</span>':r.suivi==='Non'?'<span class="badge badge-non">❌ Non</span>':'<span class="badge badge-empty">—</span>';
-    const rd6=r.rd6?'<span class="rd6-tag">RD6</span>':'';
-    return`<tr ondblclick="openEditPanel(${i})" id="row-${i}">
-      <td><span style="font-family:var(--mono);font-size:.67rem">${esc(r.num)}</span>${rd6}</td>
-      <td style="font-family:var(--mono);font-size:.64rem">${esc(r.ref)}</td>
-      <td style="font-family:var(--mono);font-size:.64rem;white-space:nowrap">${esc(fmtDate(r.date))}</td>
-      <td>${esc(r.inter)}</td><td>${esc(r.disp)}</td><td>${esc(r.avis)}</td><td>${esc(r.desc)}</td>
-      <td>${esc(r.obs)}</td><td style="font-size:.64rem">${esc(r.docs)}</td><td>${badge}</td>
-      <td>${esc(r.repK)}</td><td>${esc(r.repL)}</td><td>${esc(r.lots)}</td>
+// ----- Affichage du tableau -----
+function fmtDate(d) {
+  if (!d) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
+    const [y,m,day] = d.split('-');
+    return day+'/'+m+'/'+y;
+  }
+  return d;
+}
+function render() {
+  const tbody = document.getElementById('tableBody'), empty = document.getElementById('emptyState');
+  if (!filteredRows.length) { tbody.innerHTML = ''; empty.style.display = 'flex'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = filteredRows.map((r,i) => {
+    const badge = r.suivi === 'Oui' ? '<span class="badge badge-oui">✅ Oui</span>' : r.suivi === 'Par' ? '<span class="badge badge-par">⚠️ Par.</span>' : r.suivi === 'Non' ? '<span class="badge badge-non">❌ Non</span>' : '<span class="badge badge-empty">—</span>';
+    const rd6 = r.rd6 ? '<span class="rd6-tag">RD6</span>' : '';
+    return `<tr ondblclick="openEditPanel(${i})" id="row-${i}">
+      <td><span style="font-family:var(--mono);font-size:.67rem">${escapeHtml(r.num)}</span>${rd6}</td>
+      <td style="font-family:var(--mono);font-size:.64rem">${escapeHtml(r.ref)}</td>
+      <td style="font-family:var(--mono);font-size:.64rem;white-space:nowrap">${escapeHtml(fmtDate(r.date))}</td>
+      <td>${escapeHtml(r.inter)}</td><td>${escapeHtml(r.disp)}</td><td>${escapeHtml(r.avis)}</td>
+      <td>${escapeHtml(r.desc)}</td><td>${escapeHtml(r.obs)}</td><td style="font-size:.64rem">${escapeHtml(r.docs)}</td>
+      <td>${badge}</td><td>${escapeHtml(r.repK)}</td><td>${escapeHtml(r.repL)}</td><td>${escapeHtml(r.lots)}</td>
       <td style="text-align:center"><button class="tb-btn" onclick="openEditPanel(${i})" style="padding:1px 4px;font-size:.62rem;">✏️</button></td>
     </tr>`;
   }).join('');
 }
-function updateStats(){
-  const rows=getRows();
-  document.getElementById('statOui').textContent=rows.filter(r=>r.suivi==='Oui').length;
-  document.getElementById('statPar').textContent=rows.filter(r=>r.suivi==='Par').length;
-  document.getElementById('statNon').textContent=rows.filter(r=>r.suivi==='Non').length;
-  document.getElementById('statTotal').textContent=rows.length;
+function updateStats() {
+  const rows = getRows();
+  document.getElementById('statOui').textContent = rows.filter(r=>r.suivi==='Oui').length;
+  document.getElementById('statPar').textContent = rows.filter(r=>r.suivi==='Par').length;
+  document.getElementById('statNon').textContent = rows.filter(r=>r.suivi==='Non').length;
+  document.getElementById('statTotal').textContent = rows.length;
 }
 
-// ═══════════════════════ TABS ═══════════════════════
-function switchTab(t){
-  currentTab=t;
-  document.getElementById('tabV2').classList.toggle('active',t==='v2');
-  document.getElementById('tabV1').classList.toggle('active',t==='v1');
-  // Réinitialiser les filtres multi-sélection lors du changement d'onglet
-  selectedIntervenants.clear();
-  selectedLots.clear();
-  resetFilters(); // cela appelle applyFilters() qui rebuild les listes
+// ----- Onglets -----
+function switchTab(t) {
+  currentTab = t;
+  document.getElementById('tabV2').classList.toggle('active', t==='v2');
+  document.getElementById('tabV1').classList.toggle('active', t==='v1');
+  resetFilters();
 }
 
-// ═══════════════════════ EDIT PANEL (fonctions essentielles) ═══════════════════════
-function openEditPanel(fi){
-  editingIdx=fi;
-  const r=filteredRows[fi];
-  document.getElementById('panelTitle').textContent=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${r.inter||'-'} - Avis : ${r.avis||'-'}`;
-  document.getElementById('panelNum').textContent=r.num||'(sans n°)';
-  document.getElementById('e_lblColE').textContent=r.disp||'—';
-  document.getElementById('e_obs').value=r.obs||'';
-  document.getElementById('e_repK').value=r.repK||'';
-  document.getElementById('e_repL').value=r.repL||'';
-  document.getElementById('e_lots').value=r.lots||'';
-  document.getElementById('e_rd6').checked=r.rd6;
-  document.getElementById('rd6Toggle').classList.toggle('active',r.rd6);
-  currentSuivi=r.suivi;updateSuiviUI();
+// ----- Panneau d'édition -----
+function openEditPanel(fi) {
+  editingIdx = fi;
+  const r = filteredRows[fi];
+  document.getElementById('panelTitle').textContent = `Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${r.inter||'-'} - Avis : ${r.avis||'-'}`;
+  document.getElementById('panelNum').textContent = r.num||'(sans n°)';
+  document.getElementById('e_lblColE').textContent = r.disp||'—';
+  document.getElementById('e_obs').value = r.obs||'';
+  document.getElementById('e_repK').value = r.repK||'';
+  document.getElementById('e_repL').value = r.repL||'';
+  document.getElementById('e_lots').value = r.lots||'';
+  document.getElementById('e_rd6').checked = r.rd6;
+  document.getElementById('rd6Toggle').classList.toggle('active', r.rd6);
+  currentSuivi = r.suivi; updateSuiviUI();
   document.getElementById('overlay').classList.add('open');
   document.getElementById('editPanel').classList.add('open');
   document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
-  const el=document.getElementById('row-'+fi);if(el)el.classList.add('row-highlight');
+  const el = document.getElementById('row-'+fi); if (el) el.classList.add('row-highlight');
 }
-function closePanel(){document.getElementById('overlay').classList.remove('open');document.getElementById('editPanel').classList.remove('open');editingIdx=null;}
-function navRow(d){if(editingIdx===null)return;const n=editingIdx+d;if(n>=0&&n<filteredRows.length)openEditPanel(n);}
-function setSuivi(v){currentSuivi=v;updateSuiviUI();}
-function updateSuiviUI(){
-  ['oui','par','non','vide'].forEach(k=>document.getElementById('opt_'+k).className='suivi-opt');
-  const k=currentSuivi==='Oui'?'oui':currentSuivi==='Par'?'par':currentSuivi==='Non'?'non':'vide';
+function closePanel() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('editPanel').classList.remove('open');
+  editingIdx = null;
+}
+function navRow(d) {
+  if (editingIdx === null) return;
+  const n = editingIdx + d;
+  if (n >= 0 && n < filteredRows.length) openEditPanel(n);
+}
+function setSuivi(v) { currentSuivi = v; updateSuiviUI(); }
+function updateSuiviUI() {
+  ['oui','par','non','vide'].forEach(k => document.getElementById('opt_'+k).className = 'suivi-opt');
+  const k = currentSuivi==='Oui'?'oui' : currentSuivi==='Par'?'par' : currentSuivi==='Non'?'non' : 'vide';
   document.getElementById('opt_'+k).classList.add('sel-'+k);
 }
-function toggleRD6(){const cb=document.getElementById('e_rd6');cb.checked=!cb.checked;document.getElementById('rd6Toggle').classList.toggle('active',cb.checked);}
-function saveRow(){
-  if(editingIdx===null)return;
-  const r=filteredRows[editingIdx];
-  const gi=getRows().findIndex(x=>x.id===r.id);
-  if(gi===-1)return;
-  data[currentTab][gi]={...r,
-    obs:document.getElementById('e_obs').value,
-    repK:document.getElementById('e_repK').value,
-    repL:document.getElementById('e_repL').value,
-    lots:document.getElementById('e_lots').value,
-    suivi:currentSuivi,
-    rd6:document.getElementById('e_rd6').checked
+function toggleRD6() {
+  const cb = document.getElementById('e_rd6');
+  cb.checked = !cb.checked;
+  document.getElementById('rd6Toggle').classList.toggle('active', cb.checked);
+}
+function saveRow() {
+  if (editingIdx === null) return;
+  const r = filteredRows[editingIdx];
+  const gi = getRows().findIndex(x => x.id === r.id);
+  if (gi === -1) return;
+  data[currentTab][gi] = {
+    ...r,
+    obs: document.getElementById('e_obs').value,
+    repK: document.getElementById('e_repK').value,
+    repL: document.getElementById('e_repL').value,
+    lots: document.getElementById('e_lots').value,
+    suivi: currentSuivi,
+    rd6: document.getElementById('e_rd6').checked
   };
-  if(data[currentTab][gi].rd6 && !data[currentTab][gi].num.includes('/RD6')) data[currentTab][gi].num+='/RD6';
-  else if(!data[currentTab][gi].rd6) data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
+  if (data[currentTab][gi].rd6 && !data[currentTab][gi].num.includes('/RD6')) data[currentTab][gi].num += '/RD6';
+  else if (!data[currentTab][gi].rd6) data[currentTab][gi].num = data[currentTab][gi].num.replace('/RD6','');
   applyFilters();
   document.getElementById('saveFeedback').classList.add('show');
-  setTimeout(()=>document.getElementById('saveFeedback').classList.remove('show'),1800);
+  setTimeout(()=>document.getElementById('saveFeedback').classList.remove('show'), 1800);
   persistLocal();
   if (window.parent) {
     const raw = localStorage.getItem('rapsotracker');
@@ -780,112 +820,147 @@ function saveRow(){
     }
   }
 }
-function deleteRow(){
-  if(editingIdx===null)return;
-  const r=filteredRows[editingIdx];
-  const gi=getRows().findIndex(x=>x.id===r.id);
-  if(gi>=0){
-    if(confirm(`Supprimer définitivement l'avis ${r.num} ?`)){
-      data[currentTab].splice(gi,1);
-      applyFilters();
-      closePanel();
-      persistLocal();
-      if (window.parent) {
-        const raw = localStorage.getItem('rapsotracker');
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
-        }
+function deleteRow() {
+  if (editingIdx === null) return;
+  const r = filteredRows[editingIdx];
+  const gi = getRows().findIndex(x => x.id === r.id);
+  if (gi >= 0 && confirm(`Supprimer définitivement l'avis ${r.num} ?`)) {
+    data[currentTab].splice(gi,1);
+    applyFilters();
+    closePanel();
+    persistLocal();
+    if (window.parent) {
+      const raw = localStorage.getItem('rapsotracker');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
       }
     }
   }
 }
 
-// ═══════════════════════ PA MODAL ═══════════════════════
-function openPAModal(){['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>document.getElementById(id).checked=false);['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>document.getElementById(id).value='');document.getElementById('paFeedback').style.opacity='0';document.getElementById('paModal').classList.add('open');}
-function closePAModal(){document.getElementById('paModal').classList.remove('open');}
-function paCheck(v){['F','S','D','PM'].forEach(k=>{if(k!==v)document.getElementById('pa_'+k).checked=false;});}
-function addPA(){
-  const cat=document.getElementById('pa_F').checked?'F':document.getElementById('pa_S').checked?'S':document.getElementById('pa_D').checked?'D':document.getElementById('pa_PM').checked?'PM':'';
-  if(!cat){document.getElementById('paFeedback').style.opacity='1';setTimeout(()=>document.getElementById('paFeedback').style.opacity='0',2500);return;}
-  const rows=getRows();let maxPA=0;
-  rows.forEach(r=>{if((r.num||'').startsWith('PA')){const n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
-  const newRow=makeRow({
-    num:'PA'+(maxPA+1),date:new Date().toISOString().slice(0,10),
-    disp:document.getElementById('pa_disp').value,avis:cat,
-    obs:document.getElementById('pa_obs').value,
-    repK:document.getElementById('pa_repK').value,repL:document.getElementById('pa_repL').value,
-    lots:document.getElementById('pa_lots').value
+// ----- Modal PA -----
+function openPAModal() {
+  ['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>document.getElementById(id).checked=false);
+  ['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('paFeedback').style.opacity='0';
+  document.getElementById('paModal').classList.add('open');
+}
+function closePAModal() { document.getElementById('paModal').classList.remove('open'); }
+function paCheck(v) {
+  ['F','S','D','PM'].forEach(k=>{ if(k!==v) document.getElementById('pa_'+k).checked=false; });
+}
+function addPA() {
+  const cat = document.getElementById('pa_F').checked ? 'F' : document.getElementById('pa_S').checked ? 'S' : document.getElementById('pa_D').checked ? 'D' : document.getElementById('pa_PM').checked ? 'PM' : '';
+  if (!cat) { document.getElementById('paFeedback').style.opacity='1'; setTimeout(()=>document.getElementById('paFeedback').style.opacity='0',2500); return; }
+  const rows = getRows();
+  let maxPA = 0;
+  rows.forEach(r => { if ((r.num||'').startsWith('PA')) { const n = parseInt(r.num.replace('PA','')); if (n>maxPA) maxPA=n; } });
+  const newRow = makeRow({
+    num: 'PA'+(maxPA+1),
+    date: new Date().toISOString().slice(0,10),
+    disp: document.getElementById('pa_disp').value,
+    avis: cat,
+    obs: document.getElementById('pa_obs').value,
+    repK: document.getElementById('pa_repK').value,
+    repL: document.getElementById('pa_repL').value,
+    lots: document.getElementById('pa_lots').value
   });
-  data[currentTab].push(newRow);closePAModal();applyFilters();persistLocal();
+  data[currentTab].push(newRow);
+  closePAModal();
+  applyFilters();
+  persistLocal();
 }
 
-// ═══════════════════════ VERSION RAPIDE (simplifiée mais fonctionnelle) ═══════════════════════
-let rapideSelected=null,rapideFiltered=[];
-function openRapide(){rapideSelected=null;document.getElementById('rapideOverlay').classList.add('open');document.getElementById('rapideEditArea').style.display='none';document.getElementById('rapideSaveBtn').disabled=true;rapideApply();}
-function closeRapide(){document.getElementById('rapideOverlay').classList.remove('open');}
-function rapideReset(){['rf_lots','rf_inter'].forEach(id=>document.getElementById(id).value='');['rf_F','rf_S','rf_D','rf_rd6','rf_non','rf_par','rf_lev','rf_pa'].forEach(id=>document.getElementById(id).checked=false);rapideApply();}
-function rapideApply(){
-  const lots=(document.getElementById('rf_lots').value||'').toLowerCase(),inter=(document.getElementById('rf_inter').value||'').toLowerCase();
-  const rfF=document.getElementById('rf_F').checked,rfS=document.getElementById('rf_S').checked,rfD=document.getElementById('rf_D').checked,anyType=rfF||rfS||rfD;
-  const rfRd6=document.getElementById('rf_rd6').checked,rfNon=document.getElementById('rf_non').checked,rfPar=document.getElementById('rf_par').checked,rfLev=document.getElementById('rf_lev').checked,rfPa=document.getElementById('rf_pa').checked,anyStat=rfRd6||rfNon||rfPar||rfLev||rfPa;
-  rapideFiltered=getRows().filter(r=>{
-    if(lots&&!String(r.lots||'').toLowerCase().includes(lots))return false;
-    if(inter&&!String(r.inter||'').toLowerCase().includes(inter))return false;
-    if(anyType){const a=(r.avis||'').toUpperCase().trim();if(!((rfF&&a==='F')||(rfS&&a==='S')||(rfD&&a==='D')))return false;}
-    if(anyStat){if(!((rfRd6&&r.rd6)||(rfNon&&r.suivi==='Non')||(rfPar&&r.suivi==='Par')||(rfLev&&r.suivi==='Oui')||(rfPa&&(r.num||'').toUpperCase().startsWith('PA'))))return false;}
+// ----- Version rapide (simplifiée mais conservée) -----
+let rapideSelected = null, rapideFiltered = [];
+function openRapide() { rapideSelected=null; document.getElementById('rapideOverlay').classList.add('open'); document.getElementById('rapideEditArea').style.display='none'; document.getElementById('rapideSaveBtn').disabled=true; rapideApply(); }
+function closeRapide() { document.getElementById('rapideOverlay').classList.remove('open'); }
+function rapideReset() {
+  ['rf_lots','rf_inter'].forEach(id=>document.getElementById(id).value='');
+  ['rf_F','rf_S','rf_D','rf_rd6','rf_non','rf_par','rf_lev','rf_pa'].forEach(id=>document.getElementById(id).checked=false);
+  rapideApply();
+}
+function rapideApply() {
+  const lots = (document.getElementById('rf_lots').value||'').toLowerCase();
+  const inter = (document.getElementById('rf_inter').value||'').toLowerCase();
+  const rfF = document.getElementById('rf_F').checked, rfS = document.getElementById('rf_S').checked, rfD = document.getElementById('rf_D').checked, anyType = rfF||rfS||rfD;
+  const rfRd6 = document.getElementById('rf_rd6').checked, rfNon = document.getElementById('rf_non').checked, rfPar = document.getElementById('rf_par').checked, rfLev = document.getElementById('rf_lev').checked, rfPa = document.getElementById('rf_pa').checked, anyStat = rfRd6||rfNon||rfPar||rfLev||rfPa;
+  rapideFiltered = getRows().filter(r => {
+    if (lots && !String(r.lots||'').toLowerCase().includes(lots)) return false;
+    if (inter && !String(r.inter||'').toLowerCase().includes(inter)) return false;
+    if (anyType) { const a = (r.avis||'').toUpperCase().trim(); if (!((rfF&&a==='F')||(rfS&&a==='S')||(rfD&&a==='D'))) return false; }
+    if (anyStat) { if (!((rfRd6&&r.rd6)||(rfNon&&r.suivi==='Non')||(rfPar&&r.suivi==='Par')||(rfLev&&r.suivi==='Oui')||(rfPa&&(r.num||'').toUpperCase().startsWith('PA')))) return false; }
     return true;
   });
-  const s=rapideFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='S').length,d=rapideFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='D').length,f=rapideFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='F').length;
-  document.getElementById('rapideInfo').textContent=`Nbr.Avis : S=${s} / D=${d} / F=${f}`;
-  const list=document.getElementById('rapideList');
-  if(!rapideFiltered.length){list.innerHTML='<div class="empty-state"><div>Aucun avis</div></div>';return;}
-  list.innerHTML=rapideFiltered.map((r,i)=>{
-    const badge=r.suivi==='Oui'?'<span class="badge badge-oui" style="font-size:.56rem">✅</span>':r.suivi==='Par'?'<span class="badge badge-par" style="font-size:.56rem">⚠️</span>':r.suivi==='Non'?'<span class="badge badge-non" style="font-size:.56rem">❌</span>':'';
-    const rd6=r.rd6?'<span class="rd6-tag" style="font-size:.53rem">RD6</span>':'';
-    return`<div style="padding:5px 7px;border:1px solid transparent;border-radius:4px;cursor:pointer;margin-bottom:2px;font-size:0.7rem;${rapideSelected&&rapideSelected.id===r.id?'background:rgba(37,99,235,.1);border-color:var(--accent);':''}" onclick="rapideSelect(${i})" ondblclick="openEditPanel(${filteredRows.findIndex(x=>x.id===r.id)})">
-      <div style="display:flex;align-items:center;gap:4px;"><strong style="font-family:var(--mono);color:var(--accent);">${esc(r.num)}</strong>${badge}${rd6}</div>
-      <div style="color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(r.disp)||esc(r.avis)||'—'}</div>
+  const s=rapideFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='S').length;
+  const d=rapideFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='D').length;
+  const f=rapideFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='F').length;
+  document.getElementById('rapideInfo').textContent = `Nbr.Avis : S=${s} / D=${d} / F=${f}`;
+  const list = document.getElementById('rapideList');
+  if (!rapideFiltered.length) { list.innerHTML='<div class="empty-state"><div>Aucun avis</div></div>'; return; }
+  list.innerHTML = rapideFiltered.map((r,i) => {
+    const badge = r.suivi==='Oui'?'<span class="badge badge-oui" style="font-size:.56rem">✅</span>':r.suivi==='Par'?'<span class="badge badge-par" style="font-size:.56rem">⚠️</span>':r.suivi==='Non'?'<span class="badge badge-non" style="font-size:.56rem">❌</span>':'';
+    const rd6 = r.rd6?'<span class="rd6-tag" style="font-size:.53rem">RD6</span>':'';
+    return `<div style="padding:5px 7px;border:1px solid transparent;border-radius:4px;cursor:pointer;margin-bottom:2px;font-size:0.7rem;${rapideSelected&&rapideSelected.id===r.id?'background:rgba(37,99,235,.1);border-color:var(--accent);':''}" onclick="rapideSelect(${i})" ondblclick="openEditPanel(${filteredRows.findIndex(x=>x.id===r.id)})">
+      <div style="display:flex;align-items:center;gap:4px;"><strong style="font-family:var(--mono);color:var(--accent);">${escapeHtml(r.num)}</strong>${badge}${rd6}</div>
+      <div style="color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(r.disp)||escapeHtml(r.avis)||'—'}</div>
     </div>`;
   }).join('');
 }
-function rapideSelect(i){
-  rapideSelected=rapideFiltered[i];const r=rapideSelected;
-  document.querySelectorAll('#rapideList > div').forEach((el,j)=>el.style.background=j===i?'rgba(37,99,235,.1)':'').forEach((el,j)=>el.style.borderColor=j===i?'var(--accent)':'transparent');
-  document.getElementById('rapideDetail').innerHTML=`
-    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">N° Avis</strong><div style="font-size:0.78rem;">${esc(r.num)} ${r.rd6?'<span class="rd6-tag">RD6</span>':''}</div></div>
-    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">Avis</strong><div style="font-size:0.78rem;">${esc(r.avis)||'—'}</div></div>
-    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">Dispositions</strong><div style="font-size:0.78rem;">${esc(r.disp)||'—'}</div></div>
-    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">Observations</strong><div style="font-size:0.78rem;white-space:pre-wrap;">${esc(r.obs)||'—'}</div></div>
+function rapideSelect(i) {
+  rapideSelected = rapideFiltered[i];
+  const r = rapideSelected;
+  document.querySelectorAll('#rapideList > div').forEach((el,j)=>el.style.background=j===i?'rgba(37,99,235,.1)':'');
+  document.querySelectorAll('#rapideList > div').forEach((el,j)=>el.style.borderColor=j===i?'var(--accent)':'transparent');
+  document.getElementById('rapideDetail').innerHTML = `
+    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">N° Avis</strong><div style="font-size:0.78rem;">${escapeHtml(r.num)} ${r.rd6?'<span class="rd6-tag">RD6</span>':''}</div></div>
+    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">Avis</strong><div style="font-size:0.78rem;">${escapeHtml(r.avis)||'—'}</div></div>
+    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">Dispositions</strong><div style="font-size:0.78rem;">${escapeHtml(r.disp)||'—'}</div></div>
+    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">Observations</strong><div style="font-size:0.78rem;white-space:pre-wrap;">${escapeHtml(r.obs)||'—'}</div></div>
   `;
-  document.getElementById('rapideEditArea').style.display='flex';
-  document.getElementById('rq_repK').value=r.repK||'';document.getElementById('rq_repL').value=r.repL||'';document.getElementById('rq_lots').value=r.lots||'';
-  document.getElementById('rapideSaveBtn').disabled=false;
+  document.getElementById('rapideEditArea').style.display = 'flex';
+  document.getElementById('rq_repK').value = r.repK||'';
+  document.getElementById('rq_repL').value = r.repL||'';
+  document.getElementById('rq_lots').value = r.lots||'';
+  document.getElementById('rapideSaveBtn').disabled = false;
 }
-function rapideSetSuivi(v){if(!rapideSelected)return;const gi=data[currentTab].findIndex(x=>x.id===rapideSelected.id);if(gi>=0){data[currentTab][gi].suivi=v;rapideSelected={...data[currentTab][gi]};persistLocal();}rapideApply();}
-function rapideToggleRD6(){if(!rapideSelected)return;const gi=data[currentTab].findIndex(x=>x.id===rapideSelected.id);if(gi>=0){data[currentTab][gi].rd6=!data[currentTab][gi].rd6;rapideSelected={...data[currentTab][gi]};persistLocal();}rapideApply();}
-function rapideSave(){
-  if(!rapideSelected)return;const gi=data[currentTab].findIndex(x=>x.id===rapideSelected.id);if(gi<0)return;
-  data[currentTab][gi].repK=document.getElementById('rq_repK').value;data[currentTab][gi].repL=document.getElementById('rq_repL').value;data[currentTab][gi].lots=document.getElementById('rq_lots').value;
-  rapideSelected={...data[currentTab][gi]};persistLocal();applyFilters();rapideApply();
-  const btn=document.getElementById('rapideSaveBtn');btn.textContent='✓';setTimeout(()=>btn.textContent='💾 Valider',1500);
+function rapideSetSuivi(v) { if (!rapideSelected) return; const gi = data[currentTab].findIndex(x=>x.id===rapideSelected.id); if (gi>=0) { data[currentTab][gi].suivi=v; rapideSelected={...data[currentTab][gi]}; persistLocal(); } rapideApply(); }
+function rapideToggleRD6() { if (!rapideSelected) return; const gi = data[currentTab].findIndex(x=>x.id===rapideSelected.id); if (gi>=0) { data[currentTab][gi].rd6 = !data[currentTab][gi].rd6; rapideSelected={...data[currentTab][gi]}; persistLocal(); } rapideApply(); }
+function rapideSave() {
+  if (!rapideSelected) return;
+  const gi = data[currentTab].findIndex(x=>x.id===rapideSelected.id);
+  if (gi<0) return;
+  data[currentTab][gi].repK = document.getElementById('rq_repK').value;
+  data[currentTab][gi].repL = document.getElementById('rq_repL').value;
+  data[currentTab][gi].lots = document.getElementById('rq_lots').value;
+  rapideSelected = {...data[currentTab][gi]};
+  persistLocal();
+  applyFilters();
+  rapideApply();
+  const btn = document.getElementById('rapideSaveBtn');
+  btn.textContent = '✓';
+  setTimeout(()=>btn.textContent='💾 Valider',1500);
 }
 
-// ═══════════════════════ ADD ═══════════════════════
-function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>document.getElementById(id).value='');document.getElementById('addModal').classList.add('open');}
-function closeAddModal(){document.getElementById('addModal').classList.remove('open');}
-function addRow(){
+// ----- Ajout manuel -----
+function openAddModal() {
+  ['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('addModal').classList.add('open');
+}
+function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
+function addRow() {
   data[currentTab].push(makeRow({
-    num:document.getElementById('a_num').value,
-    ref:document.getElementById('a_ref').value,
-    date:document.getElementById('a_date').value,
-    inter:document.getElementById('a_inter').value,
-    disp:document.getElementById('a_disp').value,
-    avis:document.getElementById('a_avis').value,
-    desc:document.getElementById('a_desc').value,
-    obs:document.getElementById('a_obs').value,
-    docs:document.getElementById('a_docs').value,
-    lots:document.getElementById('a_lots').value
+    num: document.getElementById('a_num').value,
+    ref: document.getElementById('a_ref').value,
+    date: document.getElementById('a_date').value,
+    inter: document.getElementById('a_inter').value,
+    disp: document.getElementById('a_disp').value,
+    avis: document.getElementById('a_avis').value,
+    desc: document.getElementById('a_desc').value,
+    obs: document.getElementById('a_obs').value,
+    docs: document.getElementById('a_docs').value,
+    lots: document.getElementById('a_lots').value
   }));
   closeAddModal();
   applyFilters();
@@ -899,21 +974,29 @@ function addRow(){
   }
 }
 
-// ═══════════════════════ STATS ═══════════════════════
-function openStatsModal(){
-  const rows=getRows();
+// ----- Statistiques -----
+function openStatsModal() {
+  const rows = getRows();
   let F=0,S=0,D=0,SO=0,HM=0,PM=0,visites=0,avT=0,avD=0,minD=null,maxD=null,firstI=null,lastI=null,lastDate=null;
-  const ext=['.png','.jpg','.jpeg','.jpe','.jfif','.bmp','.dib'];
-  for(const r of rows){
-    switch((r.avis||'').toUpperCase().trim()){case'F':F++;break;case'S':S++;break;case'D':D++;break;case'SO':SO++;break;case'HM':HM++;break;case'PM':PM++;break;}
-    if(r.suivi==='Oui'){const d=(r.docs||'').toLowerCase();(!r.docs.trim()||ext.some(e=>d.includes(e)))?avT++:avD++;}
-    if(r.date&&/^\d{4}-\d{2}-\d{2}$/.test(r.date)){
-      if(!firstI||r.date<firstI)firstI=r.date;if(!lastI||r.date>lastI)lastI=r.date;
-      if((r.ref||'').toUpperCase().trim()!=='RICT'&&!(r.obs||'').includes('Rappel')&&!(r.docs||'').trim()&&(!lastDate||r.date!==lastDate)){visites++;lastDate=r.date;if(!minD||r.date<minD)minD=r.date;if(!maxD||r.date>maxD)maxD=r.date;}
+  const ext = ['.png','.jpg','.jpeg','.jpe','.jfif','.bmp','.dib'];
+  for (const r of rows) {
+    switch((r.avis||'').toUpperCase().trim()) {
+      case 'F': F++; break; case 'S': S++; break; case 'D': D++; break;
+      case 'SO': SO++; break; case 'HM': HM++; break; case 'PM': PM++; break;
+    }
+    if (r.suivi==='Oui') { const d=(r.docs||'').toLowerCase(); (!r.docs.trim()||ext.some(e=>d.includes(e))) ? avT++ : avD++; }
+    if (r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date)) {
+      if (!firstI || r.date < firstI) firstI = r.date;
+      if (!lastI || r.date > lastI) lastI = r.date;
+      if ((r.ref||'').toUpperCase().trim() !== 'RICT' && !(r.obs||'').includes('Rappel') && !(r.docs||'').trim() && (!lastDate || r.date !== lastDate)) {
+        visites++; lastDate = r.date;
+        if (!minD || r.date < minD) minD = r.date;
+        if (!maxD || r.date > maxD) maxD = r.date;
+      }
     }
   }
-  const fmt=d=>d?d.split('-').reverse().join('/'):'';
-  document.getElementById('statsContent').innerHTML=`
+  const fmt = d => d ? d.split('-').reverse().join('/') : '';
+  document.getElementById('statsContent').innerHTML = `
     <div style="font-family:var(--mono);font-size:0.75rem;line-height:1.8;">
       <div style="color:var(--green);"><strong>Avis Favorables :</strong> ${F}</div>
       <div style="color:var(--yellow);"><strong>Avis Suspendus :</strong> ${S}</div>
@@ -927,105 +1010,167 @@ function openStatsModal(){
     </div>`;
   document.getElementById('statsModal').classList.add('open');
 }
-function closeStatsModal(){document.getElementById('statsModal').classList.remove('open');}
+function closeStatsModal() { document.getElementById('statsModal').classList.remove('open'); }
 
-// ═══════════════════════ IMPORT / ACTUALISER ═══════════════════════
-function openImportModal(){document.getElementById('importModal').classList.add('open');}
-function closeImportModal(){document.getElementById('importModal').classList.remove('open');}
-function openActualiserModal(){document.getElementById('actualiserModal').classList.add('open');}
-function closeActualiserModal(){document.getElementById('actualiserModal').classList.remove('open');}
+// ----- Import / Actualiser XLSX -----
+function openImportModal() { document.getElementById('importModal').classList.add('open'); }
+function closeImportModal() { document.getElementById('importModal').classList.remove('open'); }
+function openActualiserModal() { document.getElementById('actualiserModal').classList.add('open'); }
+function closeActualiserModal() { document.getElementById('actualiserModal').classList.remove('open'); }
 
-function normalizeDate(d){if(d instanceof Date)return d.toISOString().slice(0,10);if(!d)return'';let t=String(d).trim().replace(/[-.]/g,'/');const p=t.split('/');if(p.length>=3){let dd=+p[0],mm=+p[1],yy=+p[2];if(yy<100)yy+=2000;if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy))return`${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;}const pd=new Date(t);return!isNaN(pd.getTime())?pd.toISOString().slice(0,10):'';}
-function cleanDocuments(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{');['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),''));c=c.replace(/"/g,'');return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n');}
-function extractKey(v){if(!v)return'';const p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
+function normalizeDate(d) {
+  if (d instanceof Date) return d.toISOString().slice(0,10);
+  if (!d) return '';
+  let t = String(d).trim().replace(/[-.]/g,'/');
+  const p = t.split('/');
+  if (p.length >= 3) {
+    let dd = +p[0], mm = +p[1], yy = +p[2];
+    if (yy < 100) yy += 2000;
+    if (!isNaN(dd) && !isNaN(mm) && !isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+  }
+  const pd = new Date(t);
+  return !isNaN(pd.getTime()) ? pd.toISOString().slice(0,10) : '';
+}
+function cleanDocuments(v) {
+  if (!v) return '';
+  let c = v.replace(/},{/g,'}\n{');
+  ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m => c = c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'), ''));
+  c = c.replace(/"/g,'');
+  return c.split('\n').map(l => l.trim() && !l.startsWith('.') ? '.'+l.trim() : l.trim()).join('\n');
+}
+function extractKey(v) { if (!v) return ''; const p = v.indexOf('/'); return p>0 ? v.substring(0,p).trim() : v.trim(); }
 
-function processXLSX(file,mode){
-  const sid=mode==='actualiser'?'actualiserStatus':'importStatus';
-  const st=document.getElementById(sid);st.textContent='Lecture…';
-  const r=new FileReader();
-  r.onload=e=>{
-    try{
-      const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
-      const sn=wb.SheetNames;let sheetName=sn.find(n=>n==='Synthèse')||sn.find(n=>n==='RapsoV2')||sn.find(n=>n==='RapsoV1')||sn[0];
-      const ws=wb.Sheets[sheetName],raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+function processXLSX(file, mode) {
+  const sid = mode === 'actualiser' ? 'actualiserStatus' : 'importStatus';
+  const st = document.getElementById(sid); st.textContent = 'Lecture…';
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+      const sn = wb.SheetNames;
+      let sheetName = sn.find(n=>n==='Synthèse') || sn.find(n=>n==='RapsoV2') || sn.find(n=>n==='RapsoV1') || sn[0];
+      const ws = wb.Sheets[sheetName];
+      const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
       const baseName = file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
       document.getElementById('affaireDisplay').innerText = baseName;
       document.getElementById('dossierInput').value = baseName;
-      const src=[];
-      for(let i=1;i<Math.min(raw.length,500);i++){
-        const row=raw[i];if(!row||row.every(c=>c===''||c===null))continue;
-        const nv=String(row[1]||'').trim();
-        src.push(makeRow({num:nv,ref:String(row[0]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),avis:String(row[5]||'').trim(),desc:String(row[6]||'').trim(),obs:String(row[7]||'').trim(),docs:cleanDocuments(String(row[8]||'').trim()),suivi:String(row[9]||'').includes('Oui')?'Oui':String(row[9]||'').includes('Par')?'Par':String(row[9]||'').includes('Non')?'Non':'',repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:nv.includes('/RD6')}));
+      const src = [];
+      for (let i=1; i<Math.min(raw.length, 500); i++) {
+        const row = raw[i];
+        if (!row || row.every(c=>c===''||c===null)) continue;
+        const nv = String(row[1]||'').trim();
+        src.push(makeRow({
+          num: nv,
+          ref: String(row[0]||'').trim(),
+          date: normalizeDate(row[2]),
+          inter: String(row[3]||'').trim(),
+          disp: String(row[4]||'').trim(),
+          avis: String(row[5]||'').trim(),
+          desc: String(row[6]||'').trim(),
+          obs: String(row[7]||'').trim(),
+          docs: cleanDocuments(String(row[8]||'').trim()),
+          suivi: String(row[9]||'').includes('Oui') ? 'Oui' : String(row[9]||'').includes('Par') ? 'Par' : String(row[9]||'').includes('Non') ? 'Non' : '',
+          repK: String(row[10]||'').trim(),
+          repL: String(row[11]||'').trim(),
+          lots: String(row[12]||'').trim(),
+          rd6: nv.includes('/RD6')
+        }));
       }
-      let target='v2';if(sheetName==='RapsoV1')target='v1';
-      let up=0,add=0;
-      if(mode==='actualiser'){
-        const ex=data[target];
-        for(const s of src){const k=extractKey(s.num);if(!k)continue;const idx=ex.findIndex(t=>extractKey(t.num)===k);if(idx>=0){ex[idx]={...ex[idx],...s,id:ex[idx].id};up++;}else{ex.push(s);add++;}}
-        ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num),undefined,{numeric:true}));
-        data[target]=ex;currentTab=target;st.textContent=`✅ ${up} mis à jour, ${add} ajoutés`;
-      }else{
-        if(!confirm(`${src.length} lignes → ${target} ?\n⚠️ Remplace tout`)){st.textContent='Annulé.';return;}
-        data[target]=src;currentTab=target;st.textContent=`✅ ${src.length} avis importés`;
+      let target = 'v2';
+      if (sheetName === 'RapsoV1') target = 'v1';
+      let up = 0, add = 0;
+      if (mode === 'actualiser') {
+        const ex = data[target];
+        for (const s of src) {
+          const k = extractKey(s.num);
+          if (!k) continue;
+          const idx = ex.findIndex(t => extractKey(t.num) === k);
+          if (idx >= 0) { ex[idx] = {...ex[idx], ...s, id: ex[idx].id}; up++; }
+          else { ex.push(s); add++; }
+        }
+        ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num), undefined, { numeric: true }));
+        data[target] = ex;
+        currentTab = target;
+        st.textContent = `✅ ${up} mis à jour, ${add} ajoutés`;
+      } else {
+        if (!confirm(`${src.length} lignes → ${target} ?\n⚠️ Remplace tout`)) { st.textContent = 'Annulé.'; return; }
+        data[target] = src;
+        currentTab = target;
+        st.textContent = `✅ ${src.length} avis importés`;
       }
-      document.getElementById('tabV2').classList.toggle('active',target==='v2');
-      document.getElementById('tabV1').classList.toggle('active',target==='v1');
-      // Réinitialiser les sélections multi
+      document.getElementById('tabV2').classList.toggle('active', target==='v2');
+      document.getElementById('tabV1').classList.toggle('active', target==='v1');
       selectedIntervenants.clear();
       selectedLots.clear();
       applyFilters();
       persistLocal();
-    }catch(err){st.textContent='❌ '+err.message;}
-  };r.readAsArrayBuffer(file);
+    } catch(err) { st.textContent = '❌ '+err.message; }
+  };
+  r.readAsArrayBuffer(file);
 }
-['importDropzone','actualiserDropzone'].forEach(id=>{
-  const dz=document.getElementById(id);if(!dz)return;
-  dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--accent)';});
-  dz.addEventListener('dragleave',()=>{dz.style.borderColor='';});
-  dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f)processXLSX(f,id==='actualiserDropzone'?'actualiser':'import');});
+['importDropzone','actualiserDropzone'].forEach(id => {
+  const dz = document.getElementById(id);
+  if (!dz) return;
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
+  dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.style.borderColor = '';
+    const f = e.dataTransfer.files[0];
+    if (f) processXLSX(f, id === 'actualiserDropzone' ? 'actualiser' : 'import');
+  });
 });
-function handleFileImport(i){if(i.files[0])processXLSX(i.files[0],'import');}
-function handleActualiserFileImport(i){if(i.files[0])processXLSX(i.files[0],'actualiser');}
+function handleFileImport(i) { if (i.files[0]) processXLSX(i.files[0], 'import'); }
+function handleActualiserFileImport(i) { if (i.files[0]) processXLSX(i.files[0], 'actualiser'); }
 
-// ═══════════════════════ JSON ═══════════════════════
-function exportJSON(){const meta={affaire:document.getElementById('affaireDisplay').innerText,dossier:document.getElementById('dossierInput').value};const b=new Blob([JSON.stringify({meta,data},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='rapso_'+(meta.affaire||'data')+'.json';a.click();}
-function loadJSON(){
-  const i=document.createElement('input');i.type='file';i.accept='.json';
-  i.onchange=e=>{
-    const f=e.target.files[0];if(!f)return;
-    const r=new FileReader();
-    r.onload=ev=>{
-      try{
-        const o=JSON.parse(ev.target.result);
-        if(o.meta){
-          document.getElementById('affaireDisplay').innerText=o.meta.affaire||'';
-          document.getElementById('dossierInput').value=o.meta.dossier||'';
+// ----- JSON -----
+function exportJSON() {
+  const meta = { affaire: document.getElementById('affaireDisplay').innerText, dossier: document.getElementById('dossierInput').value };
+  const blob = new Blob([JSON.stringify({meta, data}, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rapso_'+(meta.affaire||'data')+'.json';
+  a.click();
+}
+function loadJSON() {
+  const i = document.createElement('input');
+  i.type = 'file';
+  i.accept = '.json';
+  i.onchange = e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      try {
+        const o = JSON.parse(ev.target.result);
+        if (o.meta) {
+          document.getElementById('affaireDisplay').innerText = o.meta.affaire || '';
+          document.getElementById('dossierInput').value = o.meta.dossier || '';
         }
-        if(o.data){
-          data.v2=(o.data.v2||[]).map(makeRow);
-          data.v1=(o.data.v1||[]).map(makeRow);
+        if (o.data) {
+          data.v2 = (o.data.v2 || []).map(makeRow);
+          data.v1 = (o.data.v1 || []).map(makeRow);
         }
         selectedIntervenants.clear();
         selectedLots.clear();
         applyFilters();
         persistLocal();
         alert('✅');
-      }catch{alert('JSON invalide');}
-    };r.readAsText(f);
-  };i.click();
+      } catch { alert('JSON invalide'); }
+    };
+    r.readAsText(f);
+  };
+  i.click();
 }
-function persistLocal(){
+function persistLocal() {
   try {
     localStorage.setItem('rapsotracker', JSON.stringify({
-      meta: {
-        affaire: document.getElementById('affaireDisplay').innerText,
-        dossier: document.getElementById('dossierInput').value
-      },
+      meta: { affaire: document.getElementById('affaireDisplay').innerText, dossier: document.getElementById('dossierInput').value },
       data
     }));
   } catch(e) {}
 }
-function loadLocal(){
+function loadLocal() {
   if (typeof window.RAPSO_SYNTH_DATA !== 'undefined' && window.RAPSO_SYNTH_DATA) return;
   try {
     const r = localStorage.getItem('rapsotracker');
@@ -1042,12 +1187,10 @@ function loadLocal(){
     applyFilters();
   } catch(e) {}
 }
-
-// Initialisation
 loadLocal();
 applyFilters();
 
-// Communication parent
+// ----- Communication avec le parent (portail) -----
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'rapso_inject') {
     try {
@@ -1058,7 +1201,7 @@ window.addEventListener('message', function(e) {
       if (e.data.dossier) document.getElementById('dossierInput').value = e.data.dossier;
       selectedIntervenants.clear();
       selectedLots.clear();
-      localStorage.setItem('rapsotracker', JSON.stringify({ meta: { affaire: document.getElementById('affaireDisplay').innerText, dossier: document.getElementById('dossierInput').value }, data }));
+      persistLocal();
       applyFilters();
       if (window.parent && window.parent !== window) {
         window.parent.postMessage({ type: 'rapso_inject_ack', data: { v2: data.v2, v1: data.v1 } }, '*');
@@ -1066,9 +1209,8 @@ window.addEventListener('message', function(e) {
     } catch(err) { console.warn(err); }
   }
 });
-</script>
-<script>
-// Sauvegarde automatique vers parent
+
+// Sauvegarde automatique vers le parent
 (function() {
   function pushToParent() {
     if (!window.parent || window.parent === window) return;
