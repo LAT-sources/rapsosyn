@@ -563,21 +563,32 @@ function getRows(){return data[currentTab];}
 // ═══════════════════════ GESTION MULTI-SELECTIONS ═══════════════════════
 function buildMfSelectOptions() {
   const rows = getRows();
+  console.log('buildMfSelectOptions - rows count:', rows.length);
+  
   // Intervenants
   const intervenants = [...new Set(rows.map(r => r.inter?.trim()).filter(v => v && v !== ''))];
+  console.log('Intervenants trouvés:', intervenants);
   const interDiv = document.getElementById('mfInterDropdown');
-  interDiv.innerHTML = intervenants.map(inter => `
-    <label><input type="checkbox" value="${escAttr(inter)}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', '${escAttr(inter)}', this.checked)"> ${esc(inter)}</label>
-  `).join('');
+  if (interDiv) {
+    interDiv.innerHTML = intervenants.map(inter => `
+      <label><input type="checkbox" value="${escAttr(inter)}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', '${escAttr(inter)}', this.checked)"> ${esc(inter)}</label>
+    `).join('');
+  }
   document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
   
-  // Lots (splittés par virgule)
-  const allLots = rows.flatMap(r => (r.lots||'').split(',').map(l => l.trim()).filter(l => l !== ''));
+  // Lots (splittés par virgule, point-virgule ou espace)
+  const allLots = rows.flatMap(r => {
+    if (!r.lots) return [];
+    return String(r.lots).split(/[,; ]+/).map(l => l.trim()).filter(l => l !== '');
+  });
   const lots = [...new Set(allLots)];
+  console.log('Lots trouvés:', lots);
   const lotDiv = document.getElementById('mfLotDropdown');
-  lotDiv.innerHTML = lots.map(lot => `
-    <label><input type="checkbox" value="${escAttr(lot)}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', '${escAttr(lot)}', this.checked)"> ${esc(lot)}</label>
-  `).join('');
+  if (lotDiv) {
+    lotDiv.innerHTML = lots.map(lot => `
+      <label><input type="checkbox" value="${escAttr(lot)}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', '${escAttr(lot)}', this.checked)"> ${esc(lot)}</label>
+    `).join('');
+  }
   document.getElementById('mfLotCount').innerText = `(${selectedLots.size})`;
 }
 
