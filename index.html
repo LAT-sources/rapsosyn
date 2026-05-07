@@ -8,9 +8,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
   --blue:#1a56db;--blue-d:#1447c0;--blue-l:#e8f0fe;--blue-ll:#f0f5ff;
-  --teal:#0d9488;--teal-l:#ccfbf1;--gold:#f59e0b;--gold-l:#fef3c7;
-  --red:#ef4444;--red-l:#fee2e2;--green:#22c55e;--green-l:#dcfce7;
-  --purple:#7c3aed;--purple-l:#ede9fe;--orange:#f97316;--orange-l:#ffedd5;
+  --teal:#0d9488;--teal-l:#ccfbf1;
+  --gold:#f59e0b;--gold-l:#fef3c7;
+  --red:#ef4444;--red-l:#fee2e2;
+  --green:#22c55e;--green-l:#dcfce7;
+  --purple:#7c3aed;--purple-l:#ede9fe;
+  --orange:#f97316;--orange-l:#ffedd5;
   --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g300:#cbd5e1;
   --g400:#94a3b8;--g500:#64748b;--g600:#475569;--g700:#334155;
   --g800:#1e293b;--g900:#0f172a;
@@ -645,7 +648,7 @@ let users = [];
 let canevas = [];
 let nextUserId = 1;
 let nextCanId = 1;
-let isOnline = true;
+let isOnline = true; // supposé vrai, géré par les erreurs réseau
 
 // ══════════════════════════════════════════════════════
 //  UTILS
@@ -681,9 +684,11 @@ async function loadFromCloud() {
     const snapshot = await db.ref('/').once('value');
     const record = snapshot.val() || {};
 
+    // Helper : Firebase peut renvoyer un tableau ou un objet indexé
     const toArray = (val) => {
       if (!val) return [];
       if (Array.isArray(val)) return val;
+      // Transformation d'un objet {0: ..., 1: ...} en tableau
       return Object.values(val);
     };
 
@@ -979,63 +984,96 @@ async function openSynthese(id) {
   document.getElementById('synRoleChip').textContent = c.archived ? '🔒 Archivé – lecture seule' : '✏️ Édition';
 
   // Charger le template
-  const response = await fetch('canevas_temp.html?ts=' + Date.now(), {
-    cache: 'no-store',
-    headers: { 'Cache-Control': 'no-cache' }
-  });
-  let templateHTML = await response.text();
-
-  // Injecter les métadonnées
-  const metaScript = `
-    <script>
-      window.RAPSO_AFFAIRE = ${JSON.stringify(c.chrono)};
-      window.RAPSO_DOSSIER = ${JSON.stringify(c.nom)};
-      window.CANEVAS_ID = ${c.id};
-    <\/script>`;
-  templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
-
-  // Injecter les données de synthèse existantes si disponibles
-  if (c.synthData && c.synthData.v2) {
-    const dataScript = `
-    <script>
-      localStorage.setItem('rapsotracker', JSON.stringify({
-        meta: { affaire: ${JSON.stringify(c.chrono)}, dossier: ${JSON.stringify(c.nom)} },
-        data: ${JSON.stringify(c.synthData)}
-      }));
-    <\/script>`;
-    templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', dataScript);
-  } else {
-    // Base vide avec métadonnées
-    const emptyScript = `
-    <script>
-      localStorage.setItem('rapsotracker', JSON.stringify({
-        meta: { affaire: ${JSON.stringify(c.chrono)}, dossier: ${JSON.stringify(c.nom)} },
-        data: { v2: [], v1: [] }
-      }));
-    <\/script>`;
-    templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', emptyScript);
+  let templateHTML;
+  try {
+    const response = await fetch('canevas_temp.html?ts=' + Date.now(), {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' }
+    });
+    templateHTML = await response.text();
+  } catch(err) {
+    toast('Impossible de charger le template canevas_temp.html', 'r');
+    console.error('Fetch canevas_temp.html failed:', err);
+    return;
   }
 
+  // ── CORRECTION PRINCIPALE ──
+  // On passe les données via window.RAPSO_SYNTH_DATA (variable globale injectée AVANT
+  // tout autre script), ce qui évite le problème du localStorage de l'iframe qui était
+  // écrasé par loadLocal() au démarrage.
+  const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1))
+    ? c.synthData
+    : { v2: [], v1: [] };
+
+  const metaScript = `<script>
+    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.chrono)};
+    window.RAPSO_DOSSIER    = ${JSON.stringify(c.nom)};
+    window.CANEVAS_ID       = ${JSON.stringify(c.id)};
+    window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
+    window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
+  <\/script>`;
+
+  // Remplacer les deux placeholders
+  templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
+  templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', '<!-- data injected via RAPSO_SYNTH_DATA -->');
+
+  // Afficher dans l'iframe via blob URL
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
-  document.getElementById('synFrame').src = URL.createObjectURL(blob);
+  const blobUrl = URL.createObjectURL(blob);
+
+  // Révoquer l'ancien blob URL pour éviter les fuites mémoire
+  const frame = document.getElementById('synFrame');
+  if (frame.src && frame.src.startsWith('blob:')) {
+    URL.revokeObjectURL(frame.src);
+  }
+  frame.src = blobUrl;
 
   hide('scApp'); show('scSynthese');
 }
 
 function closeSynthese() {
-  document.getElementById('synFrame').src = '';
-  hide('scSynthese'); show('scApp');
-  renderCanevas();
+  const frame = document.getElementById('synFrame');
+  // Forcer un dernier envoi des données avant de fermer
+  try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
+  // Petit délai pour laisser le temps au postMessage d'arriver
+  setTimeout(() => {
+    if (frame.src && frame.src.startsWith('blob:')) {
+      URL.revokeObjectURL(frame.src);
+    }
+    frame.src = '';
+    hide('scSynthese'); show('scApp');
+    renderCanevas();
+  }, 150);
 }
 
-// Réception des messages de sauvegarde depuis la synthèse (ne fait plus rien car la synthèse sauvegarde directement)
+// Réception des messages de sauvegarde depuis la synthèse
 window.addEventListener('message', function(e) {
-  if (e.data && e.data.type === 'rapso_save') {
-    const c = canevas.find(x => x.id === e.data.canId);
+  // Sécurité : on accepte uniquement les messages de nos blobs (même origine window)
+  if (!e.data || typeof e.data !== 'object') return;
+
+  if (e.data.type === 'rapso_save') {
+    const canId = e.data.canId;
+    const incomingData = e.data.data;
+    if (canId === undefined || canId === null || !incomingData) return;
+
+    // Trouver le canevas par ID (en tenant compte que canId peut être string ou number)
+    const c = canevas.find(x => String(x.id) === String(canId));
     if (c) {
-      c.synthData = e.data.data;
-      saveToCloud();
+      // Vérifier que les données ont réellement changé avant de sauvegarder
+      const prevStr = JSON.stringify(c.synthData);
+      const newStr  = JSON.stringify(incomingData);
+      if (prevStr !== newStr) {
+        c.synthData = incomingData;
+        saveToCloud();
+        // Mise à jour silencieuse du compteur dans le tableau
+        renderCanevas();
+      }
     }
+  }
+
+  // Réponse à la demande de sauvegarde forcée (émise par closeSynthese)
+  if (e.data.type === 'rapso_request_save') {
+    // L'iframe va émettre un rapso_save automatiquement via pushToParent()
   }
 });
 
@@ -1150,9 +1188,10 @@ document.querySelectorAll('.modal-bd').forEach(bd => {
 window.addEventListener('load', async () => {
   await loadFromCloud();
   if (users.length === 0) {
-    users = [
-      { id: 1, prenom: 'Admin', nom: 'Socotec', email: 'admin@socotec.lu', pwd: 'admin123', role: 'admin', initiales: 'AS', color: '#1a56db', actif: true }
-    ];
+    users = [{
+      id: 1, prenom: 'Admin', nom: 'Socotec', email: 'admin@socotec.lu',
+      pwd: 'admin123', role: 'admin', initiales: 'AS', color: '#1a56db', actif: true
+    }];
     nextUserId = 2;
     saveToCloud();
   }
