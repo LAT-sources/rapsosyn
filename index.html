@@ -243,6 +243,53 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 @keyframes tIn{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
 @keyframes tOut{to{opacity:0;transform:translateX(16px);}}
 
+/* ═══ SYNC / RAFRAÎCHISSEMENT ═══ */
+.syn-refresh{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);font-family:var(--font);font-size:0.78rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.syn-refresh:hover{background:rgba(255,255,255,.14);color:white;border-color:rgba(255,255,255,.22);}
+.syn-refresh svg{transition:transform .5s;}
+.syn-refresh.spinning svg{animation:spin .9s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.syn-status{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:0.72rem;font-weight:600;transition:all .3s;white-space:nowrap;border:1px solid transparent;}
+.syn-status .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .3s;}
+.syn-status.idle{background:rgba(255,255,255,.05);color:rgba(255,255,255,.35);}
+.syn-status.idle .sdot{background:rgba(255,255,255,.2);}
+.syn-status.saving{background:rgba(245,158,11,.15);color:#fcd34d;border-color:rgba(245,158,11,.25);}
+.syn-status.saving .sdot{background:#f59e0b;animation:sdotpulse 1s infinite;}
+.syn-status.saved{background:rgba(34,197,94,.14);color:#86efac;border-color:rgba(34,197,94,.25);}
+.syn-status.saved .sdot{background:#22c55e;}
+.syn-status.error{background:rgba(239,68,68,.14);color:#fca5a5;border-color:rgba(239,68,68,.25);}
+.syn-status.error .sdot{background:#ef4444;}
+@keyframes sdotpulse{0%,100%{opacity:1;}50%{opacity:.2;}}
+
+/* Compteur mini dans topbar synthèse */
+.syn-counters{display:flex;align-items:center;gap:4px;font-size:0.7rem;font-family:var(--mono);}
+.syn-counters .sc{padding:2px 7px;border-radius:4px;font-weight:600;}
+.sc-lev{background:rgba(34,197,94,.18);color:#86efac;}
+.sc-par{background:rgba(245,158,11,.18);color:#fcd34d;}
+.sc-non{background:rgba(239,68,68,.18);color:#fca5a5;}
+.sc-tot{background:rgba(255,255,255,.08);color:rgba(255,255,255,.55);}
+
+/* Notification bandeau (dans scSynthese, sans quitter l'écran) */
+.syn-notif{
+  position:fixed;top:46px;left:50%;transform:translateX(-50%) translateY(-12px);
+  z-index:960;background:rgba(15,23,42,.96);
+  border:1px solid rgba(255,255,255,.12);border-top:none;
+  border-radius:0 0 10px 10px;padding:7px 16px 8px;
+  display:flex;align-items:center;gap:10px;
+  font-size:0.79rem;font-weight:500;color:white;
+  box-shadow:0 6px 24px rgba(0,0,0,.35);
+  opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;
+}
+.syn-notif.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);}
+.syn-notif.nok  {border-color:rgba(34,197,94,.4);}
+.syn-notif.nwarn{border-color:rgba(245,158,11,.4);}
+.syn-notif.nerr {border-color:rgba(239,68,68,.4);}
+.nicon{font-size:.95rem;line-height:1;}
+.syn-notif-txt{flex:1;}
+.syn-notif-close{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.35);font-size:1.05rem;line-height:1;padding:0 0 0 8px;transition:color .15s;}
+.syn-notif-close:hover{color:white;}
+
 /* EMPTY */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--g400);text-align:center;gap:8px;}
 .empty svg{opacity:.3;}
@@ -463,15 +510,47 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   <div class="syn-topbar">
     <button class="syn-back" onclick="closeSynthese()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      Retour aux canevas
+      Retour
     </button>
     <div class="syn-title" id="synTitle">—</div>
-    <span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;"></span>
-    <button class="btn btn-ghost btn-sm" onclick="saveFromSynthese()" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.7);">
+    <span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;flex-shrink:0;"></span>
+
+    <!-- Compteurs avis live -->
+    <div class="syn-counters" id="synCounters" style="margin:0 4px;">
+      <span class="sc sc-lev" id="sc_oui">✅ 0</span>
+      <span class="sc sc-par" id="sc_par">⚠️ 0</span>
+      <span class="sc sc-non" id="sc_non">❌ 0</span>
+      <span class="sc sc-tot" id="sc_tot">/ 0</span>
+    </div>
+
+    <!-- Statut de synchronisation -->
+    <div class="syn-status idle" id="synStatus">
+      <span class="sdot"></span>
+      <span id="synStatusTxt">En attente</span>
+    </div>
+
+    <!-- Bouton rafraîchir Firebase -->
+    <button class="syn-refresh" id="synRefreshBtn" onclick="refreshFromFirebase()" title="Recharger depuis Firebase sans quitter l'écran">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <polyline points="1 4 1 10 7 10"/>
+        <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+      </svg>
+      Rafraîchir
+    </button>
+
+    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde JSON" style="margin-left:2px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      Sauvegarder JSON
+      JSON
     </button>
   </div>
+
+  <!-- Notification bandeau (sans quitter l'écran) -->
+  <div class="syn-notif" id="synNotif">
+    <span class="nicon" id="synNotifIcon">ℹ️</span>
+    <span class="syn-notif-txt" id="synNotifTxt"></span>
+    <button class="syn-notif-close" onclick="hideNotif()">✕</button>
+  </div>
+
   <iframe id="synFrame" class="syn-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads"></iframe>
 </div>
 
@@ -721,6 +800,7 @@ async function saveToCloud() {
   } catch (err) {
     console.warn('Sauvegarde cloud échouée');
     isOnline = false;
+    throw err; // on propage pour que .catch() fonctionne en amont
   }
 }
 
@@ -1028,6 +1108,10 @@ async function openSynthese(id) {
   }
   frame.src = blobUrl;
 
+  // Réinitialiser indicateurs
+  setSynStatus('idle', 'En attente');
+  updateSynCounters(synthData);
+  hideNotif();
   hide('scApp'); show('scSynthese');
 }
 
@@ -1046,9 +1130,112 @@ function closeSynthese() {
   }, 150);
 }
 
+// ══════════════════════════════════════════════════════
+//  SYNC & REFRESH (sans quitter la synthèse)
+// ══════════════════════════════════════════════════════
+
+let _notifTimer = null;
+
+function showNotif(txt, type = 'ok', duration = 3500) {
+  const el  = document.getElementById('synNotif');
+  const ico = document.getElementById('synNotifIcon');
+  const msg = document.getElementById('synNotifTxt');
+  ico.textContent = type === 'ok' ? '✅' : type === 'warn' ? '⚠️' : '❌';
+  msg.textContent = txt;
+  el.className = 'syn-notif show n' + type;
+  clearTimeout(_notifTimer);
+  if (duration > 0) _notifTimer = setTimeout(hideNotif, duration);
+}
+
+function hideNotif() {
+  const el = document.getElementById('synNotif');
+  el.classList.remove('show');
+}
+
+function setSynStatus(state, txt) {
+  const el = document.getElementById('synStatus');
+  const t  = document.getElementById('synStatusTxt');
+  el.className = 'syn-status ' + state;
+  t.textContent = txt;
+}
+
+function updateSynCounters(data) {
+  if (!data) return;
+  const all = [...(data.v2 || []), ...(data.v1 || [])];
+  const lev = all.filter(r => r.suivi === 'Oui').length;
+  const par = all.filter(r => r.suivi === 'Par').length;
+  const non = all.filter(r => r.suivi === 'Non').length;
+  document.getElementById('sc_oui').textContent = '✅ ' + lev;
+  document.getElementById('sc_par').textContent = '⚠️ ' + par;
+  document.getElementById('sc_non').textContent = '❌ ' + non;
+  document.getElementById('sc_tot').textContent = '/ ' + all.length;
+}
+
+async function refreshFromFirebase() {
+  if (!currentCanId) return;
+  const btn = document.getElementById('synRefreshBtn');
+  btn.classList.add('spinning');
+  setSynStatus('saving', 'Chargement…');
+  showNotif('Rafraîchissement depuis Firebase…', 'warn', 0);
+
+  try {
+    const snapshot = await db.ref('/').once('value');
+    const record = snapshot.val() || {};
+    const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
+    const freshCanevas = toArray(record.canevas);
+    const freshUsers   = toArray(record.users);
+
+    // Mettre à jour le canevas courant
+    const fresh = freshCanevas.find(x => String(x.id) === String(currentCanId));
+
+    if (fresh) {
+      // Mettre à jour en mémoire
+      const localIdx = canevas.findIndex(x => String(x.id) === String(currentCanId));
+      if (localIdx >= 0) canevas[localIdx] = fresh;
+
+      // Ré-injecter les données dans l'iframe sans recharger toute la page
+      const frame = document.getElementById('synFrame');
+      const newData = fresh.synthData || { v2: [], v1: [] };
+
+      // Envoyer les nouvelles données à l'iframe via postMessage
+      try {
+        frame.contentWindow.postMessage({
+          type: 'rapso_inject',
+          data: newData,
+          affaire: fresh.chrono,
+          dossier: fresh.nom
+        }, '*');
+        updateSynCounters(newData);
+        setSynStatus('saved', 'À jour');
+        showNotif('Données rechargées depuis Firebase ✓', 'ok', 3000);
+      } catch(frameErr) {
+        // Si l'iframe ne répond pas, recharger complètement
+        await openSynthese(currentCanId);
+        setSynStatus('saved', 'Rechargé');
+        showNotif('Canevas rechargé ✓', 'ok', 3000);
+      }
+    } else {
+      setSynStatus('error', 'Introuvable');
+      showNotif('Canevas introuvable dans Firebase', 'err', 5000);
+    }
+
+    // Mettre aussi à jour la liste locale complète
+    canevas = freshCanevas;
+    users   = freshUsers;
+    localStorage.setItem('rs_canevas', JSON.stringify(canevas));
+    localStorage.setItem('rs_users',   JSON.stringify(users));
+
+  } catch(err) {
+    console.error('Refresh Firebase error:', err);
+    setSynStatus('error', 'Erreur réseau');
+    showNotif('Impossible de contacter Firebase. Vérifiez votre connexion.', 'err', 6000);
+  } finally {
+    btn.classList.remove('spinning');
+  }
+}
+
 // Réception des messages de sauvegarde depuis la synthèse
 window.addEventListener('message', function(e) {
-  // Sécurité : on accepte uniquement les messages de nos blobs (même origine window)
   if (!e.data || typeof e.data !== 'object') return;
 
   if (e.data.type === 'rapso_save') {
@@ -1056,24 +1243,35 @@ window.addEventListener('message', function(e) {
     const incomingData = e.data.data;
     if (canId === undefined || canId === null || !incomingData) return;
 
-    // Trouver le canevas par ID (en tenant compte que canId peut être string ou number)
     const c = canevas.find(x => String(x.id) === String(canId));
     if (c) {
-      // Vérifier que les données ont réellement changé avant de sauvegarder
       const prevStr = JSON.stringify(c.synthData);
       const newStr  = JSON.stringify(incomingData);
       if (prevStr !== newStr) {
         c.synthData = incomingData;
-        saveToCloud();
-        // Mise à jour silencieuse du compteur dans le tableau
+        setSynStatus('saving', 'Sauvegarde…');
+        updateSynCounters(incomingData);
+        saveToCloud().then(() => {
+          setSynStatus('saved', 'Sauvegardé');
+          // Réinitialiser à "En attente" après 4s
+          setTimeout(() => setSynStatus('idle', 'En attente'), 4000);
+        }).catch(() => {
+          setSynStatus('error', 'Échec sauvegarde');
+          showNotif('Sauvegarde Firebase échouée – données locales conservées', 'err', 5000);
+        });
         renderCanevas();
       }
     }
   }
 
-  // Réponse à la demande de sauvegarde forcée (émise par closeSynthese)
+  // Réponse à la demande de sauvegarde forcée
   if (e.data.type === 'rapso_request_save') {
-    // L'iframe va émettre un rapso_save automatiquement via pushToParent()
+    // L'iframe émet un rapso_save automatiquement
+  }
+
+  // Confirmation de l'injection réussie (envoyée par canevas_temp.html)
+  if (e.data.type === 'rapso_inject_ack') {
+    updateSynCounters(e.data.data);
   }
 });
 
