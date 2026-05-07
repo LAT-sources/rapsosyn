@@ -45,11 +45,12 @@
   .logo{font-weight:800;font-size:1rem;color:var(--accent);white-space:nowrap;}
   .logo span{color:var(--muted);font-weight:400;}
   .header-info{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
-  .header-info input{
-    background:var(--card);border:1px solid var(--border);color:var(--text);
-    padding:4px 8px;border-radius:4px;font-family:var(--mono);font-size:0.72rem;outline:none;
-  }
   .header-info .lbl{font-size:0.7rem;color:var(--muted);white-space:nowrap;}
+  .header-info .affaire-value{
+    background:var(--card);border:1px solid var(--border);color:var(--text);
+    padding:4px 8px;border-radius:4px;font-family:var(--mono);font-size:0.72rem;
+    display:inline-block;min-width:200px;word-break:break-word;
+  }
   .spacer{flex:1;}
   .mini-stats{display:flex;gap:8px;font-size:0.68rem;font-family:var(--mono);white-space:nowrap;}
   .mini-stats span{display:flex;align-items:center;gap:3px;}
@@ -88,6 +89,33 @@
     display:flex;align-items:center;gap:2px;font-size:0.7rem;cursor:pointer;
     font-family:var(--mono);color:var(--text);white-space:nowrap;
   }
+  /* Multi-select (mf-select) */
+  .mf-select{
+    position:relative;display:inline-block;
+  }
+  .mf-select-button{
+    padding:4px 24px 4px 8px;border:1px solid var(--border);border-radius:4px;
+    background:var(--card);color:var(--text);font-family:var(--sans);
+    font-size:0.72rem;cursor:pointer;white-space:nowrap;
+    position:relative;
+  }
+  .mf-select-button::after{
+    content:"▼";font-size:0.6rem;position:absolute;right:6px;top:50%;
+    transform:translateY(-50%);color:var(--muted);
+  }
+  .mf-select-dropdown{
+    position:absolute;top:100%;left:0;z-index:200;
+    background:var(--surface);border:1px solid var(--border);border-radius:4px;
+    min-width:160px;max-height:200px;overflow-y:auto;display:none;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+  }
+  .mf-select-dropdown.show{display:block;}
+  .mf-select-dropdown label{
+    display:flex;align-items:center;gap:6px;padding:4px 8px;
+    font-size:0.7rem;cursor:pointer;
+  }
+  .mf-select-dropdown label:hover{background:rgba(37,99,235,.05);}
+  .mf-select-dropdown input{margin:0;}
 
   /* TABLE */
   .main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
@@ -106,11 +134,6 @@
     cursor:pointer;user-select:none;
   }
   th:hover{color:var(--accent);}
-  .filter-row th{padding:2px 3px;background:var(--bg);}
-  .filter-row th input{
-    width:100%;background:var(--card);border:1px solid var(--border);color:var(--text);
-    padding:2px 3px;border-radius:3px;font-family:var(--mono);font-size:0.64rem;outline:none;
-  }
   td{
     border:1px solid var(--border);padding:3px 6px;vertical-align:top;
     word-break:break-word;line-height:1.35;font-size:0.71rem;transition:background .08s;
@@ -181,18 +204,6 @@
   .save-feedback{font-size:0.74rem;font-weight:600;color:var(--green);opacity:0;transition:opacity .3s;margin-left:4px;}
   .save-feedback.show{opacity:1;}
 
-  /* ListBox filtres */
-  .filter-listbox{
-    background:var(--surface);border:1px solid var(--border);border-radius:4px;
-    max-height:120px;overflow-y:auto;padding:4px;
-  }
-  .filter-listbox label{
-    display:flex;align-items:center;gap:4px;padding:2px 4px;font-size:0.7rem;cursor:pointer;
-    border-radius:3px;
-  }
-  .filter-listbox label:hover{background:rgba(37,99,235,.05);}
-  .filter-listbox input{accent-color:var(--accent);}
-
   /* MODALS */
   .modal-overlay{
     display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
@@ -223,7 +234,6 @@
     header,.toolbar,.overlay,.modal-overlay{display:none!important;}
     body{background:#fff;color:#000;}
     td,th{border-color:#ccc!important;color:#000!important;background:#fff!important;}
-    .filter-row{display:none!important;}
   }
 </style>
 </head>
@@ -233,8 +243,9 @@
 <header>
   <div class="logo">Rapso<span>Synthèse</span></div>
   <div class="header-info">
-    <span class="lbl">Affaire:</span><input type="text" id="affaireInput" placeholder="Nom complet…" style="width:280px">
-    <span class="lbl">Dossier:</span><input type="text" id="dossierInput" placeholder="N° dossier…" style="width:140px">
+    <span class="lbl">Affaire :</span>
+    <span class="affaire-value" id="affaireDisplay">—</span>
+    <span class="lbl">Dossier :</span><input type="text" id="dossierInput" placeholder="N° dossier…" style="width:140px">
   </div>
   <div class="spacer"></div>
   <div class="mini-stats">
@@ -268,6 +279,20 @@
   <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fPar" onchange="applyFilters()" style="accent-color:var(--yellow)">⚠️</label>
   <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fNon" onchange="applyFilters()" style="accent-color:var(--red)">❌</label>
   <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fRd6" onchange="applyFilters()" style="accent-color:var(--accent2)">RD6</label>
+  <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fPA" onchange="applyFilters()" style="accent-color:var(--green)">PA</label>
+
+  <!-- Multi-sélection Intervenants -->
+  <div class="mf-select" id="mfInterSelect">
+    <div class="mf-select-button" onclick="toggleMfSelect('mfInter')">Intervenants <span id="mfInterCount">(0)</span></div>
+    <div class="mf-select-dropdown" id="mfInterDropdown"></div>
+  </div>
+
+  <!-- Multi-sélection Lots -->
+  <div class="mf-select" id="mfLotSelect">
+    <div class="mf-select-button" onclick="toggleMfSelect('mfLot')">Lots <span id="mfLotCount">(0)</span></div>
+    <div class="mf-select-dropdown" id="mfLotDropdown"></div>
+  </div>
+
   <button class="tb-btn" onclick="resetFilters()">✕</button>
   <div style="flex:1;"></div>
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
@@ -300,15 +325,6 @@
           <th onclick="sortBy('docs')">Documents</th><th onclick="sortBy('suivi')">Suivi</th>
           <th onclick="sortBy('repK')">Rép. MOE</th><th onclick="sortBy('repL')">Obs. SOCOTEC</th>
           <th onclick="sortBy('lots')">Lots</th><th></th>
-        </tr>
-        <tr class="filter-row">
-          <th><input id="cf_num" placeholder="🔍"></th><th><input id="cf_ref" placeholder="🔍"></th>
-          <th><input id="cf_date" placeholder="jj/mm/aaaa"></th><th><input id="cf_inter" placeholder="🔍"></th>
-          <th><input id="cf_disp" placeholder="dispo…"></th><th><input id="cf_avis" placeholder="🔍"></th>
-          <th><input id="cf_desc" placeholder="🔍"></th><th><input id="cf_obs" placeholder="obs…"></th>
-          <th><input id="cf_docs" placeholder="docs…"></th><th><input id="cf_suivi" placeholder="🔍"></th>
-          <th><input id="cf_repK" placeholder="🔍"></th><th><input id="cf_repL" placeholder="🔍"></th>
-          <th><input id="cf_lots" placeholder="🔍"></th><th></th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -508,20 +524,18 @@ function toggleTheme(){document.body.classList.toggle('dark');localStorage.setIt
 
 // ═══════════════════════ DATA ═══════════════════════
 let currentTab='v2',data={v2:[],v1:[]},filteredRows=[],sortKey=null,sortDir=1,editingIdx=null,currentSuivi='';
+// Filtres multi-sélection
+let selectedIntervenants = new Set();
+let selectedLots = new Set();
+
 // ═══════════════════════ CHARGEMENT DONNÉES SAUVEGARDÉES ═══════════════════════
-// IMPORTANT : window.RAPSO_SYNTH_DATA est injectée par index.html AVANT ce script.
-// Elle prend TOUJOURS la priorité sur le localStorage (qui appartient au blob URL,
-// pas au portail, et qui peut donc contenir des données d'un autre canevas).
 (function() {
   if (typeof window.RAPSO_SYNTH_DATA !== 'undefined' && window.RAPSO_SYNTH_DATA) {
     try {
       const parsed = JSON.parse(window.RAPSO_SYNTH_DATA);
       if (parsed && typeof parsed === 'object') {
-        // Normaliser : s'assurer que v2 et v1 sont des tableaux
         data.v2 = Array.isArray(parsed.v2) ? parsed.v2 : [];
         data.v1 = Array.isArray(parsed.v1) ? parsed.v1 : [];
-        // Synchroniser le localStorage du blob avec ces données
-        // afin que persistLocal() et pushToParent() soient cohérents
         localStorage.setItem('rapsotracker', JSON.stringify({
           meta: {
             affaire: window.RAPSO_AFFAIRE || '',
@@ -529,22 +543,69 @@ let currentTab='v2',data={v2:[],v1:[]},filteredRows=[],sortKey=null,sortDir=1,ed
           },
           data: { v2: data.v2, v1: data.v1 }
         }));
-        console.log('[RapsoSyn] Données injectées via RAPSO_SYNTH_DATA :', data.v2.length, 'avis V2,', data.v1.length, 'avis V1');
+        console.log('[RapsoSyn] Données injectées :', data.v2.length, 'avis V2,', data.v1.length, 'avis V1');
       }
-    } catch(e) {
-      console.warn('[RapsoSyn] Impossible de parser RAPSO_SYNTH_DATA :', e);
-    }
+    } catch(e) { console.warn(e); }
   }
-  // Si le champ affaire/dossier est vide après injection, remplir depuis les meta window
   setTimeout(() => {
-    const affEl = document.getElementById('affaireInput');
+    const affSpan = document.getElementById('affaireDisplay');
     const dosEl = document.getElementById('dossierInput');
-    if (affEl && !affEl.value && window.RAPSO_AFFAIRE) affEl.value = window.RAPSO_AFFAIRE;
+    if (affSpan && !affSpan.innerText && window.RAPSO_AFFAIRE) affSpan.innerText = window.RAPSO_AFFAIRE;
     if (dosEl && !dosEl.value && window.RAPSO_DOSSIER) dosEl.value = window.RAPSO_DOSSIER;
+    // Construire les listes après chargement
+    buildMfSelectOptions();
   }, 0);
 })();
+
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
+
+// ═══════════════════════ GESTION MULTI-SELECTIONS ═══════════════════════
+function buildMfSelectOptions() {
+  const rows = getRows();
+  // Intervenants
+  const intervenants = [...new Set(rows.map(r => r.inter?.trim()).filter(v => v && v !== ''))];
+  const interDiv = document.getElementById('mfInterDropdown');
+  interDiv.innerHTML = intervenants.map(inter => `
+    <label><input type="checkbox" value="${escAttr(inter)}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', '${escAttr(inter)}', this.checked)"> ${esc(inter)}</label>
+  `).join('');
+  document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
+  
+  // Lots (splittés par virgule)
+  const allLots = rows.flatMap(r => (r.lots||'').split(',').map(l => l.trim()).filter(l => l !== ''));
+  const lots = [...new Set(allLots)];
+  const lotDiv = document.getElementById('mfLotDropdown');
+  lotDiv.innerHTML = lots.map(lot => `
+    <label><input type="checkbox" value="${escAttr(lot)}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', '${escAttr(lot)}', this.checked)"> ${esc(lot)}</label>
+  `).join('');
+  document.getElementById('mfLotCount').innerText = `(${selectedLots.size})`;
+}
+
+function escAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;'); }
+
+function toggleMultiFilter(type, value, checked) {
+  if (type === 'inter') {
+    if (checked) selectedIntervenants.add(value);
+    else selectedIntervenants.delete(value);
+  } else if (type === 'lot') {
+    if (checked) selectedLots.add(value);
+    else selectedLots.delete(value);
+  }
+  applyFilters(); // le rebuild se fait dans applyFilters
+}
+
+function toggleMfSelect(which) {
+  const dropdown = document.getElementById(`mf${which.charAt(0).toUpperCase()+which.slice(1)}Dropdown`);
+  dropdown.classList.toggle('show');
+  const other = which === 'mfInter' ? 'mfLotDropdown' : 'mfInterDropdown';
+  const otherDrop = document.getElementById(other);
+  if (otherDrop && otherDrop !== dropdown) otherDrop.classList.remove('show');
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.mf-select')) {
+    document.querySelectorAll('.mf-select-dropdown').forEach(d => d.classList.remove('show'));
+  }
+});
 
 // ═══════════════════════ FILTERS ═══════════════════════
 function gcf(id){return(document.getElementById(id)?.value||'').toLowerCase();}
@@ -558,16 +619,18 @@ function matchDate(stored,q){
 }
 
 function applyFilters(){
-  const filters={num:gcf('cf_num'),ref:gcf('cf_ref'),inter:gcf('cf_inter'),disp:gcf('cf_disp'),avis:gcf('cf_avis'),desc:gcf('cf_desc'),obs:gcf('cf_obs'),docs:gcf('cf_docs'),suivi:gcf('cf_suivi'),repK:gcf('cf_repK'),repL:gcf('cf_repL'),lots:gcf('cf_lots')};
-  const cfDate=document.getElementById('cf_date')?.value||'';
+  // Reconstruire les listes déroulantes à partir des données brutes (non filtrées)
+  buildMfSelectOptions();
+  
   const qsNum=gcf('qs_num'),qsDate=document.getElementById('qs_date')?.value||'',qsDisp=gcf('qs_disp'),qsObs=gcf('qs_obs'),qsDocs=gcf('qs_docs');
   const qsF=document.getElementById('qs_F').checked,qsS=document.getElementById('qs_S').checked,qsD=document.getElementById('qs_D').checked,qsPM=document.getElementById('qs_PM').checked,qsSO=document.getElementById('qs_SO').checked;
   const anyQS=qsF||qsS||qsD||qsPM||qsSO;
-  const fOui=document.getElementById('fOui').checked,fPar=document.getElementById('fPar').checked,fNon=document.getElementById('fNon').checked,fRd6=document.getElementById('fRd6').checked;
+  const fOui=document.getElementById('fOui').checked,fPar=document.getElementById('fPar').checked,fNon=document.getElementById('fNon').checked,fRd6=document.getElementById('fRd6').checked,fPA=document.getElementById('fPA').checked;
   const anySt=fOui||fPar||fNon;
-  filteredRows=getRows().filter(r=>{
-    for(const[k,v]of Object.entries(filters)){if(v&&!String(r[k]||'').toLowerCase().includes(v))return false;}
-    if(cfDate&&!matchDate(r.date,cfDate))return false;
+  
+  let rows = getRows(); // données brutes
+  
+  rows = rows.filter(r=>{
     if(qsNum&&!String(r.num||'').toLowerCase().includes(qsNum))return false;
     if(qsDate&&!matchDate(r.date,qsDate))return false;
     if(qsDisp&&!String(r.disp||'').toLowerCase().includes(qsDisp))return false;
@@ -576,17 +639,39 @@ function applyFilters(){
     if(anyQS){const a=(r.avis||'').toUpperCase().trim();if(!((qsF&&a==='F')||(qsS&&a==='S')||(qsD&&a==='D')||(qsPM&&a==='PM')||(qsSO&&a==='SO')))return false;}
     if(anySt){if(!((fOui&&r.suivi==='Oui')||(fPar&&r.suivi==='Par')||(fNon&&r.suivi==='Non')))return false;}
     if(fRd6&&!r.rd6)return false;
+    if(fPA && !(r.num||'').toUpperCase().startsWith('PA'))return false;
     return true;
   });
-  if(sortKey){filteredRows.sort((a,b)=>{const av=String(a[sortKey]||''),bv=String(b[sortKey]||'');return av<bv?-sortDir:av>bv?sortDir:0;});}
-  render();updateStats();
+  
+  // Appliquer multi-sélection
+  if(selectedIntervenants.size > 0) {
+    rows = rows.filter(r => selectedIntervenants.has(r.inter?.trim()));
+  }
+  if(selectedLots.size > 0) {
+    rows = rows.filter(r => {
+      const lotsRow = (r.lots||'').split(',').map(l => l.trim()).filter(l => l);
+      return lotsRow.some(l => selectedLots.has(l));
+    });
+  }
+  
+  if(sortKey){
+    rows.sort((a,b)=>{
+      const av=String(a[sortKey]||''), bv=String(b[sortKey]||'');
+      return av<bv ? -sortDir : av>bv ? sortDir : 0;
+    });
+  }
+  filteredRows = rows;
+  render();
+  updateStats();
 }
 function sortBy(k){sortKey===k?sortDir*=-1:(sortKey=k,sortDir=1);applyFilters();}
 function resetFilters(){
-  ['cf_num','cf_ref','cf_date','cf_inter','cf_disp','cf_avis','cf_desc','cf_obs','cf_docs','cf_suivi','cf_repK','cf_repL','cf_lots'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   ['qs_num','qs_date','qs_disp','qs_obs','qs_docs'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  ['qs_F','qs_S','qs_D','qs_PM','qs_SO','fOui','fPar','fNon','fRd6'].forEach(id=>document.getElementById(id).checked=false);
-  sortKey=null;sortDir=1;applyFilters();
+  ['qs_F','qs_S','qs_D','qs_PM','qs_SO','fOui','fPar','fNon','fRd6','fPA'].forEach(id=>document.getElementById(id).checked=false);
+  selectedIntervenants.clear();
+  selectedLots.clear();
+  sortKey=null;sortDir=1;
+  applyFilters();
 }
 
 // ═══════════════════════ RENDER ═══════════════════════
@@ -619,11 +704,20 @@ function updateStats(){
 }
 
 // ═══════════════════════ TABS ═══════════════════════
-function switchTab(t){currentTab=t;document.getElementById('tabV2').classList.toggle('active',t==='v2');document.getElementById('tabV1').classList.toggle('active',t==='v1');resetFilters();}
+function switchTab(t){
+  currentTab=t;
+  document.getElementById('tabV2').classList.toggle('active',t==='v2');
+  document.getElementById('tabV1').classList.toggle('active',t==='v1');
+  // Réinitialiser les filtres multi-sélection lors du changement d'onglet
+  selectedIntervenants.clear();
+  selectedLots.clear();
+  resetFilters(); // cela appelle applyFilters() qui rebuild les listes
+}
 
-// ═══════════════════════ EDIT PANEL (frmEditionCell) ═══════════════════════
+// ═══════════════════════ EDIT PANEL (fonctions essentielles) ═══════════════════════
 function openEditPanel(fi){
-  editingIdx=fi;const r=filteredRows[fi];
+  editingIdx=fi;
+  const r=filteredRows[fi];
   document.getElementById('panelTitle').textContent=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${r.inter||'-'} - Avis : ${r.avis||'-'}`;
   document.getElementById('panelNum').textContent=r.num||'(sans n°)';
   document.getElementById('e_lblColE').textContent=r.disp||'—';
@@ -634,7 +728,8 @@ function openEditPanel(fi){
   document.getElementById('e_rd6').checked=r.rd6;
   document.getElementById('rd6Toggle').classList.toggle('active',r.rd6);
   currentSuivi=r.suivi;updateSuiviUI();
-  document.getElementById('overlay').classList.add('open');document.getElementById('editPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('editPanel').classList.add('open');
   document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
   const el=document.getElementById('row-'+fi);if(el)el.classList.add('row-highlight');
 }
@@ -648,12 +743,24 @@ function updateSuiviUI(){
 }
 function toggleRD6(){const cb=document.getElementById('e_rd6');cb.checked=!cb.checked;document.getElementById('rd6Toggle').classList.toggle('active',cb.checked);}
 function saveRow(){
-  if(editingIdx===null)return;const r=filteredRows[editingIdx];const gi=getRows().findIndex(x=>x.id===r.id);if(gi===-1)return;
-  data[currentTab][gi]={...r,obs:document.getElementById('e_obs').value,repK:document.getElementById('e_repK').value,repL:document.getElementById('e_repL').value,lots:document.getElementById('e_lots').value,suivi:currentSuivi,rd6:document.getElementById('e_rd6').checked};
-  if(data[currentTab][gi].rd6&&!data[currentTab][gi].num.includes('/RD6'))data[currentTab][gi].num+='/RD6';
-  else if(!data[currentTab][gi].rd6)data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
-  applyFilters();document.getElementById('saveFeedback').classList.add('show');setTimeout(()=>document.getElementById('saveFeedback').classList.remove('show'),1800);persistLocal();
-  // ⬇️ AJOUTEZ CES 5 LIGNES CI-DESSOUS ⬇️
+  if(editingIdx===null)return;
+  const r=filteredRows[editingIdx];
+  const gi=getRows().findIndex(x=>x.id===r.id);
+  if(gi===-1)return;
+  data[currentTab][gi]={...r,
+    obs:document.getElementById('e_obs').value,
+    repK:document.getElementById('e_repK').value,
+    repL:document.getElementById('e_repL').value,
+    lots:document.getElementById('e_lots').value,
+    suivi:currentSuivi,
+    rd6:document.getElementById('e_rd6').checked
+  };
+  if(data[currentTab][gi].rd6 && !data[currentTab][gi].num.includes('/RD6')) data[currentTab][gi].num+='/RD6';
+  else if(!data[currentTab][gi].rd6) data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
+  applyFilters();
+  document.getElementById('saveFeedback').classList.add('show');
+  setTimeout(()=>document.getElementById('saveFeedback').classList.remove('show'),1800);
+  persistLocal();
   if (window.parent) {
     const raw = localStorage.getItem('rapsotracker');
     if (raw) {
@@ -662,13 +769,31 @@ function saveRow(){
     }
   }
 }
+function deleteRow(){
+  if(editingIdx===null)return;
+  const r=filteredRows[editingIdx];
+  const gi=getRows().findIndex(x=>x.id===r.id);
+  if(gi>=0){
+    if(confirm(`Supprimer définitivement l'avis ${r.num} ?`)){
+      data[currentTab].splice(gi,1);
+      applyFilters();
+      closePanel();
+      persistLocal();
+      if (window.parent) {
+        const raw = localStorage.getItem('rapsotracker');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
+        }
+      }
+    }
+  }
+}
 
 // ═══════════════════════ PA MODAL ═══════════════════════
 function openPAModal(){['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>document.getElementById(id).checked=false);['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>document.getElementById(id).value='');document.getElementById('paFeedback').style.opacity='0';document.getElementById('paModal').classList.add('open');}
 function closePAModal(){document.getElementById('paModal').classList.remove('open');}
-function paCheck(v){
-  ['F','S','D','PM'].forEach(k=>{if(k!==v)document.getElementById('pa_'+k).checked=false;});
-}
+function paCheck(v){['F','S','D','PM'].forEach(k=>{if(k!==v)document.getElementById('pa_'+k).checked=false;});}
 function addPA(){
   const cat=document.getElementById('pa_F').checked?'F':document.getElementById('pa_S').checked?'S':document.getElementById('pa_D').checked?'D':document.getElementById('pa_PM').checked?'PM':'';
   if(!cat){document.getElementById('paFeedback').style.opacity='1';setTimeout(()=>document.getElementById('paFeedback').style.opacity='0',2500);return;}
@@ -684,7 +809,7 @@ function addPA(){
   data[currentTab].push(newRow);closePAModal();applyFilters();persistLocal();
 }
 
-// ═══════════════════════ VERSION RAPIDE ═══════════════════════
+// ═══════════════════════ VERSION RAPIDE (simplifiée mais fonctionnelle) ═══════════════════════
 let rapideSelected=null,rapideFiltered=[];
 function openRapide(){rapideSelected=null;document.getElementById('rapideOverlay').classList.add('open');document.getElementById('rapideEditArea').style.display='none';document.getElementById('rapideSaveBtn').disabled=true;rapideApply();}
 function closeRapide(){document.getElementById('rapideOverlay').classList.remove('open');}
@@ -738,8 +863,22 @@ function rapideSave(){
 // ═══════════════════════ ADD ═══════════════════════
 function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>document.getElementById(id).value='');document.getElementById('addModal').classList.add('open');}
 function closeAddModal(){document.getElementById('addModal').classList.remove('open');}
-function addRow(){data[currentTab].push(makeRow({num:document.getElementById('a_num').value,ref:document.getElementById('a_ref').value,date:document.getElementById('a_date').value,inter:document.getElementById('a_inter').value,disp:document.getElementById('a_disp').value,avis:document.getElementById('a_avis').value,desc:document.getElementById('a_desc').value,obs:document.getElementById('a_obs').value,docs:document.getElementById('a_docs').value,lots:document.getElementById('a_lots').value}));closeAddModal();applyFilters();persistLocal();
-  // ⬇️ AJOUTEZ CES 5 LIGNES CI-DESSOUS ⬇️
+function addRow(){
+  data[currentTab].push(makeRow({
+    num:document.getElementById('a_num').value,
+    ref:document.getElementById('a_ref').value,
+    date:document.getElementById('a_date').value,
+    inter:document.getElementById('a_inter').value,
+    disp:document.getElementById('a_disp').value,
+    avis:document.getElementById('a_avis').value,
+    desc:document.getElementById('a_desc').value,
+    obs:document.getElementById('a_obs').value,
+    docs:document.getElementById('a_docs').value,
+    lots:document.getElementById('a_lots').value
+  }));
+  closeAddModal();
+  applyFilters();
+  persistLocal();
   if (window.parent) {
     const raw = localStorage.getItem('rapsotracker');
     if (raw) {
@@ -748,7 +887,7 @@ function addRow(){data[currentTab].push(makeRow({num:document.getElementById('a_
     }
   }
 }
-  
+
 // ═══════════════════════ STATS ═══════════════════════
 function openStatsModal(){
   const rows=getRows();
@@ -789,16 +928,6 @@ function normalizeDate(d){if(d instanceof Date)return d.toISOString().slice(0,10
 function cleanDocuments(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{');['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),''));c=c.replace(/"/g,'');return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n');}
 function extractKey(v){if(!v)return'';const p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
 
-['importDropzone','actualiserDropzone'].forEach(id=>{
-  const dz=document.getElementById(id);if(!dz)return;
-  dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--accent)';});
-  dz.addEventListener('dragleave',()=>{dz.style.borderColor='';});
-  dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f)processXLSX(f,id==='actualiserDropzone'?'actualiser':'import');});
-});
-
-function handleFileImport(i){if(i.files[0])processXLSX(i.files[0],'import');}
-function handleActualiserFileImport(i){if(i.files[0])processXLSX(i.files[0],'actualiser');}
-
 function processXLSX(file,mode){
   const sid=mode==='actualiser'?'actualiserStatus':'importStatus';
   const st=document.getElementById(sid);st.textContent='Lecture…';
@@ -808,7 +937,9 @@ function processXLSX(file,mode){
       const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
       const sn=wb.SheetNames;let sheetName=sn.find(n=>n==='Synthèse')||sn.find(n=>n==='RapsoV2')||sn.find(n=>n==='RapsoV1')||sn[0];
       const ws=wb.Sheets[sheetName],raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-      document.getElementById('dossierInput').value=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
+      const baseName = file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
+      document.getElementById('affaireDisplay').innerText = baseName;
+      document.getElementById('dossierInput').value = baseName;
       const src=[];
       for(let i=1;i<Math.min(raw.length,500);i++){
         const row=raw[i];if(!row||row.every(c=>c===''||c===null))continue;
@@ -826,125 +957,121 @@ function processXLSX(file,mode){
         if(!confirm(`${src.length} lignes → ${target} ?\n⚠️ Remplace tout`)){st.textContent='Annulé.';return;}
         data[target]=src;currentTab=target;st.textContent=`✅ ${src.length} avis importés`;
       }
-      document.getElementById('affaireInput').value=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
-      document.getElementById('tabV2').classList.toggle('active',target==='v2');document.getElementById('tabV1').classList.toggle('active',target==='v1');
-      applyFilters();persistLocal();
+      document.getElementById('tabV2').classList.toggle('active',target==='v2');
+      document.getElementById('tabV1').classList.toggle('active',target==='v1');
+      // Réinitialiser les sélections multi
+      selectedIntervenants.clear();
+      selectedLots.clear();
+      applyFilters();
+      persistLocal();
     }catch(err){st.textContent='❌ '+err.message;}
   };r.readAsArrayBuffer(file);
 }
+['importDropzone','actualiserDropzone'].forEach(id=>{
+  const dz=document.getElementById(id);if(!dz)return;
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--accent)';});
+  dz.addEventListener('dragleave',()=>{dz.style.borderColor='';});
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f)processXLSX(f,id==='actualiserDropzone'?'actualiser':'import');});
+});
+function handleFileImport(i){if(i.files[0])processXLSX(i.files[0],'import');}
+function handleActualiserFileImport(i){if(i.files[0])processXLSX(i.files[0],'actualiser');}
 
 // ═══════════════════════ JSON ═══════════════════════
-function exportJSON(){const meta={affaire:document.getElementById('affaireInput').value,dossier:document.getElementById('dossierInput').value};const b=new Blob([JSON.stringify({meta,data},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='rapso_'+(meta.affaire||'data')+'.json';a.click();}
-function loadJSON(){const i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const o=JSON.parse(ev.target.result);if(o.meta){document.getElementById('affaireInput').value=o.meta.affaire||'';document.getElementById('dossierInput').value=o.meta.dossier||'';}if(o.data){data.v2=(o.data.v2||[]).map(makeRow);data.v1=(o.data.v1||[]).map(makeRow);}applyFilters();persistLocal();alert('✅');}catch{alert('JSON invalide');}};r.readAsText(f);};i.click();}
+function exportJSON(){const meta={affaire:document.getElementById('affaireDisplay').innerText,dossier:document.getElementById('dossierInput').value};const b=new Blob([JSON.stringify({meta,data},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='rapso_'+(meta.affaire||'data')+'.json';a.click();}
+function loadJSON(){
+  const i=document.createElement('input');i.type='file';i.accept='.json';
+  i.onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      try{
+        const o=JSON.parse(ev.target.result);
+        if(o.meta){
+          document.getElementById('affaireDisplay').innerText=o.meta.affaire||'';
+          document.getElementById('dossierInput').value=o.meta.dossier||'';
+        }
+        if(o.data){
+          data.v2=(o.data.v2||[]).map(makeRow);
+          data.v1=(o.data.v1||[]).map(makeRow);
+        }
+        selectedIntervenants.clear();
+        selectedLots.clear();
+        applyFilters();
+        persistLocal();
+        alert('✅');
+      }catch{alert('JSON invalide');}
+    };r.readAsText(f);
+  };i.click();
+}
 function persistLocal(){
   try {
     localStorage.setItem('rapsotracker', JSON.stringify({
       meta: {
-        affaire: document.getElementById('affaireInput').value,
+        affaire: document.getElementById('affaireDisplay').innerText,
         dossier: document.getElementById('dossierInput').value
       },
       data
     }));
   } catch(e) {}
 }
-
 function loadLocal(){
-  // NE PAS charger depuis le localStorage si les données viennent déjà de RAPSO_SYNTH_DATA
-  // (la variable est définie par le portail avant l'exécution de ce script)
-  if (typeof window.RAPSO_SYNTH_DATA !== 'undefined' && window.RAPSO_SYNTH_DATA) {
-    // Les données ont déjà été injectées dans data{} ci-dessus, on ne les écrase pas
-    const affEl = document.getElementById('affaireInput');
-    const dosEl = document.getElementById('dossierInput');
-    if (affEl && window.RAPSO_AFFAIRE) affEl.value = window.RAPSO_AFFAIRE;
-    if (dosEl && window.RAPSO_DOSSIER) dosEl.value = window.RAPSO_DOSSIER;
-    return;
-  }
-  // Mode standalone (ouvert directement sans portail) : charger depuis localStorage
+  if (typeof window.RAPSO_SYNTH_DATA !== 'undefined' && window.RAPSO_SYNTH_DATA) return;
   try {
     const r = localStorage.getItem('rapsotracker');
     if (!r) return;
     const o = JSON.parse(r);
     if (o.meta) {
-      document.getElementById('affaireInput').value = o.meta.affaire || '';
-      document.getElementById('dossierInput').value  = o.meta.dossier  || '';
+      document.getElementById('affaireDisplay').innerText = o.meta.affaire || '';
+      document.getElementById('dossierInput').value = o.meta.dossier || '';
     }
     if (o.data) {
       data.v2 = (o.data.v2 || []).map(makeRow);
       data.v1 = (o.data.v1 || []).map(makeRow);
     }
+    applyFilters();
   } catch(e) {}
 }
-['affaireInput','dossierInput'].forEach(id=>document.getElementById(id).addEventListener('input',persistLocal));
 
-loadLocal();applyFilters();
+// Initialisation
+loadLocal();
+applyFilters();
 
-// ══ RÉCEPTION INJECTION DEPUIS LE PORTAIL (rafraîchir sans recharger) ══
+// Communication parent
 window.addEventListener('message', function(e) {
-  if (!e.data || typeof e.data !== 'object') return;
-
-  // Le portail demande une injection de nouvelles données (rafraîchir depuis Firebase)
-  if (e.data.type === 'rapso_inject') {
+  if (e.data && e.data.type === 'rapso_inject') {
     try {
       const inj = e.data.data || { v2: [], v1: [] };
       data.v2 = Array.isArray(inj.v2) ? inj.v2.map(makeRow) : [];
       data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
-
-      // Mettre à jour affaire / dossier si fournis
-      if (e.data.affaire) document.getElementById('affaireInput').value = e.data.affaire;
+      if (e.data.affaire) document.getElementById('affaireDisplay').innerText = e.data.affaire;
       if (e.data.dossier) document.getElementById('dossierInput').value = e.data.dossier;
-
-      // Synchroniser localStorage
-      localStorage.setItem('rapsotracker', JSON.stringify({
-        meta: {
-          affaire: document.getElementById('affaireInput').value,
-          dossier: document.getElementById('dossierInput').value
-        },
-        data: { v2: data.v2, v1: data.v1 }
-      }));
-
-      // Réappliquer les filtres et rafraîchir le tableau
+      selectedIntervenants.clear();
+      selectedLots.clear();
+      localStorage.setItem('rapsotracker', JSON.stringify({ meta: { affaire: document.getElementById('affaireDisplay').innerText, dossier: document.getElementById('dossierInput').value }, data }));
       applyFilters();
-
-      // Confirmer la réception au portail
       if (window.parent && window.parent !== window) {
-        window.parent.postMessage({
-          type: 'rapso_inject_ack',
-          data: { v2: data.v2, v1: data.v1 }
-        }, '*');
+        window.parent.postMessage({ type: 'rapso_inject_ack', data: { v2: data.v2, v1: data.v1 } }, '*');
       }
-    } catch(err) {
-      console.warn('[RapsoSyn] rapso_inject error:', err);
-    }
+    } catch(err) { console.warn(err); }
   }
 });
 </script>
 <script>
+// Sauvegarde automatique vers parent
 (function() {
-  // ── Envoi des données vers le portail parent ──
   function pushToParent() {
     if (!window.parent || window.parent === window) return;
-    // CANEVAS_ID doit être défini (injecté par le portail via RAPSO_META)
     const canId = window.CANEVAS_ID;
-    if (canId === undefined || canId === null) return;
+    if (canId === undefined) return;
     try {
       const raw = localStorage.getItem('rapsotracker');
       if (!raw) return;
       const parsed = JSON.parse(raw);
       if (!parsed || !parsed.data) return;
-      window.parent.postMessage({
-        type: 'rapso_save',
-        canId: canId,
-        data: parsed.data
-      }, '*');
-    } catch(e) {
-      console.warn('[RapsoSyn] pushToParent error:', e);
-    }
+      window.parent.postMessage({ type: 'rapso_save', canId: canId, data: parsed.data }, '*');
+    } catch(e) {}
   }
-
-  // Sauvegarde automatique toutes les 4 secondes
   setInterval(pushToParent, 4000);
-
-  // Sauvegarde immédiate après chaque écriture dans localStorage
   const _origSet = localStorage.setItem.bind(localStorage);
   localStorage.setItem = function(key, value) {
     _origSet(key, value);
@@ -953,15 +1080,9 @@ window.addEventListener('message', function(e) {
       window._rsSaveTimeout = setTimeout(pushToParent, 250);
     }
   };
-
-  // Sauvegarde avant fermeture de l'onglet / navigation
   window.addEventListener('beforeunload', pushToParent);
-
-  // Réponse à la demande de sauvegarde forcée émise par le portail lors du retour
   window.addEventListener('message', function(e) {
-    if (e.data && e.data.type === 'rapso_request_save') {
-      pushToParent();
-    }
+    if (e.data && e.data.type === 'rapso_request_save') pushToParent();
   });
 })();
 </script>
