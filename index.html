@@ -348,38 +348,16 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 /* Indicateur de connexion temps réel */
 .syn-live-dot{
   display:flex;align-items:center;gap:5px;
-  padding:3px 9px;border-radius:6px;
-  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
-  font-size:0.68rem;color:rgba(255,255,255,.45);
+  font-size:0.68rem;color:rgba(255,255,255,.4);
   font-family:var(--mono);white-space:nowrap;
-  transition:all .3s;
 }
 .syn-live-dot .ld{
-  width:7px;height:7px;border-radius:50%;
-  background:rgba(255,255,255,.25);
-  flex-shrink:0;transition:background .3s,box-shadow .3s;
+  width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);
+  transition:background .3s;
 }
-/* État : en cours de connexion (défaut) */
-.syn-live-dot.connecting .ld{background:#f59e0b;animation:ldpulse 1s ease infinite;}
-/* État : connecté */
-.syn-live-dot.connected{
-  background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.25);color:#86efac;
-}
-.syn-live-dot.connected .ld{
-  background:#22c55e;
-  box-shadow:0 0 0 0 rgba(34,197,94,.5);
-  animation:livepulse 2.5s ease infinite;
-}
-/* État : déconnecté */
-.syn-live-dot.disconnected{
-  background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.25);color:#fca5a5;
-}
+.syn-live-dot.connected .ld{background:#22c55e;animation:livepulse 2s ease infinite;}
 .syn-live-dot.disconnected .ld{background:#ef4444;}
-@keyframes livepulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5);}
-  60%{box-shadow:0 0 0 6px rgba(34,197,94,0);}
-}
-@keyframes ldpulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+@keyframes livepulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5);}60%{box-shadow:0 0 0 5px rgba(34,197,94,0);}}
 
 /* EMPTY */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--g400);text-align:center;gap:8px;}
@@ -1226,8 +1204,6 @@ async function openSynthese(id) {
   _lastLocalHash = hashData(synthData);
   hide('scApp'); show('scSynthese');
 
-  // Montrer immédiatement que la connexion va démarrer
-  setLiveDot('connecting');
   // Démarrer l'écoute temps réel APRÈS que l'iframe soit chargée (léger délai)
   setTimeout(() => startLiveListener(id), 1200);
 }
@@ -1286,14 +1262,12 @@ function setSynStatus(state, txt) {
   el.className = 'syn-status ' + state;
 }
 
-function setLiveDot(state) {
-  // state: 'connecting' | 'connected' | 'disconnected'
+function setLiveDot(connected) {
   const el = document.getElementById('synLiveDot');
   const tx = document.getElementById('synLiveTxt');
   if (!el) return;
-  const labels = { connecting: 'Connexion…', connected: '● Live', disconnected: 'Hors ligne' };
-  el.className = 'syn-live-dot ' + state;
-  tx.textContent = labels[state] || state;
+  el.className = 'syn-live-dot ' + (connected ? 'connected' : 'disconnected');
+  tx.textContent = connected ? 'Live' : 'Hors ligne';
 }
 
 function updateSynCounters(data) {
@@ -1401,12 +1375,12 @@ async function applyPendingUpdate() {
 function startLiveListener(canId) {
   stopLiveListener(); // nettoyer l'éventuel précédent
 
-  setLiveDot('connecting');
+  setLiveDot(true);
   let firstCall = true; // ignorer le premier snapshot (état initial déjà chargé)
 
   _liveListener = db.ref('/canevas').on('value', snapshot => {
     // Connexion réussie
-    setLiveDot('connected'); // passe de 'connecting' à 'connected' au 1er snapshot
+    setLiveDot(true);
 
     if (firstCall) { firstCall = false; return; }
 
@@ -1433,7 +1407,7 @@ function startLiveListener(canId) {
     }
   }, error => {
     console.warn('[RapsoSyn] Firebase listener error:', error);
-    setLiveDot('disconnected');
+    setLiveDot(false);
     setSynStatus('error', 'Connexion perdue');
     showNotif('Connexion Firebase perdue. Vérifiez votre réseau.', 'err', 0);
   });
@@ -1444,7 +1418,7 @@ function stopLiveListener() {
     db.ref('/canevas').off('value', _liveListener);
     _liveListener = null;
   }
-  setLiveDot('disconnected');
+  setLiveDot(false);
   _pendingData = null;
   document.getElementById('synPendingBar')?.classList.remove('show');
   document.getElementById('refreshBadge')?.classList.remove('show');
