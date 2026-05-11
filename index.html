@@ -129,47 +129,126 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .btn-icon.blue:hover{background:var(--blue-l);color:var(--blue);}
 
 /* FILTER BAR */
-.filterbar{background:white;border-bottom:1px solid var(--g200);padding:8px 22px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;flex-shrink:0;}
-.fb-input{padding:5px 11px;border:1.5px solid var(--g200);border-radius:100px;font-family:var(--font);font-size:0.8rem;color:var(--g700);outline:none;background:white;transition:border-color .15s;min-width:100px;}
+.filterbar{
+  background:white;border-bottom:1px solid var(--g200);
+  padding:8px 22px;display:flex;align-items:center;
+  gap:6px;flex-wrap:wrap;flex-shrink:0;
+}
+.fb-input{
+  padding:5px 13px;border:1.5px solid var(--g200);
+  border-radius:100px;font-family:var(--font);
+  font-size:0.79rem;color:var(--g700);outline:none;
+  background:white;transition:border-color .15s;
+  min-width:110px;height:32px;
+}
 .fb-input:focus{border-color:var(--blue);}
 .fb-input::placeholder{color:var(--g400);}
-.fb-select{padding:5px 26px 5px 11px;border:1.5px solid var(--g200);border-radius:100px;font-family:var(--font);font-size:0.8rem;color:var(--g700);outline:none;background:white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath fill='%2394a3b8' d='M0 0l4.5 5L9 0z'/%3E%3C/svg%3E") no-repeat right 9px center;appearance:none;cursor:pointer;}
+.fb-select{
+  padding:5px 28px 5px 13px;
+  border:1.5px solid var(--g200);border-radius:100px;
+  font-family:var(--font);font-size:0.79rem;color:var(--g700);
+  outline:none;height:32px;
+  background:white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath fill='%2394a3b8' d='M0 0l4.5 5L9 0z'/%3E%3C/svg%3E") no-repeat right 10px center;
+  appearance:none;cursor:pointer;transition:border-color .15s;
+}
 .fb-select:focus{border-color:var(--blue);}
-.fav-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border:1.5px solid var(--g200);border-radius:100px;cursor:pointer;font-size:0.79rem;font-weight:600;color:var(--g500);background:white;transition:all .15s;font-family:var(--font);}
+.fav-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 13px;border:1.5px solid var(--g200);
+  border-radius:100px;cursor:pointer;font-size:0.79rem;
+  font-weight:700;color:var(--g500);background:white;
+  transition:all .15s;font-family:var(--font);height:32px;
+}
 .fav-btn.on{border-color:var(--gold);background:var(--gold-l);color:#92400e;}
+.fav-btn svg{color:var(--gold);}
 
 /* TABLE */
 .table-wrap{flex:1;overflow:auto;padding:14px 22px;}
-table.main-table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden;box-shadow:var(--sh);}
-table.main-table thead th{background:var(--blue);color:white;font-size:0.76rem;font-weight:600;padding:10px 13px;text-align:left;letter-spacing:.02em;white-space:nowrap;cursor:pointer;user-select:none;transition:background .15s;}
+table.main-table{
+  width:100%;border-collapse:collapse;background:white;
+  border-radius:12px;overflow:hidden;box-shadow:var(--sh);
+}
+table.main-table thead th{
+  background:var(--blue);color:white;
+  font-size:0.75rem;font-weight:600;padding:11px 14px;
+  text-align:left;letter-spacing:.03em;white-space:nowrap;
+  cursor:pointer;user-select:none;transition:background .15s;
+}
 table.main-table thead th:hover{background:var(--blue-d);}
-table.main-table thead th:first-child,table.main-table thead th:last-child{cursor:default;}
-table.main-table thead th:first-child{width:40px;text-align:center;}
-table.main-table thead th:last-child{width:120px;text-align:center;}
-table.main-table tbody tr{border-bottom:1px solid var(--g100);transition:background .1s;cursor:pointer;}
+table.main-table thead th:first-child{width:44px;text-align:center;cursor:default;}
+table.main-table thead th:last-child{width:130px;text-align:center;cursor:default;}
+table.main-table thead th .sort-arrow{opacity:.55;margin-left:3px;font-size:0.7rem;}
+table.main-table tbody tr{
+  border-bottom:1px solid var(--g100);
+  transition:background .1s;cursor:pointer;
+}
 table.main-table tbody tr:last-child{border-bottom:none;}
 table.main-table tbody tr:hover{background:#f0f7ff;}
 table.main-table tbody tr.archived{opacity:.5;}
-td{padding:9px 13px;font-size:0.81rem;color:var(--g700);vertical-align:middle;}
-td:first-child{text-align:center;}td:last-child{text-align:center;}
-.td-name{font-weight:600;color:var(--g900);font-size:0.82rem;line-height:1.3;}
-.td-chrono{font-family:var(--mono);font-size:0.72rem;color:var(--g500);}
-.td-client{font-size:0.78rem;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+td{
+  padding:11px 14px;font-size:0.82rem;
+  color:var(--g700);vertical-align:middle;
+}
+td:first-child{text-align:center;padding:11px 8px;}
+td:last-child{text-align:center;padding:8px 10px;}
+.td-name{
+  font-weight:600;color:var(--g900);font-size:0.84rem;
+  line-height:1.35;max-width:280px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.td-chrono{
+  font-family:var(--mono);font-size:0.73rem;color:var(--g500);
+  white-space:nowrap;
+}
+.td-client{
+  font-size:0.8rem;max-width:160px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
 
 /* STATUS BADGES */
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;font-size:0.7rem;font-weight:600;white-space:nowrap;}
-.b-cmd{background:var(--blue-l);color:var(--blue-d);}
+.badge{
+  display:inline-flex;align-items:center;
+  padding:3px 10px;border-radius:100px;
+  font-size:0.72rem;font-weight:600;white-space:nowrap;
+}
+.b-cmd{background:var(--blue-l);color:var(--blue);}
 .b-att{background:var(--gold-l);color:#92400e;}
 .b-arch{background:var(--g100);color:var(--g500);}
 .b-act{background:var(--green-l);color:#15803d;}
 
-/* AVATAR */
-.av{width:27px;height:27px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:white;}
+/* AVATAR pilote */
+.av{
+  width:30px;height:30px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:0.72rem;font-weight:700;color:white;
+  box-shadow:0 1px 4px rgba(0,0,0,.18);
+}
 
 /* STAR */
-.star-btn{background:none;border:none;cursor:pointer;padding:3px;color:var(--g300);transition:color .15s,transform .15s;line-height:0;}
+.star-btn{
+  background:none;border:none;cursor:pointer;
+  padding:3px;color:var(--g300);
+  transition:color .15s,transform .15s;line-height:0;
+}
 .star-btn.on{color:var(--gold);}
-.star-btn:hover{transform:scale(1.2);}
+.star-btn:hover{transform:scale(1.25);color:var(--gold);}
+
+/* ACTIONS cell */
+.td-actions{
+  display:flex;flex-direction:column;
+  align-items:center;gap:4px;
+}
+.btn-open{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 12px;border-radius:6px;border:none;
+  background:var(--blue);color:white;
+  font-family:var(--font);font-size:0.76rem;font-weight:700;
+  cursor:pointer;transition:background .15s,transform .1s;
+  white-space:nowrap;
+}
+.btn-open:hover{background:var(--blue-d);transform:scale(1.03);}
+.btn-open svg{flex-shrink:0;}
+.td-actions-sub{display:flex;gap:3px;align-items:center;justify-content:center;}
 
 /* ═══════════════════════════════════
    SYNTHESE VIEWER (fullscreen)
@@ -348,16 +427,38 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 /* Indicateur de connexion temps réel */
 .syn-live-dot{
   display:flex;align-items:center;gap:5px;
-  font-size:0.68rem;color:rgba(255,255,255,.4);
+  padding:3px 9px;border-radius:6px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+  font-size:0.68rem;color:rgba(255,255,255,.45);
   font-family:var(--mono);white-space:nowrap;
+  transition:all .3s;
 }
 .syn-live-dot .ld{
-  width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);
-  transition:background .3s;
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(255,255,255,.25);
+  flex-shrink:0;transition:background .3s,box-shadow .3s;
 }
-.syn-live-dot.connected .ld{background:#22c55e;animation:livepulse 2s ease infinite;}
+/* État : en cours de connexion (défaut) */
+.syn-live-dot.connecting .ld{background:#f59e0b;animation:ldpulse 1s ease infinite;}
+/* État : connecté */
+.syn-live-dot.connected{
+  background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.25);color:#86efac;
+}
+.syn-live-dot.connected .ld{
+  background:#22c55e;
+  box-shadow:0 0 0 0 rgba(34,197,94,.5);
+  animation:livepulse 2.5s ease infinite;
+}
+/* État : déconnecté */
+.syn-live-dot.disconnected{
+  background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.25);color:#fca5a5;
+}
 .syn-live-dot.disconnected .ld{background:#ef4444;}
-@keyframes livepulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5);}60%{box-shadow:0 0 0 5px rgba(34,197,94,0);}}
+@keyframes livepulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5);}
+  60%{box-shadow:0 0 0 6px rgba(34,197,94,0);}
+}
+@keyframes ldpulse{0%,100%{opacity:1;}50%{opacity:.3;}}
 
 /* EMPTY */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;color:var(--g400);text-align:center;gap:8px;}
@@ -473,41 +574,42 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <div class="topbar">
         <div class="tb-title">Canevas &nbsp;<span class="count-badge" id="canevasCount">0</span></div>
         <div class="tb-actions">
-          <button class="btn btn-ghost btn-sm" onclick="openModalCanevas('create')">
+          <button class="btn btn-primary" onclick="openModalCanevas('create')" style="font-size:0.8rem;padding:7px 16px;border-radius:7px;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Nouveau canevas
           </button>
         </div>
       </div>
       <div class="filterbar">
+        <!-- ★ Favoris pill (identique à la capture) -->
         <button class="fav-btn" id="favBtn" onclick="toggleFav()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           Favoris
         </button>
-        <input class="fb-input" id="fNom"    placeholder="Nom du projet…"  oninput="renderCanevas()">
-        <input class="fb-input" id="fChrono" placeholder="Référence…"      oninput="renderCanevas()" style="width:130px">
-        <input class="fb-input" id="fClient" placeholder="Client…"          oninput="renderCanevas()" style="width:105px">
-        <input class="fb-input" id="fVille"  placeholder="Ville…"           oninput="renderCanevas()" style="width:90px">
-        <select class="fb-select" id="fStatut" onchange="renderCanevas()">
-          <option value="">Tous les statuts</option>
+        <input class="fb-input" id="fNom"    placeholder="Nom du projet…"   oninput="renderCanevas()" style="min-width:140px">
+        <input class="fb-input" id="fChrono" placeholder="Référence…"       oninput="renderCanevas()" style="width:125px">
+        <input class="fb-input" id="fClient" placeholder="Client…"           oninput="renderCanevas()" style="width:100px">
+        <input class="fb-input" id="fVille"  placeholder="Ville…"            oninput="renderCanevas()" style="width:85px">
+        <select class="fb-select" id="fStatut" onchange="renderCanevas()" style="width:150px">
+          <option value="">Tous les statuts ▾</option>
           <option value="Commandée">Commandée</option>
           <option value="En attente">En attente</option>
           <option value="En cours">En cours</option>
         </select>
-        <input class="fb-input" id="fPilote" placeholder="Pilote…" oninput="renderCanevas()" style="width:90px">
+        <input class="fb-input" id="fPilote" placeholder="Pilote…"           oninput="renderCanevas()" style="width:85px">
       </div>
       <div class="table-wrap">
         <table class="main-table" id="canevasTable">
           <thead>
             <tr>
               <th></th>
-              <th onclick="sortCan('nom')">Nom du projet ↕</th>
-              <th onclick="sortCan('chrono')">Référence ↕</th>
-              <th onclick="sortCan('client')">Client ↕</th>
-              <th onclick="sortCan('ville')">Ville ↕</th>
-              <th onclick="sortCan('statut')">Statut ↕</th>
-              <th>Pilote</th>
-              <th>Actions</th>
+              <th onclick="sortCan('nom')">Nom du projet <span class="sort-arrow">↕</span></th>
+              <th onclick="sortCan('chrono')">Référence <span class="sort-arrow">↕</span></th>
+              <th onclick="sortCan('client')">Client <span class="sort-arrow">↕</span></th>
+              <th onclick="sortCan('ville')">Ville <span class="sort-arrow">↕</span></th>
+              <th onclick="sortCan('statut')">Statut <span class="sort-arrow">↕</span></th>
+              <th style="cursor:default">Pilote</th>
+              <th style="cursor:default;text-align:center">Actions</th>
             </tr>
           </thead>
           <tbody id="canevasBody"></tbody>
@@ -1004,20 +1106,27 @@ function renderCanevas() {
       <td><button class="star-btn ${c.fav?'on':''}" onclick="toggleStar(${c.id},event)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="${c.fav?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       </button></td>
-      <td><div class="td-name">${esc(c.nom)}</div></td>
-      <td><div class="td-chrono">${esc(c.chrono)}</div></td>
-      <td class="td-client">${esc(c.client)}</td>
-      <td>${esc(c.ville)}</td>
+      <td><div class="td-name" title="${esc(c.nom)}">${esc(c.nom)}</div></td>
+      <td><div class="td-chrono">${esc(c.chrono)||'—'}</div></td>
+      <td class="td-client" title="${esc(c.client)}">${esc(c.client)||'—'}</td>
+      <td style="font-size:.81rem">${esc(c.ville)||'—'}</td>
       <td><span class="badge ${stBadge}">${esc(c.statut)}</span></td>
       <td><span class="av" style="background:${avBg(c.pilote)}" title="${fullName(c.pilote)}">${esc(c.pilote)}</span></td>
       <td>
-        <button class="btn btn-primary btn-xs" onclick="openSynthese(${c.id})">📂 Ouvrir</button>
-        ${canEdit ? `<button class="btn-icon blue" onclick="openModalCanevas('edit',${c.id},event)" title="Modifier">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>` : ''}
-        ${currentUser.role === 'admin' ? `<button class="btn-icon danger" onclick="confirmArchive(${c.id},event)" title="Archiver">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-        </button>` : ''}
+        <div class="td-actions">
+          <button class="btn-open" onclick="openSynthese(${c.id})" title="Ouvrir le canevas RapsoSynthèse">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Ouvrir
+          </button>
+          <div class="td-actions-sub">
+            ${canEdit ? `<button class="btn-icon blue" onclick="openModalCanevas('edit',${c.id},event)" title="Modifier">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>` : ''}
+            ${currentUser.role === 'admin' ? `<button class="btn-icon danger" onclick="confirmArchive(${c.id},event)" title="Archiver">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+            </button>` : ''}
+          </div>
+        </div>
       </td>
     </tr>`;
   }).join('');
@@ -1204,6 +1313,8 @@ async function openSynthese(id) {
   _lastLocalHash = hashData(synthData);
   hide('scApp'); show('scSynthese');
 
+  // Montrer immédiatement que la connexion va démarrer
+  setLiveDot('connecting');
   // Démarrer l'écoute temps réel APRÈS que l'iframe soit chargée (léger délai)
   setTimeout(() => startLiveListener(id), 1200);
 }
@@ -1262,12 +1373,14 @@ function setSynStatus(state, txt) {
   el.className = 'syn-status ' + state;
 }
 
-function setLiveDot(connected) {
+function setLiveDot(state) {
+  // state: 'connecting' | 'connected' | 'disconnected'
   const el = document.getElementById('synLiveDot');
   const tx = document.getElementById('synLiveTxt');
   if (!el) return;
-  el.className = 'syn-live-dot ' + (connected ? 'connected' : 'disconnected');
-  tx.textContent = connected ? 'Live' : 'Hors ligne';
+  const labels = { connecting: 'Connexion…', connected: '● Live', disconnected: 'Hors ligne' };
+  el.className = 'syn-live-dot ' + state;
+  tx.textContent = labels[state] || state;
 }
 
 function updateSynCounters(data) {
@@ -1375,12 +1488,12 @@ async function applyPendingUpdate() {
 function startLiveListener(canId) {
   stopLiveListener(); // nettoyer l'éventuel précédent
 
-  setLiveDot(true);
+  setLiveDot('connecting');
   let firstCall = true; // ignorer le premier snapshot (état initial déjà chargé)
 
   _liveListener = db.ref('/canevas').on('value', snapshot => {
     // Connexion réussie
-    setLiveDot(true);
+    setLiveDot('connected'); // passe de 'connecting' à 'connected' au 1er snapshot
 
     if (firstCall) { firstCall = false; return; }
 
@@ -1407,7 +1520,7 @@ function startLiveListener(canId) {
     }
   }, error => {
     console.warn('[RapsoSyn] Firebase listener error:', error);
-    setLiveDot(false);
+    setLiveDot('disconnected');
     setSynStatus('error', 'Connexion perdue');
     showNotif('Connexion Firebase perdue. Vérifiez votre réseau.', 'err', 0);
   });
@@ -1418,7 +1531,7 @@ function stopLiveListener() {
     db.ref('/canevas').off('value', _liveListener);
     _liveListener = null;
   }
-  setLiveDot(false);
+  setLiveDot('disconnected');
   _pendingData = null;
   document.getElementById('synPendingBar')?.classList.remove('show');
   document.getElementById('refreshBadge')?.classList.remove('show');
