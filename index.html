@@ -1174,8 +1174,8 @@ async function openSynthese(id) {
     : { v2: [], v1: [] };
 
   const metaScript = `<script>
-    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.chrono)};
-    window.RAPSO_DOSSIER    = ${JSON.stringify(c.nom)};
+    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.nom)};
+    window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
@@ -1349,8 +1349,8 @@ async function applyPendingUpdate() {
       document.getElementById('synFrame').contentWindow.postMessage({
         type: 'rapso_inject',
         data: newData,
-        affaire: freshCan.chrono,
-        dossier: freshCan.nom
+        affaire: freshCan.nom,
+        dossier: freshCan.chrono
       }, '*');
       updateSynCounters(newData);
       setSynStatus('saved', 'À jour');
