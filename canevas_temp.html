@@ -5,416 +5,268 @@
 <!-- RAPSO_DATA -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RapsoSynthèse</title>
+<title>RapsoSynthèse – Suivi d'avis SOCOTEC</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap');
 
   :root {
-    --blue: #1a56db; --blue-d: #1447c0; --blue-l: #e8f0fe; --blue-ll: #f0f5ff;
-    --teal: #0d9488; --teal-l: #ccfbf1; --gold: #f59e0b; --gold-l: #fef3c7;
-    --red: #ef4444; --red-l: #fee2e2; --green: #22c55e; --green-l: #dcfce7;
-    --purple: #7c3aed; --purple-l: #ede9fe; --orange: #f97316; --orange-l: #ffedd5;
-    --g50: #f8fafc; --g100: #f1f5f9; --g200: #e2e8f0; --g300: #cbd5e1;
-    --g400: #94a3b8; --g500: #64748b; --g600: #475569; --g700: #334155;
-    --g800: #1e293b; --g900: #0f172a;
-    --font: 'Outfit', sans-serif; --mono: 'JetBrains Mono', monospace;
-    --r: 10px; --sh: 0 1px 3px rgba(0,0,0,.08), 0 4px 20px rgba(0,0,0,.06);
-    --sh-lg: 0 8px 32px rgba(0,0,0,.14);
+    --bg: #f8f9fc;
+    --surface: #ffffff;
+    --card: #f1f3f9;
+    --border: #d1d5e0;
+    --accent: #2563eb;
+    --accent2: #7c3aed;
+    --green: #16a34a;
+    --yellow: #d97706;
+    --red: #dc2626;
+    --text: #1e293b;
+    --muted: #64748b;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+    --shadow: 0 1px 8px rgba(0,0,0,.06);
   }
   body.dark {
-    --blue: #4f8ef7; --blue-d: #3b7be0; --blue-l: #1e2a47; --teal-l: #0f3a3a;
-    --gold-l: #3e2a1a; --red-l: #3b1e1e; --green-l: #1a3a2a; --purple-l: #2a1e4a;
-    --orange-l: #3a2a1a; --g50: #0f0f13; --g100: #1a1a22; --g200: #2a2a34;
-    --g300: #3a3a48; --g400: #70708a; --g500: #9090aa; --g600: #b0b0c0;
-    --g700: #d0d0e0; --g800: #e8e8f0; --g900: #ffffff;
+    --bg:#0f0f13;--surface:#16161e;--card:#1e1e2a;--border:#2a2a3a;
+    --accent:#4f8ef7;--accent2:#7c5cfc;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;
+    --text:#e8e8f0;--muted:#7070a0;
   }
-  *{box-sizing: border-box; margin: 0; padding: 0;}
+  *{box-sizing:border-box;margin:0;padding:0;}
   body{
-    background: var(--g50); color: var(--g800); font-family: var(--font);
-    font-size: 13px; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    background:var(--bg);color:var(--text);font-family:var(--sans);
+    min-height:100vh;display:flex;flex-direction:column;transition:background .2s,color .2s;
+    font-size:14px;
   }
 
   /* HEADER */
-  .syn-header {
-    background: white; border-bottom: 1px solid var(--g200); padding: 6px 20px;
-    display: flex; align-items: center; gap: 16px; flex-shrink: 0; box-shadow: var(--sh);
+  header{
+    background:var(--surface);border-bottom:1px solid var(--border);
+    padding:6px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:var(--shadow);
   }
-  .header-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex: 1; }
-  .info-row {
-    display: flex; align-items: center; gap: 6px; background: var(--g100);
-    padding: 4px 12px; border-radius: 20px;
+  .logo{font-weight:800;font-size:1rem;color:var(--accent);white-space:nowrap;}
+  .logo span{color:var(--muted);font-weight:400;}
+  .header-info{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+  .header-info .lbl{font-size:0.7rem;color:var(--muted);white-space:nowrap;}
+  .header-info .affaire-value{
+    background:var(--card);border:1px solid var(--border);color:var(--text);
+    padding:4px 8px;border-radius:4px;font-family:var(--mono);font-size:0.72rem;
+    display:inline-block;min-width:200px;word-break:break-word;
   }
-  .info-row .label { font-size: 0.7rem; font-weight: 600; color: var(--g500); letter-spacing: 0.03em; }
-  .info-row .value {
-    font-family: var(--mono); font-size: 0.75rem; font-weight: 500; color: var(--g800);
-    background: transparent; border: none; outline: none; min-width: 160px;
+  .spacer{flex:1;}
+  .mini-stats{display:flex;gap:8px;font-size:0.68rem;font-family:var(--mono);white-space:nowrap;}
+  .mini-stats span{display:flex;align-items:center;gap:3px;}
+  .dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+  .dot-g{background:var(--green);}.dot-y{background:var(--yellow);}.dot-r{background:var(--red);}
+
+  /* TOOLBAR */
+  .toolbar{
+    background:var(--surface);border-bottom:1px solid var(--border);
+    padding:5px 14px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;flex-shrink:0;
   }
-  .mini-stats {
-    display: flex; gap: 12px; font-family: var(--mono); font-size: 0.7rem; font-weight: 600;
+  .tb-btn{
+    padding:4px 10px;border-radius:4px;border:1px solid var(--border);
+    background:var(--card);color:var(--text);font-family:var(--sans);
+    font-size:0.73rem;font-weight:600;cursor:pointer;transition:all .12s;white-space:nowrap;
   }
-  .mini-stats span {
-    display: flex; align-items: center; gap: 4px; background: var(--g100);
-    padding: 4px 8px; border-radius: 20px;
+  .tb-btn:hover{opacity:.85;}
+  .tb-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .tb-btn.accent{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .tb-btn.green{background:var(--green);border-color:var(--green);color:#fff;}
+  .tb-btn.orange{background:#f97316;border-color:#f97316;color:#fff;}
+  .quick-search{
+    display:flex;align-items:center;gap:3px;background:var(--card);
+    border:1px solid var(--border);border-radius:4px;padding:3px 6px;
   }
-  .dot { width: 8px; height: 8px; border-radius: 50%; }
-  .dot-g { background: var(--green); } .dot-y { background: var(--gold); } .dot-r { background: var(--red); }
-  .theme-btn {
-    background: var(--g100); border: none; padding: 6px 10px; border-radius: 8px;
-    cursor: pointer; font-size: 1rem;
+  .quick-search input{
+    background:transparent;border:none;color:var(--text);font-family:var(--mono);
+    font-size:0.71rem;outline:none;width:110px;
+  }
+  .quick-search .qs-label{font-size:0.64rem;color:var(--muted);white-space:nowrap;}
+  .qs-checks{
+    display:flex;gap:3px;align-items:center;
+    background:var(--card);border:1px solid var(--border);border-radius:4px;padding:2px 6px;
+  }
+  .qs-checks label{
+    display:flex;align-items:center;gap:2px;font-size:0.7rem;cursor:pointer;
+    font-family:var(--mono);color:var(--text);white-space:nowrap;
+  }
+  /* Multi-select (mf-select) */
+  .mf-select{
+    position:relative;display:inline-block;
+  }
+  .mf-select-button{
+    padding:4px 24px 4px 8px;border:1px solid var(--border);border-radius:4px;
+    background:var(--card);color:var(--text);font-family:var(--sans);
+    font-size:0.72rem;cursor:pointer;white-space:nowrap;
+    position:relative;
+  }
+  .mf-select-button::after{
+    content:"▼";font-size:0.6rem;position:absolute;right:6px;top:50%;
+    transform:translateY(-50%);color:var(--muted);
+  }
+  .mf-select-dropdown{
+    position:absolute;top:100%;left:0;z-index:200;
+    background:var(--surface);border:1px solid var(--border);border-radius:4px;
+    min-width:160px;max-height:200px;overflow-y:auto;display:none;
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+  }
+  .mf-select-dropdown.show{display:block;}
+  .mf-select-dropdown label{
+    display:flex;align-items:center;gap:6px;padding:4px 8px;
+    font-size:0.7rem;cursor:pointer;
+  }
+  .mf-select-dropdown label:hover{background:rgba(37,99,235,.05);}
+  .mf-select-dropdown input{margin:0;}
+
+  /* TABLE */
+  .main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+  .table-wrap{flex:1;overflow:auto;padding:8px 14px;}
+  table{width:100%;border-collapse:collapse;font-size:0.74rem;table-layout:fixed;}
+  col.c-num{width:72px;}col.c-ref{width:65px;}col.c-date{width:82px;}
+  col.c-inter{width:100px;}col.c-disp{width:175px;}col.c-avis{width:48px;}
+  col.c-desc{width:150px;}col.c-obs{width:310px;}col.c-docs{width:120px;}
+  col.c-suivi{width:68px;}col.c-rep{width:150px;}col.c-socotec{width:150px;}
+  col.c-lots{width:80px;}col.c-actions{width:42px;}
+  thead{position:sticky;top:0;z-index:10;}
+  th{
+    background:var(--card);border:1px solid var(--border);padding:5px 6px;
+    text-align:left;font-family:var(--mono);font-size:0.64rem;font-weight:500;
+    color:var(--muted);letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    cursor:pointer;user-select:none;
+  }
+  th:hover{color:var(--accent);}
+  td{
+    border:1px solid var(--border);padding:3px 6px;vertical-align:top;
+    word-break:break-word;line-height:1.35;font-size:0.71rem;transition:background .08s;
+  }
+  tr:hover td{background:rgba(37,99,235,.03);}
+  .row-highlight td{background:rgba(37,99,235,.08)!important;}
+  .badge{
+    display:inline-flex;align-items:center;gap:2px;padding:2px 5px;
+    border-radius:100px;font-size:0.61rem;font-weight:600;white-space:nowrap;
+  }
+  .badge-oui{background:rgba(22,163,74,.12);color:var(--green);border:1px solid rgba(22,163,74,.25);}
+  .badge-par{background:rgba(217,119,6,.12);color:var(--yellow);border:1px solid rgba(217,119,6,.25);}
+  .badge-non{background:rgba(220,38,38,.12);color:var(--red);border:1px solid rgba(220,38,38,.25);}
+  .badge-empty{background:var(--card);color:var(--muted);border:1px solid var(--border);}
+  .rd6-tag{
+    display:inline-block;background:rgba(124,58,237,.15);color:var(--accent2);
+    border:1px solid rgba(124,58,237,.3);border-radius:3px;padding:0 3px;
+    font-size:0.57rem;font-weight:700;font-family:var(--mono);margin-left:2px;
   }
 
-  /* TOOLBAR PRINCIPALE */
-  .toolbar {
-    background: white; border-bottom: 1px solid var(--g200); padding: 6px 20px;
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+  /* EDIT PANEL */
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;backdrop-filter:blur(2px);}
+  .overlay.open{display:block;}
+  .edit-panel{
+    position:fixed;right:0;top:0;bottom:0;width:75vw;min-width:400px;max-width:95vw;
+    background:var(--surface);border-left:1px solid var(--border);z-index:101;
+    display:flex;flex-direction:column;transform:translateX(100%);
+    transition:transform .22s cubic-bezier(.4,0,.2,1);box-shadow:-4px 0 20px rgba(0,0,0,.1);
   }
-  .tb-btn {
-    padding: 5px 12px; border-radius: 100px; border: 1.5px solid var(--g200);
-    background: white; color: var(--g700); font-family: var(--font); font-size: 0.75rem;
-    font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  .edit-panel.open{transform:translateX(0);}
+  .panel-hdr{
+    padding:8px 14px;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;gap:8px;background:var(--card);flex-shrink:0;
   }
-  .tb-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-ll); }
-  .tb-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
-  .tb-btn.accent { background: var(--blue); border-color: var(--blue); color: white; }
-  .tb-btn.green { background: var(--green); border-color: var(--green); color: white; }
-  .quick-search {
-    display: flex; align-items: center; gap: 4px; background: white;
-    border: 1.5px solid var(--g200); border-radius: 100px; padding: 3px 8px;
+  .panel-hdr .title{font-weight:700;font-size:0.85rem;flex:1;}
+  .panel-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
+  .panel-ftr{
+    padding:8px 14px;border-top:1px solid var(--border);
+    display:flex;gap:6px;align-items:center;background:var(--card);flex-shrink:0;
   }
-  .quick-search input {
-    border: none; background: transparent; font-family: var(--font);
-    font-size: 0.73rem; outline: none; width: 100px; color: var(--g800);
+  .form-section{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px;}
+  .section-title{font-size:0.62rem;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+  .form-row{display:flex;flex-direction:column;gap:2px;margin-bottom:7px;}
+  .form-row:last-child{margin-bottom:0;}
+  .form-row label{font-size:0.66rem;color:var(--muted);font-weight:600;}
+  .form-row input,.form-row textarea{
+    background:var(--surface);border:1px solid var(--border);color:var(--text);
+    padding:5px 8px;border-radius:4px;font-family:var(--sans);font-size:0.75rem;outline:none;resize:vertical;
   }
-  .qs-label { font-size: 0.65rem; font-weight: 600; color: var(--g500); }
-  .qs-checks {
-    display: flex; gap: 6px; align-items: center; background: white;
-    border: 1.5px solid var(--g200); border-radius: 100px; padding: 3px 10px;
+  .form-row textarea{min-height:55px;}
+  .form-row input:focus,.form-row textarea:focus{border-color:var(--accent);}
+  .suivi-opts{display:flex;gap:4px;}
+  .suivi-opt{
+    flex:1;border:2px solid var(--border);border-radius:5px;padding:5px 4px;
+    text-align:center;cursor:pointer;font-size:0.7rem;font-weight:600;
+    transition:all .12s;background:var(--surface);color:var(--text);
   }
-  .qs-checks label {
-    display: flex; align-items: center; gap: 3px; font-size: 0.7rem;
-    font-weight: 600; cursor: pointer; color: var(--g700);
+  .suivi-opt.sel-oui{border-color:var(--green);background:rgba(22,163,74,.08);color:var(--green);}
+  .suivi-opt.sel-par{border-color:var(--yellow);background:rgba(217,119,6,.08);color:var(--yellow);}
+  .suivi-opt.sel-non{border-color:var(--red);background:rgba(220,38,38,.08);color:var(--red);}
+  .rd6-toggle{
+    display:flex;align-items:center;gap:5px;padding:5px 8px;
+    border:1px solid var(--border);border-radius:4px;cursor:pointer;background:var(--surface);
   }
-  .mf-select { position: relative; display: inline-block; }
-  .mf-select-button {
-    background: white; border: 1.5px solid var(--g200); border-radius: 100px;
-    padding: 4px 24px 4px 12px; font-size: 0.73rem; font-weight: 600;
-    color: var(--g700); cursor: pointer; white-space: nowrap; position: relative;
-  }
-  .mf-select-button::after {
-    content: "▼"; font-size: 0.6rem; position: absolute; right: 8px;
-    top: 50%; transform: translateY(-50%); color: var(--g500);
-  }
-  .mf-select-dropdown {
-    position: absolute; top: 100%; left: 0; z-index: 200; background: white;
-    border: 1px solid var(--g200); border-radius: 12px; min-width: 180px;
-    max-height: 250px; overflow-y: auto; display: none; box-shadow: var(--sh-lg);
-    margin-top: 4px; padding: 6px 0;
-  }
-  .mf-select-dropdown.show { display: block; }
-  .mf-select-dropdown label {
-    display: flex; align-items: center; gap: 8px; padding: 6px 12px;
-    font-size: 0.75rem; cursor: pointer; font-weight: 500;
-  }
-  .mf-select-dropdown label:hover { background: var(--g100); }
-  .mf-select-dropdown input { accent-color: var(--blue); margin: 0; }
+  .rd6-toggle.active{border-color:var(--accent2);background:rgba(124,58,237,.06);}
+  .rd6-toggle input{accent-color:var(--accent2);cursor:pointer;}
+  .save-feedback{font-size:0.74rem;font-weight:600;color:var(--green);opacity:0;transition:opacity .3s;margin-left:4px;}
+  .save-feedback.show{opacity:1;}
 
-  /* TABLEAU PRINCIPAL */
-  .table-container { flex: 1; overflow: auto; padding: 16px 20px; }
-  table {
-    width: 100%; border-collapse: collapse; background: white; border-radius: var(--r);
-    overflow: hidden; box-shadow: var(--sh); font-size: 0.8rem; table-layout: fixed;
+  /* MODALS */
+  .modal-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+    z-index:200;backdrop-filter:blur(2px);align-items:center;justify-content:center;
   }
-  th {
-    background: var(--blue); color: white; font-weight: 600; padding: 10px 12px;
-    text-align: left; font-size: 0.75rem; letter-spacing: 0.02em; white-space: nowrap;
-    cursor: pointer; user-select: none;
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    width:500px;max-width:95vw;max-height:85vh;overflow-y:auto;
+    display:flex;flex-direction:column;box-shadow:0 4px 24px rgba(0,0,0,.15);
   }
-  th:hover { background: var(--blue-d); }
-  td {
-    border-bottom: 1px solid var(--g100); padding: 8px 12px; vertical-align: top;
-    color: var(--g700); font-size: 0.78rem; overflow: hidden; text-overflow: ellipsis;
+  .modal-hdr{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+  .modal-body{padding:14px;display:flex;flex-direction:column;gap:10px;}
+  .modal-ftr{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:6px;justify-content:flex-end;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .dropzone{
+    border:2px dashed var(--border);border-radius:8px;padding:28px;text-align:center;
+    cursor:pointer;color:var(--muted);font-size:0.82rem;transition:all .15s;
   }
-  .col-num { width: 70px; } .col-ref { width: 55px; } .col-date { width: 65px; }
-  .col-inter { width: 90px; } .col-disp { width: 150px; } .col-avis { width: 45px; }
-  .col-desc { width: 130px; } .col-obs { width: 220px; } .col-docs { width: 100px; }
-  .col-suivi { width: 65px; } .col-repK { width: 180px; } .col-repL { width: 180px; }
-  .col-lots { width: 80px; } .col-actions { width: 50px; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--blue-ll); }
-
-  .badge {
-    display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 100px;
-    font-size: 0.7rem; font-weight: 600;
+  .dropzone:hover{border-color:var(--accent);background:rgba(37,99,235,.03);}
+  .empty-state{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:40px;color:var(--muted);text-align:center;gap:6px;
   }
-  .badge-oui { background: var(--green-l); color: #15803d; }
-  .badge-par { background: var(--gold-l); color: #92400e; }
-  .badge-non { background: var(--red-l); color: #b91c1c; }
-  .badge-empty { background: var(--g100); color: var(--g500); }
-  .rd6-tag {
-    display: inline-block; background: var(--purple-l); color: var(--purple);
-    border-radius: 4px; padding: 0 4px; font-size: 0.6rem; font-weight: 700;
-    margin-left: 4px; font-family: var(--mono);
+  ::-webkit-scrollbar{width:4px;height:4px;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+  @media print{
+    header,.toolbar,.overlay,.modal-overlay{display:none!important;}
+    body{background:#fff;color:#000;}
+    td,th{border-color:#ccc!important;color:#000!important;background:#fff!important;}
   }
-  .empty-state {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 60px 20px; color: var(--g400); gap: 8px;
-  }
-
-  /* PANEL LATERAL (redimensionnable) */
-  .overlay {
-    display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5);
-    backdrop-filter: blur(4px); z-index: 800;
-  }
-  .overlay.open { display: block; }
-  .edit-panel {
-    position: fixed; right: 0; top: 0; bottom: 0; width: 520px; min-width: 340px; max-width: 92vw;
-    background: white; box-shadow: -4px 0 24px rgba(0,0,0,0.1); z-index: 801;
-    display: flex; flex-direction: column; transform: translateX(100%);
-    transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
-  }
-  .edit-panel.open { transform: translateX(0); }
-  .ep-rh {
-    position: absolute; left: 0; top: 0; bottom: 0; width: 5px; cursor: ew-resize;
-    z-index: 10; background: transparent; transition: background 0.15s;
-  }
-  .ep-rh:hover, .ep-rh.dragging { background: var(--blue); opacity: 0.4; }
-  .panel-hdr {
-    padding: 12px 20px; border-bottom: 1px solid var(--g200); background: var(--g100);
-    display: flex; align-items: center; gap: 12px;
-  }
-  .panel-hdr .title { font-weight: 700; font-size: 0.9rem; flex: 1; }
-  .panel-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-  .form-section {
-    background: var(--g50); border: 1px solid var(--g200); border-radius: 12px; padding: 12px;
-  }
-  .section-title {
-    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--g500);
-    margin-bottom: 8px; letter-spacing: 0.05em;
-  }
-  .form-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
-  .form-row label { font-size: 0.7rem; font-weight: 600; color: var(--g600); }
-  .form-row input, .form-row textarea {
-    border: 1.5px solid var(--g200); border-radius: 8px; padding: 8px 10px;
-    font-family: var(--font); font-size: 0.8rem; background: white; outline: none; width: 100%;
-  }
-  .form-row input:focus, .form-row textarea:focus { border-color: var(--blue); }
-  .suivi-opts { display: flex; gap: 8px; flex-wrap: wrap; }
-  .suivi-opt {
-    flex: 1; border: 2px solid var(--g200); border-radius: 8px; padding: 6px;
-    text-align: center; cursor: pointer; font-weight: 600; transition: all 0.1s;
-  }
-  .suivi-opt.sel-oui { border-color: var(--green); background: var(--green-l); color: #15803d; }
-  .suivi-opt.sel-par { border-color: var(--gold); background: var(--gold-l); color: #92400e; }
-  .suivi-opt.sel-non { border-color: var(--red); background: var(--red-l); color: #b91c1c; }
-  .suivi-opt.sel-vide { border-color: var(--g300); background: var(--g100); }
-  .rd6-toggle {
-    display: flex; align-items: center; gap: 6px; padding: 6px 12px;
-    border: 1.5px solid var(--g200); border-radius: 30px; cursor: pointer;
-  }
-  .rd6-toggle.active { border-color: var(--purple); background: var(--purple-l); }
-  .panel-ftr {
-    padding: 12px 20px; border-top: 1px solid var(--g200); display: flex;
-    gap: 8px; background: var(--g100);
-  }
-  .save-feedback {
-    font-size: 0.75rem; font-weight: 600; color: var(--green); opacity: 0;
-    transition: opacity 0.2s; margin-left: auto;
-  }
-  .save-feedback.show { opacity: 1; }
-  .obs-readonly {
-    background: var(--g100); border-radius: 8px; padding: 10px; min-height: 120px;
-    white-space: pre-wrap; font-size: 0.78rem; color: var(--g700); overflow-y: auto;
-  }
-
-  /* MODALS GENERIQUES */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px); z-index: 900; align-items: center; justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: white; border-radius: 16px; width: 550px; max-width: 95vw;
-    max-height: 85vh; overflow-y: auto; box-shadow: var(--sh-lg);
-  }
-  .modal-hdr {
-    padding: 16px 20px; border-bottom: 1px solid var(--g200);
-    display: flex; justify-content: space-between; align-items: center; font-weight: 700;
-  }
-  .modal-body { padding: 20px; }
-  .modal-ftr {
-    padding: 12px 20px; border-top: 1px solid var(--g200);
-    display: flex; justify-content: flex-end; gap: 8px;
-  }
-  .dropzone {
-    border: 2px dashed var(--g300); border-radius: 12px; padding: 30px;
-    text-align: center; cursor: pointer;
-  }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-  /* ================= VERSION RAPIDE (style épuré, sans bordures) ================= */
-  .rapide-modal {
-    width: 960px; max-width: 97vw; height: 85vh; max-height: 750px;
-    display: flex; flex-direction: column; overflow: hidden;
-    transition: all 0.2s ease;
-  }
-  .rapide-modal.fullscreen {
-    width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh;
-    border-radius: 0;
-  }
-  .rapide-filters {
-    background: white; border-bottom: 1px solid var(--g200); padding: 8px 14px;
-    display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex-shrink: 0;
-  }
-  .rapide-filter-group {
-    display: flex; align-items: center; gap: 5px; background: var(--g50);
-    border: 1px solid var(--g200); border-radius: 100px; padding: 3px 10px;
-  }
-  .rapide-filter-group label {
-    font-size: 0.7rem; font-weight: 600; color: var(--g600);
-    display: flex; align-items: center; gap: 3px; cursor: pointer;
-  }
-  .rapide-filter-group input { margin: 0; accent-color: var(--blue); }
-  .rapide-reset {
-    background: white; border: 1.5px solid var(--g200); border-radius: 100px;
-    padding: 3px 12px; font-size: 0.7rem; font-weight: 600; cursor: pointer;
-  }
-  .stats-sdf {
-    margin-left: auto; font-size: 0.75rem; font-weight: 700; font-family: var(--mono);
-    background: var(--g100); padding: 3px 12px; border-radius: 100px; white-space: nowrap;
-  }
-  .stats-sdf .s { color: var(--gold); }
-  .stats-sdf .d { color: var(--red); }
-  .stats-sdf .f { color: var(--green); }
-
-  .rapide-body { flex: 1; display: flex; overflow: hidden; }
-  .rapide-list-col {
-    width: 34%; border-right: 1px solid var(--g200);
-    display: flex; flex-direction: column; overflow: hidden;
-  }
-  .rapide-list-header {
-    padding: 8px 12px; background: var(--g50); border-bottom: 1px solid var(--g200);
-    font-weight: 700; font-size: 0.75rem;
-  }
-  .rapide-list { flex: 1; overflow-y: auto; padding: 6px; }
-  .rapide-item {
-    padding: 8px 10px; border: 1px solid transparent; border-radius: 8px;
-    margin-bottom: 4px; cursor: pointer; transition: all 0.1s;
-  }
-  .rapide-item:hover { background: var(--g50); border-color: var(--g200); }
-  .rapide-item.selected { background: var(--blue-l); border-color: var(--blue); }
-  .rapide-item-num {
-    font-family: var(--mono); font-weight: 700; color: var(--blue); font-size: 0.72rem;
-  }
-  .rapide-item-avis {
-    display: inline-block; padding: 1px 6px; border-radius: 4px;
-    font-size: 0.63rem; font-weight: 700;
-  }
-  .rapide-item-preview {
-    font-size: 0.73rem; color: var(--g600); overflow: hidden;
-    text-overflow: ellipsis; white-space: nowrap;
-  }
-  .rapide-detail-col {
-    flex: 1; display: flex; flex-direction: column; overflow: hidden;
-  }
-  /* Scroll unique, sans boîtes décoratives */
-  .rapide-detail-scroll {
-    flex: 1; overflow-y: auto; padding: 14px;
-    display: flex; flex-direction: column; gap: 16px;
-  }
-  .rapide-detail-text {
-    font-size: 0.82rem; line-height: 1.5; color: var(--g800);
-    white-space: pre-wrap; word-break: break-word;
-  }
-  .rapide-edit-area {
-    display: flex; flex-direction: column; gap: 10px;
-    margin-top: 8px;
-  }
-  .rapide-edit-area label {
-    font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--g500);
-  }
-  .rapide-edit-area textarea, .rapide-edit-area input {
-    border: 1.5px solid var(--g200); border-radius: 8px; padding: 8px 10px;
-    font-family: var(--font); font-size: 0.8rem; resize: vertical; width: 100%;
-  }
-  .rapide-edit-area textarea { min-height: 60px; }
-  .rapide-footer {
-    padding: 8px 14px; border-top: 1px solid var(--g200); display: flex;
-    gap: 8px; flex-wrap: wrap; align-items: center; background: white; flex-shrink: 0;
-  }
-  .rap-stat-btn {
-    padding: 4px 12px; border-radius: 30px; border: 1.5px solid transparent;
-    font-weight: 700; cursor: pointer; transition: all 0.1s; font-size: 0.7rem;
-  }
-  .rap-stat-btn.active {
-    filter: brightness(0.95); transform: scale(0.98); box-shadow: inset 0 0 0 1px currentColor;
-  }
-  .rsb-oui { background: var(--green-l); color: #15803d; border-color: rgba(34,197,94,0.3); }
-  .rsb-oui.active { background: #15803d; color: white; border-color: #15803d; }
-  .rsb-non { background: var(--red-l); color: #991b1b; border-color: rgba(239,68,68,0.3); }
-  .rsb-non.active { background: #991b1b; color: white; border-color: #991b1b; }
-  .rsb-par { background: var(--gold-l); color: #92400e; border-color: rgba(245,158,11,0.3); }
-  .rsb-par.active { background: #92400e; color: white; border-color: #92400e; }
-  .rsb-rd6 { background: var(--purple-l); color: var(--purple); border-color: rgba(124,58,237,0.3); }
-  .rsb-rd6.active { background: var(--purple); color: white; border-color: var(--purple); }
-
-  .col-picker-wrap { position: relative; }
-  .col-picker-panel {
-    position: absolute; top: 100%; right: 0; z-index: 350; background: white;
-    border: 1.5px solid var(--g200); border-radius: 12px; width: 240px;
-    box-shadow: var(--sh-lg); display: none;
-  }
-  .col-picker-panel.open { display: block; }
-  .col-picker-header {
-    padding: 8px 12px; background: var(--g50); border-bottom: 1px solid var(--g200);
-    display: flex; justify-content: space-between; font-weight: 600; font-size: 0.75rem;
-  }
-  .col-picker-list { padding: 6px; max-height: 260px; overflow-y: auto; }
-  .col-picker-item {
-    display: flex; align-items: center; gap: 8px; padding: 5px 8px;
-    border-radius: 6px; cursor: pointer;
-  }
-  .col-picker-item:hover { background: var(--g50); }
-  .col-picker-item input { accent-color: var(--blue); }
-
-  /* Boutons d'en-tête de modale supplémentaires */
-  .modal-header-actions {
-    display: flex; gap: 8px; align-items: center;
-  }
-  .modal-icon-btn {
-    background: transparent; border: none; cursor: pointer;
-    font-size: 1rem; padding: 4px; border-radius: 6px;
-    color: var(--g500); transition: all 0.15s;
-  }
-  .modal-icon-btn:hover { background: var(--g200); color: var(--g700); }
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<div class="syn-header">
+<header>
+  <div class="logo">Rapso<span>Synthèse</span></div>
   <div class="header-info">
-    <div class="info-row"><span class="label">AFFAIRE :</span><span class="value" id="affaireDisplay">—</span></div>
-    <div class="info-row"><span class="label">DOSSIER :</span><input class="value" id="dossierInput" placeholder="N° dossier" value=""></div>
+    <span class="lbl">Affaire :</span>
+    <span class="affaire-value" id="affaireDisplay">—</span>
+    <span class="lbl">Dossier :</span><input type="text" id="dossierInput" placeholder="N° dossier…" style="width:140px">
   </div>
+  <div class="spacer"></div>
   <div class="mini-stats">
     <span><span class="dot dot-g"></span><span id="statOui">0</span></span>
     <span><span class="dot dot-y"></span><span id="statPar">0</span></span>
     <span><span class="dot dot-r"></span><span id="statNon">0</span></span>
+    <span style="color:var(--muted)">│</span>
     <span><span id="statTotal">0</span> total</span>
   </div>
-  <button class="theme-btn" onclick="toggleTheme()">🌓</button>
-</div>
+  <button class="tb-btn" onclick="toggleTheme()" title="Thème">🌓</button>
+</header>
 
-<!-- TOOLBAR PRINCIPALE -->
+<!-- TOOLBAR -->
 <div class="toolbar">
   <button class="tb-btn active" id="tabV2" onclick="switchTab('v2')">RapsoV2</button>
   <button class="tb-btn" id="tabV1" onclick="switchTab('v1')">RapsoV1</button>
-  <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
-  <div class="quick-search"><span class="qs-label">N°</span><input id="qs_num" placeholder="n° avis" oninput="applyFilters()"></div>
+  <div style="width:1px;height:18px;background:var(--border);margin:0 2px;"></div>
+  <div class="quick-search"><span class="qs-label">N°</span><input id="qs_num" placeholder="N° avis…" oninput="applyFilters()"></div>
   <div class="quick-search"><span class="qs-label">📅</span><input id="qs_date" placeholder="jj/mm/aaaa" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label">📝</span><input id="qs_disp" placeholder="dispositions" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label">🔍</span><input id="qs_obs" placeholder="observations" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label">📎</span><input id="qs_docs" placeholder="documents" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">📝</span><input id="qs_disp" placeholder="dispositions…" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">🔍</span><input id="qs_obs" placeholder="observations…" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">📎</span><input id="qs_docs" placeholder="documents…" oninput="applyFilters()"></div>
   <div class="qs-checks">
     <label><input type="checkbox" id="qs_F" onchange="applyFilters()">F</label>
     <label><input type="checkbox" id="qs_S" onchange="applyFilters()">S</label>
@@ -422,16 +274,19 @@
     <label><input type="checkbox" id="qs_PM" onchange="applyFilters()">PM</label>
     <label><input type="checkbox" id="qs_SO" onchange="applyFilters()">SO</label>
   </div>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fOui" onchange="applyFilters()">✅</label>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPar" onchange="applyFilters()">⚠️</label>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fNon" onchange="applyFilters()">❌</label>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fRd6" onchange="applyFilters()">RD6</label>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPA" onchange="applyFilters()">PA</label>
+  <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fOui" onchange="applyFilters()" style="accent-color:var(--green)">✅</label>
+  <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fPar" onchange="applyFilters()" style="accent-color:var(--yellow)">⚠️</label>
+  <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fNon" onchange="applyFilters()" style="accent-color:var(--red)">❌</label>
+  <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fRd6" onchange="applyFilters()" style="accent-color:var(--accent2)">RD6</label>
+  <label style="display:flex;align-items:center;gap:3px;font-size:0.68rem;cursor:pointer;"><input type="checkbox" id="fPA" onchange="applyFilters()" style="accent-color:var(--green)">PA</label>
 
+  <!-- mf-select Intervenants -->
   <div class="mf-select">
     <div class="mf-select-button" onclick="toggleMfSelect('inter')">Intervenants <span id="mfInterCount">(0)</span></div>
     <div class="mf-select-dropdown" id="mfInterDropdown"></div>
   </div>
+
+  <!-- mf-select Lots -->
   <div class="mf-select">
     <div class="mf-select-button" onclick="toggleMfSelect('lot')">Lots <span id="mfLotCount">(0)</span></div>
     <div class="mf-select-dropdown" id="mfLotDropdown"></div>
@@ -441,50 +296,67 @@
   <div style="flex:1;"></div>
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
-  <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
+  <button class="tb-btn orange" onclick="openRapide()">⚡ Version rapide</button>
   <button class="tb-btn" onclick="openImportModal()">📥 Importer</button>
   <button class="tb-btn" onclick="openActualiserModal()">🔄 Actualiser</button>
   <button class="tb-btn" onclick="openStatsModal()">📊 Stats</button>
   <button class="tb-btn" onclick="exportJSON()">💾</button>
   <button class="tb-btn" onclick="loadJSON()">📂</button>
   <button class="tb-btn" onclick="window.print()">🖨️</button>
-  <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
-  <div class="col-picker-wrap">
-    <button class="tb-btn" id="colPickerBtn" onclick="toggleColPicker()">📋 Colonnes</button>
-    <div class="col-picker-panel" id="colPickerPanel">
-      <div class="col-picker-header"><span>Colonnes affichées</span><button onclick="resetColumns()" style="background:none;border:none;color:var(--blue);cursor:pointer;">Tout afficher</button></div>
-      <div class="col-picker-list" id="colPickerList"></div>
+</div>
+
+<!-- TABLE (pas de ligne de filtres par colonne) -->
+<div class="main">
+  <div class="table-wrap">
+    <table id="mainTable">
+      <colgroup>
+        <col class="c-num"><col class="c-ref"><col class="c-date"><col class="c-inter">
+        <col class="c-disp"><col class="c-avis"><col class="c-desc"><col class="c-obs">
+        <col class="c-docs"><col class="c-suivi"><col class="c-rep"><col class="c-socotec">
+        <col class="c-lots"><col class="c-actions">
+      </colgroup>
+      <thead>
+        <tr>
+          <th onclick="sortBy('num')">N° Avis</th><th onclick="sortBy('ref')">Id/Réf</th>
+          <th onclick="sortBy('date')">Date</th><th onclick="sortBy('inter')">Intervenant</th>
+          <th onclick="sortBy('disp')">Dispositions</th><th onclick="sortBy('avis')">Avis</th>
+          <th onclick="sortBy('desc')">Description</th><th onclick="sortBy('obs')">Observations</th>
+          <th onclick="sortBy('docs')">Documents</th><th onclick="sortBy('suivi')">Suivi</th>
+          <th onclick="sortBy('repK')">Rép. MOE</th><th onclick="sortBy('repL')">Obs. SOCOTEC</th>
+          <th onclick="sortBy('lots')">Lots</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div style="font-size:2rem;">📋</div><div style="font-weight:600;">Aucun avis trouvé</div>
     </div>
   </div>
 </div>
 
-<!-- TABLEAU PRINCIPAL -->
-<div class="table-container">
-  <table id="mainTable">
-    <thead id="mainThead"><tr id="headerRow"></td></thead>
-    <tbody id="tableBody"></tbody>
-  </table>
-  <div class="empty-state" id="emptyState" style="display:none"><div>📋</div><div>Aucun avis trouvé</div></div>
-</div>
-
-<!-- PANEL LATERAL -->
+<!-- EDIT PANEL -->
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="edit-panel" id="editPanel">
-  <div class="ep-rh" id="epRh"></div>
   <div class="panel-hdr">
     <span class="title" id="panelTitle">Avis n°: —</span>
-    <span style="font-family:var(--mono);font-size:0.7rem;" id="panelNum">—</span>
+    <span style="font-family:var(--mono);font-size:0.7rem;color:var(--accent);" id="panelNum">—</span>
     <button class="tb-btn" onclick="navRow(-1)">↑</button>
     <button class="tb-btn" onclick="navRow(1)">↓</button>
     <button class="tb-btn" onclick="closePanel()">✕</button>
   </div>
   <div class="panel-body">
-    <div class="form-section"><div class="section-title">Dispositions examinées</div><div style="white-space:pre-wrap;" id="e_lblColE">—</div></div>
-    <div class="form-section"><div class="section-title">Observations</div><div class="obs-readonly" id="e_obs_readonly">—</div></div>
+    <div class="form-section">
+      <div class="section-title">Dispositions examinées</div>
+      <div style="font-size:0.78rem;white-space:pre-wrap;" id="e_lblColE">—</div>
+    </div>
+    <div class="form-section">
+      <div class="section-title">Observations</div>
+      <textarea id="e_obs" style="min-height:150px;height:150px;"></textarea>
+    </div>
     <div class="form-section">
       <div class="section-title">Réponses</div>
-      <div class="form-row"><label>Réponses ENT / MOE</label><textarea id="e_repK" rows="3"></textarea></div>
-      <div class="form-row"><label>Observations-commentaires SOCOTEC</label><textarea id="e_repL" rows="3"></textarea></div>
+      <div class="form-row"><label>Réponses ENT / MOE</label><textarea id="e_repK" style="min-height:70px;"></textarea></div>
+      <div class="form-row"><label>Observations SOCOTEC</label><textarea id="e_repL" style="min-height:70px;"></textarea></div>
       <div class="form-row"><label>Lots concernés</label><input type="text" id="e_lots"></div>
     </div>
     <div class="form-section">
@@ -494,9 +366,11 @@
           <div class="suivi-opt" id="opt_oui" onclick="setSuivi('Oui')">✅ Levé</div>
           <div class="suivi-opt" id="opt_par" onclick="setSuivi('Par')">⚠️ Partiel</div>
           <div class="suivi-opt" id="opt_non" onclick="setSuivi('Non')">❌ Maintenu</div>
-          <div class="suivi-opt" onclick="setSuivi('')">—</div>
+          <div class="suivi-opt" id="opt_vide" onclick="setSuivi('')">—</div>
         </div>
-        <label class="rd6-toggle" id="rd6Toggle" onclick="toggleRD6()"><input type="checkbox" id="e_rd6"> RD6</label>
+        <label class="rd6-toggle" id="rd6Toggle" onclick="toggleRD6()">
+          <input type="checkbox" id="e_rd6"> RD6
+        </label>
       </div>
     </div>
   </div>
@@ -510,83 +384,62 @@
 
 <!-- MODAL PA -->
 <div class="modal-overlay" id="paModal">
-  <div class="modal"><div class="modal-hdr">Ajouter PA <button class="tb-btn" onclick="closePAModal()">✕</button></div>
-    <div class="modal-body"><div class="form-row"><label>Catégorie</label><div style="display:flex;gap:8px;"><label><input type="checkbox" id="pa_F">F</label><label><input type="checkbox" id="pa_S">S</label><label><input type="checkbox" id="pa_D">D</label><label><input type="checkbox" id="pa_PM">PM</label></div></div>
-    <div class="form-row"><label>Dispositions</label><textarea id="pa_disp"></textarea></div>
-    <div class="form-row"><label>Observations</label><textarea id="pa_obs"></textarea></div>
-    <div class="form-row"><label>Réponses MOE</label><textarea id="pa_repK"></textarea></div>
-    <div class="form-row"><label>Comm. SOCOTEC</label><textarea id="pa_repL"></textarea></div>
-    <div class="form-row"><label>Lots</label><input id="pa_lots"></div></div>
-    <div class="modal-ftr"><button class="tb-btn" onclick="closePAModal()">Annuler</button><button class="tb-btn green" onclick="addPA()">Ajouter PA</button><span id="paFeedback"></span></div>
-  </div>
-</div>
-
-<!-- VERSION RAPIDE AVEC BOUTONS TOGGLE ET SCROLL UNIQUE -->
-<div class="modal-overlay" id="rapideOverlay">
-  <div class="modal rapide-modal" id="rapideModal">
-<div class="modal-hdr">
-  <span id="rapideAffaireTitle" style="font-weight:600; font-size:0.9rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">—</span>
-  <div class="modal-header-actions">
-    <button class="modal-icon-btn" onclick="toggleRapideFullscreen()">⛶</button>
-    <button class="modal-icon-btn" onclick="closeRapide()">✕</button>
-  </div>
-</div>
-    <div class="rapide-filters">
-      <div class="rapide-filter-group">
-        <span style="font-size:0.7rem;font-weight:600;">Lots</span>
-        <div class="mf-select" style="display:inline-block;">
-          <div class="mf-select-button" onclick="toggleRapMf('lots')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
-          <div class="mf-select-dropdown" id="rapMfLotsDrop" style="min-width:140px;"></div>
+  <div class="modal" style="width:550px;">
+    <div class="modal-hdr"><span style="font-weight:700;">Ajouter un Point d'Action (PA)</span><button class="tb-btn" onclick="closePAModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Catégorie</label>
+        <div style="display:flex;gap:8px;">
+          <label><input type="checkbox" id="pa_F" onchange="paCheck('F')">F</label>
+          <label><input type="checkbox" id="pa_S" onchange="paCheck('S')">S</label>
+          <label><input type="checkbox" id="pa_D" onchange="paCheck('D')">D</label>
+          <label><input type="checkbox" id="pa_PM" onchange="paCheck('PM')">PM</label>
         </div>
       </div>
-      <div class="rapide-filter-group">
-        <span style="font-size:0.7rem;font-weight:600;">Intervenant</span>
-        <div class="mf-select" style="display:inline-block;">
-          <div class="mf-select-button" onclick="toggleRapMf('inter')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
-          <div class="mf-select-dropdown" id="rapMfInterDrop" style="min-width:140px;"></div>
-        </div>
-      </div>
-      <div class="rapide-filter-group">
-        <label><input type="checkbox" id="rapF_F" onchange="rapApply()"> F</label>
-        <label><input type="checkbox" id="rapF_S" onchange="rapApply()"> S</label>
-        <label><input type="checkbox" id="rapF_D" onchange="rapApply()"> D</label>
-      </div>
-      <div class="rapide-filter-group">
-        <label><input type="checkbox" id="rapF_lev" onchange="rapApply()"> Levés</label>
-        <label><input type="checkbox" id="rapF_par" onchange="rapApply()"> Partiels</label>
-        <label><input type="checkbox" id="rapF_non" onchange="rapApply()"> Maintenus</label>
-        <label><input type="checkbox" id="rapF_rd6" onchange="rapApply()"> RD6</label>
-        <label><input type="checkbox" id="rapF_pa" onchange="rapApply()"> PA</label>
-      </div>
-      <button class="rapide-reset" onclick="rapReset()">✕</button>
-      <div class="stats-sdf" id="rapStatsSDF">S=0 / D=0 / F=0</div>
+      <div class="form-row"><label>Dispositions examinées</label><textarea id="pa_disp"></textarea></div>
+      <div class="form-row"><label>Observations</label><textarea id="pa_obs"></textarea></div>
+      <div class="form-row"><label>Réponses MOE</label><textarea id="pa_repK"></textarea></div>
+      <div class="form-row"><label>Commentaires SOCOTEC</label><textarea id="pa_repL"></textarea></div>
+      <div class="form-row"><label>Lots</label><input type="text" id="pa_lots"></div>
     </div>
+    <div class="modal-ftr">
+      <button class="tb-btn" onclick="closePAModal()">Annuler</button>
+      <button class="tb-btn green" onclick="addPA()">+ Ajouter PA</button>
+      <span id="paFeedback" style="font-size:0.74rem;font-weight:600;color:var(--red);opacity:0;">⚠️ Cochez F, S, D ou PM</span>
+    </div>
+  </div>
+</div>
 
-    <div class="rapide-body">
-      <div class="rapide-list-col">
-        <div class="rapide-list-header">Avis <span id="rapCnt"></span></div>
-        <div class="rapide-list" id="rapideList"></div>
+<!-- RAPIDE MODAL -->
+<div class="modal-overlay" id="rapideOverlay">
+  <div class="modal" style="width:960px;max-width:97vw;height:85vh;max-height:700px;">
+    <div class="modal-hdr"><span style="font-weight:700;">⚡ Version rapide</span><span style="flex:1;font-size:0.72rem;color:var(--muted);font-family:var(--mono);" id="rapideInfo">Nbr.Avis : S=0 / D=0 / F=0</span><button class="tb-btn" onclick="closeRapide()">✕</button></div>
+    <div class="modal-body" style="flex:1;overflow:hidden;display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end;">
+        <div style="display:flex;flex-direction:column;gap:2px;"><label style="font-size:0.6rem;font-weight:700;color:var(--muted);">Lots</label><input id="rf_lots" style="width:130px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:0.7rem;" oninput="rapideApply()"></div>
+        <div style="display:flex;flex-direction:column;gap:2px;"><label style="font-size:0.6rem;font-weight:700;color:var(--muted);">Intervenant</label><input id="rf_inter" style="width:140px;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:0.7rem;" oninput="rapideApply()"></div>
+        <div class="qs-checks"><label><input type="checkbox" id="rf_F" onchange="rapideApply()">F</label><label><input type="checkbox" id="rf_S" onchange="rapideApply()">S</label><label><input type="checkbox" id="rf_D" onchange="rapideApply()">D</label></div>
+        <div class="qs-checks"><label style="color:var(--green)"><input type="checkbox" id="rf_lev" onchange="rapideApply()">Levés</label><label style="color:var(--red)"><input type="checkbox" id="rf_non" onchange="rapideApply()">Maintenus</label><label style="color:var(--yellow)"><input type="checkbox" id="rf_par" onchange="rapideApply()">Partiels</label><label style="color:var(--accent2)"><input type="checkbox" id="rf_rd6" onchange="rapideApply()">RD6</label><label style="color:#06b6d4"><input type="checkbox" id="rf_pa" onchange="rapideApply()">PA</label></div>
+        <button class="tb-btn" onclick="rapideReset()">✕</button>
       </div>
-      <div class="rapide-detail-col">
-        <!-- Scroll unique : pas de boîtes décoratives -->
-        <div class="rapide-detail-scroll" id="rapideScrollContainer">
-          <div class="rapide-detail-label">Observations</div>
-          <div class="rapide-detail-text" id="rapideObsText">—</div>
-          <div class="rapide-edit-area" id="rapideEditArea" style="display:none">
-            <label>Réponses ENT / MOE</label><textarea id="rq_repK" rows="2"></textarea>
-            <label>Observations-commentaires SOCOTEC</label><textarea id="rq_repL" rows="2"></textarea>
-            <label>Lots concernés</label><input type="text" id="rq_lots">
+      <div style="flex:1;display:flex;overflow:hidden;gap:0;">
+        <div style="width:38%;border-right:1px solid var(--border);overflow-y:auto;padding:4px;" id="rapideList"></div>
+        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+          <div style="flex:1;overflow-y:auto;padding:8px;" id="rapideDetail"><div class="empty-state"><div>👆 Sélectionnez un avis</div></div></div>
+          <div style="border-top:1px solid var(--border);padding:6px 8px;display:none;flex-direction:column;gap:4px;" id="rapideEditArea">
+            <label style="font-size:0.6rem;font-weight:700;color:var(--muted);">Rép. MOE</label><textarea id="rq_repK" style="height:38px;resize:none;font-size:0.72rem;padding:4px;"></textarea>
+            <label style="font-size:0.6rem;font-weight:700;color:var(--muted);">Comm. SOCOTEC</label><textarea id="rq_repL" style="height:38px;resize:none;font-size:0.72rem;padding:4px;"></textarea>
+            <label style="font-size:0.6rem;font-weight:700;color:var(--muted);">Lots</label><input type="text" id="rq_lots" style="font-size:0.72rem;padding:4px;">
           </div>
         </div>
       </div>
     </div>
-    <div class="rapide-footer">
-      <button class="rap-stat-btn rsb-oui" id="rapBtnOui" onclick="rapToggleSuivi('Oui')">✅ Levé</button>
-      <button class="rap-stat-btn rsb-par" id="rapBtnPar" onclick="rapToggleSuivi('Par')">⚠️ Partiel</button>
-      <button class="rap-stat-btn rsb-non" id="rapBtnNon" onclick="rapToggleSuivi('Non')">❌ Maintenu</button>
-      <button class="rap-stat-btn rsb-rd6" id="rapBtnRd6" onclick="rapToggleRD6()">🔷 RD6</button>
+    <div class="modal-ftr">
+      <button class="tb-btn green" onclick="rapideSetSuivi('Oui')">✅ Levé</button>
+      <button class="tb-btn" onclick="rapideSetSuivi('Non')" style="color:var(--red);border-color:var(--red);">❌ Maintenu</button>
+      <button class="tb-btn" onclick="rapideSetSuivi('Par')" style="color:var(--yellow);border-color:var(--yellow);">⚠️ Partiel</button>
+      <button class="tb-btn" onclick="rapideToggleRD6()" style="color:var(--accent2);border-color:var(--accent2);">🔷 RD6</button>
       <div style="flex:1;"></div>
-      <button class="tb-btn green" id="rapSaveBtn" onclick="rapSaveTexts()" disabled>💾 Valider (textes)</button>
+      <button class="tb-btn green" id="rapideSaveBtn" onclick="rapideSave()" disabled>💾 Valider</button>
       <button class="tb-btn" onclick="closeRapide()">Annuler</button>
     </div>
   </div>
@@ -594,14 +447,24 @@
 
 <!-- STATS MODAL -->
 <div class="modal-overlay" id="statsModal">
-  <div class="modal" style="width:520px;"><div class="modal-hdr">📊 Statistiques<button class="tb-btn" onclick="closeStatsModal()">✕</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div>
+  <div class="modal" style="width:520px;">
+    <div class="modal-hdr"><span style="font-weight:700;">📊 Statistiques</span><button class="tb-btn" onclick="closeStatsModal()">✕</button></div>
+    <div class="modal-body" id="statsContent"></div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div>
+  </div>
 </div>
 
 <!-- ADD MODAL -->
 <div class="modal-overlay" id="addModal">
-  <div class="modal"><div class="modal-hdr">Nouvel avis<button class="tb-btn" onclick="closeAddModal()">✕</button></div>
+  <div class="modal">
+    <div class="modal-hdr"><span style="font-weight:700;">Nouvel avis</span><button class="tb-btn" onclick="closeAddModal()">✕</button></div>
     <div class="modal-body">
-      <div class="form-grid"><div class="form-row"><label>N° Avis</label><input type="text" id="a_num"></div><div class="form-row"><label>Id / Réf</label><input type="text" id="a_ref"></div><div class="form-row"><label>Date</label><input type="date" id="a_date"></div><div class="form-row"><label>Intervenant</label><input type="text" id="a_inter"></div></div>
+      <div class="form-grid">
+        <div class="form-row"><label>N° Avis</label><input type="text" id="a_num"></div>
+        <div class="form-row"><label>Id / Réf</label><input type="text" id="a_ref"></div>
+        <div class="form-row"><label>Date</label><input type="date" id="a_date"></div>
+        <div class="form-row"><label>Intervenant</label><input type="text" id="a_inter"></div>
+      </div>
       <div class="form-row"><label>Dispositions</label><textarea id="a_disp"></textarea></div>
       <div class="form-row"><label>Description</label><textarea id="a_desc"></textarea></div>
       <div class="form-row"><label>Avis</label><textarea id="a_avis"></textarea></div>
@@ -615,90 +478,91 @@
 
 <!-- IMPORT MODAL -->
 <div class="modal-overlay" id="importModal">
-  <div class="modal" style="width:450px;"><div class="modal-hdr">Importer XLSX<button class="tb-btn" onclick="closeImportModal()">✕</button></div>
-    <div class="modal-body"><div class="dropzone" id="importDropzone" onclick="document.getElementById('fileInput').click()">📂 Cliquer ou glisser .xlsx/.xlsm</div><input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)"><div id="importStatus"></div></div>
+  <div class="modal" style="width:450px;">
+    <div class="modal-hdr"><span style="font-weight:700;">Importer XLSX</span><button class="tb-btn" onclick="closeImportModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="dropzone" id="importDropzone" onclick="document.getElementById('fileInput').click()">
+        <div style="font-size:1.5rem;">📂</div><div>Cliquer ou glisser-déposer <strong>.xlsx/.xlsm</strong></div>
+        <div style="font-size:0.7rem;margin-top:4px;">Feuille <strong>Synthèse</strong> ou RapsoV2/V1 ⚠️ Remplace tout</div>
+      </div>
+      <input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)">
+      <div id="importStatus" style="font-size:0.76rem;color:var(--muted);"></div>
+    </div>
     <div class="modal-ftr"><button class="tb-btn" onclick="closeImportModal()">Fermer</button></div>
   </div>
 </div>
 
 <!-- ACTUALISER MODAL -->
 <div class="modal-overlay" id="actualiserModal">
-  <div class="modal" style="width:450px;"><div class="modal-hdr">🔄 Actualiser (UPSERT)<button class="tb-btn" onclick="closeActualiserModal()">✕</button></div>
-    <div class="modal-body"><div class="dropzone" id="actualiserDropzone" onclick="document.getElementById('actualiserFileInput').click()">🔄 Glisser fichier XLSX</div><input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)"><div id="actualiserStatus"></div></div>
+  <div class="modal" style="width:450px;">
+    <div class="modal-hdr"><span style="font-weight:700;">🔄 Actualiser (UPSERT)</span><button class="tb-btn" onclick="closeActualiserModal()">✕</button></div>
+    <div class="modal-body">
+      <div class="dropzone" id="actualiserDropzone" onclick="document.getElementById('actualiserFileInput').click()">
+        <div style="font-size:1.5rem;">🔄</div><div>Cliquer ou glisser-déposer <strong>.xlsx/.xlsm</strong></div>
+        <div style="font-size:0.7rem;margin-top:4px;color:var(--green);">✅ UPSERT : Met à jour + Ajoute</div>
+      </div>
+      <input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)">
+      <div id="actualiserStatus" style="font-size:0.76rem;color:var(--muted);"></div>
+    </div>
     <div class="modal-ftr"><button class="tb-btn" onclick="closeActualiserModal()">Fermer</button></div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// ============================================================
-//  RAPSOSYNTHÈSE – VERSION FINALE (contrôle des droits utilisateur)
-// ============================================================
+// ██████████████████████████████████████████████████████████████████████████
+//  RAPSOSYNTHÈSE – VERSION CORRIGÉE (filtres multi-sélection fonctionnels)
+// ██████████████████████████████████████████████████████████████████████████
 
-// --- Variables utilisateur transmises par le parent (portail) ---
-const USER_UID = window.CANEVAS_USER_UID || '';
-const USER_INITIALES = window.CANEVAS_USER_INITIALES || '';
-const USER_ROLE = window.CANEVAS_USER_ROLE || '';
-const CANEVAS_READONLY = window.CANEVAS_READONLY === true;
-
-// --- Helper pour déterminer si l'utilisateur courant peut éditer un avis ---
-function canUserEdit(row) {
-  if (CANEVAS_READONLY) return false;
-  if (USER_ROLE === 'admin') return true;
-  // Vérification par initiales (le canevas stocke les initiales, pas les UID)
-  if (row.pilote === USER_INITIALES) return true;
-  if (Array.isArray(row.intervenants) && row.intervenants.includes(USER_INITIALES)) return true;
-  return false;
-}
-
-// --- Thème ---
+// ----- Thème -----
 function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('rapso_theme',document.body.classList.contains('dark')?'dark':'light');}
 (()=>{if((localStorage.getItem('rapso_theme')||'light')==='dark')document.body.classList.add('dark');})();
 
-// --- Données globales ---
+// ----- Données globales -----
 let currentTab='v2', data={v2:[], v1:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='';
 let selectedIntervenants = new Set();
 let selectedLots = new Set();
 
-// --- Helper cleanIntervenant (supprime la partie après @) ---
-function cleanIntervenant(inter){if(!inter)return '';const at=inter.indexOf('@');return at>0?inter.substring(0,at).trim():inter;}
-
-// --- Persistance & sync ---
-function persistLocal(){try{localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));}catch(e){}}
-function pushToParent(){if(!window.parent||window.parent===window)return;const canId=window.CANEVAS_ID;if(canId===undefined)return;try{const raw=localStorage.getItem('rapsotracker');if(raw){const parsed=JSON.parse(raw);if(parsed?.data)window.parent.postMessage({type:'rapso_save',canId,data:parsed.data},'*');}}catch(e){}}
-setInterval(pushToParent,4000);const _origSet=localStorage.setItem.bind(localStorage);
-localStorage.setItem=function(k,v){_origSet(k,v);if(k==='rapsotracker'){clearTimeout(window._rsST);window._rsST=setTimeout(pushToParent,250);}};
-window.addEventListener('beforeunload',pushToParent);
-window.addEventListener('message', function(e) {
-  if (e.data?.type === 'rapso_request_save') pushToParent();
-  if (e.data?.type === 'rapso_inject') {
+// ----- Initialisation / injection parent -----
+(function() {
+  if (typeof window.RAPSO_SYNTH_DATA !== 'undefined' && window.RAPSO_SYNTH_DATA) {
     try {
-      const inj = e.data.data || { v2: [], v1: [] };
-      data.v2 = Array.isArray(inj.v2) ? inj.v2.map(makeRow) : [];
-      data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
-      if (e.data.affaire) {
-        ge('affaireDisplay').innerText = e.data.affaire;
-        const rapTitle = document.getElementById('rapideAffaireTitle');
-        if (rapTitle) rapTitle.innerText = cleanAffaireForRapide(e.data.affaire);
+      const parsed = JSON.parse(window.RAPSO_SYNTH_DATA);
+      if (parsed && typeof parsed === 'object') {
+        data.v2 = Array.isArray(parsed.v2) ? parsed.v2 : [];
+        data.v1 = Array.isArray(parsed.v1) ? parsed.v1 : [];
+        localStorage.setItem('rapsotracker', JSON.stringify({
+          meta: { affaire: window.RAPSO_AFFAIRE || '', dossier: window.RAPSO_DOSSIER || '' },
+          data: { v2: data.v2, v1: data.v1 }
+        }));
       }
-      if (e.data.dossier) ge('dossierInput').value = e.data.dossier;
-      selectedIntervenants.clear(); selectedLots.clear();
-      persistLocal(); applyFilters();
-      if (window.parent) window.parent.postMessage({ type: 'rapso_inject_ack', data: { v2: data.v2, v1: data.v1 } }, '*');
-    } catch (err) { console.warn(err); }
+    } catch(e) { console.warn(e); }
   }
-});
+  setTimeout(() => {
+    const affSpan = document.getElementById('affaireDisplay');
+    const dosEl = document.getElementById('dossierInput');
+    if (affSpan && !affSpan.innerText && window.RAPSO_AFFAIRE) affSpan.innerText = window.RAPSO_AFFAIRE;
+    if (dosEl && !dosEl.value && window.RAPSO_DOSSIER) dosEl.value = window.RAPSO_DOSSIER;
+    applyFilters(); // buildMfSelectOptions sera appelé dans applyFilters
+  }, 0);
+})();
 
-// --- Injection parent ---
-(function(){if(window.RAPSO_SYNTH_DATA){try{const p=JSON.parse(window.RAPSO_SYNTH_DATA);if(p&&typeof p==='object'){data.v2=Array.isArray(p.v2)?p.v2:[];data.v1=Array.isArray(p.v1)?p.v1:[];localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:window.RAPSO_AFFAIRE||'',dossier:window.RAPSO_DOSSIER||''},data:{v2:data.v2,v1:data.v1}}));}}catch(e){}}setTimeout(()=>{const af=ge('affaireDisplay'),dos=ge('dossierInput');if(af&&!af.innerText&&window.RAPSO_AFFAIRE)af.innerText=window.RAPSO_AFFAIRE;if(dos&&!dos.value&&window.RAPSO_DOSSIER)dos.value=window.RAPSO_DOSSIER;applyFilters();},0);})();
+function makeRow(o={}) {
+  return {
+    id: o.id || crypto.randomUUID(),
+    num: o.num || '', ref: o.ref || '', date: o.date || '', inter: o.inter || '',
+    disp: o.disp || '', avis: o.avis || '', desc: o.desc || '', obs: o.obs || '',
+    docs: o.docs || '', suivi: o.suivi || '', repK: o.repK || '', repL: o.repL || '',
+    lots: o.lots || '', rd6: o.rd6 || false
+  };
+}
+function getRows() { return data[currentTab]; }
 
-function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
-function getRows(){return data[currentTab];}
-
-// --- Construction multi-select principaux ---
+// ----- Construction des listes déroulantes (intervenants / lots) -----
 function buildMfSelectOptions() {
   const rows = getRows();
-  const intervenants = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v => v && v !== ''))];
+  // Intervenants
+  const intervenants = [...new Set(rows.map(r => r.inter?.trim()).filter(v => v && v !== ''))];
   const interDiv = document.getElementById('mfInterDropdown');
   if (interDiv) {
     interDiv.innerHTML = intervenants.map(inter => `
@@ -707,6 +571,7 @@ function buildMfSelectOptions() {
   }
   document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
 
+  // Lots (splittés par virgule, point-virgule ou espace)
   const allLots = rows.flatMap(r => {
     if (!r.lots) return [];
     return String(r.lots).split(/[,; ]+/).map(l => l.trim()).filter(l => l !== '');
@@ -720,481 +585,659 @@ function buildMfSelectOptions() {
   }
   document.getElementById('mfLotCount').innerText = `(${selectedLots.size})`;
 }
-function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function escapeHtmlAttr(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
-function toggleMultiFilter(type,val,chk){if(type==='inter')chk?selectedIntervenants.add(val):selectedIntervenants.delete(val);else chk?selectedLots.add(val):selectedLots.delete(val);applyFilters();}
-function toggleMfSelect(which){const id=which==='inter'?'mfInterDropdown':'mfLotDropdown';ge(id).classList.toggle('show');const other=which==='inter'?'mfLotDropdown':'mfInterDropdown';if(ge(other)&&ge(other)!==ge(id))ge(other).classList.remove('show');}
-document.addEventListener('click',e=>{if(!e.target.closest('.mf-select'))document.querySelectorAll('.mf-select-dropdown').forEach(d=>d.classList.remove('show'));});
 
-// --- Filtres principaux ---
-function gcf(id){return(ge(id)?.value||'').toLowerCase();}
-function matchDate(stored,q){if(!q)return true;q=q.trim();const p=q.split('/');if(p.length>=2&&stored&&/^\d{4}-\d{2}-\d{2}$/.test(stored)){const[y,m,d]=stored.split('-'),fr=d+'/'+m+'/'+y;if(p.length>=3){let yy=p[2];if(yy.length===2)yy='20'+yy;return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0')+'/'+yy);}return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0'));}return String(stored||'').toLowerCase().includes(q);}
-function applyFilters(){
+function escapeHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeHtmlAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+
+function toggleMultiFilter(type, value, checked) {
+  if (type === 'inter') {
+    if (checked) selectedIntervenants.add(value);
+    else selectedIntervenants.delete(value);
+  } else if (type === 'lot') {
+    if (checked) selectedLots.add(value);
+    else selectedLots.delete(value);
+  }
+  applyFilters(); // le rebuild se fait dans applyFilters
+}
+
+function toggleMfSelect(which) {
+  const dropdownId = which === 'inter' ? 'mfInterDropdown' : 'mfLotDropdown';
+  const dropdown = document.getElementById(dropdownId);
+  dropdown.classList.toggle('show');
+  // fermer l'autre
+  const otherId = which === 'inter' ? 'mfLotDropdown' : 'mfInterDropdown';
+  const other = document.getElementById(otherId);
+  if (other && other !== dropdown) other.classList.remove('show');
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.mf-select')) {
+    document.querySelectorAll('.mf-select-dropdown').forEach(d => d.classList.remove('show'));
+  }
+});
+
+// ----- Filtres -----
+function gcf(id){ return (document.getElementById(id)?.value || '').toLowerCase(); }
+function matchDate(stored, q) {
+  if (!q) return true;
+  q = q.trim();
+  const p = q.split('/');
+  if (p.length >= 2 && stored && /^\d{4}-\d{2}-\d{2}$/.test(stored)) {
+    const [y,m,d] = stored.split('-'), fr = d+'/'+m+'/'+y;
+    if (p.length >= 3) {
+      let yy = p[2];
+      if (yy.length === 2) yy = '20'+yy;
+      return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0')+'/'+yy);
+    }
+    return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0'));
+  }
+  return String(stored||'').toLowerCase().includes(q.toLowerCase());
+}
+
+function applyFilters() {
+  // 1) Reconstruire les listes déroulantes à partir des données brutes (non filtrées)
   buildMfSelectOptions();
-  const qn=gcf('qs_num'),qd=ge('qs_date')?.value||'',qdi=gcf('qs_disp'),qo=gcf('qs_obs'),qdo=gcf('qs_docs');
-  const qF=ge('qs_F').checked,qS=ge('qs_S').checked,qD=ge('qs_D').checked,qPM=ge('qs_PM').checked,qSO=ge('qs_SO').checked;const anyQS=qF||qS||qD||qPM||qSO;
-  const fOui=ge('fOui').checked,fPar=ge('fPar').checked,fNon=ge('fNon').checked,fRd6=ge('fRd6').checked,fPA=ge('fPA').checked;const anySt=fOui||fPar||fNon;
-  let rows=getRows().filter(r=>{
-    if(qn&&!String(r.num||'').toLowerCase().includes(qn))return false;
-    if(qd&&!matchDate(r.date,qd))return false;
-    if(qdi&&!String(r.disp||'').toLowerCase().includes(qdi))return false;
-    if(qo&&!String(r.obs||'').toLowerCase().includes(qo))return false;
-    if(qdo&&!String(r.docs||'').toLowerCase().includes(qdo))return false;
-    if(anyQS){const a=(r.avis||'').toUpperCase().trim();if(!((qF&&a==='F')||(qS&&a==='S')||(qD&&a==='D')||(qPM&&a==='PM')||(qSO&&a==='SO')))return false;}
-    if(anySt){if(!((fOui&&r.suivi==='Oui')||(fPar&&r.suivi==='Par')||(fNon&&r.suivi==='Non')))return false;}
-    if(fRd6&&!r.rd6)return false;
-    if(fPA&&!(r.num||'').toUpperCase().startsWith('PA'))return false;
-    if(selectedIntervenants.size>0&&!selectedIntervenants.has(cleanIntervenant(r.inter)))return false;
-    if(selectedLots.size>0){const lr=(r.lots||'').split(/[,; ]+/).map(l=>l.trim()).filter(l=>l);if(!lr.some(l=>selectedLots.has(l)))return false;}
+
+  const qsNum = gcf('qs_num');
+  const qsDate = document.getElementById('qs_date')?.value || '';
+  const qsDisp = gcf('qs_disp');
+  const qsObs = gcf('qs_obs');
+  const qsDocs = gcf('qs_docs');
+  const qsF = document.getElementById('qs_F').checked;
+  const qsS = document.getElementById('qs_S').checked;
+  const qsD = document.getElementById('qs_D').checked;
+  const qsPM = document.getElementById('qs_PM').checked;
+  const qsSO = document.getElementById('qs_SO').checked;
+  const anyQS = qsF || qsS || qsD || qsPM || qsSO;
+  const fOui = document.getElementById('fOui').checked;
+  const fPar = document.getElementById('fPar').checked;
+  const fNon = document.getElementById('fNon').checked;
+  const fRd6 = document.getElementById('fRd6').checked;
+  const fPA = document.getElementById('fPA').checked;
+  const anySt = fOui || fPar || fNon;
+
+  let rows = getRows(); // données brutes
+
+  // Filtres textuels
+  rows = rows.filter(r => {
+    if (qsNum && !String(r.num||'').toLowerCase().includes(qsNum)) return false;
+    if (qsDate && !matchDate(r.date, qsDate)) return false;
+    if (qsDisp && !String(r.disp||'').toLowerCase().includes(qsDisp)) return false;
+    if (qsObs && !String(r.obs||'').toLowerCase().includes(qsObs)) return false;
+    if (qsDocs && !String(r.docs||'').toLowerCase().includes(qsDocs)) return false;
+    if (anyQS) {
+      const a = (r.avis||'').toUpperCase().trim();
+      if (!((qsF && a==='F') || (qsS && a==='S') || (qsD && a==='D') || (qsPM && a==='PM') || (qsSO && a==='SO'))) return false;
+    }
+    if (anySt) {
+      if (!((fOui && r.suivi==='Oui') || (fPar && r.suivi==='Par') || (fNon && r.suivi==='Non'))) return false;
+    }
+    if (fRd6 && !r.rd6) return false;
+    if (fPA && !(r.num||'').toUpperCase().startsWith('PA')) return false;
     return true;
   });
-  if(sortKey)rows.sort((a,b)=>{const av=String(a[sortKey]||''),bv=String(b[sortKey]||'');return av<bv?-sortDir:av>bv?sortDir:0;});
-  filteredRows=rows;renderTable();updateStats();
-}
-function sortBy(k){sortKey===k?sortDir*=-1:(sortKey=k,sortDir=1);applyFilters();}
-function resetFilters(){
-  ['qs_num','qs_date','qs_disp','qs_obs','qs_docs'].forEach(id=>{const el=ge(id);if(el)el.value='';});
-  ['qs_F','qs_S','qs_D','qs_PM','qs_SO','fOui','fPar','fNon','fRd6','fPA'].forEach(id=>ge(id).checked=false);
-  selectedIntervenants.clear();selectedLots.clear();sortKey=null;sortDir=1;applyFilters();
-}
 
-// --- Colonnes principales ---
-const COL_DEF = [
-  {key:'num', label:'N° Avis', visible:true, locked:true, width:'70px'},
-  {key:'ref', label:'Réf', visible:true, width:'55px'},
-  {key:'date', label:'Date', visible:true, width:'65px'},
-  {key:'inter', label:'Intervenant', visible:true, width:'90px'},
-  {key:'disp', label:'Dispositions', visible:true, width:'150px'},
-  {key:'avis', label:'Avis', visible:true, width:'45px'},
-  {key:'desc', label:'Description', visible:false, width:'130px'},
-  {key:'obs', label:'Observations', visible:true, width:'220px'},
-  {key:'docs', label:'Documents', visible:false, width:'100px'},
-  {key:'suivi', label:'Suivi', visible:true, width:'65px'},
-  {key:'repK', label:'Rép. MOE', visible:true, width:'180px'},
-  {key:'repL', label:'Obs. SOCOTEC', visible:false, width:'180px'},
-  {key:'lots', label:'Lots', visible:true, width:'80px'}
-];
-function loadColPrefs(){try{const s=localStorage.getItem('rs_col_prefs');if(s){const p=JSON.parse(s);COL_DEF.forEach(c=>{if(p[c.key]!==undefined)c.visible=p[c.key];});}}catch(e){}}
-function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localStorage.setItem('rs_col_prefs',JSON.stringify(p));}
-function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.onclick=()=>sortBy(c.key);th.style.cursor='pointer';hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
-function toggleColPicker(){ge('colPickerPanel').classList.toggle('open');}
-function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
-function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
-function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();buildColPickerList();ge('colPickerPanel').classList.remove('open');}
-document.addEventListener('click',e=>{if(!e.target.closest('.col-picker-wrap'))ge('colPickerPanel').classList.remove('open');});
-
-function fmtDate(d){if(!d)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}return d;}
-function renderTable(){
-  const tbody=ge('tableBody'),empty=ge('emptyState');
-  if(!filteredRows.length){tbody.innerHTML='';empty.style.display='flex';return;}
-  empty.style.display='none';
-  tbody.innerHTML=filteredRows.map((r,i)=>{
-    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✅ Oui</span>':r.suivi==='Par'?'<span class="badge badge-par">⚠️ Par.</span>':r.suivi==='Non'?'<span class="badge badge-non">❌ Non</span>':'<span class="badge badge-empty">—</span>';
-    const rd6=r.rd6?'<span class="rd6-tag">RD6</span>':'';
-    const interClean=cleanIntervenant(r.inter);
-    const userCanEdit = canUserEdit(r);
-    let cells='';
-    COL_DEF.forEach(c=>{
-      if(!c.visible)return;
-      if(c.key==='suivi')cells+=`<td>${badge}</td>`;
-      else if(c.key==='num')cells+=`<td><span style="font-family:var(--mono);">${escapeHtml(r.num)}</span>${rd6}</td>`;
-      else if(c.key==='date')cells+=`<td style="font-family:var(--mono);white-space:nowrap">${escapeHtml(fmtDate(r.date))}</td>`;
-      else if(c.key==='ref')cells+=`<td style="font-family:var(--mono);font-size:.68rem">${escapeHtml(r.ref)}</td>`;
-      else if(c.key==='inter')cells+=`<td>${escapeHtml(interClean)}</td>`;
-      else cells+=`<td>${escapeHtml(r[c.key])}</td>`;
+  // Filtres multi-sélection
+  if (selectedIntervenants.size > 0) {
+    rows = rows.filter(r => selectedIntervenants.has(r.inter?.trim()));
+  }
+  if (selectedLots.size > 0) {
+    rows = rows.filter(r => {
+      const lotsRow = (r.lots||'').split(/[,; ]+/).map(l => l.trim()).filter(l => l);
+      return lotsRow.some(l => selectedLots.has(l));
     });
-    cells += `<td class="col-actions">${userCanEdit ? `<button class="tb-btn" onclick="openEditPanel(${i})" style="padding:2px 8px;">✏️</button>` : '<span style="color:var(--g400);">🔒</span>'}</td>`;
-    return `<tr ondblclick="openEditPanel(${i})" id="row-${i}">${cells}</tr>`;
+  }
+
+  // Tri
+  if (sortKey) {
+    rows.sort((a,b) => {
+      const av = String(a[sortKey]||''), bv = String(b[sortKey]||'');
+      return av < bv ? -sortDir : av > bv ? sortDir : 0;
+    });
+  }
+  filteredRows = rows;
+  render();
+  updateStats();
+}
+
+function sortBy(k) { sortKey === k ? sortDir *= -1 : (sortKey = k, sortDir = 1); applyFilters(); }
+function resetFilters() {
+  ['qs_num','qs_date','qs_disp','qs_obs','qs_docs'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  ['qs_F','qs_S','qs_D','qs_PM','qs_SO','fOui','fPar','fNon','fRd6','fPA'].forEach(id => document.getElementById(id).checked = false);
+  selectedIntervenants.clear();
+  selectedLots.clear();
+  sortKey = null; sortDir = 1;
+  applyFilters();
+}
+
+// ----- Affichage du tableau -----
+function fmtDate(d) {
+  if (!d) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d)) {
+    const [y,m,day] = d.split('-');
+    return day+'/'+m+'/'+y;
+  }
+  return d;
+}
+function render() {
+  const tbody = document.getElementById('tableBody'), empty = document.getElementById('emptyState');
+  if (!filteredRows.length) { tbody.innerHTML = ''; empty.style.display = 'flex'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = filteredRows.map((r,i) => {
+    const badge = r.suivi === 'Oui' ? '<span class="badge badge-oui">✅ Oui</span>' : r.suivi === 'Par' ? '<span class="badge badge-par">⚠️ Par.</span>' : r.suivi === 'Non' ? '<span class="badge badge-non">❌ Non</span>' : '<span class="badge badge-empty">—</span>';
+    const rd6 = r.rd6 ? '<span class="rd6-tag">RD6</span>' : '';
+    return `<tr ondblclick="openEditPanel(${i})" id="row-${i}">
+      <td><span style="font-family:var(--mono);font-size:.67rem">${escapeHtml(r.num)}</span>${rd6}</td>
+      <td style="font-family:var(--mono);font-size:.64rem">${escapeHtml(r.ref)}</td>
+      <td style="font-family:var(--mono);font-size:.64rem;white-space:nowrap">${escapeHtml(fmtDate(r.date))}</td>
+      <td>${escapeHtml(r.inter)}</td><td>${escapeHtml(r.disp)}</td><td>${escapeHtml(r.avis)}</td>
+      <td>${escapeHtml(r.desc)}</td><td>${escapeHtml(r.obs)}</td><td style="font-size:.64rem">${escapeHtml(r.docs)}</td>
+      <td>${badge}</td><td>${escapeHtml(r.repK)}</td><td>${escapeHtml(r.repL)}</td><td>${escapeHtml(r.lots)}</td>
+      <td style="text-align:center"><button class="tb-btn" onclick="openEditPanel(${i})" style="padding:1px 4px;font-size:.62rem;">✏️</button></td>
+    </tr>`;
   }).join('');
 }
-function updateStats(){const rows=getRows();ge('statOui').textContent=rows.filter(r=>r.suivi==='Oui').length;ge('statPar').textContent=rows.filter(r=>r.suivi==='Par').length;ge('statNon').textContent=rows.filter(r=>r.suivi==='Non').length;ge('statTotal').textContent=rows.length;}
-function switchTab(t){currentTab=t;ge('tabV2').classList.toggle('active',t==='v2');ge('tabV1').classList.toggle('active',t==='v1');resetFilters();}
-
-// --- Panneau latéral (avec désactivation si droits insuffisants) ---
-function openEditPanel(fi){
-  editingIdx=fi;
-  const r=filteredRows[fi];
-  const isEditable = canUserEdit(r) && !CANEVAS_READONLY;
-  ge('panelTitle').innerHTML=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - Avis : ${r.avis||'-'}`;
-  ge('panelNum').innerText=r.num||'(sans n°)';
-  ge('e_lblColE').innerText=r.disp||'—';
-  ge('e_obs_readonly').innerText=r.obs||'—';
-  ge('e_repK').value=r.repK||'';
-  ge('e_repL').value=r.repL||'';
-  ge('e_lots').value=r.lots||'';
-  ge('e_rd6').checked=r.rd6;
-  ge('rd6Toggle').classList.toggle('active',r.rd6);
-  currentSuivi=r.suivi; updateSuiviUI();
-  // Désactiver les contrôles si non éditable
-  const disabled = !isEditable;
-  ge('e_repK').disabled = disabled;
-  ge('e_repL').disabled = disabled;
-  ge('e_lots').disabled = disabled;
-  ge('e_rd6').disabled = disabled;
-  document.querySelectorAll('.suivi-opt').forEach(opt => opt.style.pointerEvents = disabled ? 'none' : 'auto');
-  ge('rd6Toggle').style.pointerEvents = disabled ? 'none' : 'auto';
-  ge('overlay').classList.add('open');
-  ge('editPanel').classList.add('open');
-  document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
-  const el=ge('row-'+fi); if(el) el.classList.add('row-highlight');
-}
-function closePanel(){ge('overlay').classList.remove('open');ge('editPanel').classList.remove('open');editingIdx=null;}
-function navRow(d){if(editingIdx!==null){let n=editingIdx+d;if(n>=0&&n<filteredRows.length)openEditPanel(n);}}
-function setSuivi(v){currentSuivi=v;updateSuiviUI();}
-function updateSuiviUI(){['oui','par','non','vide'].forEach(k=>{const el=ge('opt_'+k);if(el)el.classList.remove('sel-oui','sel-par','sel-non','sel-vide');});if(currentSuivi==='Oui')ge('opt_oui').classList.add('sel-oui');else if(currentSuivi==='Par')ge('opt_par').classList.add('sel-par');else if(currentSuivi==='Non')ge('opt_non').classList.add('sel-non');else ge('opt_vide')?.classList.add('sel-vide');}
-function toggleRD6(){const cb=ge('e_rd6');cb.checked=!cb.checked;ge('rd6Toggle').classList.toggle('active',cb.checked);}
-function saveRow(){
-  if(editingIdx===null)return;
-  const r=filteredRows[editingIdx];
-  if(!canUserEdit(r)){ alert("Vous n'avez pas les droits pour modifier cet avis."); return; }
-  const gi=getRows().findIndex(x=>x.id===r.id); if(gi===-1)return;
-  data[currentTab][gi]={...r,repK:ge('e_repK').value,repL:ge('e_repL').value,lots:ge('e_lots').value,suivi:currentSuivi,rd6:ge('e_rd6').checked};
-  if(data[currentTab][gi].rd6&&!data[currentTab][gi].num.includes('/RD6'))data[currentTab][gi].num+='/RD6';
-  else if(!data[currentTab][gi].rd6)data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
-  applyFilters();ge('saveFeedback').classList.add('show');setTimeout(()=>ge('saveFeedback').classList.remove('show'),1800);
-  persistLocal();pushToParent();
-}
-function deleteRow(){
-  if(editingIdx===null)return;
-  const r=filteredRows[editingIdx];
-  if(!canUserEdit(r)){ alert("Vous n'avez pas les droits pour supprimer cet avis."); return; }
-  if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;
-  const gi=getRows().findIndex(x=>x.id===r.id);
-  if(gi>=0){data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}
-}
-
-// --- Redimensionnement du volet latéral ---
-(function(){
-  const h = document.getElementById('epRh');
-  const ep = document.getElementById('editPanel');
-  let drag = false, sx = 0, sw = 0;
-  const sv = parseInt(localStorage.getItem('rs_ep_w') || '520');
-  ep.style.width = Math.max(340, Math.min(sv, window.innerWidth * 0.9)) + 'px';
-  h.addEventListener('mousedown', function(e) {
-    drag = true;
-    sx = e.clientX;
-    sw = ep.offsetWidth;
-    h.classList.add('dragging');
-    document.body.style.cssText = 'cursor:ew-resize;user-select:none';
-    e.preventDefault();
-  });
-  document.addEventListener('mousemove', function(e) {
-    if (!drag) return;
-    const nw = Math.max(340, Math.min(sw + (sx - e.clientX), window.innerWidth * 0.9));
-    ep.style.width = nw + 'px';
-  });
-  document.addEventListener('mouseup', function() {
-    if (!drag) return;
-    drag = false;
-    h.classList.remove('dragging');
-    document.body.style.cssText = '';
-    localStorage.setItem('rs_ep_w', ep.offsetWidth);
-  });
-})();
-
-// --- Modal PA ---
-function openPAModal(){['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>ge(id).checked=false);['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>ge(id).value='');ge('paFeedback').innerText='';ge('paModal').classList.add('open');}
-function closePAModal(){ge('paModal').classList.remove('open');}
-function addPA(){
-  const cat=ge('pa_F').checked?'F':ge('pa_S').checked?'S':ge('pa_D').checked?'D':ge('pa_PM').checked?'PM':'';
-  if(!cat){ge('paFeedback').innerText='⚠️ Cochez F, S, D ou PM';setTimeout(()=>ge('paFeedback').innerText='',2000);return;}
-  let maxPA=0;getRows().forEach(r=>{if((r.num||'').startsWith('PA')){let n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
-  data[currentTab].push(makeRow({num:'PA'+(maxPA+1),date:new Date().toISOString().slice(0,10),disp:ge('pa_disp').value,avis:cat,obs:ge('pa_obs').value,repK:ge('pa_repK').value,repL:ge('pa_repL').value,lots:ge('pa_lots').value}));
-  closePAModal();applyFilters();persistLocal();pushToParent();
-}
-
-// ======================= VERSION RAPIDE (avec vérification des droits) =======================
-let rapCurrent = null, rapFiltered = [];
-let rapSelectedLots = new Set(), rapSelectedInters = new Set();
-
-function toggleRapideFullscreen() { document.getElementById('rapideModal').classList.toggle('fullscreen'); }
-function buildRapMfOptions() {
+function updateStats() {
   const rows = getRows();
-  const inters = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v=>v))];
-  const allLots = rows.flatMap(r => (r.lots||'').split(/[,; ]+/).map(l=>l.trim()).filter(l=>l));
-  const lots = [...new Set(allLots)];
-  const interDrop = document.getElementById('rapMfInterDrop');
-  if (interDrop) interDrop.innerHTML = inters.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
-  const lotDrop = document.getElementById('rapMfLotsDrop');
-  if (lotDrop) lotDrop.innerHTML = lots.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
+  document.getElementById('statOui').textContent = rows.filter(r=>r.suivi==='Oui').length;
+  document.getElementById('statPar').textContent = rows.filter(r=>r.suivi==='Par').length;
+  document.getElementById('statNon').textContent = rows.filter(r=>r.suivi==='Non').length;
+  document.getElementById('statTotal').textContent = rows.length;
 }
-function toggleRapMulti(type, val, checked) {
-  if (type === 'inter') checked ? rapSelectedInters.add(val) : rapSelectedInters.delete(val);
-  else checked ? rapSelectedLots.add(val) : rapSelectedLots.delete(val);
-  rapApply();
+
+// ----- Onglets -----
+function switchTab(t) {
+  currentTab = t;
+  document.getElementById('tabV2').classList.toggle('active', t==='v2');
+  document.getElementById('tabV1').classList.toggle('active', t==='v1');
+  resetFilters();
 }
-function toggleRapMf(which) {
-  const id = which === 'inter' ? 'rapMfInterDrop' : 'rapMfLotsDrop';
-  const el = document.getElementById(id);
-  el.classList.toggle('show');
-  const other = which === 'inter' ? 'rapMfLotsDrop' : 'rapMfInterDrop';
-  const otherEl = document.getElementById(other);
-  if (otherEl && otherEl !== el) otherEl.classList.remove('show');
+
+// ----- Panneau d'édition -----
+function openEditPanel(fi) {
+  editingIdx = fi;
+  const r = filteredRows[fi];
+  document.getElementById('panelTitle').textContent = `Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${r.inter||'-'} - Avis : ${r.avis||'-'}`;
+  document.getElementById('panelNum').textContent = r.num||'(sans n°)';
+  document.getElementById('e_lblColE').textContent = r.disp||'—';
+  document.getElementById('e_obs').value = r.obs||'';
+  document.getElementById('e_repK').value = r.repK||'';
+  document.getElementById('e_repL').value = r.repL||'';
+  document.getElementById('e_lots').value = r.lots||'';
+  document.getElementById('e_rd6').checked = r.rd6;
+  document.getElementById('rd6Toggle').classList.toggle('active', r.rd6);
+  currentSuivi = r.suivi; updateSuiviUI();
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('editPanel').classList.add('open');
+  document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
+  const el = document.getElementById('row-'+fi); if (el) el.classList.add('row-highlight');
 }
-function cleanAffaireForRapide(raw) {
-  if (!raw) return '—';
-  let cleaned = raw.replace(/^\d{2}-\d{2}-\d{2}\s*-\s*/, '');
-  cleaned = cleaned.replace(/(-Rapport.*)$/, '');
-  return cleaned.trim();
+function closePanel() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('editPanel').classList.remove('open');
+  editingIdx = null;
 }
-function openRapide() {
-  rapCurrent = null;
-  rapSelectedLots.clear();
-  rapSelectedInters.clear();
-  buildRapMfOptions();
-  const affaireRaw = document.getElementById('affaireDisplay').innerText;
-  const titre = document.getElementById('rapideAffaireTitle');
-  if (titre) titre.innerText = cleanAffaireForRapide(affaireRaw);
-  ['rapF_F','rapF_S','rapF_D','rapF_lev','rapF_par','rapF_non','rapF_rd6','rapF_pa'].forEach(id => { const ch = ge(id); if (ch) ch.checked = false; });
-  document.getElementById('rapideOverlay').classList.add('open');
-  document.getElementById('rapideEditArea').style.display = 'none';
-  document.getElementById('rapSaveBtn').disabled = true;
-  document.getElementById('rapideObsText').innerHTML = '—';
-  rapApply();
+function navRow(d) {
+  if (editingIdx === null) return;
+  const n = editingIdx + d;
+  if (n >= 0 && n < filteredRows.length) openEditPanel(n);
 }
-function closeRapide() { document.getElementById('rapideOverlay').classList.remove('open'); }
-function rapReset() {
-  ['rapF_F','rapF_S','rapF_D','rapF_lev','rapF_par','rapF_non','rapF_rd6','rapF_pa'].forEach(id => { const ch = ge(id); if (ch) ch.checked = false; });
-  rapSelectedLots.clear(); rapSelectedInters.clear();
-  buildRapMfOptions();
-  rapApply();
+function setSuivi(v) { currentSuivi = v; updateSuiviUI(); }
+function updateSuiviUI() {
+  ['oui','par','non','vide'].forEach(k => document.getElementById('opt_'+k).className = 'suivi-opt');
+  const k = currentSuivi==='Oui'?'oui' : currentSuivi==='Par'?'par' : currentSuivi==='Non'?'non' : 'vide';
+  document.getElementById('opt_'+k).classList.add('sel-'+k);
 }
-function rapApply() {
-  const lotsFilter = Array.from(rapSelectedLots);
-  const interFilter = Array.from(rapSelectedInters);
-  const rfF = ge('rapF_F')?.checked||false, rfS = ge('rapF_S')?.checked||false, rfD = ge('rapF_D')?.checked||false;
-  const anyType = rfF||rfS||rfD;
-  const rfLev = ge('rapF_lev')?.checked||false, rfPar = ge('rapF_par')?.checked||false, rfNon = ge('rapF_non')?.checked||false, rfRd6 = ge('rapF_rd6')?.checked||false, rfPa = ge('rapF_pa')?.checked||false;
-  rapFiltered = getRows().filter(r => {
-    if (lotsFilter.length > 0) {
-      const rowLots = (r.lots||'').split(/[,; ]+/).map(l=>l.trim()).filter(l=>l);
-      if (!rowLots.some(l => lotsFilter.includes(l))) return false;
+function toggleRD6() {
+  const cb = document.getElementById('e_rd6');
+  cb.checked = !cb.checked;
+  document.getElementById('rd6Toggle').classList.toggle('active', cb.checked);
+}
+function saveRow() {
+  if (editingIdx === null) return;
+  const r = filteredRows[editingIdx];
+  const gi = getRows().findIndex(x => x.id === r.id);
+  if (gi === -1) return;
+  data[currentTab][gi] = {
+    ...r,
+    obs: document.getElementById('e_obs').value,
+    repK: document.getElementById('e_repK').value,
+    repL: document.getElementById('e_repL').value,
+    lots: document.getElementById('e_lots').value,
+    suivi: currentSuivi,
+    rd6: document.getElementById('e_rd6').checked
+  };
+  if (data[currentTab][gi].rd6 && !data[currentTab][gi].num.includes('/RD6')) data[currentTab][gi].num += '/RD6';
+  else if (!data[currentTab][gi].rd6) data[currentTab][gi].num = data[currentTab][gi].num.replace('/RD6','');
+  applyFilters();
+  document.getElementById('saveFeedback').classList.add('show');
+  setTimeout(()=>document.getElementById('saveFeedback').classList.remove('show'), 1800);
+  persistLocal();
+  if (window.parent) {
+    const raw = localStorage.getItem('rapsotracker');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
     }
-    if (interFilter.length > 0 && !interFilter.includes(cleanIntervenant(r.inter))) return false;
+  }
+}
+function deleteRow() {
+  if (editingIdx === null) return;
+  const r = filteredRows[editingIdx];
+  const gi = getRows().findIndex(x => x.id === r.id);
+  if (gi >= 0 && confirm(`Supprimer définitivement l'avis ${r.num} ?`)) {
+    data[currentTab].splice(gi,1);
+    applyFilters();
+    closePanel();
+    persistLocal();
+    if (window.parent) {
+      const raw = localStorage.getItem('rapsotracker');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
+      }
+    }
+  }
+}
+
+// ----- Modal PA -----
+function openPAModal() {
+  ['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>document.getElementById(id).checked=false);
+  ['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('paFeedback').style.opacity='0';
+  document.getElementById('paModal').classList.add('open');
+}
+function closePAModal() { document.getElementById('paModal').classList.remove('open'); }
+function paCheck(v) {
+  ['F','S','D','PM'].forEach(k=>{ if(k!==v) document.getElementById('pa_'+k).checked=false; });
+}
+function addPA() {
+  const cat = document.getElementById('pa_F').checked ? 'F' : document.getElementById('pa_S').checked ? 'S' : document.getElementById('pa_D').checked ? 'D' : document.getElementById('pa_PM').checked ? 'PM' : '';
+  if (!cat) { document.getElementById('paFeedback').style.opacity='1'; setTimeout(()=>document.getElementById('paFeedback').style.opacity='0',2500); return; }
+  const rows = getRows();
+  let maxPA = 0;
+  rows.forEach(r => { if ((r.num||'').startsWith('PA')) { const n = parseInt(r.num.replace('PA','')); if (n>maxPA) maxPA=n; } });
+  const newRow = makeRow({
+    num: 'PA'+(maxPA+1),
+    date: new Date().toISOString().slice(0,10),
+    disp: document.getElementById('pa_disp').value,
+    avis: cat,
+    obs: document.getElementById('pa_obs').value,
+    repK: document.getElementById('pa_repK').value,
+    repL: document.getElementById('pa_repL').value,
+    lots: document.getElementById('pa_lots').value
+  });
+  data[currentTab].push(newRow);
+  closePAModal();
+  applyFilters();
+  persistLocal();
+}
+
+// ----- Version rapide (simplifiée mais conservée) -----
+let rapideSelected = null, rapideFiltered = [];
+function openRapide() { rapideSelected=null; document.getElementById('rapideOverlay').classList.add('open'); document.getElementById('rapideEditArea').style.display='none'; document.getElementById('rapideSaveBtn').disabled=true; rapideApply(); }
+function closeRapide() { document.getElementById('rapideOverlay').classList.remove('open'); }
+function rapideReset() {
+  ['rf_lots','rf_inter'].forEach(id=>document.getElementById(id).value='');
+  ['rf_F','rf_S','rf_D','rf_rd6','rf_non','rf_par','rf_lev','rf_pa'].forEach(id=>document.getElementById(id).checked=false);
+  rapideApply();
+}
+function rapideApply() {
+  const lots = (document.getElementById('rf_lots').value||'').toLowerCase();
+  const inter = (document.getElementById('rf_inter').value||'').toLowerCase();
+  const rfF = document.getElementById('rf_F').checked, rfS = document.getElementById('rf_S').checked, rfD = document.getElementById('rf_D').checked, anyType = rfF||rfS||rfD;
+  const rfRd6 = document.getElementById('rf_rd6').checked, rfNon = document.getElementById('rf_non').checked, rfPar = document.getElementById('rf_par').checked, rfLev = document.getElementById('rf_lev').checked, rfPa = document.getElementById('rf_pa').checked, anyStat = rfRd6||rfNon||rfPar||rfLev||rfPa;
+  rapideFiltered = getRows().filter(r => {
+    if (lots && !String(r.lots||'').toLowerCase().includes(lots)) return false;
+    if (inter && !String(r.inter||'').toLowerCase().includes(inter)) return false;
     if (anyType) { const a = (r.avis||'').toUpperCase().trim(); if (!((rfF&&a==='F')||(rfS&&a==='S')||(rfD&&a==='D'))) return false; }
-    if (rfLev && r.suivi !== 'Oui') return false;
-    if (rfPar && r.suivi !== 'Par') return false;
-    if (rfNon && r.suivi !== 'Non') return false;
-    if (rfRd6 && !r.rd6) return false;
-    if (rfPa && !(r.num||'').toUpperCase().startsWith('PA')) return false;
+    if (anyStat) { if (!((rfRd6&&r.rd6)||(rfNon&&r.suivi==='Non')||(rfPar&&r.suivi==='Par')||(rfLev&&r.suivi==='Oui')||(rfPa&&(r.num||'').toUpperCase().startsWith('PA')))) return false; }
     return true;
   });
-  const sCount = rapFiltered.filter(r => (r.avis||'').toUpperCase().trim() === 'S').length;
-  const dCount = rapFiltered.filter(r => (r.avis||'').toUpperCase().trim() === 'D').length;
-  const fCount = rapFiltered.filter(r => (r.avis||'').toUpperCase().trim() === 'F').length;
-  ge('rapStatsSDF').innerHTML = `<span class="s">S=${sCount}</span> / <span class="d">D=${dCount}</span> / <span class="f">F=${fCount}</span>`;
-  ge('rapCnt').innerHTML = `(${rapFiltered.length})`;
-  const listDiv = ge('rapideList');
-  if (!rapFiltered.length) { listDiv.innerHTML = '<div class="empty-state" style="padding:20px"><div>Aucun avis</div></div>'; return; }
-  listDiv.innerHTML = rapFiltered.map((r,i) => {
-    let badge = '';
-    if (r.suivi === 'Oui') badge = '<span class="badge badge-oui" style="font-size:0.6rem;margin-right:4px;">✅</span>';
-    else if (r.suivi === 'Par') badge = '<span class="badge badge-par" style="font-size:0.6rem;margin-right:4px;">⚠️</span>';
-    else if (r.suivi === 'Non') badge = '<span class="badge badge-non" style="font-size:0.6rem;margin-right:4px;">❌</span>';
-    const avisBg = (r.avis||'').toUpperCase() === 'F' ? '#dcfce7' : (r.avis||'').toUpperCase() === 'S' ? '#fef3c7' : (r.avis||'').toUpperCase() === 'D' ? '#fee2e2' : 'var(--g100)';
-    const avisCol = (r.avis||'').toUpperCase() === 'F' ? '#15803d' : (r.avis||'').toUpperCase() === 'S' ? '#92400e' : (r.avis||'').toUpperCase() === 'D' ? '#991b1b' : 'var(--g500)';
-    const sel = (rapCurrent && rapCurrent.id === r.id) ? 'selected' : '';
-    return `<div class="rapide-item ${sel}" onclick="rapSelect(${i})">
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;">
-        <span class="rapide-item-num">${escapeHtml(r.num)}</span>
-        <span class="rapide-item-avis" style="background:${avisBg};color:${avisCol};">${escapeHtml(r.avis)}</span>
-        ${badge}
-        ${r.rd6 ? '<span class="rd6-tag" style="font-size:0.55rem;">RD6</span>' : ''}
-        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--g400);">${escapeHtml(fmtDate(r.date))}</span>
-      </div>
-      <div class="rapide-item-preview">${escapeHtml(r.disp) || escapeHtml(r.obs) || '—'}</div>
+  const s=rapideFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='S').length;
+  const d=rapideFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='D').length;
+  const f=rapideFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='F').length;
+  document.getElementById('rapideInfo').textContent = `Nbr.Avis : S=${s} / D=${d} / F=${f}`;
+  const list = document.getElementById('rapideList');
+  if (!rapideFiltered.length) { list.innerHTML='<div class="empty-state"><div>Aucun avis</div></div>'; return; }
+  list.innerHTML = rapideFiltered.map((r,i) => {
+    const badge = r.suivi==='Oui'?'<span class="badge badge-oui" style="font-size:.56rem">✅</span>':r.suivi==='Par'?'<span class="badge badge-par" style="font-size:.56rem">⚠️</span>':r.suivi==='Non'?'<span class="badge badge-non" style="font-size:.56rem">❌</span>':'';
+    const rd6 = r.rd6?'<span class="rd6-tag" style="font-size:.53rem">RD6</span>':'';
+    return `<div style="padding:5px 7px;border:1px solid transparent;border-radius:4px;cursor:pointer;margin-bottom:2px;font-size:0.7rem;${rapideSelected&&rapideSelected.id===r.id?'background:rgba(37,99,235,.1);border-color:var(--accent);':''}" onclick="rapideSelect(${i})" ondblclick="openEditPanel(${filteredRows.findIndex(x=>x.id===r.id)})">
+      <div style="display:flex;align-items:center;gap:4px;"><strong style="font-family:var(--mono);color:var(--accent);">${escapeHtml(r.num)}</strong>${badge}${rd6}</div>
+      <div style="color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(r.disp)||escapeHtml(r.avis)||'—'}</div>
     </div>`;
   }).join('');
-  if (rapCurrent) { const idx = rapFiltered.findIndex(r => r.id === rapCurrent.id); if (idx >= 0) rapSelect(idx, false); }
-  updateRapButtonsState();
 }
-function updateRapButtonsState() {
-  const oui = ge('rapBtnOui'), par = ge('rapBtnPar'), non = ge('rapBtnNon'), rd6 = ge('rapBtnRd6');
-  if (rapCurrent) {
-    oui.classList.toggle('active', rapCurrent.suivi === 'Oui');
-    par.classList.toggle('active', rapCurrent.suivi === 'Par');
-    non.classList.toggle('active', rapCurrent.suivi === 'Non');
-    rd6.classList.toggle('active', rapCurrent.rd6 === true);
-  } else {
-    oui.classList.remove('active'); par.classList.remove('active'); non.classList.remove('active'); rd6.classList.remove('active');
-  }
+function rapideSelect(i) {
+  rapideSelected = rapideFiltered[i];
+  const r = rapideSelected;
+  document.querySelectorAll('#rapideList > div').forEach((el,j)=>el.style.background=j===i?'rgba(37,99,235,.1)':'');
+  document.querySelectorAll('#rapideList > div').forEach((el,j)=>el.style.borderColor=j===i?'var(--accent)':'transparent');
+  document.getElementById('rapideDetail').innerHTML = `
+    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">N° Avis</strong><div style="font-size:0.78rem;">${escapeHtml(r.num)} ${r.rd6?'<span class="rd6-tag">RD6</span>':''}</div></div>
+    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">Avis</strong><div style="font-size:0.78rem;">${escapeHtml(r.avis)||'—'}</div></div>
+    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">Dispositions</strong><div style="font-size:0.78rem;">${escapeHtml(r.disp)||'—'}</div></div>
+    <div style="margin-bottom:6px;"><strong style="font-size:0.62rem;color:var(--muted);">Observations</strong><div style="font-size:0.78rem;white-space:pre-wrap;">${escapeHtml(r.obs)||'—'}</div></div>
+  `;
+  document.getElementById('rapideEditArea').style.display = 'flex';
+  document.getElementById('rq_repK').value = r.repK||'';
+  document.getElementById('rq_repL').value = r.repL||'';
+  document.getElementById('rq_lots').value = r.lots||'';
+  document.getElementById('rapideSaveBtn').disabled = false;
 }
-function rapSelect(i, scroll = true) {
-  rapCurrent = rapFiltered[i];
-  document.querySelectorAll('.rapide-item').forEach((el, idx) => el.classList.toggle('selected', idx === i));
-  if (scroll) document.querySelectorAll('.rapide-item')[i]?.scrollIntoView({ block: 'nearest' });
-  const r = rapCurrent;
-  ge('rapideObsText').innerHTML = escapeHtml(r.obs) || '—';
-  const editArea = ge('rapideEditArea');
-  editArea.style.display = 'flex';
-  ge('rq_repK').value = r.repK || '';
-  ge('rq_repL').value = r.repL || '';
-  ge('rq_lots').value = r.lots || '';
-  ge('rapSaveBtn').disabled = false;
-  updateRapButtonsState();
-}
-function rapToggleSuivi(v) {
-  if (!rapCurrent) return;
-  if (!canUserEdit(rapCurrent)) { alert("Vous n'avez pas les droits pour modifier le suivi."); return; }
-  const gi = data[currentTab].findIndex(x => x.id === rapCurrent.id);
-  if (gi === -1) return;
-  const newSuivi = (data[currentTab][gi].suivi === v) ? '' : v;
-  data[currentTab][gi].suivi = newSuivi;
-  rapCurrent = { ...data[currentTab][gi] };
-  persistLocal(); pushToParent();
-  rapApply();
-}
-function rapToggleRD6() {
-  if (!rapCurrent) return;
-  if (!canUserEdit(rapCurrent)) { alert("Vous n'avez pas les droits pour modifier RD6."); return; }
-  const gi = data[currentTab].findIndex(x => x.id === rapCurrent.id);
-  if (gi === -1) return;
-  data[currentTab][gi].rd6 = !data[currentTab][gi].rd6;
-  rapCurrent = { ...data[currentTab][gi] };
-  persistLocal(); pushToParent();
-  rapApply();
-}
-function rapSaveTexts() {
-  if (!rapCurrent) return;
-  if (!canUserEdit(rapCurrent)) { alert("Vous n'avez pas les droits pour modifier les textes."); return; }
-  const gi = data[currentTab].findIndex(x => x.id === rapCurrent.id);
-  if (gi === -1) return;
-  data[currentTab][gi].repK = ge('rq_repK').value;
-  data[currentTab][gi].repL = ge('rq_repL').value;
-  data[currentTab][gi].lots = ge('rq_lots').value;
-  rapCurrent = { ...data[currentTab][gi] };
-  persistLocal(); pushToParent();
-  rapApply();
-  const btn = ge('rapSaveBtn');
+function rapideSetSuivi(v) { if (!rapideSelected) return; const gi = data[currentTab].findIndex(x=>x.id===rapideSelected.id); if (gi>=0) { data[currentTab][gi].suivi=v; rapideSelected={...data[currentTab][gi]}; persistLocal(); } rapideApply(); }
+function rapideToggleRD6() { if (!rapideSelected) return; const gi = data[currentTab].findIndex(x=>x.id===rapideSelected.id); if (gi>=0) { data[currentTab][gi].rd6 = !data[currentTab][gi].rd6; rapideSelected={...data[currentTab][gi]}; persistLocal(); } rapideApply(); }
+function rapideSave() {
+  if (!rapideSelected) return;
+  const gi = data[currentTab].findIndex(x=>x.id===rapideSelected.id);
+  if (gi<0) return;
+  data[currentTab][gi].repK = document.getElementById('rq_repK').value;
+  data[currentTab][gi].repL = document.getElementById('rq_repL').value;
+  data[currentTab][gi].lots = document.getElementById('rq_lots').value;
+  rapideSelected = {...data[currentTab][gi]};
+  persistLocal();
+  applyFilters();
+  rapideApply();
+  const btn = document.getElementById('rapideSaveBtn');
   btn.textContent = '✓';
-  setTimeout(() => { btn.textContent = '💾 Valider'; btn.disabled = true; }, 2000);
+  setTimeout(()=>btn.textContent='💾 Valider',1500);
 }
 
-// --- Ajout manuel ---
-function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>ge(id).value='');ge('addModal').classList.add('open');}
-function closeAddModal(){ge('addModal').classList.remove('open');}
-function addRow(){
-  if(!ge('a_num').value.trim()){alert('Numéro d\'avis requis');return;}
-  data[currentTab].push(makeRow({num:ge('a_num').value,ref:ge('a_ref').value,date:ge('a_date').value,inter:ge('a_inter').value,disp:ge('a_disp').value,avis:ge('a_avis').value,desc:ge('a_desc').value,obs:ge('a_obs').value,docs:ge('a_docs').value,lots:ge('a_lots').value}));
-  closeAddModal();applyFilters();persistLocal();pushToParent();
+// ----- Ajout manuel -----
+function openAddModal() {
+  ['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('addModal').classList.add('open');
 }
-
-// --- Statistiques (version simplifiée mais lisible) ---
-function openStatsModal() {
-  const rows = getRows();
-  let F=0, S=0, D=0, SO=0, HM=0, PM=0;
-  let suivis=0, partiels=0, nonSuivis=0;
-  let avisLevesTotal = 0;
-  let firstIntervention = null, lastIntervention = null;
-  for (const r of rows) {
-    const av = (r.avis || '').toUpperCase().trim();
-    if (av === 'F') F++;
-    else if (av === 'S') S++;
-    else if (av === 'D') D++;
-    else if (av === 'SO') SO++;
-    else if (av === 'HM') HM++;
-    else if (av === 'PM') PM++;
-    if (r.suivi === 'Oui') { suivis++; avisLevesTotal++; }
-    else if (r.suivi === 'Par') partiels++;
-    else if (r.suivi === 'Non') nonSuivis++;
-    if (r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date)) {
-      const d = new Date(r.date);
-      if (!firstIntervention || d < firstIntervention) firstIntervention = d;
-      if (!lastIntervention || d > lastIntervention) lastIntervention = d;
+function closeAddModal() { document.getElementById('addModal').classList.remove('open'); }
+function addRow() {
+  data[currentTab].push(makeRow({
+    num: document.getElementById('a_num').value,
+    ref: document.getElementById('a_ref').value,
+    date: document.getElementById('a_date').value,
+    inter: document.getElementById('a_inter').value,
+    disp: document.getElementById('a_disp').value,
+    avis: document.getElementById('a_avis').value,
+    desc: document.getElementById('a_desc').value,
+    obs: document.getElementById('a_obs').value,
+    docs: document.getElementById('a_docs').value,
+    lots: document.getElementById('a_lots').value
+  }));
+  closeAddModal();
+  applyFilters();
+  persistLocal();
+  if (window.parent) {
+    const raw = localStorage.getItem('rapsotracker');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      window.parent.postMessage({ type: 'rapso_save', canId: window.CANEVAS_ID, data: parsed.data }, '*');
     }
   }
-  const fmt = d => d ? d.toLocaleDateString('fr-FR') : '—';
-  const html = `
-    <div style="display:flex;flex-direction:column;gap:8px;">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-        <div style="background:var(--green-l);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#15803d">${F}</div><div style="font-size:.74rem;color:#15803d">Favorables (F)</div></div>
-        <div style="background:var(--gold-l);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#92400e">${S}</div><div style="font-size:.74rem;color:#92400e">Suspendus (S)</div></div>
-        <div style="background:var(--red-l);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#991b1b">${D}</div><div style="font-size:.74rem;color:#991b1b">Défavorables (D)</div></div>
-      </div>
-      <div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;">
-        <div><strong>Avis Sans Objet :</strong> ${SO}</div>
-        <div><strong>Avis Hors Mission :</strong> ${HM}</div>
-        <div><strong>Avis Pour Mémoire :</strong> ${PM}</div>
-        <div><strong>Nombre Total d'Avis Levés :</strong> ${avisLevesTotal}</div>
-      </div>
-      <div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;">
-        <div><strong>Première intervention :</strong> ${fmt(firstIntervention)}</div>
-        <div><strong>Dernière intervention :</strong> ${fmt(lastIntervention)}</div>
-      </div>
-      <div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;">
-        <div><strong>Avis suivis :</strong> ${suivis}</div>
-        <div><strong>Avis partiellement suivis :</strong> ${partiels}</div>
-        <div><strong>Avis non suivis :</strong> ${nonSuivis}</div>
-      </div>
-    </div>
-  `;
-  ge('statsContent').innerHTML = html;
-  ge('statsModal').classList.add('open');
 }
-function closeStatsModal(){ge('statsModal').classList.remove('open');}
 
-// --- Import / Actualiser XLSX (avec mot de passe sur import) ---
-function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
-function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
-function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
-function hasRappel(obs){if(!obs)return false;let s=String(obs);return s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l’observation précédente :")||s.includes("Rappel de l'observation précédente:")||s.includes("Rappel de l’observation précédente:");}
-function processXLSX(file,mode){
-  const sid=mode==='actualiser'?'actualiserStatus':'importStatus'; ge(sid).textContent='Lecture...';
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
-      let sheetName=wb.SheetNames.find(n=>n==='Synthèse')||wb.SheetNames.find(n=>n==='RapsoV2')||wb.SheetNames.find(n=>n==='RapsoV1')||wb.SheetNames[0];
-      const ws=wb.Sheets[sheetName];
-      const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-      const baseName=file.name.replace(/\.(xlsx|xlsm|xls)$/i,''); ge('affaireDisplay').innerText=baseName;
-      const src=[];
-      for(let i=1;i<Math.min(raw.length,500);i++){
-        const row=raw[i]; if(!row||row.every(c=>c===''))continue;
-        const nv=String(row[1]||'').trim(); const obs=String(row[7]||''); let suivi=hasRappel(obs)?'Oui':'';
-        src.push(makeRow({num:nv,ref:String(row[0]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),avis:String(row[5]||'').trim(),desc:String(row[6]||'').trim(),obs,docs:cleanDocs(String(row[8]||'').trim()),suivi,repK:'',repL:'',lots:'',rd6:nv.includes('/RD6')}));
+// ----- Statistiques -----
+function openStatsModal() {
+  const rows = getRows();
+  let F=0,S=0,D=0,SO=0,HM=0,PM=0,visites=0,avT=0,avD=0,minD=null,maxD=null,firstI=null,lastI=null,lastDate=null;
+  const ext = ['.png','.jpg','.jpeg','.jpe','.jfif','.bmp','.dib'];
+  for (const r of rows) {
+    switch((r.avis||'').toUpperCase().trim()) {
+      case 'F': F++; break; case 'S': S++; break; case 'D': D++; break;
+      case 'SO': SO++; break; case 'HM': HM++; break; case 'PM': PM++; break;
+    }
+    if (r.suivi==='Oui') { const d=(r.docs||'').toLowerCase(); (!r.docs.trim()||ext.some(e=>d.includes(e))) ? avT++ : avD++; }
+    if (r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date)) {
+      if (!firstI || r.date < firstI) firstI = r.date;
+      if (!lastI || r.date > lastI) lastI = r.date;
+      if ((r.ref||'').toUpperCase().trim() !== 'RICT' && !(r.obs||'').includes('Rappel') && !(r.docs||'').trim() && (!lastDate || r.date !== lastDate)) {
+        visites++; lastDate = r.date;
+        if (!minD || r.date < minD) minD = r.date;
+        if (!maxD || r.date > maxD) maxD = r.date;
       }
-      let target=sheetName==='RapsoV1'?'v1':'v2';
-      if(mode==='actualiser'){
-        let ex=data[target]; let up=0,add=0;
-        for(const s of src){ const k=extractKey(s.num); if(!k)continue; const idx=ex.findIndex(t=>extractKey(t.num)===k); if(idx>=0){ ex[idx]={...ex[idx],...s,id:ex[idx].id}; if(hasRappel(ex[idx].obs))ex[idx].suivi='Oui'; else ex[idx].suivi=''; up++; } else{ ex.push(s); add++; } }
-        ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num),undefined,{numeric:true})); data[target]=ex; currentTab=target; ge(sid).textContent=`✅ ${up} mis à jour, ${add} ajoutés`;
+    }
+  }
+  const fmt = d => d ? d.split('-').reverse().join('/') : '';
+  document.getElementById('statsContent').innerHTML = `
+    <div style="font-family:var(--mono);font-size:0.75rem;line-height:1.8;">
+      <div style="color:var(--green);"><strong>Avis Favorables :</strong> ${F}</div>
+      <div style="color:var(--yellow);"><strong>Avis Suspendus :</strong> ${S}</div>
+      <div style="color:var(--red);"><strong>Avis Défavorables :</strong> ${D}</div>
+      <div><strong>Sans Objet :</strong> ${SO} | <strong>Hors Mission :</strong> ${HM} | <strong>Pour Mémoire :</strong> ${PM}</div>
+      <hr style="border-color:var(--border);margin:6px 0;">
+      <div style="color:var(--green);"><strong>Avis Levés Travaux :</strong> ${avT} | <strong>Documents :</strong> ${avD} | <strong>Total :</strong> ${avT+avD}</div>
+      <hr style="border-color:var(--border);margin:6px 0;">
+      <div><strong>Visites :</strong> ${visites} | <strong>Premier :</strong> ${fmt(minD)} | <strong>Dernier :</strong> ${fmt(maxD)}</div>
+      <div><strong>Interventions :</strong> ${fmt(firstI)} → ${fmt(lastI)}</div>
+    </div>`;
+  document.getElementById('statsModal').classList.add('open');
+}
+function closeStatsModal() { document.getElementById('statsModal').classList.remove('open'); }
+
+// ----- Import / Actualiser XLSX -----
+function openImportModal() { document.getElementById('importModal').classList.add('open'); }
+function closeImportModal() { document.getElementById('importModal').classList.remove('open'); }
+function openActualiserModal() { document.getElementById('actualiserModal').classList.add('open'); }
+function closeActualiserModal() { document.getElementById('actualiserModal').classList.remove('open'); }
+
+function normalizeDate(d) {
+  if (d instanceof Date) return d.toISOString().slice(0,10);
+  if (!d) return '';
+  let t = String(d).trim().replace(/[-.]/g,'/');
+  const p = t.split('/');
+  if (p.length >= 3) {
+    let dd = +p[0], mm = +p[1], yy = +p[2];
+    if (yy < 100) yy += 2000;
+    if (!isNaN(dd) && !isNaN(mm) && !isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+  }
+  const pd = new Date(t);
+  return !isNaN(pd.getTime()) ? pd.toISOString().slice(0,10) : '';
+}
+function cleanDocuments(v) {
+  if (!v) return '';
+  let c = v.replace(/},{/g,'}\n{');
+  ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m => c = c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'), ''));
+  c = c.replace(/"/g,'');
+  return c.split('\n').map(l => l.trim() && !l.startsWith('.') ? '.'+l.trim() : l.trim()).join('\n');
+}
+function extractKey(v) { if (!v) return ''; const p = v.indexOf('/'); return p>0 ? v.substring(0,p).trim() : v.trim(); }
+
+function processXLSX(file, mode) {
+  const sid = mode === 'actualiser' ? 'actualiserStatus' : 'importStatus';
+  const st = document.getElementById(sid); st.textContent = 'Lecture…';
+  const r = new FileReader();
+  r.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+      const sn = wb.SheetNames;
+      let sheetName = sn.find(n=>n==='Synthèse') || sn.find(n=>n==='RapsoV2') || sn.find(n=>n==='RapsoV1') || sn[0];
+      const ws = wb.Sheets[sheetName];
+      const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      const baseName = file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
+      document.getElementById('affaireDisplay').innerText = baseName;
+      document.getElementById('dossierInput').value = baseName;
+      const src = [];
+      for (let i=1; i<Math.min(raw.length, 500); i++) {
+        const row = raw[i];
+        if (!row || row.every(c=>c===''||c===null)) continue;
+        const nv = String(row[1]||'').trim();
+        src.push(makeRow({
+          num: nv,
+          ref: String(row[0]||'').trim(),
+          date: normalizeDate(row[2]),
+          inter: String(row[3]||'').trim(),
+          disp: String(row[4]||'').trim(),
+          avis: String(row[5]||'').trim(),
+          desc: String(row[6]||'').trim(),
+          obs: String(row[7]||'').trim(),
+          docs: cleanDocuments(String(row[8]||'').trim()),
+          suivi: String(row[9]||'').includes('Oui') ? 'Oui' : String(row[9]||'').includes('Par') ? 'Par' : String(row[9]||'').includes('Non') ? 'Non' : '',
+          repK: String(row[10]||'').trim(),
+          repL: String(row[11]||'').trim(),
+          lots: String(row[12]||'').trim(),
+          rd6: nv.includes('/RD6')
+        }));
+      }
+      let target = 'v2';
+      if (sheetName === 'RapsoV1') target = 'v1';
+      let up = 0, add = 0;
+      if (mode === 'actualiser') {
+        const ex = data[target];
+        for (const s of src) {
+          const k = extractKey(s.num);
+          if (!k) continue;
+          const idx = ex.findIndex(t => extractKey(t.num) === k);
+          if (idx >= 0) { ex[idx] = {...ex[idx], ...s, id: ex[idx].id}; up++; }
+          else { ex.push(s); add++; }
+        }
+        ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num), undefined, { numeric: true }));
+        data[target] = ex;
+        currentTab = target;
+        st.textContent = `✅ ${up} mis à jour, ${add} ajoutés`;
       } else {
-        if(!confirm(`${src.length} lignes → ${target} ?\n⚠️ Remplace tout`)){ ge(sid).textContent='Annulé.'; return; }
-        data[target]=src; currentTab=target; ge(sid).textContent=`✅ ${src.length} avis importés`;
+        if (!confirm(`${src.length} lignes → ${target} ?\n⚠️ Remplace tout`)) { st.textContent = 'Annulé.'; return; }
+        data[target] = src;
+        currentTab = target;
+        st.textContent = `✅ ${src.length} avis importés`;
       }
-      ge('tabV2').classList.toggle('active',target==='v2'); ge('tabV1').classList.toggle('active',target==='v1');
-      selectedIntervenants.clear(); selectedLots.clear(); applyFilters(); persistLocal(); pushToParent();
-    }catch(err){ ge(sid).textContent='❌ '+err.message; }
+      document.getElementById('tabV2').classList.toggle('active', target==='v2');
+      document.getElementById('tabV1').classList.toggle('active', target==='v1');
+      selectedIntervenants.clear();
+      selectedLots.clear();
+      applyFilters();
+      persistLocal();
+    } catch(err) { st.textContent = '❌ '+err.message; }
   };
-  reader.readAsArrayBuffer(file);
+  r.readAsArrayBuffer(file);
 }
-function checkPasswordBeforeImport() {
-  const motDePasse = "SOCOTEC";
-  let tentative = prompt("Veuillez saisir le code d'accès pour lancer l'importation.\n\nATTENTION : Pour une simple mise à jour des données existantes, cliquez sur ANNULER puis sur le bouton 'Actualiser'.", "");
-  if (tentative === null || tentative === "") return false;
-  if (tentative === motDePasse) return true;
-  alert("Mot de passe incorrect.");
-  return false;
-}
-function openImportModal() {
-  if (!checkPasswordBeforeImport()) return;
-  document.getElementById('importModal').classList.add('open');
-}
-function closeImportModal(){ge('importModal').classList.remove('open');}
-function openActualiserModal(){ge('actualiserModal').classList.add('open');}
-function closeActualiserModal(){ge('actualiserModal').classList.remove('open');}
-function handleFileImport(i){if(i.files[0])processXLSX(i.files[0],'import');}
-function handleActualiserFileImport(i){if(i.files[0])processXLSX(i.files[0],'actualiser');}
-['importDropzone','actualiserDropzone'].forEach(id=>{const dz=ge(id);if(dz){dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--blue)';});dz.addEventListener('dragleave',()=>dz.style.borderColor='');dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f)processXLSX(f,id==='actualiserDropzone'?'actualiser':'import');});}});
+['importDropzone','actualiserDropzone'].forEach(id => {
+  const dz = document.getElementById(id);
+  if (!dz) return;
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'var(--accent)'; });
+  dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.style.borderColor = '';
+    const f = e.dataTransfer.files[0];
+    if (f) processXLSX(f, id === 'actualiserDropzone' ? 'actualiser' : 'import');
+  });
+});
+function handleFileImport(i) { if (i.files[0]) processXLSX(i.files[0], 'import'); }
+function handleActualiserFileImport(i) { if (i.files[0]) processXLSX(i.files[0], 'actualiser'); }
 
-// --- JSON ---
-function exportJSON(){const meta={affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value};const blob=new Blob([JSON.stringify({meta,data},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rapso_'+(meta.affaire||'data')+'.json';a.click();}
-function loadJSON(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const o=JSON.parse(ev.target.result);if(o.meta){ge('affaireDisplay').innerText=o.meta.affaire||'';ge('dossierInput').value=o.meta.dossier||'';}if(o.data){data.v2=(o.data.v2||[]).map(makeRow);data.v1=(o.data.v1||[]).map(makeRow);}selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();alert('✅');}catch(e){alert('JSON invalide');}};r.readAsText(f);};inp.click();}
-function loadLocal(){if(window.RAPSO_SYNTH_DATA)return;try{const r=localStorage.getItem('rapsotracker');if(!r)return;const o=JSON.parse(r);if(o.meta){ge('affaireDisplay').innerText=o.meta.affaire||'';ge('dossierInput').value=o.meta.dossier||'';}if(o.data){data.v2=(o.data.v2||[]).map(makeRow);data.v1=(o.data.v1||[]).map(makeRow);}applyFilters();}catch(e){}}
-function ge(id){return document.getElementById(id);}
+// ----- JSON -----
+function exportJSON() {
+  const meta = { affaire: document.getElementById('affaireDisplay').innerText, dossier: document.getElementById('dossierInput').value };
+  const blob = new Blob([JSON.stringify({meta, data}, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rapso_'+(meta.affaire||'data')+'.json';
+  a.click();
+}
+function loadJSON() {
+  const i = document.createElement('input');
+  i.type = 'file';
+  i.accept = '.json';
+  i.onchange = e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      try {
+        const o = JSON.parse(ev.target.result);
+        if (o.meta) {
+          document.getElementById('affaireDisplay').innerText = o.meta.affaire || '';
+          document.getElementById('dossierInput').value = o.meta.dossier || '';
+        }
+        if (o.data) {
+          data.v2 = (o.data.v2 || []).map(makeRow);
+          data.v1 = (o.data.v1 || []).map(makeRow);
+        }
+        selectedIntervenants.clear();
+        selectedLots.clear();
+        applyFilters();
+        persistLocal();
+        alert('✅');
+      } catch { alert('JSON invalide'); }
+    };
+    r.readAsText(f);
+  };
+  i.click();
+}
+function persistLocal() {
+  try {
+    localStorage.setItem('rapsotracker', JSON.stringify({
+      meta: { affaire: document.getElementById('affaireDisplay').innerText, dossier: document.getElementById('dossierInput').value },
+      data
+    }));
+  } catch(e) {}
+}
+function loadLocal() {
+  if (typeof window.RAPSO_SYNTH_DATA !== 'undefined' && window.RAPSO_SYNTH_DATA) return;
+  try {
+    const r = localStorage.getItem('rapsotracker');
+    if (!r) return;
+    const o = JSON.parse(r);
+    if (o.meta) {
+      document.getElementById('affaireDisplay').innerText = o.meta.affaire || '';
+      document.getElementById('dossierInput').value = o.meta.dossier || '';
+    }
+    if (o.data) {
+      data.v2 = (o.data.v2 || []).map(makeRow);
+      data.v1 = (o.data.v1 || []).map(makeRow);
+    }
+    applyFilters();
+  } catch(e) {}
+}
+loadLocal();
+applyFilters();
 
-loadColPrefs(); buildColPickerList(); rebuildTableHeader(); loadLocal(); applyFilters();
+// ----- Communication avec le parent (portail) -----
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'rapso_inject') {
+    try {
+      const inj = e.data.data || { v2: [], v1: [] };
+      data.v2 = Array.isArray(inj.v2) ? inj.v2.map(makeRow) : [];
+      data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
+      if (e.data.affaire) document.getElementById('affaireDisplay').innerText = e.data.affaire;
+      if (e.data.dossier) document.getElementById('dossierInput').value = e.data.dossier;
+      selectedIntervenants.clear();
+      selectedLots.clear();
+      persistLocal();
+      applyFilters();
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'rapso_inject_ack', data: { v2: data.v2, v1: data.v1 } }, '*');
+      }
+    } catch(err) { console.warn(err); }
+  }
+});
+
+// Sauvegarde automatique vers le parent
+(function() {
+  function pushToParent() {
+    if (!window.parent || window.parent === window) return;
+    const canId = window.CANEVAS_ID;
+    if (canId === undefined) return;
+    try {
+      const raw = localStorage.getItem('rapsotracker');
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (!parsed || !parsed.data) return;
+      window.parent.postMessage({ type: 'rapso_save', canId: canId, data: parsed.data }, '*');
+    } catch(e) {}
+  }
+  setInterval(pushToParent, 4000);
+  const _origSet = localStorage.setItem.bind(localStorage);
+  localStorage.setItem = function(key, value) {
+    _origSet(key, value);
+    if (key === 'rapsotracker') {
+      clearTimeout(window._rsSaveTimeout);
+      window._rsSaveTimeout = setTimeout(pushToParent, 250);
+    }
+  };
+  window.addEventListener('beforeunload', pushToParent);
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'rapso_request_save') pushToParent();
+  });
+})();
 </script>
 </body>
 </html>
