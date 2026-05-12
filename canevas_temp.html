@@ -586,7 +586,7 @@
       <button class="rap-stat-btn rsb-non" id="rapBtnNon" onclick="rapToggleSuivi('Non')">❌ Maintenu</button>
       <button class="rap-stat-btn rsb-rd6" id="rapBtnRd6" onclick="rapToggleRD6()">🔷 RD6</button>
       <div style="flex:1;"></div>
-      <button class="tb-btn green" id="rapSaveBtn" onclick="rapSaveTexts()" disabled>💾 Valider (textes)</button>
+      <button class="tb-btn green" id="rapSaveBtn" onclick="rapSaveTexts()" disabled>💾 Valider</button>
       <button class="tb-btn" onclick="closeRapide()">Annuler</button>
     </div>
   </div>
@@ -632,24 +632,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 // ============================================================
-//  RAPSOSYNTHÈSE – VERSION FINALE (contrôle des droits utilisateur)
+//  RAPSOSYNTHÈSE – VERSION FINALE (boutons toggle, redimensionnement latéral, style épuré)
 // ============================================================
-
-// --- Variables utilisateur transmises par le parent (portail) ---
-const USER_UID = window.CANEVAS_USER_UID || '';
-const USER_INITIALES = window.CANEVAS_USER_INITIALES || '';
-const USER_ROLE = window.CANEVAS_USER_ROLE || '';
-const CANEVAS_READONLY = window.CANEVAS_READONLY === true;
-
-// --- Helper pour déterminer si l'utilisateur courant peut éditer un avis ---
-function canUserEdit(row) {
-  if (CANEVAS_READONLY) return false;
-  if (USER_ROLE === 'admin') return true;
-  // Vérification par initiales (le canevas stocke les initiales, pas les UID)
-  if (row.pilote === USER_INITIALES) return true;
-  if (Array.isArray(row.intervenants) && row.intervenants.includes(USER_INITIALES)) return true;
-  return false;
-}
 
 // --- Thème ---
 function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('rapso_theme',document.body.classList.contains('dark')?'dark':'light');}
@@ -660,7 +644,7 @@ let currentTab='v2', data={v2:[], v1:[]}, filteredRows=[], sortKey=null, sortDir
 let selectedIntervenants = new Set();
 let selectedLots = new Set();
 
-// --- Helper cleanIntervenant (supprime la partie après @) ---
+// --- Helper cleanIntervenant ---
 function cleanIntervenant(inter){if(!inter)return '';const at=inter.indexOf('@');return at>0?inter.substring(0,at).trim():inter;}
 
 // --- Persistance & sync ---
@@ -678,12 +662,15 @@ window.addEventListener('message', function(e) {
       data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
       if (e.data.affaire) {
         ge('affaireDisplay').innerText = e.data.affaire;
+        // 👇 Met à jour le titre de la version rapide si la fenêtre est ouverte
         const rapTitle = document.getElementById('rapideAffaireTitle');
         if (rapTitle) rapTitle.innerText = cleanAffaireForRapide(e.data.affaire);
       }
       if (e.data.dossier) ge('dossierInput').value = e.data.dossier;
-      selectedIntervenants.clear(); selectedLots.clear();
-      persistLocal(); applyFilters();
+      selectedIntervenants.clear();
+      selectedLots.clear();
+      persistLocal();
+      applyFilters();
       if (window.parent) window.parent.postMessage({ type: 'rapso_inject_ack', data: { v2: data.v2, v1: data.v1 } }, '*');
     } catch (err) { console.warn(err); }
   }
@@ -792,7 +779,6 @@ function renderTable(){
     const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✅ Oui</span>':r.suivi==='Par'?'<span class="badge badge-par">⚠️ Par.</span>':r.suivi==='Non'?'<span class="badge badge-non">❌ Non</span>':'<span class="badge badge-empty">—</span>';
     const rd6=r.rd6?'<span class="rd6-tag">RD6</span>':'';
     const interClean=cleanIntervenant(r.inter);
-    const userCanEdit = canUserEdit(r);
     let cells='';
     COL_DEF.forEach(c=>{
       if(!c.visible)return;
@@ -803,40 +789,26 @@ function renderTable(){
       else if(c.key==='inter')cells+=`<td>${escapeHtml(interClean)}</td>`;
       else cells+=`<td>${escapeHtml(r[c.key])}</td>`;
     });
-    cells += `<td class="col-actions">${userCanEdit ? `<button class="tb-btn" onclick="openEditPanel(${i})" style="padding:2px 8px;">✏️</button>` : '<span style="color:var(--g400);">🔒</span>'}</td>`;
+    cells+=`<td class="col-actions"><button class="tb-btn" onclick="openEditPanel(${i})" style="padding:2px 8px;">✏️</button></td>`;
     return `<tr ondblclick="openEditPanel(${i})" id="row-${i}">${cells}</tr>`;
   }).join('');
 }
 function updateStats(){const rows=getRows();ge('statOui').textContent=rows.filter(r=>r.suivi==='Oui').length;ge('statPar').textContent=rows.filter(r=>r.suivi==='Par').length;ge('statNon').textContent=rows.filter(r=>r.suivi==='Non').length;ge('statTotal').textContent=rows.length;}
 function switchTab(t){currentTab=t;ge('tabV2').classList.toggle('active',t==='v2');ge('tabV1').classList.toggle('active',t==='v1');resetFilters();}
 
-// --- Panneau latéral (avec désactivation si droits insuffisants) ---
+// --- Panneau d'édition (volet latéral) ---
 function openEditPanel(fi){
-  editingIdx=fi;
-  const r=filteredRows[fi];
-  const isEditable = canUserEdit(r) && !CANEVAS_READONLY;
+  editingIdx=fi;const r=filteredRows[fi];
   ge('panelTitle').innerHTML=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - Avis : ${r.avis||'-'}`;
   ge('panelNum').innerText=r.num||'(sans n°)';
   ge('e_lblColE').innerText=r.disp||'—';
   ge('e_obs_readonly').innerText=r.obs||'—';
-  ge('e_repK').value=r.repK||'';
-  ge('e_repL').value=r.repL||'';
-  ge('e_lots').value=r.lots||'';
-  ge('e_rd6').checked=r.rd6;
-  ge('rd6Toggle').classList.toggle('active',r.rd6);
-  currentSuivi=r.suivi; updateSuiviUI();
-  // Désactiver les contrôles si non éditable
-  const disabled = !isEditable;
-  ge('e_repK').disabled = disabled;
-  ge('e_repL').disabled = disabled;
-  ge('e_lots').disabled = disabled;
-  ge('e_rd6').disabled = disabled;
-  document.querySelectorAll('.suivi-opt').forEach(opt => opt.style.pointerEvents = disabled ? 'none' : 'auto');
-  ge('rd6Toggle').style.pointerEvents = disabled ? 'none' : 'auto';
-  ge('overlay').classList.add('open');
-  ge('editPanel').classList.add('open');
+  ge('e_repK').value=r.repK||'';ge('e_repL').value=r.repL||'';ge('e_lots').value=r.lots||'';
+  ge('e_rd6').checked=r.rd6;ge('rd6Toggle').classList.toggle('active',r.rd6);
+  currentSuivi=r.suivi;updateSuiviUI();
+  ge('overlay').classList.add('open');ge('editPanel').classList.add('open');
   document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
-  const el=ge('row-'+fi); if(el) el.classList.add('row-highlight');
+  const el=ge('row-'+fi);if(el)el.classList.add('row-highlight');
 }
 function closePanel(){ge('overlay').classList.remove('open');ge('editPanel').classList.remove('open');editingIdx=null;}
 function navRow(d){if(editingIdx!==null){let n=editingIdx+d;if(n>=0&&n<filteredRows.length)openEditPanel(n);}}
@@ -845,23 +817,14 @@ function updateSuiviUI(){['oui','par','non','vide'].forEach(k=>{const el=ge('opt
 function toggleRD6(){const cb=ge('e_rd6');cb.checked=!cb.checked;ge('rd6Toggle').classList.toggle('active',cb.checked);}
 function saveRow(){
   if(editingIdx===null)return;
-  const r=filteredRows[editingIdx];
-  if(!canUserEdit(r)){ alert("Vous n'avez pas les droits pour modifier cet avis."); return; }
-  const gi=getRows().findIndex(x=>x.id===r.id); if(gi===-1)return;
+  const r=filteredRows[editingIdx];const gi=getRows().findIndex(x=>x.id===r.id);if(gi===-1)return;
   data[currentTab][gi]={...r,repK:ge('e_repK').value,repL:ge('e_repL').value,lots:ge('e_lots').value,suivi:currentSuivi,rd6:ge('e_rd6').checked};
   if(data[currentTab][gi].rd6&&!data[currentTab][gi].num.includes('/RD6'))data[currentTab][gi].num+='/RD6';
   else if(!data[currentTab][gi].rd6)data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
   applyFilters();ge('saveFeedback').classList.add('show');setTimeout(()=>ge('saveFeedback').classList.remove('show'),1800);
   persistLocal();pushToParent();
 }
-function deleteRow(){
-  if(editingIdx===null)return;
-  const r=filteredRows[editingIdx];
-  if(!canUserEdit(r)){ alert("Vous n'avez pas les droits pour supprimer cet avis."); return; }
-  if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;
-  const gi=getRows().findIndex(x=>x.id===r.id);
-  if(gi>=0){data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}
-}
+function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx];if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;const gi=getRows().findIndex(x=>x.id===r.id);if(gi>=0){data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}}
 
 // --- Redimensionnement du volet latéral ---
 (function(){
@@ -903,7 +866,7 @@ function addPA(){
   closePAModal();applyFilters();persistLocal();pushToParent();
 }
 
-// ======================= VERSION RAPIDE (avec vérification des droits) =======================
+// ======================= VERSION RAPIDE (boutons toggle, sauvegarde immédiate) =======================
 let rapCurrent = null, rapFiltered = [];
 let rapSelectedLots = new Set(), rapSelectedInters = new Set();
 
@@ -933,7 +896,9 @@ function toggleRapMf(which) {
 }
 function cleanAffaireForRapide(raw) {
   if (!raw) return '—';
+  // Supprime la date en début : "09-04-26 - "
   let cleaned = raw.replace(/^\d{2}-\d{2}-\d{2}\s*-\s*/, '');
+  // Supprime tout ce qui suit "-Rapport" ou le premier tiret après le numéro
   cleaned = cleaned.replace(/(-Rapport.*)$/, '');
   return cleaned.trim();
 }
@@ -942,9 +907,11 @@ function openRapide() {
   rapSelectedLots.clear();
   rapSelectedInters.clear();
   buildRapMfOptions();
+  // --- AJOUT POUR AFFICHER L'AFFAIRE NETTOYÉE ---
   const affaireRaw = document.getElementById('affaireDisplay').innerText;
   const titre = document.getElementById('rapideAffaireTitle');
   if (titre) titre.innerText = cleanAffaireForRapide(affaireRaw);
+  // --- FIN AJOUT ---
   ['rapF_F','rapF_S','rapF_D','rapF_lev','rapF_par','rapF_non','rapF_rd6','rapF_pa'].forEach(id => { const ch = ge(id); if (ch) ch.checked = false; });
   document.getElementById('rapideOverlay').classList.add('open');
   document.getElementById('rapideEditArea').style.display = 'none';
@@ -1033,37 +1000,39 @@ function rapSelect(i, scroll = true) {
   ge('rapSaveBtn').disabled = false;
   updateRapButtonsState();
 }
+// -- TOGGLE pour les statuts (activation/désactivation avec sauvegarde immédiate) --
 function rapToggleSuivi(v) {
   if (!rapCurrent) return;
-  if (!canUserEdit(rapCurrent)) { alert("Vous n'avez pas les droits pour modifier le suivi."); return; }
   const gi = data[currentTab].findIndex(x => x.id === rapCurrent.id);
   if (gi === -1) return;
+  // Si déjà actif, on désactive, sinon on active
   const newSuivi = (data[currentTab][gi].suivi === v) ? '' : v;
   data[currentTab][gi].suivi = newSuivi;
   rapCurrent = { ...data[currentTab][gi] };
-  persistLocal(); pushToParent();
+  persistLocal();
+  pushToParent();
   rapApply();
 }
 function rapToggleRD6() {
   if (!rapCurrent) return;
-  if (!canUserEdit(rapCurrent)) { alert("Vous n'avez pas les droits pour modifier RD6."); return; }
   const gi = data[currentTab].findIndex(x => x.id === rapCurrent.id);
   if (gi === -1) return;
   data[currentTab][gi].rd6 = !data[currentTab][gi].rd6;
   rapCurrent = { ...data[currentTab][gi] };
-  persistLocal(); pushToParent();
+  persistLocal();
+  pushToParent();
   rapApply();
 }
 function rapSaveTexts() {
   if (!rapCurrent) return;
-  if (!canUserEdit(rapCurrent)) { alert("Vous n'avez pas les droits pour modifier les textes."); return; }
   const gi = data[currentTab].findIndex(x => x.id === rapCurrent.id);
   if (gi === -1) return;
   data[currentTab][gi].repK = ge('rq_repK').value;
   data[currentTab][gi].repL = ge('rq_repL').value;
   data[currentTab][gi].lots = ge('rq_lots').value;
   rapCurrent = { ...data[currentTab][gi] };
-  persistLocal(); pushToParent();
+  persistLocal();
+  pushToParent();
   rapApply();
   const btn = ge('rapSaveBtn');
   btn.textContent = '✓';
@@ -1079,13 +1048,14 @@ function addRow(){
   closeAddModal();applyFilters();persistLocal();pushToParent();
 }
 
-// --- Statistiques (version simplifiée mais lisible) ---
+// --- Statistiques ---
 function openStatsModal() {
   const rows = getRows();
   let F=0, S=0, D=0, SO=0, HM=0, PM=0;
   let suivis=0, partiels=0, nonSuivis=0;
   let avisLevesTotal = 0;
   let firstIntervention = null, lastIntervention = null;
+
   for (const r of rows) {
     const av = (r.avis || '').toUpperCase().trim();
     if (av === 'F') F++;
@@ -1094,33 +1064,59 @@ function openStatsModal() {
     else if (av === 'SO') SO++;
     else if (av === 'HM') HM++;
     else if (av === 'PM') PM++;
-    if (r.suivi === 'Oui') { suivis++; avisLevesTotal++; }
-    else if (r.suivi === 'Par') partiels++;
-    else if (r.suivi === 'Non') nonSuivis++;
+
+    // Suivis
+    if (r.suivi === 'Oui') {
+      suivis++;
+      avisLevesTotal++;
+    } else if (r.suivi === 'Par') {
+      partiels++;
+    } else if (r.suivi === 'Non') {
+      nonSuivis++;
+    }
+
+    // Dates d'intervention (toutes lignes)
     if (r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date)) {
       const d = new Date(r.date);
       if (!firstIntervention || d < firstIntervention) firstIntervention = d;
       if (!lastIntervention || d > lastIntervention) lastIntervention = d;
     }
   }
+
   const fmt = d => d ? d.toLocaleDateString('fr-FR') : '—';
+
+  // Construction HTML avec conservation des cases colorées pour F/S/D
   const html = `
     <div style="display:flex;flex-direction:column;gap:8px;">
+      <!-- Grille des trois premières cases (F, S, D) -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-        <div style="background:var(--green-l);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#15803d">${F}</div><div style="font-size:.74rem;color:#15803d">Favorables (F)</div></div>
-        <div style="background:var(--gold-l);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#92400e">${S}</div><div style="font-size:.74rem;color:#92400e">Suspendus (S)</div></div>
-        <div style="background:var(--red-l);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#991b1b">${D}</div><div style="font-size:.74rem;color:#991b1b">Défavorables (D)</div></div>
+        <div style="background:var(--green-l);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:1.4rem;font-weight:800;color:#15803d">${F}</div>
+          <div style="font-size:.74rem;color:#15803d">Favorables (F)</div>
+        </div>
+        <div style="background:var(--gold-l);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:1.4rem;font-weight:800;color:#92400e">${S}</div>
+          <div style="font-size:.74rem;color:#92400e">Suspendus (S)</div>
+        </div>
+        <div style="background:var(--red-l);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:1.4rem;font-weight:800;color:#991b1b">${D}</div>
+          <div style="font-size:.74rem;color:#991b1b">Défavorables (D)</div>
+        </div>
       </div>
+
+      <!-- Lignes supplémentaires (style simple, sans cases) -->
       <div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;">
         <div><strong>Avis Sans Objet :</strong> ${SO}</div>
         <div><strong>Avis Hors Mission :</strong> ${HM}</div>
         <div><strong>Avis Pour Mémoire :</strong> ${PM}</div>
         <div><strong>Nombre Total d'Avis Levés :</strong> ${avisLevesTotal}</div>
       </div>
+
       <div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;">
         <div><strong>Première intervention :</strong> ${fmt(firstIntervention)}</div>
         <div><strong>Dernière intervention :</strong> ${fmt(lastIntervention)}</div>
       </div>
+
       <div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;">
         <div><strong>Avis suivis :</strong> ${suivis}</div>
         <div><strong>Avis partiellement suivis :</strong> ${partiels}</div>
@@ -1128,12 +1124,13 @@ function openStatsModal() {
       </div>
     </div>
   `;
+
   ge('statsContent').innerHTML = html;
   ge('statsModal').classList.add('open');
 }
 function closeStatsModal(){ge('statsModal').classList.remove('open');}
 
-// --- Import / Actualiser XLSX (avec mot de passe sur import) ---
+// --- Import / Actualiser XLSX ---
 function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
 function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
 function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
@@ -1171,14 +1168,26 @@ function processXLSX(file,mode){
 }
 function checkPasswordBeforeImport() {
   const motDePasse = "SOCOTEC";
-  let tentative = prompt("Veuillez saisir le code d'accès pour lancer l'importation.\n\nATTENTION : Pour une simple mise à jour des données existantes, cliquez sur ANNULER puis sur le bouton 'Actualiser'.", "");
-  if (tentative === null || tentative === "") return false;
-  if (tentative === motDePasse) return true;
-  alert("Mot de passe incorrect.");
-  return false;
+  let tentative = prompt(
+    "Veuillez saisir le code d'accès pour lancer l'importation.\n\n" +
+    "ATTENTION : Pour une simple mise à jour des données existantes, " +
+    "cliquez sur ANNULER puis sur le bouton 'Actualiser'.",
+    ""
+  );
+  if (tentative === null || tentative === "") {
+    return false; // Annulation
+  }
+  if (tentative === motDePasse) {
+    return true;
+  } else {
+    alert("Mot de passe incorrect.");
+    return false;
+  }
 }
 function openImportModal() {
-  if (!checkPasswordBeforeImport()) return;
+  if (!checkPasswordBeforeImport()) {
+    return;
+  }
   document.getElementById('importModal').classList.add('open');
 }
 function closeImportModal(){ge('importModal').classList.remove('open');}
