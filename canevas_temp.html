@@ -660,13 +660,27 @@ window.addEventListener('message', function(e) {
       const inj = e.data.data || { v2: [], v1: [] };
       data.v2 = Array.isArray(inj.v2) ? inj.v2.map(makeRow) : [];
       data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
-      if (e.data.affaire) {
-       // ge('affaireDisplay').innerText = e.data.affaire;
-        // 👇 Met à jour le titre de la version rapide si la fenêtre est ouverte
-        const rapTitle = document.getElementById('rapideAffaireTitle');
-        if (rapTitle) rapTitle.innerText = cleanAffaireForRapide(e.data.affaire);
+      // Ne mettre à jour l'affaire et le dossier QUE si le localStorage est vide
+      // (c'est-à-dire que l'utilisateur n'a pas encore importé/modifié les champs)
+      if (e.data.affaire || e.data.dossier) {
+        const stored = localStorage.getItem('rapsotracker');
+        let localAffaire = '';
+        let localDossier = '';
+        try {
+          if (stored) {
+            const o = JSON.parse(stored);
+            localAffaire = (o.meta && o.meta.affaire) || '';
+            localDossier = (o.meta && o.meta.dossier) || '';
+          }
+        } catch (e) {}
+        // Appliquer uniquement si le localStorage n'a pas déjà une valeur différente
+        if (e.data.affaire && !localAffaire) {
+          ge('affaireDisplay').innerText = e.data.affaire;
+        }
+        if (e.data.dossier && !localDossier) {
+          ge('dossierInput').value = e.data.dossier;
+        }
       }
-     if (e.data.dossier) ge('dossierInput').value = e.data.dossier;
       selectedIntervenants.clear();
       selectedLots.clear();
       persistLocal();
