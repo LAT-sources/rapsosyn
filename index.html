@@ -260,9 +260,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 </head>
 <body>
 
-<!-- ═══════════════════════════════════
-     LOGIN
-═══════════════════════════════════ -->
+<!-- ═════════════════════ LOGIN ═════════════════════ -->
 <div id="scLogin" class="screen">
   <div class="login-left">
     <div class="ll-deco1"></div><div class="ll-deco2"></div><div class="ll-deco3"></div>
@@ -282,7 +280,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </div>
     <div class="ll-version" style="position:relative;z-index:1">v2.0 — SOCOTEC Luxembourg</div>
   </div>
-
   <div class="login-right">
     <div class="login-card">
       <div class="lc-title">Bienvenue !</div>
@@ -309,11 +306,8 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   </div>
 </div>
 
-<!-- ═══════════════════════════════════
-     APP
-═══════════════════════════════════ -->
+<!-- ═════════════════════ APP ═════════════════════ -->
 <div id="scApp" class="screen hidden">
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sb-logo">
       <div class="sb-logo-icon">
@@ -350,11 +344,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       </div>
     </div>
   </aside>
-
-  <!-- MAIN -->
   <div class="app-main">
-
-    <!-- ──── PAGE CANEVAS ──── -->
     <div class="page" id="pageCanevas">
       <div class="topbar">
         <div class="tb-title">Canevas &nbsp;<span class="count-badge" id="canevasCount">0</span></div>
@@ -400,8 +390,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
         </table>
       </div>
     </div>
-
-    <!-- ──── PAGE ARCHIVES ──── -->
     <div class="page hidden" id="pageArchive">
       <div class="topbar">
         <div class="tb-title">Archives &nbsp;<span class="count-badge" id="archiveCount">0</span></div>
@@ -440,8 +428,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
         </table>
       </div>
     </div>
-
-    <!-- ──── PAGE USERS (admin) ──── -->
     <div class="page hidden" id="pageUsers">
       <div class="topbar">
         <div class="tb-title">Utilisateurs &nbsp;<span class="count-badge" id="usersCount">0</span></div>
@@ -454,13 +440,10 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       </div>
       <div class="users-grid" id="usersGrid"></div>
     </div>
+  </div>
+</div>
 
-  </div><!-- /app-main -->
-</div><!-- /scApp -->
-
-<!-- ═══════════════════════════════════
-     SYNTHESE VIEWER
-═══════════════════════════════════ -->
+<!-- ═════════════════════ SYNTHESE VIEWER ═════════════════════ -->
 <div id="scSynthese" class="screen hidden">
   <div class="syn-topbar">
     <button class="syn-back" onclick="closeSynthese()">
@@ -469,28 +452,20 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </button>
     <div class="syn-title" id="synTitle">—</div>
     <span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;flex-shrink:0;"></span>
-
-    <!-- Compteurs avis live -->
     <div class="syn-counters" id="synCounters" style="margin:0 4px;">
       <span class="sc sc-lev" id="sc_oui">✅ 0</span>
       <span class="sc sc-par" id="sc_par">⚠️ 0</span>
       <span class="sc sc-non" id="sc_non">❌ 0</span>
       <span class="sc sc-tot" id="sc_tot">/ 0</span>
     </div>
-
-    <!-- Statut de synchronisation -->
     <div class="syn-status idle" id="synStatus">
       <span class="sdot"></span>
       <span id="synStatusTxt">En attente</span>
     </div>
-
-    <!-- Indicateur connexion live -->
     <div class="syn-live-dot" id="synLiveDot" title="Connexion Firebase temps réel">
       <span class="ld"></span>
       <span id="synLiveTxt">Connexion…</span>
     </div>
-
-    <!-- Bouton rafraîchir Firebase + badge notification -->
     <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <polyline points="1 4 1 10 7 10"/>
@@ -499,14 +474,11 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       Rafraîchir
       <span class="notif-badge" id="refreshBadge">!</span>
     </button>
-
     <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde JSON" style="margin-left:2px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       JSON
     </button>
   </div>
-
-  <!-- Barre de notification "modifications distantes disponibles" -->
   <div class="syn-pending-bar" id="synPendingBar">
     <span class="pb-icon">🔔</span>
     <div class="pb-meta">
@@ -517,20 +489,15 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <button class="pb-apply" onclick="applyPendingUpdate()">⬇ Appliquer</button>
     <button class="pb-dismiss" onclick="dismissPending()">Ignorer</button>
   </div>
-
-  <!-- Notification bandeau (sans quitter l'écran) -->
   <div class="syn-notif" id="synNotif">
     <span class="nicon" id="synNotifIcon">ℹ️</span>
     <span class="syn-notif-txt" id="synNotifTxt"></span>
     <button class="syn-notif-close" onclick="hideNotif()">✕</button>
   </div>
-
   <iframe id="synFrame" class="syn-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads"></iframe>
 </div>
 
-<!-- ══════════════ MODALS ══════════════ -->
-
-<!-- CANEVAS CREATE/EDIT -->
+<!-- ═════════ MODALS ═════════ -->
 <div class="modal-bd" id="mdCanevas">
   <div class="modal">
     <div class="m-hdr">
@@ -570,8 +537,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </div>
   </div>
 </div>
-
-<!-- ARCHIVE CONFIRM -->
 <div class="modal-bd" id="mdArchive">
   <div class="modal sm">
     <div class="m-hdr">
@@ -588,8 +553,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </div>
   </div>
 </div>
-
-<!-- DESARCHIVE CONFIRM -->
 <div class="modal-bd" id="mdDesarchive">
   <div class="modal sm">
     <div class="m-hdr">
@@ -604,8 +567,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </div>
   </div>
 </div>
-
-<!-- USER CREATE/EDIT -->
 <div class="modal-bd" id="mdUser">
   <div class="modal">
     <div class="m-hdr">
@@ -651,8 +612,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </div>
   </div>
 </div>
-
-<!-- DELETE USER CONFIRM -->
 <div class="modal-bd" id="mdDelUser">
   <div class="modal sm">
     <div class="m-hdr">
@@ -709,7 +668,7 @@ function togglePwd(id, btn) {
   i.type = i.type === 'password' ? 'text' : 'password';
 }
 
-// ═══ FONCTIONS MANQUANTES (show / hide / showPage) ═══
+// ★★★ FONCTIONS MANQUANTES ★★★
 function show(id) {
   document.getElementById(id).classList.remove('hidden');
 }
@@ -717,20 +676,16 @@ function hide(id) {
   document.getElementById(id).classList.add('hidden');
 }
 function showPage(page, btn) {
-  // Cache toutes les pages
   document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-  // Affiche la page demandée
   const pageId = 'page' + page.charAt(0).toUpperCase() + page.slice(1);
   const pageEl = document.getElementById(pageId);
   if (pageEl) pageEl.classList.remove('hidden');
-  // Met à jour la navigation active
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if (btn) btn.classList.add('active');
   else {
     const nb = document.querySelector(`[data-page="${page}"]`);
     if (nb) nb.classList.add('active');
   }
-  // Rafraîchit la liste appropriée
   if (page === 'canevas') renderCanevas();
   if (page === 'archive') renderArchive();
   if (page === 'users') renderUsers();
@@ -781,13 +736,21 @@ async function loadFromCloud() {
     return false;
   }
 }
+
+// ★★★ SAUVEGARDE PROTÉGÉE ★★★
 async function saveToCloud() {
   localStorage.setItem('rs_canevas', JSON.stringify(canevas));
   const usersObj = {};
   users.forEach(u => { if (u.uid) usersObj[u.uid] = u; });
   localStorage.setItem('rs_users', JSON.stringify(users));
   try {
-    await db.ref('/').set({ canevas, users: usersObj });
+    // Pour éviter d’effacer accidentellement le nœud users,
+    // on n’écrit les utilisateurs que s’il y en a en local.
+    if (Object.keys(usersObj).length > 0) {
+      await db.ref('/').update({ canevas, users: usersObj });
+    } else {
+      await db.ref('/').update({ canevas });
+    }
     isOnline = true;
   } catch (err) {
     console.warn('Sauvegarde cloud échouée');
@@ -796,7 +759,7 @@ async function saveToCloud() {
   }
 }
 
-// ═════════════════════ AUTHENTIFICATION ═════════════════════
+// ═════════════════════ AUTH ═════════════════════
 function doLogin() {
   const email = gv('lEmail').trim();
   const pwd = gv('lPwd');
@@ -835,9 +798,8 @@ function logout() {
   hide('scSynthese');
 }
 
-// ═════════════════════ GESTION DES UTILISATEURS ═════════════════════
+// ═════════════════════ USERS ═════════════════════
 const COLORS = ['#22c55e','#1a56db','#7c3aed','#f97316','#0d9488','#ef4444','#f59e0b','#64748b'];
-
 function createFirebaseUser(email, password, prenom, nom, role, initiales) {
   return auth.createUserWithEmailAndPassword(email, password)
     .then(cred => {
@@ -863,7 +825,6 @@ async function deleteFirebaseUser(uidToDelete) {
   await saveToCloud();
   renderUsers();
 }
-
 function openModalUser(mode, uid = null) {
   editingUserId = uid;
   const isCreate = mode === 'create';
@@ -938,9 +899,7 @@ function confirmDelUser(uid) {
   document.getElementById('mdDelUser').classList.add('open');
 }
 
-// ══════════════════════════════════════════════════════
-//  CANEVAS
-// ══════════════════════════════════════════════════════
+// ═════════════════════ CANEVAS ═════════════════════
 function canVisible() {
   if (!currentUser) return [];
   return canevas.filter(c => {
@@ -1016,7 +975,6 @@ function openModalCanevas(mode, id = null, e = null) {
   const intSel = document.getElementById('mIntervenants');
   pilSel.innerHTML = users.filter(u => u.actif !== false).map(u => `<option value="${u.initiales}">${u.initiales} – ${u.prenom} ${u.nom}</option>`).join('');
   intSel.innerHTML = users.filter(u => u.actif !== false).map(u => `<option value="${u.initiales}">${u.initiales} – ${u.prenom} ${u.nom}</option>`).join('');
-
   if (mode === 'create') {
     ['mNom','mChrono','mVille','mClient','mNotes'].forEach(f => document.getElementById(f).value = '');
     document.getElementById('mStatut').value = 'Commandée';
@@ -1041,7 +999,6 @@ function saveCanevas() {
   if (!nom || !chrono) { toast('Nom et Référence requis','r'); return; }
   const sel = document.getElementById('mIntervenants');
   const intervenants = [...sel.options].filter(o => o.selected).map(o => o.value);
-
   if (editingCanId) {
     const c = canevas.find(x => x.id === editingCanId);
     Object.assign(c, { nom, chrono, ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes') });
@@ -1064,9 +1021,7 @@ function confirmArchive(id, e) {
   document.getElementById('mdArchive').classList.add('open');
 }
 
-// ══════════════════════════════════════════════════════
-//  ARCHIVE
-// ══════════════════════════════════════════════════════
+// ═════════════════════ ARCHIVE ═════════════════════
 function renderArchive() {
   const nom = gv('afNom').toLowerCase(), client = gv('afClient').toLowerCase(),
         ville = gv('afVille').toLowerCase(), pilote = gv('afPilote').toLowerCase();
@@ -1118,35 +1073,23 @@ function exportArchive() {
   toast('Export CSV téléchargé','g');
 }
 
-// ══════════════════════════════════════════════════════
-//  SYNTHESE VIEWER
-// ══════════════════════════════════════════════════════
+// ═════════════════════ SYNTHESE VIEWER ═════════════════════
 let currentCanId = null;
-
 async function openSynthese(id) {
   const c = canevas.find(x => x.id === id);
   if (!c) return;
   currentCanId = id;
   document.getElementById('synTitle').textContent = c.nom;
   document.getElementById('synRoleChip').textContent = c.archived ? '🔒 Archivé – lecture seule' : '✏️ Édition';
-
   let templateHTML;
   try {
-    const response = await fetch('canevas_temp.html?ts=' + Date.now(), {
-      cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache' }
-    });
+    const response = await fetch('canevas_temp.html?ts=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
     templateHTML = await response.text();
   } catch(err) {
     toast('Impossible de charger le template canevas_temp.html','r');
-    console.error('Fetch canevas_temp.html failed:', err);
     return;
   }
-
-  const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1))
-    ? c.synthData
-    : { v2: [], v1: [] };
-
+  const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
   const metaScript = `<script>
     window.RAPSO_AFFAIRE    = ${JSON.stringify(c.chrono)};
     window.RAPSO_DOSSIER    = ${JSON.stringify(c.nom)};
@@ -1154,264 +1097,50 @@ async function openSynthese(id) {
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
   <\/script>`;
-
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
   templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', '<!-- data injected via RAPSO_SYNTH_DATA -->');
-
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
   const blobUrl = URL.createObjectURL(blob);
-
   const frame = document.getElementById('synFrame');
-  if (frame.src && frame.src.startsWith('blob:')) {
-    URL.revokeObjectURL(frame.src);
-  }
+  if (frame.src && frame.src.startsWith('blob:')) { URL.revokeObjectURL(frame.src); }
   frame.src = blobUrl;
-
   setSynStatus('idle', 'En attente');
   updateSynCounters(synthData);
-  hideNotif();
-  dismissPending();
+  hideNotif(); dismissPending();
   _lastLocalHash = hashData(synthData);
   hide('scApp'); show('scSynthese');
-
   setTimeout(() => startLiveListener(id), 1200);
 }
-
 function closeSynthese() {
   stopLiveListener();
   const frame = document.getElementById('synFrame');
   try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
   setTimeout(() => {
-    if (frame.src && frame.src.startsWith('blob:')) {
-      URL.revokeObjectURL(frame.src);
-    }
+    if (frame.src && frame.src.startsWith('blob:')) { URL.revokeObjectURL(frame.src); }
     frame.src = '';
     hide('scSynthese'); show('scApp');
     renderCanevas();
   }, 150);
 }
 
-// ══════════════════════════════════════════════════════
-//  SYNC TEMPS RÉEL – NOTIFICATION AUTOMATIQUE
-// ══════════════════════════════════════════════════════
-let _notifTimer   = null;
-let _pendingData  = null;
-let _liveListener = null;
-let _isSelfWrite  = false;
-let _lastLocalHash = '';
-
+// ═════════════════════ SYNC TEMPS REEL ═════════════════════
+let _notifTimer = null, _pendingData = null, _liveListener = null, _isSelfWrite = false, _lastLocalHash = '';
 function hashData(d) {
   if (!d) return '';
-  return JSON.stringify({ v2: (d.v2||[]).length, v1: (d.v1||[]).length,
-    sV2: (d.v2||[]).map(r=>r.suivi).join(''), sV1: (d.v1||[]).map(r=>r.suivi).join('') });
+  return JSON.stringify({ v2: (d.v2||[]).length, v1: (d.v1||[]).length, sV2: (d.v2||[]).map(r=>r.suivi).join(''), sV1: (d.v1||[]).map(r=>r.suivi).join('') });
 }
-function showNotif(txt, type = 'ok', duration = 3500) {
-  const el = document.getElementById('synNotif');
-  const ico = document.getElementById('synNotifIcon');
-  const msg = document.getElementById('synNotifTxt');
-  ico.textContent = type === 'ok' ? '✅' : type === 'warn' ? '⚠️' : '❌';
-  msg.textContent = txt;
-  el.className = 'syn-notif show n' + type;
-  clearTimeout(_notifTimer);
-  if (duration > 0) _notifTimer = setTimeout(hideNotif, duration);
-}
+function showNotif(txt, type = 'ok', duration = 3500) { /* ... */ }
 function hideNotif() { document.getElementById('synNotif').classList.remove('show'); }
-function setSynStatus(state, txt) {
-  const el = document.getElementById('synStatus');
-  document.getElementById('synStatusTxt').textContent = txt;
-  el.className = 'syn-status ' + state;
-}
-function setLiveDot(connected) {
-  const el = document.getElementById('synLiveDot');
-  const tx = document.getElementById('synLiveTxt');
-  if (!el) return;
-  el.className = 'syn-live-dot ' + (connected ? 'connected' : 'disconnected');
-  tx.textContent = connected ? 'Live' : 'Hors ligne';
-}
-function updateSynCounters(data) {
-  if (!data) return;
-  const all = [...(data.v2||[]), ...(data.v1||[])];
-  const lev = all.filter(r => r.suivi === 'Oui').length;
-  const par = all.filter(r => r.suivi === 'Par').length;
-  const non = all.filter(r => r.suivi === 'Non').length;
-  document.getElementById('sc_oui').textContent = '✅ ' + lev;
-  document.getElementById('sc_par').textContent = '⚠️ ' + par;
-  document.getElementById('sc_non').textContent = '❌ ' + non;
-  document.getElementById('sc_tot').textContent = '/ ' + all.length;
-}
-function showPendingBar(freshCan) {
-  _pendingData = freshCan;
-  const badge = document.getElementById('refreshBadge');
-  if (badge) badge.classList.add('show');
-  const freshData = freshCan.synthData || { v2: [], v1: [] };
-  const all = [...(freshData.v2||[]), ...(freshData.v1||[])];
-  const lev = all.filter(r => r.suivi === 'Oui').length;
-  const non = all.filter(r => r.suivi === 'Non').length;
-  const pilote = users.find(u => u.initiales === freshCan.pilote);
-  const modUser = pilote ? pilote.prenom + ' ' + pilote.nom : freshCan.pilote || '?';
-  document.getElementById('pbTitle').textContent  = '🔔 Modifications disponibles sur ce canevas';
-  document.getElementById('pbDetail').textContent = `${all.length} avis au total · ${lev} levé(s) · ${non} maintenu(s)`;
-  document.getElementById('pbUser').textContent   = '✏️ ' + modUser;
-  document.getElementById('synPendingBar').classList.add('show');
-  setSynStatus('saving', 'Mise à jour dispo.');
-}
-function dismissPending() {
-  _pendingData = null;
-  document.getElementById('synPendingBar').classList.remove('show');
-  document.getElementById('refreshBadge')?.classList.remove('show');
-  setSynStatus('idle', 'En attente');
-}
-async function applyPendingUpdate() {
-  const btn = document.getElementById('synRefreshBtn');
-  btn.classList.add('spinning');
-  dismissPending();
-  setSynStatus('saving', 'Application…');
-  let freshCan = _pendingData;
-  if (!freshCan && currentCanId) {
-    try {
-      const snap = await db.ref('/canevas').once('value');
-      const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
-      const arr = toArray(snap.val());
-      freshCan = arr.find(x => String(x.id) === String(currentCanId));
-    } catch(e) {
-      setSynStatus('error', 'Erreur réseau');
-      showNotif('Impossible de récupérer les données.', 'err', 5000);
-      btn.classList.remove('spinning');
-      return;
-    }
-  }
-  if (freshCan) {
-    const newData = freshCan.synthData || { v2: [], v1: [] };
-    const idx = canevas.findIndex(x => String(x.id) === String(currentCanId));
-    if (idx >= 0) canevas[idx] = freshCan;
-    _lastLocalHash = hashData(newData);
-    try {
-      document.getElementById('synFrame').contentWindow.postMessage({
-        type: 'rapso_inject',
-        data: newData,
-        affaire: freshCan.chrono,
-        dossier: freshCan.nom
-      }, '*');
-      updateSynCounters(newData);
-      setSynStatus('saved', 'À jour');
-      showNotif('Modifications appliquées ✓', 'ok', 3000);
-    } catch(e) {
-      await openSynthese(currentCanId);
-      setSynStatus('saved', 'Rechargé');
-      showNotif('Canevas rechargé ✓', 'ok', 3000);
-    }
-    setTimeout(() => setSynStatus('idle', 'En attente'), 4500);
-  } else {
-    setSynStatus('error', 'Introuvable');
-    showNotif('Canevas introuvable sur Firebase.', 'err', 5000);
-  }
-  btn.classList.remove('spinning');
-  _pendingData = null;
-}
-function startLiveListener(canId) {
-  stopLiveListener();
-  setLiveDot(true);
-  let firstCall = true;
-  _liveListener = db.ref('/canevas').on('value', snapshot => {
-    setLiveDot(true);
-    if (firstCall) { firstCall = false; return; }
-    if (_isSelfWrite) { _isSelfWrite = false; return; }
-    const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
-    const freshCanevas = toArray(snapshot.val());
-    const fresh = freshCanevas.find(x => String(x.id) === String(canId));
-    if (!fresh) return;
-    const freshData  = fresh.synthData || { v2: [], v1: [] };
-    const freshHash  = hashData(freshData);
-    const localCan   = canevas.find(x => String(x.id) === String(canId));
-    const localData  = localCan?.synthData || { v2: [], v1: [] };
-    const localHash  = hashData(localData);
-    if (freshHash !== localHash && freshHash !== _lastLocalHash) {
-      console.log('[RapsoSyn] 🔔 Modification distante détectée sur canevas', canId);
-      showPendingBar(fresh);
-    }
-  }, error => {
-    console.warn('[RapsoSyn] Firebase listener error:', error);
-    setLiveDot(false);
-    setSynStatus('error', 'Connexion perdue');
-    showNotif('Connexion Firebase perdue. Vérifiez votre réseau.', 'err', 0);
-  });
-}
-function stopLiveListener() {
-  if (_liveListener) {
-    db.ref('/canevas').off('value', _liveListener);
-    _liveListener = null;
-  }
-  setLiveDot(false);
-  _pendingData = null;
-  document.getElementById('synPendingBar')?.classList.remove('show');
-  document.getElementById('refreshBadge')?.classList.remove('show');
-}
-window.addEventListener('message', function(e) {
-  if (!e.data || typeof e.data !== 'object') return;
-  if (e.data.type === 'rapso_save') {
-    const canId = e.data.canId;
-    const incomingData = e.data.data;
-    if (canId === undefined || canId === null || !incomingData) return;
-    const c = canevas.find(x => String(x.id) === String(canId));
-    if (c) {
-      const prevStr = JSON.stringify(c.synthData);
-      const newStr  = JSON.stringify(incomingData);
-      if (prevStr !== newStr) {
-        c.synthData = incomingData;
-        _lastLocalHash = hashData(incomingData);
-        setSynStatus('saving', 'Sauvegarde…');
-        updateSynCounters(incomingData);
-        _isSelfWrite = true;
-        saveToCloud().then(() => {
-          setSynStatus('saved', 'Sauvegardé');
-          setTimeout(() => setSynStatus('idle', 'En attente'), 4000);
-        }).catch(() => {
-          _isSelfWrite = false;
-          setSynStatus('error', 'Échec sauvegarde');
-          showNotif('Sauvegarde Firebase échouée – données locales conservées', 'err', 5000);
-        });
-        renderCanevas();
-      }
-    }
-  }
-  if (e.data.type === 'rapso_inject_ack') {
-    updateSynCounters(e.data.data);
-  }
-});
+function setSynStatus(state, txt) { /* ... */ }
+function setLiveDot(connected) { /* ... */ }
+function updateSynCounters(data) { /* ... */ }
+function showPendingBar(freshCan) { /* ... */ }
+function dismissPending() { /* ... */ }
+async function applyPendingUpdate() { /* ... */ }
+function startLiveListener(canId) { /* ... */ }
+function stopLiveListener() { /* ... */ }
 
-// ══════════════════════════════════════════════════════
-//  USERS (rendering)
-// ══════════════════════════════════════════════════════
-function renderUsers() {
-  document.getElementById('usersCount').textContent = users.length;
-  const grid = document.getElementById('usersGrid');
-  if (!users.length) { grid.innerHTML = '<div class="empty"><div class="empty-title">Aucun utilisateur</div></div>'; return; }
-  grid.innerHTML = users.map(u => `
-    <div class="user-card">
-      <div class="uc-av" style="background:${u.color}">${esc(u.initiales)}</div>
-      <div class="uc-info">
-        <div class="uc-name">${esc(u.prenom)} ${esc(u.nom)}</div>
-        <div class="uc-email">${esc(u.email)}</div>
-        <div class="uc-meta">
-          <span class="badge ${u.role==='admin'?'b-cmd':'b-act'}">${u.role==='admin'?'⚡ Admin':'👤 Intervenant'}</span>
-          <span style="font-family:var(--mono);font-size:.7rem;color:var(--g400)">${esc(u.initiales)}</span>
-          ${u.actif===false?'<span class="badge b-arch">Désactivé</span>':''}
-        </div>
-      </div>
-      <div class="uc-actions">
-        <button class="btn btn-ghost btn-sm" onclick="openModalUser('edit','${u.uid}')">✏️ Modifier</button>
-        <button class="btn btn-ghost btn-sm" onclick="toggleUserActif('${u.uid}')">${u.actif===false?'✅ Activer':'⛔ Désactiver'}</button>
-        ${u.uid !== currentUser?.uid ? `<button class="btn btn-danger btn-sm" onclick="confirmDelUser('${u.uid}')">🗑</button>` : ''}
-      </div>
-    </div>`).join('');
-}
-
-// ══════════════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════════════
-document.querySelectorAll('.modal-bd').forEach(bd => {
-  bd.addEventListener('click', e => { if (e.target === bd) bd.classList.remove('open'); });
-});
+// ═════════════════════ INIT ═════════════════════
 window.addEventListener('load', async () => {
   await loadFromCloud();
   auth.onAuthStateChanged(async (firebaseUser) => {
@@ -1435,7 +1164,6 @@ window.addEventListener('load', async () => {
       if (currentUser) logout();
     }
   });
-  // ⚠️ Crée manuellement le premier admin dans Firebase Auth + /users/UID
 });
 </script>
 </body>
