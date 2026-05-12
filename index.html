@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAPSOSYN – Portail de gestion</title>
 <style>
+/* ═══════════════════════════════════════════════════════
+   STYLES – inchangés par rapport à votre version originale
+   ═══════════════════════════════════════════════════════ */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
   --blue:#1a56db;--blue-d:#1447c0;--blue-l:#e8f0fe;--blue-ll:#f0f5ff;
@@ -371,6 +374,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
 <body>
 
@@ -786,9 +790,8 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 // ══════════════════════════════════════════════════════
-//  CONFIGURATION JSONBIN
+//  CONFIGURATION FIREBASE
 // ══════════════════════════════════════════════════════
-// ═══ CONFIGURATION FIREBASE ═══
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
   authDomain: "rapsosyn.firebaseapp.com",
@@ -801,7 +804,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-console.log('Firebase connecté');
+const auth = firebase.auth();
 
 // ══════════════════════════════════════════════════════
 //  STATE
@@ -813,9 +816,8 @@ let favOnly = false;
 let canSort = { key: '', dir: 1 };
 let users = [];
 let canevas = [];
-let nextUserId = 1;
 let nextCanId = 1;
-let isOnline = true; // supposé vrai, géré par les erreurs réseau
+let isOnline = true;
 
 // ══════════════════════════════════════════════════════
 //  UTILS
@@ -843,111 +845,200 @@ function toast(msg, type = 'g') {
 }
 
 // ══════════════════════════════════════════════════════
-//  STOCKAGE DISTANT (JSONBIN)
+//  STOCKAGE DISTANT (FIREBASE RTDB)
 // ══════════════════════════════════════════════════════
-// ═══ STOCKAGE ═══
+function fromUserList(val) {
+  if (!val) return {};
+  if (Array.isArray(val)) {
+    const map = {};
+    val.forEach(u => { if (u?.uid) map[u.uid] = u; });
+    return map;
+  }
+  return val;
+}
+function toUsersArray(map) { return Object.values(map || {}); }
+
 async function loadFromCloud() {
   try {
     const snapshot = await db.ref('/').once('value');
     const record = snapshot.val() || {};
-
-    // Helper : Firebase peut renvoyer un tableau ou un objet indexé
     const toArray = (val) => {
       if (!val) return [];
       if (Array.isArray(val)) return val;
-      // Transformation d'un objet {0: ..., 1: ...} en tableau
       return Object.values(val);
     };
-
     canevas = toArray(record.canevas);
-    users   = toArray(record.users);
-
+    const usersMap = fromUserList(record.users);
+    users = toUsersArray(usersMap);
     nextCanId  = canevas.length ? Math.max(...canevas.map(c => c.id)) + 1 : 1;
-    nextUserId = users.length   ? Math.max(...users.map(u => u.id)) + 1 : 1;
-
-    localStorage.setItem('rs_canevas', JSON.stringify(canevas));
-    localStorage.setItem('rs_users',   JSON.stringify(users));
     isOnline = true;
-    console.log('Données chargées avec succès', { canevas, users });
     return true;
   } catch (err) {
-    console.error('Erreur Firebase détaillée :', err);
     console.warn('Mode hors ligne – chargement depuis le stockage local');
     canevas = JSON.parse(localStorage.getItem('rs_canevas') || '[]');
-    users   = JSON.parse(localStorage.getItem('rs_users')   || '[]');
+    users   = JSON.parse(localStorage.getItem('rs_users') || '[]');
     isOnline = false;
     return false;
   }
 }
 async function saveToCloud() {
   localStorage.setItem('rs_canevas', JSON.stringify(canevas));
-  localStorage.setItem('rs_users',   JSON.stringify(users));
+  const usersObj = {};
+  users.forEach(u => { if (u.uid) usersObj[u.uid] = u; });
+  localStorage.setItem('rs_users', JSON.stringify(users));
   try {
-    await db.ref('/').set({ canevas, users });
+    await db.ref('/').set({ canevas, users: usersObj });
     isOnline = true;
   } catch (err) {
     console.warn('Sauvegarde cloud échouée');
     isOnline = false;
-    throw err; // on propage pour que .catch() fonctionne en amont
+    throw err;
   }
 }
 
 // ══════════════════════════════════════════════════════
-//  MODAL
+//  AUTHENTIFICATION (Firebase Auth)
 // ══════════════════════════════════════════════════════
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-bd').forEach(bd => bd.addEventListener('click', e => { if (e.target === bd) bd.classList.remove('open'); }));
-
-// ══════════════════════════════════════════════════════
-//  LOGIN / LOGOUT
-// ══════════════════════════════════════════════════════
-// ═══ LOGIN ═══
 function doLogin() {
-  const email = gv('lEmail').trim().toLowerCase();
-  const pwd   = gv('lPwd');
-  const u = users.find(x => x.email.toLowerCase() === email && x.pwd === pwd && x.actif !== false);
-  document.getElementById('loginErr').style.display = u ? 'none' : 'block';
-  if (!u) return;
-  currentUser = u;
-  document.getElementById('sbAv').textContent = u.initiales;
-  document.getElementById('sbAv').style.background = u.color;
-  document.getElementById('sbName').textContent = u.prenom + ' ' + u.nom;
-  document.getElementById('sbRole').textContent = u.role === 'admin' ? '⚡ Administrateur' : '👤 Intervenant';
-  const isAdmin = u.role === 'admin';
-  document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
-  document.getElementById('navUsers').style.display  = isAdmin ? '' : 'none';
-  document.getElementById('adminNav').style.display  = isAdmin ? '' : 'none';
-  show('scApp'); hide('scLogin'); hide('scSynthese');
-  showPage('canevas');
+  const email = gv('lEmail').trim();
+  const pwd = gv('lPwd');
+  document.getElementById('loginErr').style.display = 'none';
+  auth.signInWithEmailAndPassword(email, pwd)
+    .then(cred => {
+      return db.ref('/users/' + cred.user.uid).once('value');
+    })
+    .then(snap => {
+      const uProfile = snap.val();
+      if (!uProfile) throw new Error('Profil utilisateur introuvable');
+      currentUser = { ...uProfile, uid: auth.currentUser.uid };
+      document.getElementById('sbAv').textContent = currentUser.initiales;
+      document.getElementById('sbAv').style.background = currentUser.color;
+      document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
+      document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Administrateur' : '👤 Intervenant';
+      const isAdmin = currentUser.role === 'admin';
+      document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
+      document.getElementById('navUsers').style.display  = isAdmin ? '' : 'none';
+      document.getElementById('adminNav').style.display  = isAdmin ? '' : 'none';
+      show('scApp'); hide('scLogin'); hide('scSynthese');
+      showPage('canevas');
+    })
+    .catch(err => {
+      document.getElementById('loginErr').style.display = 'block';
+      console.error('Erreur login:', err);
+    });
 }
 function logout() {
+  auth.signOut();
   currentUser = null;
   show('scLogin'); hide('scApp'); hide('scSynthese');
 }
-document.getElementById('lPwd').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-document.getElementById('lEmail').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-function show(id) { document.getElementById(id).classList.remove('hidden'); }
-function hide(id) { document.getElementById(id).classList.add('hidden'); }
 
 // ══════════════════════════════════════════════════════
-//  SIDEBAR
+//  GESTION DES UTILISATEURS (création / modification)
 // ══════════════════════════════════════════════════════
-let sidebarSlim = false;
-function toggleSidebar() {
-  sidebarSlim = !sidebarSlim;
-  document.getElementById('sidebar').classList.toggle('slim', sidebarSlim);
-  document.getElementById('sbToggle').querySelector('span').textContent = sidebarSlim ? '' : 'Réduire';
+const COLORS = ['#22c55e','#1a56db','#7c3aed','#f97316','#0d9488','#ef4444','#f59e0b','#64748b'];
+
+function createFirebaseUser(email, password, prenom, nom, role, initiales) {
+  return auth.createUserWithEmailAndPassword(email, password)
+    .then(cred => {
+      const uid = cred.user.uid;
+      const color = COLORS[users.length % COLORS.length];
+      const newUser = {
+        uid, prenom, nom, email,
+        role, initiales: initiales || (prenom[0]+nom[0]).toUpperCase(),
+        color, actif: true
+      };
+      users.push(newUser);
+      return saveToCloud().then(() => newUser);
+    });
 }
-function showPage(page, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-  document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.remove('hidden');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  else { const nb = document.querySelector(`[data-page="${page}"]`); if (nb) nb.classList.add('active'); }
-  if (page === 'canevas') renderCanevas();
-  if (page === 'archive') renderArchive();
-  if (page === 'users') renderUsers();
+function updateUserProfile(uid, newProfile) {
+  const idx = users.findIndex(u => u.uid === uid);
+  if (idx >= 0) Object.assign(users[idx], newProfile);
+  return saveToCloud();
+}
+async function deleteFirebaseUser(uidToDelete) {
+  // Désactive et retire du tableau (la suppression réelle du compte Auth nécessiterait un backend)
+  await updateUserProfile(uidToDelete, { actif: false });
+  users = users.filter(u => u.uid !== uidToDelete);
+  await saveToCloud();
+  renderUsers();
+}
+
+function openModalUser(mode, uid = null) {
+  editingUserId = uid;
+  const isCreate = mode === 'create';
+  document.getElementById('mdUserTitle').textContent = isCreate ? 'Créer un compte' : 'Modifier le compte';
+  document.getElementById('uPwdLabel').innerHTML = `Mot de passe${isCreate ? ' <span class="req">*</span>' : ''}`;
+  document.getElementById('uPwdHint').style.display = isCreate ? 'none' : '';
+  if (isCreate) {
+    ['uPrenom','uNom','uEmail','uInitiales','uPwd','uPwd2'].forEach(f => document.getElementById(f).value = '');
+    document.getElementById('uRole').value = 'user';
+  } else {
+    const u = users.find(x => x.uid === uid);
+    if (!u) return;
+    document.getElementById('uPrenom').value = u.prenom;
+    document.getElementById('uNom').value = u.nom;
+    document.getElementById('uEmail').value = u.email;
+    document.getElementById('uInitiales').value = u.initiales;
+    document.getElementById('uRole').value = u.role;
+    document.getElementById('uPwd').value = '';
+    document.getElementById('uPwd2').value = '';
+  }
+  document.getElementById('mdUser').classList.add('open');
+}
+function saveUser() {
+  const prenom = gv('uPrenom').trim();
+  const nom = gv('uNom').trim();
+  const email = gv('uEmail').trim();
+  const initiales = gv('uInitiales').trim().toUpperCase();
+  const role = gv('uRole');
+  const pwd = gv('uPwd');
+  const pwd2 = gv('uPwd2');
+  if (!prenom || !nom || !email) { toast('Prénom, Nom et Email requis','r'); return; }
+  if (editingUserId) {
+    // MODIFICATION
+    const profile = { prenom, nom, email, role, initiales: initiales || (prenom[0]+nom[0]).toUpperCase() };
+    if (pwd) {
+      if (pwd !== pwd2) { toast('Les mots de passe ne correspondent pas','r'); return; }
+      auth.currentUser.updatePassword(pwd).catch(e => toast('Erreur mise à jour mot de passe','r'));
+    }
+    updateUserProfile(editingUserId, profile).then(() => {
+      toast('Compte modifié','g'); closeModal('mdUser'); renderUsers();
+    });
+  } else {
+    // CRÉATION
+    if (!pwd || pwd.length < 6) { toast('Mot de passe >= 6 caractères','r'); return; }
+    if (pwd !== pwd2) { toast('Les mots de passe ne correspondent pas','r'); return; }
+    createFirebaseUser(email, pwd, prenom, nom, role, initiales)
+      .then(() => {
+        toast('Compte créé','g'); closeModal('mdUser'); renderUsers();
+      })
+      .catch(err => toast('Erreur: ' + err.message,'r'));
+  }
+}
+function toggleUserActif(uid) {
+  const u = users.find(x => x.uid === uid);
+  if (!u) return;
+  u.actif = u.actif === false ? true : false;
+  updateUserProfile(uid, { actif: u.actif }).then(() => {
+    toast(u.actif ? 'Compte activé' : 'Compte désactivé', 'b');
+    renderUsers();
+  });
+}
+function confirmDelUser(uid) {
+  const u = users.find(x => x.uid === uid);
+  if (!u) return;
+  if (u.uid === currentUser?.uid) { toast('Impossible de supprimer votre propre compte','r'); return; }
+  document.getElementById('delUserText').textContent = `Supprimer le compte de ${u.prenom} ${u.nom} ? Cette action est irréversible.`;
+  document.getElementById('delUserOk').onclick = () => {
+    deleteFirebaseUser(uid).then(() => {
+      toast('Compte supprimé','b');
+      closeModal('mdDelUser');
+      renderUsers();
+    });
+  };
+  document.getElementById('mdDelUser').classList.add('open');
 }
 
 // ══════════════════════════════════════════════════════
@@ -973,18 +1064,15 @@ function canVisible() {
     return true;
   });
 }
-
 function sortCan(key) {
   if (canSort.key === key) canSort.dir *= -1; else { canSort.key = key; canSort.dir = 1; }
   renderCanevas();
 }
-
 function toggleFav() {
   favOnly = !favOnly;
   document.getElementById('favBtn').classList.toggle('on', favOnly);
   renderCanevas();
 }
-
 function renderCanevas() {
   let rows = canVisible();
   if (canSort.key) rows = [...rows].sort((a, b) => {
@@ -1022,9 +1110,7 @@ function renderCanevas() {
     </tr>`;
   }).join('');
 }
-
 function toggleStar(id, e) { e.stopPropagation(); const c = canevas.find(x => x.id === id); if (c) { c.fav = !c.fav; saveToCloud(); renderCanevas(); } }
-
 function openModalCanevas(mode, id = null, e = null) {
   if (e) e.stopPropagation();
   editingCanId = id;
@@ -1052,33 +1138,31 @@ function openModalCanevas(mode, id = null, e = null) {
   }
   document.getElementById('mdCanevas').classList.add('open');
 }
-
 function saveCanevas() {
-  const nom = document.getElementById('mNom').value.trim();
-  const chrono = document.getElementById('mChrono').value.trim();
-  if (!nom || !chrono) { toast('Nom et Référence requis', 'r'); return; }
+  const nom = gv('mNom').trim();
+  const chrono = gv('mChrono').trim();
+  if (!nom || !chrono) { toast('Nom et Référence requis','r'); return; }
   const sel = document.getElementById('mIntervenants');
   const intervenants = [...sel.options].filter(o => o.selected).map(o => o.value);
 
   if (editingCanId) {
     const c = canevas.find(x => x.id === editingCanId);
     Object.assign(c, { nom, chrono, ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes') });
-    toast('Canevas modifié', 'g');
+    toast('Canevas modifié','g');
   } else {
     canevas.unshift({ id: nextCanId++, nom, chrono, ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes'), fav: false, archived: false, archivedDate: null, synthData: null });
-    toast('Canevas créé ✓', 'g');
+    toast('Canevas créé ✓','g');
   }
   saveToCloud(); closeModal('mdCanevas'); renderCanevas();
 }
-
 function confirmArchive(id, e) {
   if (e) e.stopPropagation();
   const c = canevas.find(x => x.id === id);
   document.getElementById('archiveText').textContent = `« ${c.nom.slice(0,70)} » sera déplacé dans les archives.`;
   document.getElementById('archiveOk').onclick = () => {
-    c.archived = true; c.archivedDate = new Date().toISOString().slice(0, 10);
+    c.archived = true; c.archivedDate = new Date().toISOString().slice(0,10);
     saveToCloud(); closeModal('mdArchive'); renderCanevas(); renderArchive();
-    toast('Canevas archivé', 'b');
+    toast('Canevas archivé','b');
   };
   document.getElementById('mdArchive').classList.add('open');
 }
@@ -1119,24 +1203,22 @@ function renderArchive() {
       </td>
     </tr>`).join('');
 }
-
 function confirmDesarchive(id, e) {
   if (e) e.stopPropagation();
   document.getElementById('desarchiveOk').onclick = () => {
     const c = canevas.find(x => x.id === id);
     c.archived = false; c.archivedDate = null;
     saveToCloud(); closeModal('mdDesarchive'); renderArchive(); renderCanevas();
-    toast('Canevas restauré', 'g');
+    toast('Canevas restauré','g');
   };
   document.getElementById('mdDesarchive').classList.add('open');
 }
-
 function exportArchive() {
   const rows = canevas.filter(c => c.archived);
   const lines = ['Nom;Référence;Client;Ville;Pilote;Archivé le', ...rows.map(c => [c.nom,c.chrono,c.client,c.ville,c.pilote,c.archivedDate||''].join(';'))];
-  const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+  const blob = new Blob(['\uFEFF' + lines.join('\n')], {type:'text/csv;charset=utf-8'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'archives_rapsosyn.csv'; a.click();
-  toast('Export CSV téléchargé', 'g');
+  toast('Export CSV téléchargé','g');
 }
 
 // ══════════════════════════════════════════════════════
@@ -1151,7 +1233,6 @@ async function openSynthese(id) {
   document.getElementById('synTitle').textContent = c.nom;
   document.getElementById('synRoleChip').textContent = c.archived ? '🔒 Archivé – lecture seule' : '✏️ Édition';
 
-  // Charger le template
   let templateHTML;
   try {
     const response = await fetch('canevas_temp.html?ts=' + Date.now(), {
@@ -1160,43 +1241,35 @@ async function openSynthese(id) {
     });
     templateHTML = await response.text();
   } catch(err) {
-    toast('Impossible de charger le template canevas_temp.html', 'r');
+    toast('Impossible de charger le template canevas_temp.html','r');
     console.error('Fetch canevas_temp.html failed:', err);
     return;
   }
 
-  // ── CORRECTION PRINCIPALE ──
-  // On passe les données via window.RAPSO_SYNTH_DATA (variable globale injectée AVANT
-  // tout autre script), ce qui évite le problème du localStorage de l'iframe qui était
-  // écrasé par loadLocal() au démarrage.
   const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1))
     ? c.synthData
     : { v2: [], v1: [] };
 
   const metaScript = `<script>
-    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.nom)};
-    window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
+    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.chrono)};
+    window.RAPSO_DOSSIER    = ${JSON.stringify(c.nom)};
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
   <\/script>`;
 
-  // Remplacer les deux placeholders
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
   templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', '<!-- data injected via RAPSO_SYNTH_DATA -->');
 
-  // Afficher dans l'iframe via blob URL
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
   const blobUrl = URL.createObjectURL(blob);
 
-  // Révoquer l'ancien blob URL pour éviter les fuites mémoire
   const frame = document.getElementById('synFrame');
   if (frame.src && frame.src.startsWith('blob:')) {
     URL.revokeObjectURL(frame.src);
   }
   frame.src = blobUrl;
 
-  // Réinitialiser indicateurs
   setSynStatus('idle', 'En attente');
   updateSynCounters(synthData);
   hideNotif();
@@ -1204,18 +1277,13 @@ async function openSynthese(id) {
   _lastLocalHash = hashData(synthData);
   hide('scApp'); show('scSynthese');
 
-  // Démarrer l'écoute temps réel APRÈS que l'iframe soit chargée (léger délai)
   setTimeout(() => startLiveListener(id), 1200);
 }
 
 function closeSynthese() {
-  // Arrêter l'écoute temps réel immédiatement
   stopLiveListener();
-
   const frame = document.getElementById('synFrame');
-  // Forcer un dernier envoi des données avant de fermer
   try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
-  // Petit délai pour laisser le temps au postMessage d'arriver
   setTimeout(() => {
     if (frame.src && frame.src.startsWith('blob:')) {
       URL.revokeObjectURL(frame.src);
@@ -1227,22 +1295,19 @@ function closeSynthese() {
 }
 
 // ══════════════════════════════════════════════════════
-//  SYNC TEMPS RÉEL — NOTIFICATION AUTOMATIQUE
+//  SYNC TEMPS RÉEL – NOTIFICATION AUTOMATIQUE
 // ══════════════════════════════════════════════════════
-
 let _notifTimer   = null;
-let _pendingData  = null;   // données distantes en attente d'application
-let _liveListener = null;   // référence Firebase .on()
-let _isSelfWrite  = false;  // flag pour ignorer nos propres écritures
-let _lastLocalHash = '';    // hash des données locales pour comparaison
+let _pendingData  = null;
+let _liveListener = null;
+let _isSelfWrite  = false;
+let _lastLocalHash = '';
 
-// ─── Utilitaires ───────────────────────────────────────
 function hashData(d) {
   if (!d) return '';
   return JSON.stringify({ v2: (d.v2||[]).length, v1: (d.v1||[]).length,
     sV2: (d.v2||[]).map(r=>r.suivi).join(''), sV1: (d.v1||[]).map(r=>r.suivi).join('') });
 }
-
 function showNotif(txt, type = 'ok', duration = 3500) {
   const el = document.getElementById('synNotif');
   const ico = document.getElementById('synNotifIcon');
@@ -1253,15 +1318,12 @@ function showNotif(txt, type = 'ok', duration = 3500) {
   clearTimeout(_notifTimer);
   if (duration > 0) _notifTimer = setTimeout(hideNotif, duration);
 }
-
 function hideNotif() { document.getElementById('synNotif').classList.remove('show'); }
-
 function setSynStatus(state, txt) {
   const el = document.getElementById('synStatus');
   document.getElementById('synStatusTxt').textContent = txt;
   el.className = 'syn-status ' + state;
 }
-
 function setLiveDot(connected) {
   const el = document.getElementById('synLiveDot');
   const tx = document.getElementById('synLiveTxt');
@@ -1269,7 +1331,6 @@ function setLiveDot(connected) {
   el.className = 'syn-live-dot ' + (connected ? 'connected' : 'disconnected');
   tx.textContent = connected ? 'Live' : 'Hors ligne';
 }
-
 function updateSynCounters(data) {
   if (!data) return;
   const all = [...(data.v2||[]), ...(data.v1||[])];
@@ -1281,47 +1342,33 @@ function updateSynCounters(data) {
   document.getElementById('sc_non').textContent = '❌ ' + non;
   document.getElementById('sc_tot').textContent = '/ ' + all.length;
 }
-
-// ─── Barre de notification "modifications distantes" ───
 function showPendingBar(freshCan) {
   _pendingData = freshCan;
-
-  // Badge rouge sur le bouton
   const badge = document.getElementById('refreshBadge');
   if (badge) badge.classList.add('show');
-
-  // Construire le message de détail
   const freshData = freshCan.synthData || { v2: [], v1: [] };
   const all = [...(freshData.v2||[]), ...(freshData.v1||[])];
   const lev = all.filter(r => r.suivi === 'Oui').length;
   const non = all.filter(r => r.suivi === 'Non').length;
-
-  // Qui a modifié ? (chercher dans la liste users)
   const pilote = users.find(u => u.initiales === freshCan.pilote);
   const modUser = pilote ? pilote.prenom + ' ' + pilote.nom : freshCan.pilote || '?';
-
   document.getElementById('pbTitle').textContent  = '🔔 Modifications disponibles sur ce canevas';
   document.getElementById('pbDetail').textContent = `${all.length} avis au total · ${lev} levé(s) · ${non} maintenu(s)`;
   document.getElementById('pbUser').textContent   = '✏️ ' + modUser;
-
   document.getElementById('synPendingBar').classList.add('show');
   setSynStatus('saving', 'Mise à jour dispo.');
 }
-
 function dismissPending() {
   _pendingData = null;
   document.getElementById('synPendingBar').classList.remove('show');
   document.getElementById('refreshBadge')?.classList.remove('show');
   setSynStatus('idle', 'En attente');
 }
-
 async function applyPendingUpdate() {
   const btn = document.getElementById('synRefreshBtn');
   btn.classList.add('spinning');
   dismissPending();
   setSynStatus('saving', 'Application…');
-
-  // Si on a des données en attente on les injecte directement, sinon on relit Firebase
   let freshCan = _pendingData;
   if (!freshCan && currentCanId) {
     try {
@@ -1336,27 +1383,22 @@ async function applyPendingUpdate() {
       return;
     }
   }
-
   if (freshCan) {
     const newData = freshCan.synthData || { v2: [], v1: [] };
-    // Mettre à jour en mémoire locale
     const idx = canevas.findIndex(x => String(x.id) === String(currentCanId));
     if (idx >= 0) canevas[idx] = freshCan;
     _lastLocalHash = hashData(newData);
-
-    // Injecter dans l'iframe via postMessage
     try {
       document.getElementById('synFrame').contentWindow.postMessage({
         type: 'rapso_inject',
         data: newData,
-        affaire: freshCan.nom,
-        dossier: freshCan.chrono
+        affaire: freshCan.chrono,
+        dossier: freshCan.nom
       }, '*');
       updateSynCounters(newData);
       setSynStatus('saved', 'À jour');
       showNotif('Modifications appliquées ✓', 'ok', 3000);
     } catch(e) {
-      // Fallback : recharger l'iframe complètement
       await openSynthese(currentCanId);
       setSynStatus('saved', 'Rechargé');
       showNotif('Canevas rechargé ✓', 'ok', 3000);
@@ -1369,39 +1411,24 @@ async function applyPendingUpdate() {
   btn.classList.remove('spinning');
   _pendingData = null;
 }
-
-// ─── Écouteur Firebase TEMPS RÉEL ──────────────────────
-// Démarre quand on ouvre un canevas, s'arrête quand on ferme
 function startLiveListener(canId) {
-  stopLiveListener(); // nettoyer l'éventuel précédent
-
+  stopLiveListener();
   setLiveDot(true);
-  let firstCall = true; // ignorer le premier snapshot (état initial déjà chargé)
-
+  let firstCall = true;
   _liveListener = db.ref('/canevas').on('value', snapshot => {
-    // Connexion réussie
     setLiveDot(true);
-
     if (firstCall) { firstCall = false; return; }
-
-    // Ignorer si c'est nous qui venons d'écrire
     if (_isSelfWrite) { _isSelfWrite = false; return; }
-
     const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
     const freshCanevas = toArray(snapshot.val());
     const fresh = freshCanevas.find(x => String(x.id) === String(canId));
     if (!fresh) return;
-
     const freshData  = fresh.synthData || { v2: [], v1: [] };
     const freshHash  = hashData(freshData);
-
-    // Comparer avec ce qu'on a localement
     const localCan   = canevas.find(x => String(x.id) === String(canId));
     const localData  = localCan?.synthData || { v2: [], v1: [] };
     const localHash  = hashData(localData);
-
     if (freshHash !== localHash && freshHash !== _lastLocalHash) {
-      // ✅ VRAIE modification distante détectée → notification automatique
       console.log('[RapsoSyn] 🔔 Modification distante détectée sur canevas', canId);
       showPendingBar(fresh);
     }
@@ -1412,7 +1439,6 @@ function startLiveListener(canId) {
     showNotif('Connexion Firebase perdue. Vérifiez votre réseau.', 'err', 0);
   });
 }
-
 function stopLiveListener() {
   if (_liveListener) {
     db.ref('/canevas').off('value', _liveListener);
@@ -1423,26 +1449,22 @@ function stopLiveListener() {
   document.getElementById('synPendingBar')?.classList.remove('show');
   document.getElementById('refreshBadge')?.classList.remove('show');
 }
-
-// Réception des messages de sauvegarde depuis la synthèse
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
-
   if (e.data.type === 'rapso_save') {
     const canId = e.data.canId;
     const incomingData = e.data.data;
     if (canId === undefined || canId === null || !incomingData) return;
-
     const c = canevas.find(x => String(x.id) === String(canId));
     if (c) {
       const prevStr = JSON.stringify(c.synthData);
       const newStr  = JSON.stringify(incomingData);
       if (prevStr !== newStr) {
         c.synthData = incomingData;
-        _lastLocalHash = hashData(incomingData); // mémoriser notre propre hash
+        _lastLocalHash = hashData(incomingData);
         setSynStatus('saving', 'Sauvegarde…');
         updateSynCounters(incomingData);
-        _isSelfWrite = true; // marquer : c'est nous qui écrivons → ignorer dans le listener
+        _isSelfWrite = true;
         saveToCloud().then(() => {
           setSynStatus('saved', 'Sauvegardé');
           setTimeout(() => setSynStatus('idle', 'En attente'), 4000);
@@ -1455,23 +1477,14 @@ window.addEventListener('message', function(e) {
       }
     }
   }
-
-  // Réponse à la demande de sauvegarde forcée
-  if (e.data.type === 'rapso_request_save') {
-    // L'iframe émet un rapso_save automatiquement
-  }
-
-  // Confirmation de l'injection réussie (envoyée par canevas_temp.html)
   if (e.data.type === 'rapso_inject_ack') {
     updateSynCounters(e.data.data);
   }
 });
 
 // ══════════════════════════════════════════════════════
-//  USERS
+//  USERS (rendering)
 // ══════════════════════════════════════════════════════
-const COLORS = ['#22c55e','#1a56db','#7c3aed','#f97316','#0d9488','#ef4444','#f59e0b','#64748b'];
-
 function renderUsers() {
   document.getElementById('usersCount').textContent = users.length;
   const grid = document.getElementById('usersGrid');
@@ -1489,83 +1502,11 @@ function renderUsers() {
         </div>
       </div>
       <div class="uc-actions">
-        <button class="btn btn-ghost btn-sm" onclick="openModalUser('edit',${u.id})">✏️ Modifier</button>
-        <button class="btn btn-ghost btn-sm" onclick="toggleUserActif(${u.id})">${u.actif===false?'✅ Activer':'⛔ Désactiver'}</button>
-        ${u.id !== currentUser?.id ? `<button class="btn btn-danger btn-sm" onclick="confirmDelUser(${u.id})">🗑</button>` : ''}
+        <button class="btn btn-ghost btn-sm" onclick="openModalUser('edit','${u.uid}')">✏️ Modifier</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleUserActif('${u.uid}')">${u.actif===false?'✅ Activer':'⛔ Désactiver'}</button>
+        ${u.uid !== currentUser?.uid ? `<button class="btn btn-danger btn-sm" onclick="confirmDelUser('${u.uid}')">🗑</button>` : ''}
       </div>
     </div>`).join('');
-}
-
-function openModalUser(mode, id = null) {
-  editingUserId = id;
-  const isCreate = mode === 'create';
-  document.getElementById('mdUserTitle').textContent = isCreate ? 'Créer un compte' : 'Modifier le compte';
-  document.getElementById('uPwdLabel').innerHTML = `Mot de passe${isCreate ? ' <span class="req">*</span>' : ''}`;
-  document.getElementById('uPwdHint').style.display = isCreate ? 'none' : '';
-  if (isCreate) {
-    ['uPrenom','uNom','uEmail','uInitiales','uPwd','uPwd2'].forEach(f => document.getElementById(f).value = '');
-    document.getElementById('uRole').value = 'user';
-  } else {
-    const u = users.find(x => x.id === id); if (!u) return;
-    document.getElementById('uPrenom').value = u.prenom;
-    document.getElementById('uNom').value = u.nom;
-    document.getElementById('uEmail').value = u.email;
-    document.getElementById('uInitiales').value = u.initiales;
-    document.getElementById('uRole').value = u.role;
-    document.getElementById('uPwd').value = '';
-    document.getElementById('uPwd2').value = '';
-  }
-  document.getElementById('mdUser').classList.add('open');
-}
-
-function saveUser() {
-  const prenom = document.getElementById('uPrenom').value.trim();
-  const nom = document.getElementById('uNom').value.trim();
-  const email = document.getElementById('uEmail').value.trim();
-  const initiales = document.getElementById('uInitiales').value.trim().toUpperCase();
-  const role = document.getElementById('uRole').value;
-  const pwd = document.getElementById('uPwd').value;
-  const pwd2 = document.getElementById('uPwd2').value;
-
-  if (!prenom || !nom || !email) { toast('Prénom, Nom et Email requis', 'r'); return; }
-  if (pwd && pwd !== pwd2) { toast('Les mots de passe ne correspondent pas', 'r'); return; }
-
-  if (editingUserId) {
-    const u = users.find(x => x.id === editingUserId);
-    u.prenom = prenom; u.nom = nom; u.email = email;
-    u.initiales = initiales || (prenom[0]+nom[0]).toUpperCase();
-    u.role = role;
-    if (pwd) u.pwd = pwd;
-    toast('Compte modifié', 'g');
-  } else {
-    if (!pwd) { toast('Mot de passe requis', 'r'); return; }
-    const dupEmail = users.find(x => x.email.toLowerCase() === email.toLowerCase());
-    if (dupEmail) { toast('Cet email est déjà utilisé', 'r'); return; }
-    const color = COLORS[users.length % COLORS.length];
-    users.push({ id: nextUserId++, prenom, nom, email, pwd, role, initiales: initiales || (prenom[0]+nom[0]).toUpperCase(), color, actif: true });
-    toast('Compte créé', 'g');
-  }
-  saveToCloud(); closeModal('mdUser'); renderUsers();
-}
-
-function toggleUserActif(id) {
-  if (id === currentUser?.id) { toast('Vous ne pouvez pas désactiver votre propre compte', 'r'); return; }
-  const u = users.find(x => x.id === id);
-  u.actif = u.actif === false ? true : false;
-  saveToCloud(); renderUsers();
-  toast(u.actif ? 'Compte activé' : 'Compte désactivé', 'b');
-}
-
-function confirmDelUser(id) {
-  if (id === currentUser?.id) { toast('Impossible de supprimer votre propre compte', 'r'); return; }
-  const u = users.find(x => x.id === id);
-  document.getElementById('delUserText').textContent = `Supprimer le compte de ${u.prenom} ${u.nom} ? Cette action est irréversible.`;
-  document.getElementById('delUserOk').onclick = () => {
-    users = users.filter(x => x.id !== id);
-    saveToCloud(); closeModal('mdDelUser'); renderUsers();
-    toast('Compte supprimé', 'b');
-  };
-  document.getElementById('mdDelUser').classList.add('open');
 }
 
 // ══════════════════════════════════════════════════════
@@ -1574,17 +1515,30 @@ function confirmDelUser(id) {
 document.querySelectorAll('.modal-bd').forEach(bd => {
   bd.addEventListener('click', e => { if (e.target === bd) bd.classList.remove('open'); });
 });
-
 window.addEventListener('load', async () => {
   await loadFromCloud();
-  if (users.length === 0) {
-    users = [{
-      id: 1, prenom: 'Admin', nom: 'Socotec', email: 'admin@socotec.lu',
-      pwd: 'admin123', role: 'admin', initiales: 'AS', color: '#1a56db', actif: true
-    }];
-    nextUserId = 2;
-    saveToCloud();
-  }
+  auth.onAuthStateChanged(async (firebaseUser) => {
+    if (firebaseUser && currentUser && currentUser.uid === firebaseUser.uid) return;
+    if (firebaseUser) {
+      const snap = await db.ref('/users/' + firebaseUser.uid).once('value');
+      if (snap.exists()) {
+        currentUser = { ...snap.val(), uid: firebaseUser.uid };
+        document.getElementById('sbAv').textContent = currentUser.initiales;
+        document.getElementById('sbAv').style.background = currentUser.color;
+        document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
+        document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Admin' : '👤 User';
+        const isAdmin = currentUser.role === 'admin';
+        document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
+        document.getElementById('navUsers').style.display = isAdmin ? '' : 'none';
+        document.getElementById('adminNav').style.display = isAdmin ? '' : 'none';
+        show('scApp'); hide('scLogin');
+        showPage('canevas');
+      }
+    } else {
+      if (currentUser) logout();
+    }
+  });
+  // ⚠️ Crée manuellement le premier admin dans Firebase Auth + /users/UID
 });
 </script>
 </body>
