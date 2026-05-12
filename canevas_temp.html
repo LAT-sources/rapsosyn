@@ -681,19 +681,7 @@ window.addEventListener('message', function(e) {
 
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
-  
-setTimeout(() => {
-  const af = ge('affaireDisplay'), dos = ge('dossierInput');
-  // Forcer la mise à jour si le span contient le placeholder "—"
-  if (af && (af.innerText === '—' || af.innerText === '' || !af.innerText) && window.RAPSO_AFFAIRE) {
-    af.innerText = window.RAPSO_AFFAIRE;
-  }
-  if (dos && (!dos.value || dos.value === '') && window.RAPSO_DOSSIER) {
-    dos.value = window.RAPSO_DOSSIER;
-  }
-  applyFilters();
-}, 0);
-  
+ 
 // --- Construction multi-select principaux ---
 function buildMfSelectOptions() {
   const rows = getRows();
