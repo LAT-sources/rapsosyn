@@ -874,7 +874,9 @@ async function saveToCloud() {
   localStorage.setItem('rs_canevas', JSON.stringify(canevas));
   localStorage.setItem('rs_users', JSON.stringify(users));
   try {
-    await db.ref('/').set({ canevas, users });
+    // Écriture séparée pour respecter les règles Firebase
+    await db.ref('/canevas').set(canevas);
+    await db.ref('/users').set(users);
     isOnline = true;
   } catch (err) {
     console.warn('Sauvegarde cloud échouée');
