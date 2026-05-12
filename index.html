@@ -1349,7 +1349,7 @@ async function applyPendingUpdate() {
       document.getElementById('synFrame').contentWindow.postMessage({
         type: 'rapso_inject',
         data: newData,
-        
+        affaire: freshCan.nom,
         dossier: freshCan.chrono
       }, '*');
       updateSynCounters(newData);
