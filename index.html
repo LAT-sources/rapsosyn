@@ -459,7 +459,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
         <span>Utilisateurs</span>
       </button>
     </nav>
-    <div class="sb-user" id="logoutBtn">
+    
       <div class="u-av" id="sbAv" style="background:var(--blue)">?</div>
       <div class="u-info">
         <div class="u-name" id="sbName">—</div>
@@ -845,8 +845,14 @@ function toast(msg, type = 'g') {
 // ══════════════════════════════════════════════════════
 async function loadFromCloud() {
   try {
-    const snapshot = await db.ref('/').once('value');
-    const record = snapshot.val() || {};
+    const [canevasSnap, usersSnap] = await Promise.all([
+      db.ref('/canevas').once('value'),
+      db.ref('/users').once('value')
+    ]);
+    const record = {
+      canevas: canevasSnap.val() || {},
+      users: usersSnap.val() || {}
+    };
     const toArray = (val) => {
       if (!val) return [];
       if (Array.isArray(val)) return val;
@@ -870,11 +876,11 @@ async function loadFromCloud() {
     return false;
   }
 }
+
 async function saveToCloud() {
   localStorage.setItem('rs_canevas', JSON.stringify(canevas));
   localStorage.setItem('rs_users', JSON.stringify(users));
   try {
-    // Écriture séparée pour respecter les règles Firebase
     await db.ref('/canevas').set(canevas);
     await db.ref('/users').set(users);
     isOnline = true;
@@ -901,12 +907,12 @@ async function doLogin() {
     return;
   }
   try {
-    const cred = await auth.signInWithEmailAndPassword(email, pwd);
+    const cred = await firebase.auth().signInWithEmailAndPassword(email, pwd);
     const uid = cred.user.uid;
     const profileSnap = await db.ref(`/users/${uid}`).once('value');
     const profile = profileSnap.val();
     if (!profile || profile.actif === false) {
-      await auth.signOut();
+      await firebase.auth().signOut();
       errDiv.style.display = 'block';
       errDiv.textContent = 'Compte désactivé ou introuvable. Contactez l\'administrateur.';
       return;
@@ -946,7 +952,7 @@ async function logout() {
 }
 
 // Écouter l'état de connexion (persistance après recharge)
-auth.onAuthStateChanged(async (user) => {
+firebase.auth().onAuthStateChanged(async (user) => {
   if (user && !currentUser) {
     const uid = user.uid;
     const profileSnap = await db.ref(`/users/${uid}`).once('value');
@@ -966,7 +972,7 @@ auth.onAuthStateChanged(async (user) => {
       show('scApp');
       showPage('canevas');
     } else {
-      await auth.signOut();
+      await firebase.auth().signOut();
       show('scLogin');
     }
   }
