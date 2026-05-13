@@ -444,19 +444,178 @@ function renderUsers() {
 }
 
 // ═════════════════════ CANEVAS ═════════════════════
-function canVisible() { /* ... */ }
-function sortCan(key) { /* ... */ }
-function toggleFav() { /* ... */ }
-function renderCanevas() { /* ... */ }
-function toggleStar(id, e) { /* ... */ }
-function openModalCanevas(mode, id = null, e = null) { /* ... */ }
-function saveCanevas() { /* ... */ }
-function confirmArchive(id, e) { /* ... */ }
+function canVisible() {
+  if (!currentUser) return [];
+  return canevas.filter(c => {
+    if (c.archived) return false;
+    if (currentUser.role !== 'admin') {
+      if (!c.intervenants.includes(currentUser.initiales) && c.pilote !== currentUser.initiales) return false;
+    }
+    if (favOnly && !c.fav) return false;
+    const nom = gv('fNom').toLowerCase(), chrono = gv('fChrono').toLowerCase(),
+          client = gv('fClient').toLowerCase(), ville = gv('fVille').toLowerCase(),
+          statut = gv('fStatut'), pilote = gv('fPilote').toLowerCase();
+    if (nom && !c.nom.toLowerCase().includes(nom)) return false;
+    if (chrono && !c.chrono.toLowerCase().includes(chrono)) return false;
+    if (client && !c.client.toLowerCase().includes(client)) return false;
+    if (ville && !c.ville.toLowerCase().includes(ville)) return false;
+    if (statut && c.statut !== statut) return false;
+    if (pilote && !c.pilote.toLowerCase().includes(pilote)) return false;
+    return true;
+  });
+}
+function sortCan(key) {
+  if (canSort.key === key) canSort.dir *= -1; else { canSort.key = key; canSort.dir = 1; }
+  renderCanevas();
+}
+function toggleFav() {
+  favOnly = !favOnly;
+  document.getElementById('favBtn').classList.toggle('on', favOnly);
+  renderCanevas();
+}
+function renderCanevas() {
+  let rows = canVisible();
+  if (canSort.key) rows = [...rows].sort((a, b) => {
+    const av = String(a[canSort.key]||''), bv = String(b[canSort.key]||'');
+    return av < bv ? -canSort.dir : av > bv ? canSort.dir : 0;
+  });
+  document.getElementById('canevasCount').textContent = rows.length;
+  const tbody = document.getElementById('canevasBody');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><div class="empty-title">Aucun canevas</div><div class="empty-sub">Créez votre premier canevas ou ajustez les filtres</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(c => {
+    const stBadge = c.statut === 'Commandée' ? 'b-cmd' : c.statut === 'En attente' ? 'b-att' : 'b-act';
+    const canEdit = currentUser.role === 'admin' || c.pilote === currentUser.initiales || c.intervenants.includes(currentUser.initiales);
+    return `<tr ondblclick="openSynthese(${c.id})">
+      <td><button class="star-btn ${c.fav?'on':''}" onclick="toggleStar(${c.id},event)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="${c.fav?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </button></td>
+      <td><div class="td-name">${esc(c.nom)}</div></td>
+      <td><div class="td-chrono">${esc(c.chrono)}</div></td>
+      <td class="td-client">${esc(c.client)}</td>
+      <td>${esc(c.ville)}</td>
+      <td><span class="badge ${stBadge}">${esc(c.statut)}</span></td>
+      <td><span class="av" style="background:${avBg(c.pilote)}" title="${fullName(c.pilote)}">${esc(c.pilote)}</span></td>
+      <td>
+        <button class="btn btn-primary btn-xs" onclick="openSynthese(${c.id})">📂 Ouvrir</button>
+        ${canEdit ? `<button class="btn-icon blue" onclick="openModalCanevas('edit',${c.id},event)" title="Modifier">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>` : ''}
+        ${currentUser.role === 'admin' ? `<button class="btn-icon danger" onclick="confirmArchive(${c.id},event)" title="Archiver">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+        </button>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+function toggleStar(id, e) { e.stopPropagation(); const c = canevas.find(x => x.id === id); if (c) { c.fav = !c.fav; saveToCloud(); renderCanevas(); } }
+function openModalCanevas(mode, id = null, e = null) {
+  if (e) e.stopPropagation();
+  editingCanId = id;
+  document.getElementById('mdCanTitle').textContent = mode === 'create' ? 'Nouveau canevas' : 'Modifier le canevas';
+  const pilSel = document.getElementById('mPilote');
+  const intSel = document.getElementById('mIntervenants');
+  pilSel.innerHTML = users.filter(u => u.actif !== false).map(u => `<option value="${u.initiales}">${u.initiales} – ${u.prenom} ${u.nom}</option>`).join('');
+  intSel.innerHTML = users.filter(u => u.actif !== false).map(u => `<option value="${u.initiales}">${u.initiales} – ${u.prenom} ${u.nom}</option>`).join('');
+  if (mode === 'create') {
+    ['mNom','mChrono','mVille','mClient','mNotes'].forEach(f => document.getElementById(f).value = '');
+    document.getElementById('mStatut').value = 'Commandée';
+    pilSel.value = currentUser.initiales;
+    [...intSel.options].forEach(o => o.selected = false);
+  } else {
+    const c = canevas.find(x => x.id === id); if (!c) return;
+    document.getElementById('mNom').value = c.nom;
+    document.getElementById('mChrono').value = c.chrono;
+    document.getElementById('mVille').value = c.ville;
+    document.getElementById('mClient').value = c.client;
+    document.getElementById('mStatut').value = c.statut;
+    document.getElementById('mNotes').value = c.notes;
+    pilSel.value = c.pilote;
+    [...intSel.options].forEach(o => o.selected = c.intervenants.includes(o.value));
+  }
+  document.getElementById('mdCanevas').classList.add('open');
+}
+function saveCanevas() {
+  const nom = gv('mNom').trim();
+  const chrono = gv('mChrono').trim();
+  if (!nom || !chrono) { toast('Nom et Référence requis','r'); return; }
+  const sel = document.getElementById('mIntervenants');
+  const intervenants = [...sel.options].filter(o => o.selected).map(o => o.value);
+  if (editingCanId) {
+    const c = canevas.find(x => x.id === editingCanId);
+    Object.assign(c, { nom, chrono, ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes') });
+    toast('Canevas modifié','g');
+  } else {
+    canevas.unshift({ id: nextCanId++, nom, chrono, ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes'), fav: false, archived: false, archivedDate: null, synthData: null });
+    toast('Canevas créé ✓','g');
+  }
+  saveToCloud(); closeModal('mdCanevas'); renderCanevas();
+}
+function confirmArchive(id, e) {
+  if (e) e.stopPropagation();
+  const c = canevas.find(x => x.id === id);
+  document.getElementById('archiveText').textContent = `« ${c.nom.slice(0,70)} » sera déplacé dans les archives.`;
+  document.getElementById('archiveOk').onclick = () => {
+    c.archived = true; c.archivedDate = new Date().toISOString().slice(0,10);
+    saveToCloud(); closeModal('mdArchive'); renderCanevas(); renderArchive();
+    toast('Canevas archivé','b');
+  };
+  document.getElementById('mdArchive').classList.add('open');
+}
 
 // ═════════════════════ ARCHIVE ═════════════════════
-function renderArchive() { /* ... */ }
-function confirmDesarchive(id, e) { /* ... */ }
-function exportArchive() { /* ... */ }
+function renderArchive() {
+  const nom = gv('afNom').toLowerCase(), client = gv('afClient').toLowerCase(),
+        ville = gv('afVille').toLowerCase(), pilote = gv('afPilote').toLowerCase();
+  let rows = canevas.filter(c => {
+    if (!c.archived) return false;
+    if (currentUser.role !== 'admin' && c.pilote !== currentUser.initiales && !c.intervenants.includes(currentUser.initiales)) return false;
+    if (nom && !c.nom.toLowerCase().includes(nom)) return false;
+    if (client && !c.client.toLowerCase().includes(client)) return false;
+    if (ville && !c.ville.toLowerCase().includes(ville)) return false;
+    if (pilote && !c.pilote.toLowerCase().includes(pilote)) return false;
+    return true;
+  });
+  document.getElementById('archiveCount').textContent = rows.length;
+  const tbody = document.getElementById('archiveBody');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg><div class="empty-title">Aucune archive</div><div class="empty-sub">Les canevas archivés apparaissent ici</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map(c => `
+    <tr style="opacity:.75" ondblclick="openSynthese(${c.id})">
+      <td><span class="badge b-arch">Archivé</span></td>
+      <td><div class="td-name" style="color:var(--g600)">${esc(c.nom)}</div></td>
+      <td><div class="td-chrono">${esc(c.chrono)}</div></td>
+      <td class="td-client">${esc(c.client)}</td>
+      <td>${esc(c.ville)}</td>
+      <td><span style="font-family:var(--mono);font-size:.74rem">${c.archivedDate||'—'}</span></td>
+      <td><span class="av" style="background:${avBg(c.pilote)}" title="${fullName(c.pilote)}">${esc(c.pilote)}</span></td>
+      <td>
+        <button class="btn btn-ghost btn-xs" onclick="openSynthese(${c.id})">📂 Consulter</button>
+        ${currentUser.role==='admin'?`<button class="btn btn-success btn-xs" onclick="confirmDesarchive(${c.id},event)">↩ Restaurer</button>`:''}
+      </td>
+    </tr>`).join('');
+}
+function confirmDesarchive(id, e) {
+  if (e) e.stopPropagation();
+  document.getElementById('desarchiveOk').onclick = () => {
+    const c = canevas.find(x => x.id === id);
+    c.archived = false; c.archivedDate = null;
+    saveToCloud(); closeModal('mdDesarchive'); renderArchive(); renderCanevas();
+    toast('Canevas restauré','g');
+  };
+  document.getElementById('mdDesarchive').classList.add('open');
+}
+function exportArchive() {
+  const rows = canevas.filter(c => c.archived);
+  const lines = ['Nom;Référence;Client;Ville;Pilote;Archivé le', ...rows.map(c => [c.nom,c.chrono,c.client,c.ville,c.pilote,c.archivedDate||''].join(';'))];
+  const blob = new Blob(['\uFEFF' + lines.join('\n')], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'archives_rapsosyn.csv'; a.click();
+  toast('Export CSV téléchargé','g');
+}
 
 // ═════════════════════ SYNTHESE VIEWER ═════════════════════
 let currentCanId = null;
