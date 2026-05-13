@@ -455,7 +455,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </button>
     <div class="syn-title" id="synTitle">—</div>
     <span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;flex-shrink:0;"></span>
-    <div class="syn-counters" id="synCounters">
+    <div class="syn-counters" id="synCounters" style="margin:0 4px;">
       <span class="sc sc-lev" id="sc_oui">✅ 0</span>
       <span class="sc sc-par" id="sc_par">⚠️ 0</span>
       <span class="sc sc-non" id="sc_non">❌ 0</span>
@@ -469,7 +469,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <span class="ld"></span>
       <span id="synLiveTxt">Connexion…</span>
     </div>
-    <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Appliquer modifications distantes">
+    <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <polyline points="1 4 1 10 7 10"/>
         <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
@@ -477,7 +477,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       Rafraîchir
       <span class="notif-badge" id="refreshBadge">!</span>
     </button>
-    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde JSON">
+    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde JSON" style="margin-left:2px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       JSON
     </button>
@@ -548,9 +548,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <div class="m-title">Archiver ce canevas ?</div>
       <button class="m-close" onclick="closeModal('mdArchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="m-body">
-      <p class="confirm-text" id="archiveText">Ce canevas sera déplacé dans les archives.</p>
-    </div>
+    <div class="m-body"><p class="confirm-text" id="archiveText">Ce canevas sera déplacé dans les archives.</p></div>
     <div class="m-foot">
       <button class="btn btn-ghost" onclick="closeModal('mdArchive')">Annuler</button>
       <button class="btn btn-danger" id="archiveOk">Archiver</button>
@@ -638,7 +636,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET (toutes les fonctions incluses)
+   SCRIPT COMPLET CORRIGÉ
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -786,8 +784,19 @@ function createFirebaseUser(email, password, prenom, nom, role, initiales) {
     return saveToCloud().then(() => newUser);
   });
 }
-function updateUserProfile(uid, newProfile) { const idx = users.findIndex(u => u.uid === uid); if (idx >= 0) Object.assign(users[idx], newProfile); return saveToCloud(); }
-async function deleteFirebaseUser(uidToDelete) { await updateUserProfile(uidToDelete, { actif: false }); users = users.filter(u => u.uid !== uidToDelete); await saveToCloud(); renderUsers(); }
+function updateUserProfile(uid, newProfile) {
+  const idx = users.findIndex(u => u.uid === uid);
+  if (idx >= 0) Object.assign(users[idx], newProfile);
+  return saveToCloud();
+}
+async function deleteFirebaseUser(uidToDelete) {
+  const u = users.find(x => x.uid === uidToDelete);
+  if (u) u.actif = false;
+  await saveToCloud();
+  users = users.filter(x => x.uid !== uidToDelete);
+  await saveToCloud();
+  renderUsers();
+}
 function openModalUser(mode, uid = null) {
   editingUserId = uid;
   const isCreate = mode === 'create';
@@ -876,7 +885,9 @@ function canVisible() {
   return canevas.filter(c => {
     if (c.archived) return false;
     if (currentUser.role !== 'admin') {
-      if (!c.intervenants.includes(currentUser.initiales) && c.pilote !== currentUser.initiales) return false;
+      const piloteMatch = c.pilote === currentUser.initiales;
+      const intervenantMatch = Array.isArray(c.intervenants) && c.intervenants.includes(currentUser.initiales);
+      if (!piloteMatch && !intervenantMatch) return false;
     }
     if (favOnly && !c.fav) return false;
     const nom = gv('fNom').toLowerCase(), chrono = gv('fChrono').toLowerCase(),
@@ -910,7 +921,7 @@ function renderCanevas() {
   }
   tbody.innerHTML = rows.map(c => {
     const stBadge = c.statut === 'Commandée' ? 'b-cmd' : c.statut === 'En attente' ? 'b-att' : 'b-act';
-    const canEdit = currentUser.role === 'admin' || c.pilote === currentUser.initiales || c.intervenants.includes(currentUser.initiales);
+    const canEdit = currentUser.role === 'admin' || c.pilote === currentUser.initiales || (Array.isArray(c.intervenants) && c.intervenants.includes(currentUser.initiales));
     return `<tr ondblclick="openSynthese(${c.id})">
       <td><button class="star-btn ${c.fav?'on':''}" onclick="toggleStar(${c.id},event)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="${c.fav?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -952,7 +963,7 @@ function openModalCanevas(mode, id = null, e = null) {
     document.getElementById('mStatut').value = c.statut;
     document.getElementById('mNotes').value = c.notes;
     pilSel.value = c.pilote;
-    [...intSel.options].forEach(o => o.selected = c.intervenants.includes(o.value));
+    [...intSel.options].forEach(o => o.selected = Array.isArray(c.intervenants) && c.intervenants.includes(o.value));
   }
   document.getElementById('mdCanevas').classList.add('open');
 }
@@ -990,7 +1001,11 @@ function renderArchive() {
         ville = gv('afVille').toLowerCase(), pilote = gv('afPilote').toLowerCase();
   let rows = canevas.filter(c => {
     if (!c.archived) return false;
-    if (currentUser.role !== 'admin' && c.pilote !== currentUser.initiales && !c.intervenants.includes(currentUser.initiales)) return false;
+    if (currentUser.role !== 'admin') {
+      const piloteMatch = c.pilote === currentUser.initiales;
+      const intervenantMatch = Array.isArray(c.intervenants) && c.intervenants.includes(currentUser.initiales);
+      if (!piloteMatch && !intervenantMatch) return false;
+    }
     if (nom && !c.nom.toLowerCase().includes(nom)) return false;
     if (client && !c.client.toLowerCase().includes(client)) return false;
     if (ville && !c.ville.toLowerCase().includes(ville)) return false;
@@ -1036,7 +1051,7 @@ function exportArchive() {
   toast('Export CSV téléchargé','g');
 }
 
-/* SYNTHESE */
+/* SYNTHESE VIEWER */
 let currentCanId = null;
 async function openSynthese(id) {
   const c = canevas.find(x => x.id === id);
@@ -1213,7 +1228,7 @@ function stopLiveListener() {
   document.getElementById('refreshBadge')?.classList.remove('show');
 }
 
-/* MESSAGE HANDLER (save from iframe) */
+/* MESSAGE HANDLER */
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
   if (e.data.type === 'rapso_save') {
