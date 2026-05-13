@@ -6,7 +6,7 @@
 <title>RAPSOSYN – Portail de gestion</title>
 <style>
 /* ══════════════════════════════════════════════════════
-   STYLES – inchangés
+   STYLES (inchangés)
    ══════════════════════════════════════════════════════ */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
@@ -455,7 +455,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </button>
     <div class="syn-title" id="synTitle">—</div>
     <span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;flex-shrink:0;"></span>
-    <div class="syn-counters" id="synCounters" style="margin:0 4px;">
+    <div class="syn-counters" id="synCounters">
       <span class="sc sc-lev" id="sc_oui">✅ 0</span>
       <span class="sc sc-par" id="sc_par">⚠️ 0</span>
       <span class="sc sc-non" id="sc_non">❌ 0</span>
@@ -469,7 +469,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <span class="ld"></span>
       <span id="synLiveTxt">Connexion…</span>
     </div>
-    <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
+    <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Appliquer modifications distantes">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <polyline points="1 4 1 10 7 10"/>
         <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
@@ -477,7 +477,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       Rafraîchir
       <span class="notif-badge" id="refreshBadge">!</span>
     </button>
-    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde JSON" style="margin-left:2px;">
+    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde JSON">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       JSON
     </button>
@@ -549,7 +549,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <button class="m-close" onclick="closeModal('mdArchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="m-body">
-      <p class="confirm-text" id="archiveText">Ce canevas sera déplacé dans les archives. Vous pourrez le consulter et le restaurer depuis la page Archives.</p>
+      <p class="confirm-text" id="archiveText">Ce canevas sera déplacé dans les archives.</p>
     </div>
     <div class="m-foot">
       <button class="btn btn-ghost" onclick="closeModal('mdArchive')">Annuler</button>
@@ -599,7 +599,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <div class="mf-row">
         <label id="uPwdLabel">Mot de passe <span class="req">*</span></label>
         <div class="pw-wrap">
-          <input class="mf-input" id="uPwd" type="password" placeholder="Minimum 6 caractères" style="padding-right:40px">
+          <input class="mf-input" id="uPwd" type="password" placeholder="Minimum 6 caractères">
           <button class="pw-eye" onclick="togglePwd('uPwd',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
         <span class="mf-hint" id="uPwdHint">Laissez vide pour ne pas modifier</span>
@@ -607,7 +607,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <div class="mf-row">
         <label>Confirmer le mot de passe</label>
         <div class="pw-wrap">
-          <input class="mf-input" id="uPwd2" type="password" placeholder="Répétez le mot de passe" style="padding-right:40px">
+          <input class="mf-input" id="uPwd2" type="password" placeholder="Répétez le mot de passe">
           <button class="pw-eye" onclick="togglePwd('uPwd2',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </div>
       </div>
@@ -638,7 +638,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET (toutes les fonctions présentes)
+   SCRIPT COMPLET (toutes les fonctions incluses)
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -671,6 +671,12 @@ function fullName(init) { const u = userByInit(init); return u ? u.prenom + ' ' 
 function togglePwd(id, btn) { const i = document.getElementById(id); i.type = i.type === 'password' ? 'text' : 'password'; }
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('slim');
+  const btn = document.getElementById('sbToggle').querySelector('span');
+  btn.textContent = document.getElementById('sidebar').classList.contains('slim') ? '' : 'Réduire';
+}
 function showPage(page, btn) {
   document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
   const pageId = 'page' + page.charAt(0).toUpperCase() + page.slice(1);
@@ -691,13 +697,14 @@ function toast(msg, type = 'g') {
   document.getElementById('toastContainer').appendChild(el);
   setTimeout(() => { el.style.animation = 'tOut .25s forwards'; setTimeout(() => el.remove(), 250); }, 2800);
 }
+
+/* STOCKAGE */
 function fromUserList(val) {
   if (!val) return {};
   if (Array.isArray(val)) { const map = {}; val.forEach(u => { if (u?.uid) map[u.uid] = u; }); return map; }
   return val;
 }
 function toUsersArray(map) { return Object.values(map || {}); }
-
 async function loadFromCloud() {
   try {
     const snapshot = await db.ref('/').once('value');
@@ -739,6 +746,8 @@ async function saveToCloud() {
     throw err;
   }
 }
+
+/* AUTH */
 function doLogin() {
   const email = gv('lEmail').trim();
   const pwd = gv('lPwd');
@@ -749,20 +758,24 @@ function doLogin() {
       const uProfile = snap.val();
       if (!uProfile) throw new Error('Profil utilisateur introuvable');
       currentUser = { ...uProfile, uid: auth.currentUser.uid };
-      document.getElementById('sbAv').textContent = currentUser.initiales;
-      document.getElementById('sbAv').style.background = currentUser.color;
-      document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
-      document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Administrateur' : '👤 Intervenant';
-      const isAdmin = currentUser.role === 'admin';
-      document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
-      document.getElementById('navUsers').style.display  = isAdmin ? '' : 'none';
-      document.getElementById('adminNav').style.display  = isAdmin ? '' : 'none';
+      if (document.getElementById('sbAv')) {
+        document.getElementById('sbAv').textContent = currentUser.initiales;
+        document.getElementById('sbAv').style.background = currentUser.color;
+        document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
+        document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Administrateur' : '👤 Intervenant';
+        const isAdmin = currentUser.role === 'admin';
+        document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
+        document.getElementById('navUsers').style.display  = isAdmin ? '' : 'none';
+        document.getElementById('adminNav').style.display  = isAdmin ? '' : 'none';
+      }
       show('scApp'); hide('scLogin'); hide('scSynthese');
       showPage('canevas');
     })
     .catch(err => { document.getElementById('loginErr').style.display = 'block'; console.error('Erreur login:', err); });
 }
 function logout() { auth.signOut(); currentUser = null; show('scLogin'); hide('scApp'); hide('scSynthese'); }
+
+/* USERS */
 const COLORS = ['#22c55e','#1a56db','#7c3aed','#f97316','#0d9488','#ef4444','#f59e0b','#64748b'];
 function createFirebaseUser(email, password, prenom, nom, role, initiales) {
   return auth.createUserWithEmailAndPassword(email, password).then(cred => {
@@ -856,6 +869,8 @@ function renderUsers() {
       </div>
     </div>`).join('');
 }
+
+/* CANEVAS */
 function canVisible() {
   if (!currentUser) return [];
   return canevas.filter(c => {
@@ -968,6 +983,8 @@ function confirmArchive(id, e) {
   };
   document.getElementById('mdArchive').classList.add('open');
 }
+
+/* ARCHIVES */
 function renderArchive() {
   const nom = gv('afNom').toLowerCase(), client = gv('afClient').toLowerCase(),
         ville = gv('afVille').toLowerCase(), pilote = gv('afPilote').toLowerCase();
@@ -1018,6 +1035,8 @@ function exportArchive() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'archives_rapsosyn.csv'; a.click();
   toast('Export CSV téléchargé','g');
 }
+
+/* SYNTHESE */
 let currentCanId = null;
 async function openSynthese(id) {
   const c = canevas.find(x => x.id === id);
@@ -1063,6 +1082,13 @@ function closeSynthese() {
     renderCanevas();
   }, 150);
 }
+function saveFromSynthese() {
+  const frame = document.getElementById('synFrame');
+  try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
+  toast('Demande de sauvegarde envoyée','b');
+}
+
+/* SYNC LIVE */
 let _notifTimer = null, _pendingData = null, _liveListener = null, _isSelfWrite = false, _lastLocalHash = '';
 function hashData(d) { if (!d) return ''; return JSON.stringify({ v2: (d.v2||[]).length, v1: (d.v1||[]).length, sV2: (d.v2||[]).map(r=>r.suivi).join(''), sV1: (d.v1||[]).map(r=>r.suivi).join('') }); }
 function showNotif(txt, type = 'ok', duration = 3500) {
@@ -1186,6 +1212,8 @@ function stopLiveListener() {
   document.getElementById('synPendingBar')?.classList.remove('show');
   document.getElementById('refreshBadge')?.classList.remove('show');
 }
+
+/* MESSAGE HANDLER (save from iframe) */
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
   if (e.data.type === 'rapso_save') {
@@ -1208,6 +1236,8 @@ window.addEventListener('message', function(e) {
   }
   if (e.data.type === 'rapso_inject_ack') { updateSynCounters(e.data.data); }
 });
+
+/* INIT */
 window.addEventListener('load', async () => {
   await loadFromCloud();
   auth.onAuthStateChanged(async (firebaseUser) => {
