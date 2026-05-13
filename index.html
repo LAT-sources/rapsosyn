@@ -6,7 +6,7 @@
 <title>RAPSOSYN – Portail de gestion</title>
 <style>
 /* ══════════════════════════════════════════════════════
-   STYLES – exactement les mêmes que votre version originale
+   STYLES – inchangés
    ══════════════════════════════════════════════════════ */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
@@ -260,24 +260,45 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 </head>
 <body>
 
-<!-- ======= LOGIN ======= -->
+<!-- ═════════════════════ LOGIN ═════════════════════ -->
 <div id="scLogin" class="screen">
   <div class="login-left">
     <div class="ll-deco1"></div><div class="ll-deco2"></div><div class="ll-deco3"></div>
     <div class="ll-logo" style="position:relative;z-index:1">
-      <div class="ll-logo-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="#1a56db"/><path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2.2" stroke-linecap="round"/><circle cx="14" cy="14" r="3" fill="white"/></svg></div>
+      <div class="ll-logo-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <circle cx="14" cy="14" r="12" fill="#1a56db"/>
+          <path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="14" cy="14" r="3" fill="white"/>
+        </svg>
+      </div>
       <div class="ll-brand">RAPSO<span>SYN</span></div>
     </div>
-    <div class="ll-tag"><h2>Plateforme de suivi<br>des avis SOCOTEC</h2><p>Gestion collaborative des canevas, intervenants et rapports de synthèse.</p></div>
-    <div class="ll-version">v2.0 — SOCOTEC Luxembourg</div>
+    <div class="ll-tag" style="position:relative;z-index:1">
+      <h2>Plateforme de suivi<br>des avis SOCOTEC</h2>
+      <p>Gestion collaborative des canevas, intervenants et rapports de synthèse.</p>
+    </div>
+    <div class="ll-version" style="position:relative;z-index:1">v2.0 — SOCOTEC Luxembourg</div>
   </div>
   <div class="login-right">
     <div class="login-card">
       <div class="lc-title">Bienvenue !</div>
       <div class="lc-sub">Connectez-vous avec vos identifiants pour accéder à vos projets.</div>
       <div class="login-err" id="loginErr">Identifiants incorrects.</div>
-      <div class="lf-group"><label class="lf-label">Email</label><input class="lf-input" id="lEmail" type="email" placeholder="votre@email.com"></div>
-      <div class="lf-group"><label class="lf-label">Mot de passe</label><div class="lf-input-wrap"><input class="lf-input" id="lPwd" type="password" placeholder="••••••••"><button class="lf-eye" onclick="togglePwd('lPwd',this)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+      <div class="lf-group">
+        <label class="lf-label">Email</label>
+        <input class="lf-input" id="lEmail" type="email" placeholder="votre@email.com">
+      </div>
+      <div class="lf-group">
+        <label class="lf-label">Mot de passe</label>
+        <div class="lf-input-wrap">
+          <input class="lf-input" id="lPwd" type="password" placeholder="••••••••">
+          <button class="lf-eye" onclick="togglePwd('lPwd',this)">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <span class="lf-forgot">Mot de passe oublié ?</span>
+      </div>
       <label class="lf-check"><input type="checkbox" checked> Se souvenir de moi</label>
       <button class="btn-login" onclick="doLogin()">Se connecter</button>
       <button class="btn-email">Courriel uniquement</button>
@@ -285,37 +306,340 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   </div>
 </div>
 
-<!-- ======= APP ======= -->
+<!-- ═════════════════════ APP ═════════════════════ -->
 <div id="scApp" class="screen hidden">
-  <aside class="sidebar" id="sidebar"><!-- ... sidebar identical to previous ... --></aside>
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-icon">
+        <svg width="20" height="20" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="rgba(255,255,255,.15)"/><path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="white"/></svg>
+      </div>
+      <div class="sb-logo-text">RAPSO<span>SYN</span></div>
+    </div>
+    <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <span>Réduire</span>
+    </button>
+    <nav class="sb-nav">
+      <div class="nav-label">Principal</div>
+      <button class="nav-item active" data-page="canevas" onclick="showPage('canevas',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span>Mes canevas</span>
+      </button>
+      <button class="nav-item" data-page="archive" onclick="showPage('archive',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+        <span>Archives</span>
+      </button>
+      <div class="nav-sep" id="adminNav"></div>
+      <div class="nav-label" id="adminLabel" style="display:none">Administration</div>
+      <button class="nav-item" id="navUsers" data-page="users" onclick="showPage('users',this)" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span>Utilisateurs</span>
+      </button>
+    </nav>
+    <div class="sb-user" onclick="logout()">
+      <div class="u-av" id="sbAv" style="background:var(--blue)">?</div>
+      <div class="u-info">
+        <div class="u-name" id="sbName">—</div>
+        <div class="u-role" id="sbRole">—</div>
+      </div>
+    </div>
+  </aside>
+
   <div class="app-main">
-    <div class="page" id="pageCanevas"><!-- ... topbar, filterbar, table ... --></div>
-    <div class="page hidden" id="pageArchive"><!-- ... archive topbar, table ... --></div>
-    <div class="page hidden" id="pageUsers"><!-- ... users grid ... --></div>
+    <div class="page" id="pageCanevas">
+      <div class="topbar">
+        <div class="tb-title">Canevas &nbsp;<span class="count-badge" id="canevasCount">0</span></div>
+        <div class="tb-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openModalCanevas('create')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nouveau canevas
+          </button>
+        </div>
+      </div>
+      <div class="filterbar">
+        <button class="fav-btn" id="favBtn" onclick="toggleFav()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Favoris
+        </button>
+        <input class="fb-input" id="fNom"    placeholder="Nom du projet…"  oninput="renderCanevas()">
+        <input class="fb-input" id="fChrono" placeholder="Référence…"      oninput="renderCanevas()" style="width:130px">
+        <input class="fb-input" id="fClient" placeholder="Client…"          oninput="renderCanevas()" style="width:105px">
+        <input class="fb-input" id="fVille"  placeholder="Ville…"           oninput="renderCanevas()" style="width:90px">
+        <select class="fb-select" id="fStatut" onchange="renderCanevas()">
+          <option value="">Tous les statuts</option>
+          <option value="Commandée">Commandée</option>
+          <option value="En attente">En attente</option>
+          <option value="En cours">En cours</option>
+        </select>
+        <input class="fb-input" id="fPilote" placeholder="Pilote…" oninput="renderCanevas()" style="width:90px">
+      </div>
+      <div class="table-wrap">
+        <table class="main-table" id="canevasTable">
+          <thead>
+            <tr>
+              <th></th>
+              <th onclick="sortCan('nom')">Nom du projet ↕</th>
+              <th onclick="sortCan('chrono')">Référence ↕</th>
+              <th onclick="sortCan('client')">Client ↕</th>
+              <th onclick="sortCan('ville')">Ville ↕</th>
+              <th onclick="sortCan('statut')">Statut ↕</th>
+              <th>Pilote</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="canevasBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page hidden" id="pageArchive">
+      <div class="topbar">
+        <div class="tb-title">Archives &nbsp;<span class="count-badge" id="archiveCount">0</span></div>
+        <div class="tb-actions">
+          <button class="btn btn-ghost btn-sm" onclick="exportArchive()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exporter liste
+          </button>
+        </div>
+      </div>
+      <div class="archive-info">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Les canevas archivés sont en lecture seule. Vous pouvez les consulter ou les désarchiver.
+      </div>
+      <div class="filterbar">
+        <input class="fb-input" id="afNom" placeholder="Nom du projet…" oninput="renderArchive()">
+        <input class="fb-input" id="afClient" placeholder="Client…" oninput="renderArchive()" style="width:110px">
+        <input class="fb-input" id="afVille"  placeholder="Ville…"  oninput="renderArchive()" style="width:90px">
+        <input class="fb-input" id="afPilote" placeholder="Pilote…" oninput="renderArchive()" style="width:90px">
+      </div>
+      <div class="table-wrap">
+        <table class="main-table" id="archiveTable">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Nom du projet</th>
+              <th>Référence</th>
+              <th>Client</th>
+              <th>Ville</th>
+              <th>Archivé le</th>
+              <th>Pilote</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="archiveBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page hidden" id="pageUsers">
+      <div class="topbar">
+        <div class="tb-title">Utilisateurs &nbsp;<span class="count-badge" id="usersCount">0</span></div>
+        <div class="tb-actions">
+          <button class="btn btn-purple btn-sm" onclick="openModalUser('create')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Créer un compte
+          </button>
+        </div>
+      </div>
+      <div class="users-grid" id="usersGrid"></div>
+    </div>
   </div>
 </div>
 
-<!-- ======= SYNTHESE VIEWER ======= -->
+<!-- ═════════════════════ SYNTHESE VIEWER ═════════════════════ -->
 <div id="scSynthese" class="screen hidden">
-  <div class="syn-topbar">...</div>
-  <div class="syn-pending-bar">...</div>
-  <div class="syn-notif">...</div>
+  <div class="syn-topbar">
+    <button class="syn-back" onclick="closeSynthese()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Retour
+    </button>
+    <div class="syn-title" id="synTitle">—</div>
+    <span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;flex-shrink:0;"></span>
+    <div class="syn-counters" id="synCounters" style="margin:0 4px;">
+      <span class="sc sc-lev" id="sc_oui">✅ 0</span>
+      <span class="sc sc-par" id="sc_par">⚠️ 0</span>
+      <span class="sc sc-non" id="sc_non">❌ 0</span>
+      <span class="sc sc-tot" id="sc_tot">/ 0</span>
+    </div>
+    <div class="syn-status idle" id="synStatus">
+      <span class="sdot"></span>
+      <span id="synStatusTxt">En attente</span>
+    </div>
+    <div class="syn-live-dot" id="synLiveDot" title="Connexion Firebase temps réel">
+      <span class="ld"></span>
+      <span id="synLiveTxt">Connexion…</span>
+    </div>
+    <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <polyline points="1 4 1 10 7 10"/>
+        <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+      </svg>
+      Rafraîchir
+      <span class="notif-badge" id="refreshBadge">!</span>
+    </button>
+    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde JSON" style="margin-left:2px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      JSON
+    </button>
+  </div>
+  <div class="syn-pending-bar" id="synPendingBar">
+    <span class="pb-icon">🔔</span>
+    <div class="pb-meta">
+      <div class="pb-title" id="pbTitle">Modifications disponibles</div>
+      <div class="pb-detail" id="pbDetail">Un autre utilisateur a modifié ce canevas</div>
+    </div>
+    <span class="pb-user" id="pbUser"></span>
+    <button class="pb-apply" onclick="applyPendingUpdate()">⬇ Appliquer</button>
+    <button class="pb-dismiss" onclick="dismissPending()">Ignorer</button>
+  </div>
+  <div class="syn-notif" id="synNotif">
+    <span class="nicon" id="synNotifIcon">ℹ️</span>
+    <span class="syn-notif-txt" id="synNotifTxt"></span>
+    <button class="syn-notif-close" onclick="hideNotif()">✕</button>
+  </div>
   <iframe id="synFrame" class="syn-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads"></iframe>
 </div>
 
-<!-- ======= MODALS ======= -->
-<div class="modal-bd" id="mdCanevas">...</div>
-<div class="modal-bd" id="mdArchive">...</div>
-<div class="modal-bd" id="mdDesarchive">...</div>
-<div class="modal-bd" id="mdUser">...</div>
-<div class="modal-bd" id="mdDelUser">...</div>
+<!-- ═════════ MODALS ═════════ -->
+<div class="modal-bd" id="mdCanevas">
+  <div class="modal">
+    <div class="m-hdr">
+      <div class="m-icon blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div class="m-title" id="mdCanTitle">Nouveau canevas</div>
+      <button class="m-close" onclick="closeModal('mdCanevas')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="m-body">
+      <div class="mf-row"><label>Nom du projet <span class="req">*</span></label><input class="mf-input" id="mNom" placeholder="ex: LUXEMBOURG – Complexe sportif…"></div>
+      <div class="mf-grid">
+        <div class="mf-row"><label>Référence / Chronorapso <span class="req">*</span></label><input class="mf-input" id="mChrono" placeholder="ex: 2507JB000000021/1"></div>
+        <div class="mf-row"><label>Ville</label><input class="mf-input" id="mVille" placeholder="ex: Luxembourg"></div>
+      </div>
+      <div class="mf-grid">
+        <div class="mf-row"><label>Client</label><input class="mf-input" id="mClient" placeholder="Nom du client"></div>
+        <div class="mf-row"><label>Statut</label>
+          <select class="mf-select" id="mStatut">
+            <option value="Commandée">Commandée</option>
+            <option value="En attente">En attente</option>
+            <option value="En cours">En cours</option>
+          </select>
+        </div>
+      </div>
+      <div class="mf-grid">
+        <div class="mf-row"><label>Pilote assigné</label>
+          <select class="mf-select" id="mPilote"></select>
+        </div>
+        <div class="mf-row"><label>Intervenants assignés</label>
+          <select class="mf-select" id="mIntervenants" multiple style="height:80px;border-radius:8px;padding:4px;"></select>
+        </div>
+      </div>
+      <div class="mf-row"><label>Notes</label><textarea class="mf-ta" id="mNotes" placeholder="Informations complémentaires…"></textarea></div>
+    </div>
+    <div class="m-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mdCanevas')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveCanevas()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bd" id="mdArchive">
+  <div class="modal sm">
+    <div class="m-hdr">
+      <div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div>
+      <div class="m-title">Archiver ce canevas ?</div>
+      <button class="m-close" onclick="closeModal('mdArchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="m-body">
+      <p class="confirm-text" id="archiveText">Ce canevas sera déplacé dans les archives. Vous pourrez le consulter et le restaurer depuis la page Archives.</p>
+    </div>
+    <div class="m-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mdArchive')">Annuler</button>
+      <button class="btn btn-danger" id="archiveOk">Archiver</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bd" id="mdDesarchive">
+  <div class="modal sm">
+    <div class="m-hdr">
+      <div class="m-icon green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg></div>
+      <div class="m-title">Désarchiver ?</div>
+      <button class="m-close" onclick="closeModal('mdDesarchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="m-body"><p class="confirm-text">Ce canevas sera restauré dans la liste des canevas actifs.</p></div>
+    <div class="m-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mdDesarchive')">Annuler</button>
+      <button class="btn btn-success" id="desarchiveOk">Restaurer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bd" id="mdUser">
+  <div class="modal">
+    <div class="m-hdr">
+      <div class="m-icon purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+      <div class="m-title" id="mdUserTitle">Créer un compte</div>
+      <button class="m-close" onclick="closeModal('mdUser')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="m-body">
+      <div class="mf-grid">
+        <div class="mf-row"><label>Prénom <span class="req">*</span></label><input class="mf-input" id="uPrenom" placeholder="Jean"></div>
+        <div class="mf-row"><label>Nom <span class="req">*</span></label><input class="mf-input" id="uNom" placeholder="Dupont"></div>
+      </div>
+      <div class="mf-row"><label>Email <span class="req">*</span></label><input class="mf-input" id="uEmail" type="email" placeholder="jean.dupont@socotec.lu"></div>
+      <div class="mf-grid">
+        <div class="mf-row"><label>Initiales</label><input class="mf-input" id="uInitiales" placeholder="JD" maxlength="3" style="text-transform:uppercase"></div>
+        <div class="mf-row"><label>Rôle</label>
+          <select class="mf-select" id="uRole">
+            <option value="user">Intervenant</option>
+            <option value="admin">Administrateur</option>
+          </select>
+        </div>
+      </div>
+      <div class="mf-sep"></div>
+      <div class="mf-row">
+        <label id="uPwdLabel">Mot de passe <span class="req">*</span></label>
+        <div class="pw-wrap">
+          <input class="mf-input" id="uPwd" type="password" placeholder="Minimum 6 caractères" style="padding-right:40px">
+          <button class="pw-eye" onclick="togglePwd('uPwd',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <span class="mf-hint" id="uPwdHint">Laissez vide pour ne pas modifier</span>
+      </div>
+      <div class="mf-row">
+        <label>Confirmer le mot de passe</label>
+        <div class="pw-wrap">
+          <input class="mf-input" id="uPwd2" type="password" placeholder="Répétez le mot de passe" style="padding-right:40px">
+          <button class="pw-eye" onclick="togglePwd('uPwd2',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mdUser')">Annuler</button>
+      <button class="btn btn-purple" onclick="saveUser()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bd" id="mdDelUser">
+  <div class="modal sm">
+    <div class="m-hdr">
+      <div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
+      <div class="m-title">Supprimer ce compte ?</div>
+      <button class="m-close" onclick="closeModal('mdDelUser')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="m-body"><p class="confirm-text" id="delUserText">Cette action est irréversible.</p></div>
+    <div class="m-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mdDelUser')">Annuler</button>
+      <button class="btn btn-danger" id="delUserOk">Supprimer</button>
+    </div>
+  </div>
+</div>
 
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-// ══════════════════════════════════════════════════════
-//  CONFIGURATION FIREBASE
-// ══════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════
+   SCRIPT COMPLET (toutes les fonctions présentes)
+   ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
   authDomain: "rapsosyn.firebaseapp.com",
@@ -329,7 +653,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const auth = firebase.auth();
 
-// ═════════════════════ STATE ═════════════════════
 let currentUser = null;
 let editingCanId = null;
 let editingUserId = null;
@@ -340,7 +663,6 @@ let canevas = [];
 let nextCanId = 1;
 let isOnline = true;
 
-// ═════════════════════ UTILS ═════════════════════
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function gv(id) { return document.getElementById(id)?.value || ''; }
 function userByInit(init) { return users.find(u => u.initiales === init); }
@@ -369,18 +691,54 @@ function toast(msg, type = 'g') {
   document.getElementById('toastContainer').appendChild(el);
   setTimeout(() => { el.style.animation = 'tOut .25s forwards'; setTimeout(() => el.remove(), 250); }, 2800);
 }
-
-// ═════════════════════ STOCKAGE ═════════════════════
 function fromUserList(val) {
   if (!val) return {};
   if (Array.isArray(val)) { const map = {}; val.forEach(u => { if (u?.uid) map[u.uid] = u; }); return map; }
   return val;
 }
 function toUsersArray(map) { return Object.values(map || {}); }
-async function loadFromCloud() { /* identical to previous safe version */ }
-async function saveToCloud() { /* with update protection, identical */ }
 
-// ═════════════════════ AUTH ═════════════════════
+async function loadFromCloud() {
+  try {
+    const snapshot = await db.ref('/').once('value');
+    const record = snapshot.val() || {};
+    const toArray = (val) => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val;
+      return Object.values(val);
+    };
+    canevas = toArray(record.canevas);
+    const usersMap = fromUserList(record.users);
+    users = toUsersArray(usersMap);
+    nextCanId = canevas.length ? Math.max(...canevas.map(c => c.id)) + 1 : 1;
+    isOnline = true;
+    return true;
+  } catch (err) {
+    console.warn('Mode hors ligne');
+    canevas = JSON.parse(localStorage.getItem('rs_canevas') || '[]');
+    users   = JSON.parse(localStorage.getItem('rs_users') || '[]');
+    isOnline = false;
+    return false;
+  }
+}
+async function saveToCloud() {
+  localStorage.setItem('rs_canevas', JSON.stringify(canevas));
+  const usersObj = {};
+  users.forEach(u => { if (u.uid) usersObj[u.uid] = u; });
+  localStorage.setItem('rs_users', JSON.stringify(users));
+  try {
+    if (Object.keys(usersObj).length > 0) {
+      await db.ref('/').update({ canevas, users: usersObj });
+    } else {
+      await db.ref('/').update({ canevas });
+    }
+    isOnline = true;
+  } catch (err) {
+    console.warn('Sauvegarde cloud échouée');
+    isOnline = false;
+    throw err;
+  }
+}
 function doLogin() {
   const email = gv('lEmail').trim();
   const pwd = gv('lPwd');
@@ -405,8 +763,6 @@ function doLogin() {
     .catch(err => { document.getElementById('loginErr').style.display = 'block'; console.error('Erreur login:', err); });
 }
 function logout() { auth.signOut(); currentUser = null; show('scLogin'); hide('scApp'); hide('scSynthese'); }
-
-// ═════════════════════ USERS (CRUD) ═════════════════════
 const COLORS = ['#22c55e','#1a56db','#7c3aed','#f97316','#0d9488','#ef4444','#f59e0b','#64748b'];
 function createFirebaseUser(email, password, prenom, nom, role, initiales) {
   return auth.createUserWithEmailAndPassword(email, password).then(cred => {
@@ -419,10 +775,68 @@ function createFirebaseUser(email, password, prenom, nom, role, initiales) {
 }
 function updateUserProfile(uid, newProfile) { const idx = users.findIndex(u => u.uid === uid); if (idx >= 0) Object.assign(users[idx], newProfile); return saveToCloud(); }
 async function deleteFirebaseUser(uidToDelete) { await updateUserProfile(uidToDelete, { actif: false }); users = users.filter(u => u.uid !== uidToDelete); await saveToCloud(); renderUsers(); }
-function openModalUser(mode, uid = null) { /* ... */ }
-function saveUser() { /* ... */ }
-function toggleUserActif(uid) { /* ... */ }
-function confirmDelUser(uid) { /* ... */ }
+function openModalUser(mode, uid = null) {
+  editingUserId = uid;
+  const isCreate = mode === 'create';
+  document.getElementById('mdUserTitle').textContent = isCreate ? 'Créer un compte' : 'Modifier le compte';
+  document.getElementById('uPwdLabel').innerHTML = `Mot de passe${isCreate ? ' <span class="req">*</span>' : ''}`;
+  document.getElementById('uPwdHint').style.display = isCreate ? 'none' : '';
+  if (isCreate) {
+    ['uPrenom','uNom','uEmail','uInitiales','uPwd','uPwd2'].forEach(f => document.getElementById(f).value = '');
+    document.getElementById('uRole').value = 'user';
+  } else {
+    const u = users.find(x => x.uid === uid);
+    if (!u) return;
+    document.getElementById('uPrenom').value = u.prenom;
+    document.getElementById('uNom').value = u.nom;
+    document.getElementById('uEmail').value = u.email;
+    document.getElementById('uInitiales').value = u.initiales;
+    document.getElementById('uRole').value = u.role;
+    document.getElementById('uPwd').value = '';
+    document.getElementById('uPwd2').value = '';
+  }
+  document.getElementById('mdUser').classList.add('open');
+}
+function saveUser() {
+  const prenom = gv('uPrenom').trim();
+  const nom = gv('uNom').trim();
+  const email = gv('uEmail').trim();
+  const initiales = gv('uInitiales').trim().toUpperCase();
+  const role = gv('uRole');
+  const pwd = gv('uPwd');
+  const pwd2 = gv('uPwd2');
+  if (!prenom || !nom || !email) { toast('Prénom, Nom et Email requis','r'); return; }
+  if (editingUserId) {
+    const profile = { prenom, nom, email, role, initiales: initiales || (prenom[0]+nom[0]).toUpperCase() };
+    if (pwd) {
+      if (pwd !== pwd2) { toast('Les mots de passe ne correspondent pas','r'); return; }
+      auth.currentUser.updatePassword(pwd).catch(e => toast('Erreur mise à jour mot de passe','r'));
+    }
+    updateUserProfile(editingUserId, profile).then(() => { toast('Compte modifié','g'); closeModal('mdUser'); renderUsers(); });
+  } else {
+    if (!pwd || pwd.length < 6) { toast('Mot de passe >= 6 caractères','r'); return; }
+    if (pwd !== pwd2) { toast('Les mots de passe ne correspondent pas','r'); return; }
+    createFirebaseUser(email, pwd, prenom, nom, role, initiales)
+      .then(() => { toast('Compte créé','g'); closeModal('mdUser'); renderUsers(); })
+      .catch(err => toast('Erreur: ' + err.message,'r'));
+  }
+}
+function toggleUserActif(uid) {
+  const u = users.find(x => x.uid === uid);
+  if (!u) return;
+  u.actif = u.actif === false ? true : false;
+  updateUserProfile(uid, { actif: u.actif }).then(() => { toast(u.actif ? 'Compte activé' : 'Compte désactivé','b'); renderUsers(); });
+}
+function confirmDelUser(uid) {
+  const u = users.find(x => x.uid === uid);
+  if (!u) return;
+  if (u.uid === currentUser?.uid) { toast('Impossible de supprimer votre propre compte','r'); return; }
+  document.getElementById('delUserText').textContent = `Supprimer le compte de ${u.prenom} ${u.nom} ? Cette action est irréversible.`;
+  document.getElementById('delUserOk').onclick = () => {
+    deleteFirebaseUser(uid).then(() => { toast('Compte supprimé','b'); closeModal('mdDelUser'); renderUsers(); });
+  };
+  document.getElementById('mdDelUser').classList.add('open');
+}
 function renderUsers() {
   document.getElementById('usersCount').textContent = users.length;
   const grid = document.getElementById('usersGrid');
@@ -442,8 +856,6 @@ function renderUsers() {
       </div>
     </div>`).join('');
 }
-
-// ═════════════════════ CANEVAS ═════════════════════
 function canVisible() {
   if (!currentUser) return [];
   return canevas.filter(c => {
@@ -468,11 +880,7 @@ function sortCan(key) {
   if (canSort.key === key) canSort.dir *= -1; else { canSort.key = key; canSort.dir = 1; }
   renderCanevas();
 }
-function toggleFav() {
-  favOnly = !favOnly;
-  document.getElementById('favBtn').classList.toggle('on', favOnly);
-  renderCanevas();
-}
+function toggleFav() { favOnly = !favOnly; document.getElementById('favBtn').classList.toggle('on', favOnly); renderCanevas(); }
 function renderCanevas() {
   let rows = canVisible();
   if (canSort.key) rows = [...rows].sort((a, b) => {
@@ -500,12 +908,8 @@ function renderCanevas() {
       <td><span class="av" style="background:${avBg(c.pilote)}" title="${fullName(c.pilote)}">${esc(c.pilote)}</span></td>
       <td>
         <button class="btn btn-primary btn-xs" onclick="openSynthese(${c.id})">📂 Ouvrir</button>
-        ${canEdit ? `<button class="btn-icon blue" onclick="openModalCanevas('edit',${c.id},event)" title="Modifier">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </button>` : ''}
-        ${currentUser.role === 'admin' ? `<button class="btn-icon danger" onclick="confirmArchive(${c.id},event)" title="Archiver">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-        </button>` : ''}
+        ${canEdit ? `<button class="btn-icon blue" onclick="openModalCanevas('edit',${c.id},event)" title="Modifier"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>` : ''}
+        ${currentUser.role === 'admin' ? `<button class="btn-icon danger" onclick="confirmArchive(${c.id},event)" title="Archiver"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>` : ''}
       </td>
     </tr>`;
   }).join('');
@@ -564,8 +968,6 @@ function confirmArchive(id, e) {
   };
   document.getElementById('mdArchive').classList.add('open');
 }
-
-// ═════════════════════ ARCHIVE ═════════════════════
 function renderArchive() {
   const nom = gv('afNom').toLowerCase(), client = gv('afClient').toLowerCase(),
         ville = gv('afVille').toLowerCase(), pilote = gv('afPilote').toLowerCase();
@@ -616,8 +1018,6 @@ function exportArchive() {
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'archives_rapsosyn.csv'; a.click();
   toast('Export CSV téléchargé','g');
 }
-
-// ═════════════════════ SYNTHESE VIEWER ═════════════════════
 let currentCanId = null;
 async function openSynthese(id) {
   const c = canevas.find(x => x.id === id);
@@ -663,47 +1063,72 @@ function closeSynthese() {
     renderCanevas();
   }, 150);
 }
-
-// ═════════════════════ SYNC TEMPS RÉEL ═════════════════════
 let _notifTimer = null, _pendingData = null, _liveListener = null, _isSelfWrite = false, _lastLocalHash = '';
 function hashData(d) { if (!d) return ''; return JSON.stringify({ v2: (d.v2||[]).length, v1: (d.v1||[]).length, sV2: (d.v2||[]).map(r=>r.suivi).join(''), sV1: (d.v1||[]).map(r=>r.suivi).join('') }); }
 function showNotif(txt, type = 'ok', duration = 3500) {
   const el = document.getElementById('synNotif');
   const ico = document.getElementById('synNotifIcon');
   const msg = document.getElementById('synNotifTxt');
+  if (!el) return;
   ico.textContent = type === 'ok' ? '✅' : type === 'warn' ? '⚠️' : '❌';
   msg.textContent = txt;
   el.className = 'syn-notif show n' + type;
   clearTimeout(_notifTimer);
   if (duration > 0) _notifTimer = setTimeout(hideNotif, duration);
 }
-function hideNotif() { document.getElementById('synNotif').classList.remove('show'); }
-function setSynStatus(state, txt) { const el = document.getElementById('synStatus'); document.getElementById('synStatusTxt').textContent = txt; el.className = 'syn-status ' + state; }
-function setLiveDot(connected) { const el = document.getElementById('synLiveDot'); const tx = document.getElementById('synLiveTxt'); if (!el) return; el.className = 'syn-live-dot ' + (connected ? 'connected' : 'disconnected'); tx.textContent = connected ? 'Live' : 'Hors ligne'; }
+function hideNotif() { const el = document.getElementById('synNotif'); if (el) el.classList.remove('show'); }
+function setSynStatus(state, txt) {
+  const el = document.getElementById('synStatus');
+  const txtEl = document.getElementById('synStatusTxt');
+  if (!el) return;
+  txtEl.textContent = txt;
+  el.className = 'syn-status ' + state;
+}
+function setLiveDot(connected) {
+  const el = document.getElementById('synLiveDot');
+  const tx = document.getElementById('synLiveTxt');
+  if (!el) return;
+  el.className = 'syn-live-dot ' + (connected ? 'connected' : 'disconnected');
+  tx.textContent = connected ? 'Live' : 'Hors ligne';
+}
 function updateSynCounters(data) {
   if (!data) return;
   const all = [...(data.v2||[]), ...(data.v1||[])];
-  document.getElementById('sc_oui').textContent = '✅ ' + all.filter(r => r.suivi === 'Oui').length;
-  document.getElementById('sc_par').textContent = '⚠️ ' + all.filter(r => r.suivi === 'Par').length;
-  document.getElementById('sc_non').textContent = '❌ ' + all.filter(r => r.suivi === 'Non').length;
+  const lev = all.filter(r => r.suivi === 'Oui').length;
+  const par = all.filter(r => r.suivi === 'Par').length;
+  const non = all.filter(r => r.suivi === 'Non').length;
+  document.getElementById('sc_oui').textContent = '✅ ' + lev;
+  document.getElementById('sc_par').textContent = '⚠️ ' + par;
+  document.getElementById('sc_non').textContent = '❌ ' + non;
   document.getElementById('sc_tot').textContent = '/ ' + all.length;
 }
 function showPendingBar(freshCan) {
   _pendingData = freshCan;
-  const badge = document.getElementById('refreshBadge'); if (badge) badge.classList.add('show');
+  const badge = document.getElementById('refreshBadge');
+  if (badge) badge.classList.add('show');
   const freshData = freshCan.synthData || { v2: [], v1: [] };
   const all = [...(freshData.v2||[]), ...(freshData.v1||[])];
   const lev = all.filter(r => r.suivi === 'Oui').length, non = all.filter(r => r.suivi === 'Non').length;
   const pilote = users.find(u => u.initiales === freshCan.pilote);
+  const modUser = pilote ? pilote.prenom + ' ' + pilote.nom : freshCan.pilote || '?';
   document.getElementById('pbTitle').textContent = '🔔 Modifications disponibles sur ce canevas';
   document.getElementById('pbDetail').textContent = `${all.length} avis au total · ${lev} levé(s) · ${non} maintenu(s)`;
-  document.getElementById('pbUser').textContent = '✏️ ' + (pilote ? pilote.prenom + ' ' + pilote.nom : freshCan.pilote || '?');
+  document.getElementById('pbUser').textContent = '✏️ ' + modUser;
   document.getElementById('synPendingBar').classList.add('show');
   setSynStatus('saving', 'Mise à jour dispo.');
 }
-function dismissPending() { _pendingData = null; document.getElementById('synPendingBar').classList.remove('show'); document.getElementById('refreshBadge')?.classList.remove('show'); setSynStatus('idle', 'En attente'); }
+function dismissPending() {
+  _pendingData = null;
+  document.getElementById('synPendingBar').classList.remove('show');
+  document.getElementById('refreshBadge')?.classList.remove('show');
+  setSynStatus('idle', 'En attente');
+}
 async function applyPendingUpdate() {
-  const btn = document.getElementById('synRefreshBtn'); btn.classList.add('spinning'); dismissPending(); setSynStatus('saving', 'Application…');
+  const btn = document.getElementById('synRefreshBtn');
+  if (!btn) return;
+  btn.classList.add('spinning');
+  dismissPending();
+  setSynStatus('saving', 'Application…');
   let freshCan = _pendingData;
   if (!freshCan && currentCanId) {
     try {
@@ -725,7 +1150,8 @@ async function applyPendingUpdate() {
     } catch(e) { await openSynthese(currentCanId); setSynStatus('saved', 'Rechargé'); showNotif('Canevas rechargé ✓','ok',3000); }
     setTimeout(() => setSynStatus('idle', 'En attente'), 4500);
   } else { setSynStatus('error', 'Introuvable'); showNotif('Canevas introuvable sur Firebase.','err',5000); }
-  btn.classList.remove('spinning'); _pendingData = null;
+  btn.classList.remove('spinning');
+  _pendingData = null;
 }
 function startLiveListener(canId) {
   stopLiveListener();
@@ -744,14 +1170,22 @@ function startLiveListener(canId) {
     const localCan = canevas.find(x => String(x.id) === String(canId));
     const localHash = hashData(localCan?.synthData);
     if (freshHash !== localHash && freshHash !== _lastLocalHash) {
-      console.log('Modification distante détectée');
       showPendingBar(fresh);
     }
-  }, error => { console.warn('Listener error:', error); setLiveDot(false); setSynStatus('error','Connexion perdue'); showNotif('Connexion Firebase perdue','err',0); });
+  }, error => {
+    console.warn('Listener error:', error);
+    setLiveDot(false);
+    setSynStatus('error','Connexion perdue');
+    showNotif('Connexion Firebase perdue','err',0);
+  });
 }
-function stopLiveListener() { if (_liveListener) { db.ref('/canevas').off('value', _liveListener); _liveListener = null; } setLiveDot(false); _pendingData = null; document.getElementById('synPendingBar')?.classList.remove('show'); document.getElementById('refreshBadge')?.classList.remove('show'); }
-
-// ═════════════════════ MESSAGE HANDLER ═════════════════════
+function stopLiveListener() {
+  if (_liveListener) { db.ref('/canevas').off('value', _liveListener); _liveListener = null; }
+  setLiveDot(false);
+  _pendingData = null;
+  document.getElementById('synPendingBar')?.classList.remove('show');
+  document.getElementById('refreshBadge')?.classList.remove('show');
+}
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
   if (e.data.type === 'rapso_save') {
@@ -774,8 +1208,6 @@ window.addEventListener('message', function(e) {
   }
   if (e.data.type === 'rapso_inject_ack') { updateSynCounters(e.data.data); }
 });
-
-// ═════════════════════ INIT ═════════════════════
 window.addEventListener('load', async () => {
   await loadFromCloud();
   auth.onAuthStateChanged(async (firebaseUser) => {
@@ -784,16 +1216,18 @@ window.addEventListener('load', async () => {
       const snap = await db.ref('/users/' + firebaseUser.uid).once('value');
       if (snap.exists()) {
         currentUser = { ...snap.val(), uid: firebaseUser.uid };
-        document.getElementById('sbAv').textContent = currentUser.initiales;
-        document.getElementById('sbAv').style.background = currentUser.color;
-        document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
-        document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Admin' : '👤 User';
-        const isAdmin = currentUser.role === 'admin';
-        document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
-        document.getElementById('navUsers').style.display = isAdmin ? '' : 'none';
-        document.getElementById('adminNav').style.display = isAdmin ? '' : 'none';
-        show('scApp'); hide('scLogin');
-        showPage('canevas');
+        if (document.getElementById('sbAv')) {
+          document.getElementById('sbAv').textContent = currentUser.initiales;
+          document.getElementById('sbAv').style.background = currentUser.color;
+          document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
+          document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Admin' : '👤 User';
+          const isAdmin = currentUser.role === 'admin';
+          document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
+          document.getElementById('navUsers').style.display = isAdmin ? '' : 'none';
+          document.getElementById('adminNav').style.display = isAdmin ? '' : 'none';
+          show('scApp'); hide('scLogin');
+          showPage('canevas');
+        }
       }
     } else {
       if (currentUser) logout();
