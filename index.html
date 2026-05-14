@@ -1070,7 +1070,7 @@ async function openSynthese(id) {
   const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
   // ⚠️ Ne plus injecter la valeur de l'affaire à l'ouverture (elle sera gérée par l'iframe via import)
   const metaScript = `<script>
-    window.RAPSO_AFFAIRE    = '';
+    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.nom)};
     window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
@@ -1264,7 +1264,7 @@ window.addEventListener('message', function(e) {
     if (canId !== undefined && affaire) {
       const c = canevas.find(x => String(x.id) === String(canId));
       if (c) {
-        c.chrono = affaire;
+        c.nom = affaire;
         saveToCloud();
         toast('Affaire mise à jour', 'g');
       }
