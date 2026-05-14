@@ -636,7 +636,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET – AFFAIRE / DOSSIER corrigés définitivement
+   SCRIPT COMPLET – c.nom ET c.nomimp INDÉPENDANTS
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -978,10 +978,11 @@ function saveCanevas() {
   const intervenants = [...sel.options].filter(o => o.selected).map(o => o.value);
   if (editingCanId) {
     const c = canevas.find(x => x.id === editingCanId);
+    // ✅ Préserver c.nomimp lors de la modification manuelle
     Object.assign(c, { nom, chrono, ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes') });
     toast('Canevas modifié','g');
   } else {
-    canevas.unshift({ id: nextCanId++, nom, chrono, ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes'), fav: false, archived: false, archivedDate: null, synthData: null });
+    canevas.unshift({ id: nextCanId++, nom, chrono, nomimp: '', ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes'), fav: false, archived: false, archivedDate: null, synthData: null });
     toast('Canevas créé ✓','g');
   }
   saveToCloud(); closeModal('mdCanevas'); renderCanevas();
@@ -1068,9 +1069,10 @@ async function openSynthese(id) {
     templateHTML = await response.text();
   } catch(err) { toast('Impossible de charger le template canevas_temp.html','r'); return; }
   const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
-  // ⚠️ Ne plus injecter la valeur de l'affaire à l'ouverture (elle sera gérée par l'iframe via import)
+  // ✅ AFFAIRE = c.nomimp (ou c.nom si nomimp est vide), DOSSIER = c.chrono
+  const affaireValue = c.nomimp || c.nom || '';
   const metaScript = `<script>
-    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.nom)};
+    window.RAPSO_AFFAIRE    = ${JSON.stringify(affaireValue)};
     window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
@@ -1189,7 +1191,7 @@ async function applyPendingUpdate() {
     if (idx >= 0) canevas[idx] = freshCan;
     _lastLocalHash = hashData(newData);
     try {
-      // ne plus envoyer l'affaire
+      // ✅ Ne jamais envoyer "affaire" ici, seulement "dossier"
       document.getElementById('synFrame').contentWindow.postMessage({ type: 'rapso_inject', data: newData, dossier: freshCan.chrono }, '*');
       updateSynCounters(newData);
       setSynStatus('saved', 'À jour'); showNotif('Modifications appliquées ✓','ok',3000);
@@ -1237,7 +1239,6 @@ function stopLiveListener() {
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
 
-  // 1. Sauvegarde des données de synthèse
   if (e.data.type === 'rapso_save') {
     const canId = e.data.canId;
     const incomingData = e.data.data;
@@ -1257,21 +1258,20 @@ window.addEventListener('message', function(e) {
     }
   }
 
-  // 2. Mise à jour de l'affaire (chrono) après import / actualisation
+  // ✅ Mise à jour du nom d'affaire importé (nomimp)
   if (e.data.type === 'rapso_update_affaire') {
     const canId = e.data.canId;
     const affaire = e.data.affaire;
     if (canId !== undefined && affaire) {
       const c = canevas.find(x => String(x.id) === String(canId));
       if (c) {
-        c.nom = affaire;
+        c.nomimp = affaire;
         saveToCloud();
         toast('Affaire mise à jour', 'g');
       }
     }
   }
 
-  // 3. Confirmation de l'injection
   if (e.data.type === 'rapso_inject_ack') {
     updateSynCounters(e.data.data);
   }
