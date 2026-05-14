@@ -1069,7 +1069,7 @@ async function openSynthese(id) {
   } catch(err) { toast('Impossible de charger le template canevas_temp.html','r'); return; }
   const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
   const metaScript = `<script>
-    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.chrono)};
+    window.RAPSO_AFFAIRE    = '';
     window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
