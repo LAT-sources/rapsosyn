@@ -1235,6 +1235,8 @@ function stopLiveListener() {
 /* MESSAGE HANDLER */
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
+
+  // 1. Sauvegarde des données de synthèse envoyées par l’iframe
   if (e.data.type === 'rapso_save') {
     const canId = e.data.canId;
     const incomingData = e.data.data;
@@ -1253,9 +1255,27 @@ window.addEventListener('message', function(e) {
       }
     }
   }
-  if (e.data.type === 'rapso_inject_ack') { updateSynCounters(e.data.data); }
-});
 
+  // 2. Mise à jour de l’affaire (chrono) après un import / actualisation
+  if (e.data.type === 'rapso_update_affaire') {
+    const canId = e.data.canId;
+    const affaire = e.data.affaire;
+    if (canId !== undefined && affaire) {
+      const c = canevas.find(x => String(x.id) === String(canId));
+      if (c) {
+        c.chrono = affaire;
+        saveToCloud();
+        toast('Affaire mise à jour', 'g');
+      }
+    }
+  }
+
+  // 3. Confirmation de l’injection des données dans l’iframe
+  if (e.data.type === 'rapso_inject_ack') {
+    updateSynCounters(e.data.data);
+  }
+});
+   
 /* INIT */
 window.addEventListener('load', async () => {
   await loadFromCloud();
