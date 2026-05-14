@@ -636,7 +636,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET – AFFAIRE/DOSSIER corrigés
+   SCRIPT COMPLET – AFFAIRE / DOSSIER corrigés définitivement
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -1068,6 +1068,7 @@ async function openSynthese(id) {
     templateHTML = await response.text();
   } catch(err) { toast('Impossible de charger le template canevas_temp.html','r'); return; }
   const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
+  // ⚠️ Ne plus injecter la valeur de l'affaire à l'ouverture (elle sera gérée par l'iframe via import)
   const metaScript = `<script>
     window.RAPSO_AFFAIRE    = '';
     window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
@@ -1188,7 +1189,7 @@ async function applyPendingUpdate() {
     if (idx >= 0) canevas[idx] = freshCan;
     _lastLocalHash = hashData(newData);
     try {
-      // Ne plus envoyer "affaire" pour ne pas écraser le champ AFFAIRE
+      // ne plus envoyer l'affaire
       document.getElementById('synFrame').contentWindow.postMessage({ type: 'rapso_inject', data: newData, dossier: freshCan.chrono }, '*');
       updateSynCounters(newData);
       setSynStatus('saved', 'À jour'); showNotif('Modifications appliquées ✓','ok',3000);
@@ -1236,7 +1237,7 @@ function stopLiveListener() {
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
 
-  // 1. Sauvegarde des données de synthèse envoyées par l’iframe
+  // 1. Sauvegarde des données de synthèse
   if (e.data.type === 'rapso_save') {
     const canId = e.data.canId;
     const incomingData = e.data.data;
@@ -1256,7 +1257,7 @@ window.addEventListener('message', function(e) {
     }
   }
 
-  // 2. Mise à jour de l’affaire (chrono) après un import / actualisation
+  // 2. Mise à jour de l'affaire (chrono) après import / actualisation
   if (e.data.type === 'rapso_update_affaire') {
     const canId = e.data.canId;
     const affaire = e.data.affaire;
@@ -1270,12 +1271,12 @@ window.addEventListener('message', function(e) {
     }
   }
 
-  // 3. Confirmation de l’injection des données dans l’iframe
+  // 3. Confirmation de l'injection
   if (e.data.type === 'rapso_inject_ack') {
     updateSynCounters(e.data.data);
   }
 });
-   
+
 /* INIT */
 window.addEventListener('load', async () => {
   await loadFromCloud();
