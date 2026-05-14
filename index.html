@@ -636,7 +636,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET – avec correction chrono dans RAPSO_DOSSIER
+   SCRIPT COMPLET – AFFAIRE/DOSSIER corrigés
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -1188,7 +1188,8 @@ async function applyPendingUpdate() {
     if (idx >= 0) canevas[idx] = freshCan;
     _lastLocalHash = hashData(newData);
     try {
-      document.getElementById('synFrame').contentWindow.postMessage({ type: 'rapso_inject', data: newData, affaire: freshCan.chrono, dossier: freshCan.nom }, '*');
+      // Ne plus envoyer "affaire" pour ne pas écraser le champ AFFAIRE
+      document.getElementById('synFrame').contentWindow.postMessage({ type: 'rapso_inject', data: newData, dossier: freshCan.chrono }, '*');
       updateSynCounters(newData);
       setSynStatus('saved', 'À jour'); showNotif('Modifications appliquées ✓','ok',3000);
     } catch(e) { await openSynthese(currentCanId); setSynStatus('saved', 'Rechargé'); showNotif('Canevas rechargé ✓','ok',3000); }
