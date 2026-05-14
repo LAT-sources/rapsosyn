@@ -636,7 +636,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET CORRIGÉ
+   SCRIPT COMPLET – protection admin + chargement complet
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -756,6 +756,10 @@ function doLogin() {
       const uProfile = snap.val();
       if (!uProfile) throw new Error('Profil utilisateur introuvable');
       currentUser = { ...uProfile, uid: auth.currentUser.uid };
+      // Recharger TOUS les utilisateurs pour avoir la liste complète
+      return loadFromCloud();
+    })
+    .then(() => {
       if (document.getElementById('sbAv')) {
         document.getElementById('sbAv').textContent = currentUser.initiales;
         document.getElementById('sbAv').style.background = currentUser.color;
@@ -1258,6 +1262,8 @@ window.addEventListener('load', async () => {
   auth.onAuthStateChanged(async (firebaseUser) => {
     if (firebaseUser && currentUser && currentUser.uid === firebaseUser.uid) return;
     if (firebaseUser) {
+      // Recharger tous les utilisateurs pour être à jour
+      await loadFromCloud();
       const snap = await db.ref('/users/' + firebaseUser.uid).once('value');
       if (snap.exists()) {
         currentUser = { ...snap.val(), uid: firebaseUser.uid };
