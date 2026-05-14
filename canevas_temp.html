@@ -1207,7 +1207,10 @@ function hasRappel(obs){if(!obs)return false;let s=String(obs);return s.includes
 // Nouvelle fonction pour envoyer l'affaire au parent
 function updateParentAffaire(affaire) {
   if (window.parent && window.parent !== window) {
-    window.parent.postMessage({ type: 'rapso_update_affaire', canId: window.CANEVAS_ID, affaire: affaire }, '*');
+    window.parent.postMessage(
+      { type: 'rapso_update_affaire', canId: window.CANEVAS_ID, affaire: affaire },
+      '*'
+    );
   }
 }
 
