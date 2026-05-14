@@ -636,7 +636,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET – protection admin + chargement complet
+   SCRIPT COMPLET – avec correction chrono dans RAPSO_DOSSIER
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -756,7 +756,6 @@ function doLogin() {
       const uProfile = snap.val();
       if (!uProfile) throw new Error('Profil utilisateur introuvable');
       currentUser = { ...uProfile, uid: auth.currentUser.uid };
-      // Recharger TOUS les utilisateurs pour avoir la liste complète
       return loadFromCloud();
     })
     .then(() => {
@@ -1071,7 +1070,7 @@ async function openSynthese(id) {
   const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
   const metaScript = `<script>
     window.RAPSO_AFFAIRE    = ${JSON.stringify(c.chrono)};
-    window.RAPSO_DOSSIER    = ${JSON.stringify(c.nom)};
+    window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
@@ -1262,7 +1261,6 @@ window.addEventListener('load', async () => {
   auth.onAuthStateChanged(async (firebaseUser) => {
     if (firebaseUser && currentUser && currentUser.uid === firebaseUser.uid) return;
     if (firebaseUser) {
-      // Recharger tous les utilisateurs pour être à jour
       await loadFromCloud();
       const snap = await db.ref('/users/' + firebaseUser.uid).once('value');
       if (snap.exists()) {
