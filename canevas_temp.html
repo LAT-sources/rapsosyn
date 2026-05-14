@@ -667,7 +667,6 @@ window.addEventListener('message', function(e) {
       data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
       if (e.data.affaire) {
         ge('affaireDisplay').innerText = e.data.affaire;
-        // 👇 Met à jour le titre de la version rapide si la fenêtre est ouverte
         const rapTitle = document.getElementById('rapideAffaireTitle');
         if (rapTitle) rapTitle.innerText = cleanAffaireForRapide(e.data.affaire);
       }
@@ -901,9 +900,7 @@ function toggleRapMf(which) {
 }
 function cleanAffaireForRapide(raw) {
   if (!raw) return '—';
-  // Supprime la date en début : "09-04-26 - "
   let cleaned = raw.replace(/^\d{2}-\d{2}-\d{2}\s*-\s*/, '');
-  // Supprime tout ce qui suit "-Rapport" ou le premier tiret après le numéro
   cleaned = cleaned.replace(/(-Rapport.*)$/, '');
   return cleaned.trim();
 }
@@ -912,11 +909,9 @@ function openRapide() {
   rapSelectedLots.clear();
   rapSelectedInters.clear();
   buildRapMfOptions();
-  // --- AJOUT POUR AFFICHER L'AFFAIRE NETTOYÉE ---
   const affaireRaw = document.getElementById('affaireDisplay').innerText;
   const titre = document.getElementById('rapideAffaireTitle');
   if (titre) titre.innerText = cleanAffaireForRapide(affaireRaw);
-  // --- FIN AJOUT ---
   ['rapF_F','rapF_S','rapF_D','rapF_lev','rapF_par','rapF_non','rapF_rd6','rapF_pa'].forEach(id => { const ch = ge(id); if (ch) ch.checked = false; });
   document.getElementById('rapideOverlay').classList.add('open');
   document.getElementById('rapideEditArea').style.display = 'none';
@@ -1005,12 +1000,10 @@ function rapSelect(i, scroll = true) {
   ge('rapSaveBtn').disabled = false;
   updateRapButtonsState();
 }
-// -- TOGGLE pour les statuts (activation/désactivation avec sauvegarde immédiate) --
 function rapToggleSuivi(v) {
   if (!rapCurrent) return;
   const gi = data[currentTab].findIndex(x => x.id === rapCurrent.id);
   if (gi === -1) return;
-  // Si déjà actif, on désactive, sinon on active
   const newSuivi = (data[currentTab][gi].suivi === v) ? '' : v;
   data[currentTab][gi].suivi = newSuivi;
   rapCurrent = { ...data[currentTab][gi] };
@@ -1070,7 +1063,6 @@ function openStatsModal() {
     else if (av === 'HM') HM++;
     else if (av === 'PM') PM++;
 
-    // Suivis
     if (r.suivi === 'Oui') {
       suivis++;
       avisLevesTotal++;
@@ -1080,7 +1072,6 @@ function openStatsModal() {
       nonSuivis++;
     }
 
-    // Dates d'intervention (toutes lignes)
     if (r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date)) {
       const d = new Date(r.date);
       if (!firstIntervention || d < firstIntervention) firstIntervention = d;
@@ -1090,10 +1081,8 @@ function openStatsModal() {
 
   const fmt = d => d ? d.toLocaleDateString('fr-FR') : '—';
 
-  // Construction HTML avec conservation des cases colorées pour F/S/D
   const html = `
     <div style="display:flex;flex-direction:column;gap:8px;">
-      <!-- Grille des trois premières cases (F, S, D) -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
         <div style="background:var(--green-l);border-radius:8px;padding:10px;text-align:center;">
           <div style="font-size:1.4rem;font-weight:800;color:#15803d">${F}</div>
@@ -1108,20 +1097,16 @@ function openStatsModal() {
           <div style="font-size:.74rem;color:#991b1b">Défavorables (D)</div>
         </div>
       </div>
-
-      <!-- Lignes supplémentaires (style simple, sans cases) -->
       <div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;">
         <div><strong>Avis Sans Objet :</strong> ${SO}</div>
         <div><strong>Avis Hors Mission :</strong> ${HM}</div>
         <div><strong>Avis Pour Mémoire :</strong> ${PM}</div>
         <div><strong>Nombre Total d'Avis Levés :</strong> ${avisLevesTotal}</div>
       </div>
-
       <div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;">
         <div><strong>Première intervention :</strong> ${fmt(firstIntervention)}</div>
         <div><strong>Dernière intervention :</strong> ${fmt(lastIntervention)}</div>
       </div>
-
       <div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;">
         <div><strong>Avis suivis :</strong> ${suivis}</div>
         <div><strong>Avis partiellement suivis :</strong> ${partiels}</div>
@@ -1145,17 +1130,14 @@ async function exportWithExcelJS() {
   console.clear();
   console.log('⏳ Téléchargement du modèle avec ExcelJS...');
   try {
-    // 1. Récupérer le fichier modèle depuis GitHub
     const response = await fetch(TEMPLATE_URL);
     if (!response.ok) throw new Error(`Erreur réseau : HTTP ${response.status}`);
     const buffer = await response.arrayBuffer();
     console.log(`📦 Modèle reçu : ${buffer.byteLength} octets`);
 
-    // 2. Charger le classeur avec ExcelJS
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(buffer);
     
-    // 3. Récupérer la feuille "RapsoV2" (ou la première)
     let worksheet = workbook.getWorksheet('RapsoV2');
     if (!worksheet) {
       worksheet = workbook.worksheets[0];
@@ -1164,36 +1146,27 @@ async function exportWithExcelJS() {
     }
     console.log(`📋 Feuille : ${worksheet.name}`);
 
-    // 4. Données à exporter
     const rows = getRows();
     const affaire = document.getElementById('affaireDisplay').innerText.trim() || 'Sans nom';
     const dossier = document.getElementById('dossierInput').value.trim() || '';
 
-    // 5. Mise à jour des cellules d’en-tête (B1 et B2)
     worksheet.getCell('B1').value = `Affaire : ${affaire}`;
     worksheet.getCell('B2').value = `Dossier : ${dossier}`;
 
-    // 6. Vider les anciennes données (ligne 4 → fin) sans toucher au style
-    const lastRow = worksheet.rowCount; // ExcelJS trouve la dernière ligne utilisée
-    // On vide les lignes 4 jusqu'à la dernière
+    const lastRow = worksheet.rowCount;
     for (let r = 4; r <= lastRow; r++) {
       const row = worksheet.getRow(r);
-      // On efface toutes les valeurs des cellules (de la colonne 1 à 13)
       for (let c = 1; c <= 13; c++) {
         const cell = row.getCell(c);
-        // Ne pas toucher aux cellules qui ont des formules (comme L2 ?)
-        // Pour être sûr, on vide seulement si la cellule n'est pas une formule
         if (typeof cell.value !== 'object' || !cell.value || !cell.value.formula) {
-          cell.value = null; // efface la valeur, le style reste
+          cell.value = null;
         }
       }
     }
 
-    // 7. Écrire les nouvelles données (ligne 4 et suivantes)
     rows.forEach((r, i) => {
-      const excelRowNum = 4 + i; // Excel commence à 1, ligne 4 correspond à l'index 3 dans notre tableau
+      const excelRowNum = 4 + i;
       const row = worksheet.getRow(excelRowNum);
-      // Insérer les valeurs dans l'ordre des colonnes
       row.getCell(1).value = r.num;
       row.getCell(2).value = r.ref;
       row.getCell(3).value = fmtDate(r.date);
@@ -1207,12 +1180,8 @@ async function exportWithExcelJS() {
       row.getCell(11).value = r.repK;
       row.getCell(12).value = r.repL;
       row.getCell(13).value = r.lots;
-      // Important : ne pas déranger le style
     });
 
-    // 8. Ajuster la hauteur ? (optionnel, pas nécessaire)
-
-    // 9. Générer le fichier final et le télécharger
     const bufferOut = await workbook.xlsx.writeBuffer();
     const blob = new Blob([bufferOut], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     const url = URL.createObjectURL(blob);
@@ -1234,8 +1203,26 @@ function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,1
 function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
 function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
 function hasRappel(obs){if(!obs)return false;let s=String(obs);return s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l’observation précédente :")||s.includes("Rappel de l'observation précédente:")||s.includes("Rappel de l’observation précédente:");}
+
+// Nouvelle fonction pour envoyer l'affaire au parent
+function updateParentAffaire(affaire) {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'rapso_update_affaire', canId: window.CANEVAS_ID, affaire: affaire }, '*');
+  }
+}
+
 function processXLSX(file,mode){
   const sid=mode==='actualiser'?'actualiserStatus':'importStatus'; ge(sid).textContent='Lecture...';
+
+  // Pour l'actualisation, on demande confirmation avec le nom du fichier
+  if (mode === 'actualiser') {
+    const nomFichier = file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
+    if (!confirm(`Attention ! Vous allez mettre à jour le dossier « ${nomFichier} ». Continuer ?`)) {
+      ge(sid).textContent = 'Annulé.';
+      return;
+    }
+  }
+
   const reader=new FileReader();
   reader.onload=e=>{
     try{
@@ -1243,7 +1230,11 @@ function processXLSX(file,mode){
       let sheetName=wb.SheetNames.find(n=>n==='Synthèse')||wb.SheetNames.find(n=>n==='RapsoV2')||wb.SheetNames.find(n=>n==='RapsoV1')||wb.SheetNames[0];
       const ws=wb.Sheets[sheetName];
       const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-      const baseName=file.name.replace(/\.(xlsx|xlsm|xls)$/i,''); ge('affaireDisplay').innerText=baseName;
+      const baseName=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
+      ge('affaireDisplay').innerText=baseName;
+      // Envoyer l'affaire au parent pour mise à jour de la base
+      updateParentAffaire(baseName);
+
       const src=[];
       for(let i=1;i<Math.min(raw.length,500);i++){
         const row=raw[i]; if(!row||row.every(c=>c===''))continue;
