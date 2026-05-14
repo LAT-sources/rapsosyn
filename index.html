@@ -1250,15 +1250,6 @@ window.addEventListener('message', function(e) {
         _isSelfWrite = true;
         saveToCloud().then(() => { setSynStatus('saved', 'Sauvegardé'); setTimeout(() => setSynStatus('idle', 'En attente'), 4000); }).catch(() => { _isSelfWrite = false; setSynStatus('error', 'Échec sauvegarde'); showNotif('Sauvegarde Firebase échouée','err',5000); });
         renderCanevas();
-         if (e.data.type === 'rapso_update_affaire') {
-  const canId = e.data.canId;
-  const affaire = e.data.affaire;
-  if (canId !== undefined && affaire) {
-    const c = canevas.find(x => String(x.id) === String(canId));
-    if (c) {
-      c.chrono = affaire;          // met à jour la référence affaire
-      saveToCloud();
-      toast('Affaire mise à jour', 'g');
       }
     }
   }
