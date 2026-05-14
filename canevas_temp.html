@@ -410,7 +410,7 @@
   <button class="tb-btn active" id="tabV2" onclick="switchTab('v2')">RapsoV2</button>
   <button class="tb-btn" id="tabV1" onclick="switchTab('v1')">RapsoV1</button>
   <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
-  <div class="quick-search"><span class="qs-label">N°</span><input id="qs_num" placeholder="n° avis" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">N°</span><input id="qs_num" placeholder="avis" oninput="applyFilters()"></div>
   <div class="quick-search"><span class="qs-label">📅</span><input id="qs_date" placeholder="jj/mm/aaaa" oninput="applyFilters()"></div>
   <div class="quick-search"><span class="qs-label">📝</span><input id="qs_disp" placeholder="dispositions" oninput="applyFilters()"></div>
   <div class="quick-search"><span class="qs-label">🔍</span><input id="qs_obs" placeholder="observations" oninput="applyFilters()"></div>
@@ -448,6 +448,7 @@
   <button class="tb-btn" onclick="exportJSON()">💾</button>
   <button class="tb-btn" onclick="loadJSON()">📂</button>
   <button class="tb-btn" onclick="window.print()">🖨️</button>
+  <button class="tb-btn" onclick="exportWithExcelJS()">📥 Télécharger Excel</button>
   <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
   <div class="col-picker-wrap">
     <button class="tb-btn" id="colPickerBtn" onclick="toggleColPicker()">📋 Colonnes</button>
@@ -628,9 +629,13 @@
     <div class="modal-ftr"><button class="tb-btn" onclick="closeActualiserModal()">Fermer</button></div>
   </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+
+// 👉 Remplacez par votre URL
+const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
+
 // ============================================================
 //  RAPSOSYNTHÈSE – VERSION FINALE (boutons toggle, redimensionnement latéral, style épuré)
 // ============================================================
@@ -1130,6 +1135,100 @@ function openStatsModal() {
 }
 function closeStatsModal(){ge('statsModal').classList.remove('open');}
 
+
+// --- Export / Actualiser XLSX ---
+async function exportWithExcelJS() {
+  if (typeof ExcelJS === 'undefined') {
+    alert('La bibliothèque ExcelJS n’est pas chargée…');
+    return;
+  }
+  console.clear();
+  console.log('⏳ Téléchargement du modèle avec ExcelJS...');
+  try {
+    // 1. Récupérer le fichier modèle depuis GitHub
+    const response = await fetch(TEMPLATE_URL);
+    if (!response.ok) throw new Error(`Erreur réseau : HTTP ${response.status}`);
+    const buffer = await response.arrayBuffer();
+    console.log(`📦 Modèle reçu : ${buffer.byteLength} octets`);
+
+    // 2. Charger le classeur avec ExcelJS
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(buffer);
+    
+    // 3. Récupérer la feuille "RapsoV2" (ou la première)
+    let worksheet = workbook.getWorksheet('RapsoV2');
+    if (!worksheet) {
+      worksheet = workbook.worksheets[0];
+      if (!worksheet) throw new Error('Aucune feuille trouvée dans le modèle.');
+      console.warn(`Feuille "RapsoV2" absente, utilisation de "${worksheet.name}"`);
+    }
+    console.log(`📋 Feuille : ${worksheet.name}`);
+
+    // 4. Données à exporter
+    const rows = getRows();
+    const affaire = document.getElementById('affaireDisplay').innerText.trim() || 'Sans nom';
+    const dossier = document.getElementById('dossierInput').value.trim() || '';
+
+    // 5. Mise à jour des cellules d’en-tête (B1 et B2)
+    worksheet.getCell('B1').value = `Affaire : ${affaire}`;
+    worksheet.getCell('B2').value = `Dossier : ${dossier}`;
+
+    // 6. Vider les anciennes données (ligne 4 → fin) sans toucher au style
+    const lastRow = worksheet.rowCount; // ExcelJS trouve la dernière ligne utilisée
+    // On vide les lignes 4 jusqu'à la dernière
+    for (let r = 4; r <= lastRow; r++) {
+      const row = worksheet.getRow(r);
+      // On efface toutes les valeurs des cellules (de la colonne 1 à 13)
+      for (let c = 1; c <= 13; c++) {
+        const cell = row.getCell(c);
+        // Ne pas toucher aux cellules qui ont des formules (comme L2 ?)
+        // Pour être sûr, on vide seulement si la cellule n'est pas une formule
+        if (typeof cell.value !== 'object' || !cell.value || !cell.value.formula) {
+          cell.value = null; // efface la valeur, le style reste
+        }
+      }
+    }
+
+    // 7. Écrire les nouvelles données (ligne 4 et suivantes)
+    rows.forEach((r, i) => {
+      const excelRowNum = 4 + i; // Excel commence à 1, ligne 4 correspond à l'index 3 dans notre tableau
+      const row = worksheet.getRow(excelRowNum);
+      // Insérer les valeurs dans l'ordre des colonnes
+      row.getCell(1).value = r.num;
+      row.getCell(2).value = r.ref;
+      row.getCell(3).value = fmtDate(r.date);
+      row.getCell(4).value = cleanIntervenant(r.inter);
+      row.getCell(5).value = r.disp;
+      row.getCell(6).value = r.desc;
+      row.getCell(7).value = r.avis;
+      row.getCell(8).value = r.obs;
+      row.getCell(9).value = r.docs;
+      row.getCell(10).value = r.suivi;
+      row.getCell(11).value = r.repK;
+      row.getCell(12).value = r.repL;
+      row.getCell(13).value = r.lots;
+      // Important : ne pas déranger le style
+    });
+
+    // 8. Ajuster la hauteur ? (optionnel, pas nécessaire)
+
+    // 9. Générer le fichier final et le télécharger
+    const bufferOut = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([bufferOut], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Rapso_${affaire.replace(/[\\/:*?"<>|]/g, '_')}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+    console.log('✅ Fichier Excel exporté avec toute la mise en forme.');
+    alert('Fichier Excel téléchargé. Ouvrez-le pour vérifier la mise en forme.');
+  } catch (err) {
+    console.error('❌ Erreur :', err);
+    alert('Erreur : ' + err.message);
+  }
+}
+
 // --- Import / Actualiser XLSX ---
 function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
 function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
@@ -1166,30 +1265,7 @@ function processXLSX(file,mode){
   };
   reader.readAsArrayBuffer(file);
 }
-function checkPasswordBeforeImport() {
-  const motDePasse = "SOCOTEC";
-  let tentative = prompt(
-    "Veuillez saisir le code d'accès pour lancer l'importation.\n\n" +
-    "ATTENTION : Pour une simple mise à jour des données existantes, " +
-    "cliquez sur ANNULER puis sur le bouton 'Actualiser'.",
-    ""
-  );
-  if (tentative === null || tentative === "") {
-    return false; // Annulation
-  }
-  if (tentative === motDePasse) {
-    return true;
-  } else {
-    alert("Mot de passe incorrect.");
-    return false;
-  }
-}
-function openImportModal() {
-  if (!checkPasswordBeforeImport()) {
-    return;
-  }
-  document.getElementById('importModal').classList.add('open');
-}
+function openImportModal(){ge('importModal').classList.add('open');}
 function closeImportModal(){ge('importModal').classList.remove('open');}
 function openActualiserModal(){ge('actualiserModal').classList.add('open');}
 function closeActualiserModal(){ge('actualiserModal').classList.remove('open');}
