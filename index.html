@@ -1195,7 +1195,10 @@ async function applyPendingUpdate() {
     _lastLocalHash = hashData(newData);
     try {
       // ✅ Ne jamais envoyer "affaire" ici, seulement "dossier"
-      document.getElementById('synFrame').contentWindow.postMessage({ type: 'rapso_inject', data: newData, dossier: freshCan.chrono }, '*');
+      document.getElementById('synFrame').contentWindow.postMessage(
+  { type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '' },
+  '*'
+);
       updateSynCounters(newData);
       setSynStatus('saved', 'À jour'); showNotif('Modifications appliquées ✓','ok',3000);
     } catch(e) { await openSynthese(currentCanId); setSynStatus('saved', 'Rechargé'); showNotif('Canevas rechargé ✓','ok',3000); }
