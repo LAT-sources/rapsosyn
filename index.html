@@ -1072,7 +1072,7 @@ async function openSynthese(id) {
   // ✅ AFFAIRE = c.nomimp (prioritaire) ou c.nom (fallback), DOSSIER = c.chrono
   const affaireValue = c.nomimp || c.nom || '';
   const metaScript = `<script>
-    window.RAPSO_AFFAIRE    = ${JSON.stringify(affaireValue)};
+    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.nomimp)};
     window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
