@@ -1058,6 +1058,7 @@ function exportArchive() {
 /* SYNTHESE VIEWER */
 let currentCanId = null;
 async function openSynthese(id) {
+async function openSynthese(id) {
   const c = canevas.find(x => x.id === id);
   if (!c) return;
   currentCanId = id;
@@ -1069,16 +1070,19 @@ async function openSynthese(id) {
     templateHTML = await response.text();
   } catch(err) { toast('Impossible de charger le template canevas_temp.html','r'); return; }
   const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
+
   // ✅ AFFAIRE = c.nomimp (prioritaire) ou c.nom (fallback), DOSSIER = c.chrono
   const affaireValue = c.nomimp || c.nom || '';
+
   const metaScript = `<script>
-    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.nomimp)};
+    window.RAPSO_AFFAIRE    = ${JSON.stringify(affaireValue)};
     window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
   <\/script>`;
-  templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);   
+
+  templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
   templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', '<!-- data injected via RAPSO_SYNTH_DATA -->');
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
   const blobUrl = URL.createObjectURL(blob);
