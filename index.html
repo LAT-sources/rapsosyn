@@ -636,7 +636,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET – c.nom ET c.nomimp INDÉPENDANTS
+   SCRIPT COMPLET – c.nomimp INJECTÉ À L'OUVERTURE
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -1069,7 +1069,7 @@ async function openSynthese(id) {
     templateHTML = await response.text();
   } catch(err) { toast('Impossible de charger le template canevas_temp.html','r'); return; }
   const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
-  // ✅ AFFAIRE = c.nomimp (ou c.nom si nomimp est vide), DOSSIER = c.chrono
+  // ✅ AFFAIRE = c.nomimp (prioritaire) ou c.nom (fallback), DOSSIER = c.chrono
   const affaireValue = c.nomimp || c.nom || '';
   const metaScript = `<script>
     window.RAPSO_AFFAIRE    = ${JSON.stringify(affaireValue)};
