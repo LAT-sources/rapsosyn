@@ -278,7 +278,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <h2>Plateforme de suivi<br>des avis SOCOTEC</h2>
       <p>Gestion collaborative des canevas, intervenants et rapports de synthèse.</p>
     </div>
-    <div class="ll-version" style="position:relative;z-index:1">v2.0 — SOCOTEC Luxembourg</div>
+    <div class="ll-version" style="position:relative;z-index:1">v2.0.1 — SOCOTEC Luxembourg</div>
   </div>
   <div class="login-right">
     <div class="login-card">
@@ -636,7 +636,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET – c.nomimp INJECTÉ À L'OUVERTURE
+   SCRIPT COMPLET – c.nomimp GÉRÉ CORRECTEMENT
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -1069,10 +1069,8 @@ async function openSynthese(id) {
     templateHTML = await response.text();
   } catch(err) { toast('Impossible de charger le template canevas_temp.html','r'); return; }
   const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
-
   // ✅ AFFAIRE = c.nomimp (prioritaire) ou c.nom (fallback), DOSSIER = c.chrono
   const affaireValue = c.nomimp || c.nom || '';
-
   const metaScript = `<script>
     window.RAPSO_AFFAIRE    = ${JSON.stringify(affaireValue)};
     window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
@@ -1080,7 +1078,6 @@ async function openSynthese(id) {
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
   <\/script>`;
-
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
   templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', '<!-- data injected via RAPSO_SYNTH_DATA -->');
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
@@ -1194,11 +1191,14 @@ async function applyPendingUpdate() {
     if (idx >= 0) canevas[idx] = freshCan;
     _lastLocalHash = hashData(newData);
     try {
-      // ✅ Ne jamais envoyer "affaire" ici, seulement "dossier"
-      document.getElementById('synFrame').contentWindow.postMessage(
-  { type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '' },
-  '*'
-);
+      // ✅ CORRECTION : Envoyer AFFAIRE (c.nomimp prioritaire) et DOSSIER lors du rafraîchissement
+      const affaireValue = freshCan.nomimp || freshCan.nom || '';
+      document.getElementById('synFrame').contentWindow.postMessage({ 
+        type: 'rapso_inject', 
+        data: newData, 
+        dossier: freshCan.chrono,
+        affaire: affaireValue
+      }, '*');
       updateSynCounters(newData);
       setSynStatus('saved', 'À jour'); showNotif('Modifications appliquées ✓','ok',3000);
     } catch(e) { await openSynthese(currentCanId); setSynStatus('saved', 'Rechargé'); showNotif('Canevas rechargé ✓','ok',3000); }
