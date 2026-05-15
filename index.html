@@ -474,12 +474,12 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
         <polyline points="1 4 1 10 7 10"/>
         <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
       </svg>
-      Rafraîchir
+      Synchroniser
       <span class="notif-badge" id="refreshBadge">!</span>
     </button>
-    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde JSON" style="margin-left:2px;">
+    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde" style="margin-left:2px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      JSON
+      
     </button>
   </div>
   <div class="syn-pending-bar" id="synPendingBar">
@@ -1140,7 +1140,7 @@ function setLiveDot(connected) {
   const tx = document.getElementById('synLiveTxt');
   if (!el) return;
   el.className = 'syn-live-dot ' + (connected ? 'connected' : 'disconnected');
-  tx.textContent = connected ? 'Live' : 'Hors ligne';
+  tx.textContent = connected ? 'Connecté' : 'Hors ligne';
 }
 function updateSynCounters(data) {
   if (!data) return;
