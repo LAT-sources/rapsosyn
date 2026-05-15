@@ -1234,6 +1234,24 @@ function processXLSX(file, mode){
   };
   reader.readAsArrayBuffer(file);
 }
+function checkPasswordBeforeImport() {
+  const motDePasse = "SOCOTEC"; // ou celui que vous voulez
+  let tentative = prompt(
+    "Veuillez saisir le code d'accès pour lancer l'importation.\n\n" +
+    "ATTENTION : Pour une simple mise à jour des données existantes, " +
+    "cliquez sur ANNULER puis sur le bouton 'Actualiser'.",
+    ""
+  );
+  if (tentative === null || tentative === "") {
+    return false; // Annulation
+  }
+  if (tentative === motDePasse) {
+    return true;
+  } else {
+    alert("Mot de passe incorrect.");
+    return false;
+  }
+}
 function openImportModal(){ge('importModal').classList.add('open');}
 function closeImportModal(){ge('importModal').classList.remove('open');}
 function openActualiserModal(){ge('actualiserModal').classList.add('open');}
