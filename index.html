@@ -259,384 +259,23 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-
-<!-- ═════════════════════ LOGIN ═════════════════════ -->
-<div id="scLogin" class="screen">
-  <div class="login-left">
-    <div class="ll-deco1"></div><div class="ll-deco2"></div><div class="ll-deco3"></div>
-    <div class="ll-logo" style="position:relative;z-index:1">
-      <div class="ll-logo-icon">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="12" fill="#1a56db"/>
-          <path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-          <circle cx="14" cy="14" r="3" fill="white"/>
-        </svg>
-      </div>
-      <div class="ll-brand">RAPSO<span>SYN</span></div>
-    </div>
-    <div class="ll-tag" style="position:relative;z-index:1">
-      <h2>Plateforme de suivi<br>des avis SOCOTEC</h2>
-      <p>Gestion collaborative des canevas, intervenants et rapports de synthèse.</p>
-    </div>
-    <div class="ll-version" style="position:relative;z-index:1">v2.0.1 — SOCOTEC Luxembourg</div>
-  </div>
-  <div class="login-right">
-    <div class="login-card">
-      <div class="lc-title">Bienvenue !</div>
-      <div class="lc-sub">Connectez-vous avec vos identifiants pour accéder à vos projets.</div>
-      <div class="login-err" id="loginErr">Identifiants incorrects.</div>
-      <div class="lf-group">
-        <label class="lf-label">Email</label>
-        <input class="lf-input" id="lEmail" type="email" placeholder="votre@email.com">
-      </div>
-      <div class="lf-group">
-        <label class="lf-label">Mot de passe</label>
-        <div class="lf-input-wrap">
-          <input class="lf-input" id="lPwd" type="password" placeholder="••••••••">
-          <button class="lf-eye" onclick="togglePwd('lPwd',this)">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <span class="lf-forgot">Mot de passe oublié ?</span>
-      </div>
-      <label class="lf-check"><input type="checkbox" checked> Se souvenir de moi</label>
-      <button class="btn-login" onclick="doLogin()">Se connecter</button>
-      <button class="btn-email">Courriel uniquement</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═════════════════════ APP ═════════════════════ -->
-<div id="scApp" class="screen hidden">
-  <aside class="sidebar" id="sidebar">
-    <div class="sb-logo">
-      <div class="sb-logo-icon">
-        <svg width="20" height="20" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="rgba(255,255,255,.15)"/><path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="white"/></svg>
-      </div>
-      <div class="sb-logo-text">RAPSO<span>SYN</span></div>
-    </div>
-    <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      <span>Réduire</span>
-    </button>
-    <nav class="sb-nav">
-      <div class="nav-label">Principal</div>
-      <button class="nav-item active" data-page="canevas" onclick="showPage('canevas',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <span>Mes canevas</span>
-      </button>
-      <button class="nav-item" data-page="archive" onclick="showPage('archive',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-        <span>Archives</span>
-      </button>
-      <div class="nav-sep" id="adminNav"></div>
-      <div class="nav-label" id="adminLabel" style="display:none">Administration</div>
-      <button class="nav-item" id="navUsers" data-page="users" onclick="showPage('users',this)" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span>Utilisateurs</span>
-      </button>
-    </nav>
-    <div class="sb-user" onclick="logout()">
-      <div class="u-av" id="sbAv" style="background:var(--blue)">?</div>
-      <div class="u-info">
-        <div class="u-name" id="sbName">—</div>
-        <div class="u-role" id="sbRole">—</div>
-      </div>
-    </div>
-  </aside>
-
-  <div class="app-main">
-    <div class="page" id="pageCanevas">
-      <div class="topbar">
-        <div class="tb-title">Canevas &nbsp;<span class="count-badge" id="canevasCount">0</span></div>
-        <div class="tb-actions">
-          <button class="btn btn-ghost btn-sm" onclick="openModalCanevas('create')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nouveau canevas
-          </button>
-        </div>
-      </div>
-      <div class="filterbar">
-        <button class="fav-btn" id="favBtn" onclick="toggleFav()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          Favoris
-        </button>
-        <input class="fb-input" id="fNom"    placeholder="Nom du projet…"  oninput="renderCanevas()">
-        <input class="fb-input" id="fChrono" placeholder="Référence…"      oninput="renderCanevas()" style="width:130px">
-        <input class="fb-input" id="fClient" placeholder="Client…"          oninput="renderCanevas()" style="width:105px">
-        <input class="fb-input" id="fVille"  placeholder="Ville…"           oninput="renderCanevas()" style="width:90px">
-        <select class="fb-select" id="fStatut" onchange="renderCanevas()">
-          <option value="">Tous les statuts</option>
-          <option value="Commandée">Commandée</option>
-          <option value="En attente">En attente</option>
-          <option value="En cours">En cours</option>
-        </select>
-        <input class="fb-input" id="fPilote" placeholder="Pilote…" oninput="renderCanevas()" style="width:90px">
-      </div>
-      <div class="table-wrap">
-        <table class="main-table" id="canevasTable">
-          <thead>
-            <tr>
-              <th></th>
-              <th onclick="sortCan('nom')">Nom du projet ↕</th>
-              <th onclick="sortCan('chrono')">Référence ↕</th>
-              <th onclick="sortCan('client')">Client ↕</th>
-              <th onclick="sortCan('ville')">Ville ↕</th>
-              <th onclick="sortCan('statut')">Statut ↕</th>
-              <th>Pilote</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="canevasBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="page hidden" id="pageArchive">
-      <div class="topbar">
-        <div class="tb-title">Archives &nbsp;<span class="count-badge" id="archiveCount">0</span></div>
-        <div class="tb-actions">
-          <button class="btn btn-ghost btn-sm" onclick="exportArchive()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Exporter liste
-          </button>
-        </div>
-      </div>
-      <div class="archive-info">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Les canevas archivés sont en lecture seule. Vous pouvez les consulter ou les désarchiver.
-      </div>
-      <div class="filterbar">
-        <input class="fb-input" id="afNom" placeholder="Nom du projet…" oninput="renderArchive()">
-        <input class="fb-input" id="afClient" placeholder="Client…" oninput="renderArchive()" style="width:110px">
-        <input class="fb-input" id="afVille"  placeholder="Ville…"  oninput="renderArchive()" style="width:90px">
-        <input class="fb-input" id="afPilote" placeholder="Pilote…" oninput="renderArchive()" style="width:90px">
-      </div>
-      <div class="table-wrap">
-        <table class="main-table" id="archiveTable">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Nom du projet</th>
-              <th>Référence</th>
-              <th>Client</th>
-              <th>Ville</th>
-              <th>Archivé le</th>
-              <th>Pilote</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="archiveBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="page hidden" id="pageUsers">
-      <div class="topbar">
-        <div class="tb-title">Utilisateurs &nbsp;<span class="count-badge" id="usersCount">0</span></div>
-        <div class="tb-actions">
-          <button class="btn btn-purple btn-sm" onclick="openModalUser('create')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Créer un compte
-          </button>
-        </div>
-      </div>
-      <div class="users-grid" id="usersGrid"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ═════════════════════ SYNTHESE VIEWER ═════════════════════ -->
-<div id="scSynthese" class="screen hidden">
-  <div class="syn-topbar">
-    <button class="syn-back" onclick="closeSynthese()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      Retour
-    </button>
-    <div class="syn-title" id="synTitle">—</div>
-    <span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;flex-shrink:0;"></span>
-    <div class="syn-counters" id="synCounters" style="margin:0 4px;">
-      <span class="sc sc-lev" id="sc_oui">✅ 0</span>
-      <span class="sc sc-par" id="sc_par">⚠️ 0</span>
-      <span class="sc sc-non" id="sc_non">❌ 0</span>
-      <span class="sc sc-tot" id="sc_tot">/ 0</span>
-    </div>
-    <div class="syn-status idle" id="synStatus">
-      <span class="sdot"></span>
-      <span id="synStatusTxt">En attente</span>
-    </div>
-    <div class="syn-live-dot" id="synLiveDot" title="Connexion Firebase temps réel">
-      <span class="ld"></span>
-      <span id="synLiveTxt">Connexion…</span>
-    </div>
-    <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <polyline points="1 4 1 10 7 10"/>
-        <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
-      </svg>
-      Rafraîchir
-      <span class="notif-badge" id="refreshBadge">!</span>
-    </button>
-    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde JSON" style="margin-left:2px;">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      JSON
-    </button>
-  </div>
-  <div class="syn-pending-bar" id="synPendingBar">
-    <span class="pb-icon">🔔</span>
-    <div class="pb-meta">
-      <div class="pb-title" id="pbTitle">Modifications disponibles</div>
-      <div class="pb-detail" id="pbDetail">Un autre utilisateur a modifié ce canevas</div>
-    </div>
-    <span class="pb-user" id="pbUser"></span>
-    <button class="pb-apply" onclick="applyPendingUpdate()">⬇ Appliquer</button>
-    <button class="pb-dismiss" onclick="dismissPending()">Ignorer</button>
-  </div>
-  <div class="syn-notif" id="synNotif">
-    <span class="nicon" id="synNotifIcon">ℹ️</span>
-    <span class="syn-notif-txt" id="synNotifTxt"></span>
-    <button class="syn-notif-close" onclick="hideNotif()">✕</button>
-  </div>
-  <iframe id="synFrame" class="syn-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads"></iframe>
-</div>
-
-<!-- ═════════ MODALS ═════════ -->
-<div class="modal-bd" id="mdCanevas">
-  <div class="modal">
-    <div class="m-hdr">
-      <div class="m-icon blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      <div class="m-title" id="mdCanTitle">Nouveau canevas</div>
-      <button class="m-close" onclick="closeModal('mdCanevas')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body">
-      <div class="mf-row"><label>Nom du projet <span class="req">*</span></label><input class="mf-input" id="mNom" placeholder="ex: LUXEMBOURG – Complexe sportif…"></div>
-      <div class="mf-grid">
-        <div class="mf-row"><label>Référence / Chronorapso <span class="req">*</span></label><input class="mf-input" id="mChrono" placeholder="ex: 2507JB000000021/1"></div>
-        <div class="mf-row"><label>Ville</label><input class="mf-input" id="mVille" placeholder="ex: Luxembourg"></div>
-      </div>
-      <div class="mf-grid">
-        <div class="mf-row"><label>Client</label><input class="mf-input" id="mClient" placeholder="Nom du client"></div>
-        <div class="mf-row"><label>Statut</label>
-          <select class="mf-select" id="mStatut">
-            <option value="Commandée">Commandée</option>
-            <option value="En attente">En attente</option>
-            <option value="En cours">En cours</option>
-          </select>
-        </div>
-      </div>
-      <div class="mf-grid">
-        <div class="mf-row"><label>Pilote assigné</label>
-          <select class="mf-select" id="mPilote"></select>
-        </div>
-        <div class="mf-row"><label>Intervenants assignés</label>
-          <select class="mf-select" id="mIntervenants" multiple style="height:80px;border-radius:8px;padding:4px;"></select>
-        </div>
-      </div>
-      <div class="mf-row"><label>Notes</label><textarea class="mf-ta" id="mNotes" placeholder="Informations complémentaires…"></textarea></div>
-    </div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdCanevas')">Annuler</button>
-      <button class="btn btn-primary" onclick="saveCanevas()">💾 Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bd" id="mdArchive">
-  <div class="modal sm">
-    <div class="m-hdr">
-      <div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div>
-      <div class="m-title">Archiver ce canevas ?</div>
-      <button class="m-close" onclick="closeModal('mdArchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body"><p class="confirm-text" id="archiveText">Ce canevas sera déplacé dans les archives.</p></div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdArchive')">Annuler</button>
-      <button class="btn btn-danger" id="archiveOk">Archiver</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bd" id="mdDesarchive">
-  <div class="modal sm">
-    <div class="m-hdr">
-      <div class="m-icon green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg></div>
-      <div class="m-title">Désarchiver ?</div>
-      <button class="m-close" onclick="closeModal('mdDesarchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body"><p class="confirm-text">Ce canevas sera restauré dans la liste des canevas actifs.</p></div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdDesarchive')">Annuler</button>
-      <button class="btn btn-success" id="desarchiveOk">Restaurer</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bd" id="mdUser">
-  <div class="modal">
-    <div class="m-hdr">
-      <div class="m-icon purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-      <div class="m-title" id="mdUserTitle">Créer un compte</div>
-      <button class="m-close" onclick="closeModal('mdUser')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body">
-      <div class="mf-grid">
-        <div class="mf-row"><label>Prénom <span class="req">*</span></label><input class="mf-input" id="uPrenom" placeholder="Jean"></div>
-        <div class="mf-row"><label>Nom <span class="req">*</span></label><input class="mf-input" id="uNom" placeholder="Dupont"></div>
-      </div>
-      <div class="mf-row"><label>Email <span class="req">*</span></label><input class="mf-input" id="uEmail" type="email" placeholder="jean.dupont@socotec.lu"></div>
-      <div class="mf-grid">
-        <div class="mf-row"><label>Initiales</label><input class="mf-input" id="uInitiales" placeholder="JD" maxlength="3" style="text-transform:uppercase"></div>
-        <div class="mf-row"><label>Rôle</label>
-          <select class="mf-select" id="uRole">
-            <option value="user">Intervenant</option>
-            <option value="admin">Administrateur</option>
-          </select>
-        </div>
-      </div>
-      <div class="mf-sep"></div>
-      <div class="mf-row">
-        <label id="uPwdLabel">Mot de passe <span class="req">*</span></label>
-        <div class="pw-wrap">
-          <input class="mf-input" id="uPwd" type="password" placeholder="Minimum 6 caractères">
-          <button class="pw-eye" onclick="togglePwd('uPwd',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        </div>
-        <span class="mf-hint" id="uPwdHint">Laissez vide pour ne pas modifier</span>
-      </div>
-      <div class="mf-row">
-        <label>Confirmer le mot de passe</label>
-        <div class="pw-wrap">
-          <input class="mf-input" id="uPwd2" type="password" placeholder="Répétez le mot de passe">
-          <button class="pw-eye" onclick="togglePwd('uPwd2',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        </div>
-      </div>
-    </div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdUser')">Annuler</button>
-      <button class="btn btn-purple" onclick="saveUser()">💾 Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bd" id="mdDelUser">
-  <div class="modal sm">
-    <div class="m-hdr">
-      <div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
-      <div class="m-title">Supprimer ce compte ?</div>
-      <button class="m-close" onclick="closeModal('mdDelUser')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body"><p class="confirm-text" id="delUserText">Cette action est irréversible.</p></div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdDelUser')">Annuler</button>
-      <button class="btn btn-danger" id="delUserOk">Supprimer</button>
-    </div>
-  </div>
-</div>
-
+<!-- ═══════════════════ LOGIN ═══════════════════ -->
+<div id="scLogin" class="screen"><!-- … --></div>
+<!-- ═══════════════════ APP ═══════════════════ -->
+<div id="scApp" class="screen hidden"><!-- … --></div>
+<!-- ═══════════════════ SYNTHESE ═══════════════════ -->
+<div id="scSynthese" class="screen hidden"><!-- … --></div>
+<!-- ═══════ MODALS ═══════ -->
+<div class="modal-bd" id="mdCanevas"><!-- … --></div>
+<div class="modal-bd" id="mdArchive"><!-- … --></div>
+<div class="modal-bd" id="mdDesarchive"><!-- … --></div>
+<div class="modal-bd" id="mdUser"><!-- … --></div>
+<div class="modal-bd" id="mdDelUser"><!-- … --></div>
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET – c.nomimp GÉRÉ CORRECTEMENT
+   SCRIPT – CORRIGÉ (double déclaration supprimée)
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -1057,6 +696,7 @@ function exportArchive() {
 
 /* SYNTHESE VIEWER */
 let currentCanId = null;
+
 async function openSynthese(id) {
   const c = canevas.find(x => x.id === id);
   if (!c) return;
@@ -1069,15 +709,18 @@ async function openSynthese(id) {
     templateHTML = await response.text();
   } catch(err) { toast('Impossible de charger le template canevas_temp.html','r'); return; }
   const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
+
   // ✅ AFFAIRE = c.nomimp (prioritaire) ou c.nom (fallback), DOSSIER = c.chrono
   const affaireValue = c.nomimp || c.nom || '';
+
   const metaScript = `<script>
-    window.RAPSO_AFFAIRE    = ${JSON.stringify(c.nomimp)};
+    window.RAPSO_AFFAIRE    = ${JSON.stringify(affaireValue)};
     window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
   <\/script>`;
+
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
   templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', '<!-- data injected via RAPSO_SYNTH_DATA -->');
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
@@ -1191,14 +834,11 @@ async function applyPendingUpdate() {
     if (idx >= 0) canevas[idx] = freshCan;
     _lastLocalHash = hashData(newData);
     try {
-      // ✅ CORRECTION : Envoyer AFFAIRE (c.nomimp prioritaire) et DOSSIER lors du rafraîchissement
-      const affaireValue = freshCan.nomimp || freshCan.nom || '';
-      document.getElementById('synFrame').contentWindow.postMessage({ 
-        type: 'rapso_inject', 
-        data: newData, 
-        dossier: freshCan.chrono,
-        affaire: affaireValue
-      }, '*');
+      // ✅ Envoyer aussi l'affaire pour la mettre à jour
+      document.getElementById('synFrame').contentWindow.postMessage(
+        { type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '' },
+        '*'
+      );
       updateSynCounters(newData);
       setSynStatus('saved', 'À jour'); showNotif('Modifications appliquées ✓','ok',3000);
     } catch(e) { await openSynthese(currentCanId); setSynStatus('saved', 'Rechargé'); showNotif('Canevas rechargé ✓','ok',3000); }
