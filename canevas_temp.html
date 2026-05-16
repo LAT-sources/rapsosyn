@@ -7,88 +7,71 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RapsoSynthèse</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
   :root {
     --blue: #1a56db; --blue-d: #1447c0; --blue-l: #e8f0fe; --blue-ll: #f0f5ff;
-    --teal: #0d9488; --teal-l: #ccfbf1; --gold: #f59e0b; --gold-l: #fef3c7;
+    --gold: #f59e0b; --gold-l: #fef3c7;
     --red: #ef4444; --red-l: #fee2e2; --green: #22c55e; --green-l: #dcfce7;
-    --purple: #7c3aed; --purple-l: #ede9fe; --orange: #f97316; --orange-l: #ffedd5;
+    --purple: #7c3aed; --purple-l: #ede9fe;
     --g50: #f8fafc; --g100: #f1f5f9; --g200: #e2e8f0; --g300: #cbd5e1;
     --g400: #94a3b8; --g500: #64748b; --g600: #475569; --g700: #334155;
     --g800: #1e293b; --g900: #0f172a;
-    --font: 'Outfit', sans-serif; --mono: 'JetBrains Mono', monospace;
-    --r: 10px; --sh: 0 1px 3px rgba(0,0,0,.08), 0 4px 20px rgba(0,0,0,.06);
-    --sh-lg: 0 8px 32px rgba(0,0,0,.14);
+    --font: 'Inter', sans-serif; --mono: 'JetBrains Mono', monospace;
+    --sh: 0 1px 3px rgba(0,0,0,.08);
+    --sh-lg: 0 4px 16px rgba(0,0,0,.12);
   }
   body.dark {
-    --blue: #4f8ef7; --blue-d: #3b7be0; --blue-l: #1e2a47; --teal-l: #0f3a3a;
+    --blue: #4f8ef7; --blue-d: #3b7be0; --blue-l: #1e2a47;
     --gold-l: #3e2a1a; --red-l: #3b1e1e; --green-l: #1a3a2a; --purple-l: #2a1e4a;
-    --orange-l: #3a2a1a; --g50: #0f0f13; --g100: #1a1a22; --g200: #2a2a34;
-    --g300: #3a3a48; --g400: #70708a; --g500: #9090aa; --g600: #b0b0c0;
-    --g700: #d0d0e0; --g800: #e8e8f0; --g900: #ffffff;
+    --g50: #0f0f13; --g100: #1a1a22; --g200: #2a2a34; --g300: #3a3a48;
+    --g400: #70708a; --g500: #9090aa; --g600: #b0b0c0; --g700: #d0d0e0;
+    --g800: #e8e8f0; --g900: #ffffff;
   }
   *{box-sizing: border-box; margin: 0; padding: 0;}
   body{
-    background: var(--g50); color: var(--g800); font-family: var(--font);
+    background: var(--g100); color: var(--g800); font-family: var(--font);
     font-size: 13px; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
   }
 
   /* HEADER */
   .syn-header {
-    background: white; border-bottom: 1px solid var(--g200); padding: 6px 20px;
-    display: flex; align-items: center; gap: 16px; flex-shrink: 0; box-shadow: var(--sh);
+    background: white; border-bottom: 1px solid var(--g200); padding: 6px 16px;
+    display: flex; align-items: center; gap: 12px; flex-shrink: 0;
   }
-  .header-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex: 1; }
-  .info-row {
-    display: flex; align-items: center; gap: 6px; background: var(--g100);
-    padding: 4px 12px; border-radius: 20px;
-  }
-  .info-row .label { font-size: 0.7rem; font-weight: 600; color: var(--g500); letter-spacing: 0.03em; }
-  .info-row .value {
-    font-family: var(--mono); font-size: 0.75rem; font-weight: 500; color: var(--g800);
-    background: transparent; border: none; outline: none; min-width: 160px;
-  }
-  .mini-stats {
-    display: flex; gap: 12px; font-family: var(--mono); font-size: 0.7rem; font-weight: 600;
-  }
-  .mini-stats span {
-    display: flex; align-items: center; gap: 4px; background: var(--g100);
-    padding: 4px 8px; border-radius: 20px;
-  }
-  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .header-info { display: none; }
+  .mini-stats { display: flex; gap: 10px; font-family: var(--mono); font-size: 0.7rem; font-weight: 600; }
+  .mini-stats span { display: flex; align-items: center; gap: 4px; background: var(--g100); padding: 3px 7px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; }
   .dot-g { background: var(--green); } .dot-y { background: var(--gold); } .dot-r { background: var(--red); }
-  .theme-btn {
-    background: var(--g100); border: none; padding: 6px 10px; border-radius: 8px;
-    cursor: pointer; font-size: 1rem;
-  }
+  .theme-btn { background: var(--g100); border: 1px solid var(--g200); padding: 4px 8px; cursor: pointer; font-size: 0.85rem; }
 
-  /* TOOLBAR PRINCIPALE */
+  /* TOOLBAR */
   .toolbar {
-    background: white; border-bottom: 1px solid var(--g200); padding: 6px 20px;
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0;
+    background: white; border-bottom: 1px solid var(--g200); padding: 5px 16px;
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex-shrink: 0;
   }
   .tb-btn {
-    padding: 5px 12px; border-radius: 100px; border: 1.5px solid var(--g200);
-    background: white; color: var(--g700); font-family: var(--font); font-size: 0.75rem;
-    font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    padding: 4px 10px; border: 1px solid var(--g300);
+    background: white; color: var(--g700); font-family: var(--font); font-size: 0.73rem;
+    font-weight: 500; cursor: pointer; transition: background 0.1s, color 0.1s; white-space: nowrap;
   }
   .tb-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-ll); }
   .tb-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
   .tb-btn.accent { background: var(--blue); border-color: var(--blue); color: white; }
-  .tb-btn.green { background: var(--green); border-color: var(--green); color: white; }
+  .tb-btn.green { background: #16a34a; border-color: #16a34a; color: white; }
   .quick-search {
-    display: flex; align-items: center; gap: 4px; background: white;
-    border: 1.5px solid var(--g200); border-radius: 100px; padding: 3px 8px;
+    display: flex; align-items: center; gap: 3px; background: white;
+    border: 1px solid var(--g300); padding: 3px 7px;
   }
   .quick-search input {
     border: none; background: transparent; font-family: var(--font);
-    font-size: 0.73rem; outline: none; width: 100px; color: var(--g800);
+    font-size: 0.72rem; outline: none; width: 90px; color: var(--g800);
   }
-  .qs-label { font-size: 0.65rem; font-weight: 600; color: var(--g500); }
+  .qs-label { font-size: 0.63rem; font-weight: 600; color: var(--g500); }
   .qs-checks {
     display: flex; gap: 6px; align-items: center; background: white;
-    border: 1.5px solid var(--g200); border-radius: 100px; padding: 3px 10px;
+    border: 1px solid var(--g300); padding: 3px 8px;
   }
   .qs-checks label {
     display: flex; align-items: center; gap: 3px; font-size: 0.7rem;
@@ -96,178 +79,214 @@
   }
   .mf-select { position: relative; display: inline-block; }
   .mf-select-button {
-    background: white; border: 1.5px solid var(--g200); border-radius: 100px;
-    padding: 4px 24px 4px 12px; font-size: 0.73rem; font-weight: 600;
+    background: white; border: 1px solid var(--g300);
+    padding: 4px 22px 4px 10px; font-size: 0.72rem; font-weight: 500;
     color: var(--g700); cursor: pointer; white-space: nowrap; position: relative;
   }
   .mf-select-button::after {
-    content: "▼"; font-size: 0.6rem; position: absolute; right: 8px;
+    content: "▾"; font-size: 0.65rem; position: absolute; right: 7px;
     top: 50%; transform: translateY(-50%); color: var(--g500);
   }
   .mf-select-dropdown {
     position: absolute; top: 100%; left: 0; z-index: 200; background: white;
-    border: 1px solid var(--g200); border-radius: 12px; min-width: 180px;
+    border: 1px solid var(--g200); min-width: 180px;
     max-height: 250px; overflow-y: auto; display: none; box-shadow: var(--sh-lg);
-    margin-top: 4px; padding: 6px 0;
+    margin-top: 2px; padding: 4px 0;
   }
   .mf-select-dropdown.show { display: block; }
   .mf-select-dropdown label {
-    display: flex; align-items: center; gap: 8px; padding: 6px 12px;
-    font-size: 0.75rem; cursor: pointer; font-weight: 500;
+    display: flex; align-items: center; gap: 8px; padding: 5px 10px;
+    font-size: 0.73rem; cursor: pointer; font-weight: 400;
   }
   .mf-select-dropdown label:hover { background: var(--g100); }
   .mf-select-dropdown input { accent-color: var(--blue); margin: 0; }
 
+  /* Menu déroulant "Actions" */
+  .actions-dropdown { position: relative; display: inline-block; }
+  .actions-menu {
+    position: absolute; top: 100%; right: 0; z-index: 300; background: white;
+    border: 1px solid var(--g200); box-shadow: var(--sh-lg); min-width: 210px;
+    display: none; padding: 4px 0; margin-top: 2px;
+  }
+  .actions-menu.show { display: block; }
+  .actions-menu button {
+    display: block; width: 100%; text-align: left; padding: 7px 14px;
+    background: none; border: none; font-family: var(--font); font-size: 0.78rem;
+    font-weight: 400; color: var(--g700); cursor: pointer; transition: background 0.1s;
+  }
+  .actions-menu button:hover { background: var(--g50); color: var(--blue); }
+
+  /* Panneau colonnes */
+  .col-picker-panel {
+    position: absolute; top: 100%; right: 0; z-index: 350; background: white;
+    border: 1px solid var(--g200); width: 230px; box-shadow: var(--sh-lg);
+    display: none; margin-top: 2px;
+  }
+  .col-picker-panel.open { display: block; }
+  .col-picker-header {
+    padding: 7px 10px; background: var(--g50); border-bottom: 1px solid var(--g200);
+    display: flex; justify-content: space-between; font-weight: 600; font-size: 0.73rem;
+  }
+  .col-picker-list { padding: 4px; max-height: 260px; overflow-y: auto; }
+  .col-picker-item {
+    display: flex; align-items: center; gap: 8px; padding: 4px 7px; cursor: pointer;
+  }
+  .col-picker-item:hover { background: var(--g50); }
+  .col-picker-item input { accent-color: var(--blue); }
+
   /* TABLEAU PRINCIPAL */
-  .table-container { flex: 1; overflow: auto; padding: 16px 20px; }
+  .table-container { flex: 1; overflow: auto; padding: 12px 16px; }
   table {
-    width: 100%; border-collapse: collapse; background: white; border-radius: var(--r);
-    overflow: hidden; box-shadow: var(--sh); font-size: 0.8rem; table-layout: fixed;
+    width: 100%; border-collapse: collapse; background: white;
+    font-size: 0.78rem; table-layout: fixed; border: 1px solid var(--g200);
   }
   th {
-    background: var(--blue); color: white; font-weight: 600; padding: 10px 12px;
-    text-align: left; font-size: 0.75rem; letter-spacing: 0.02em; white-space: nowrap;
-    cursor: pointer; user-select: none;
+    background: var(--g800); color: white; font-weight: 600; padding: 9px 10px;
+    text-align: left; font-size: 0.72rem; letter-spacing: 0.02em; white-space: nowrap;
+    cursor: pointer; user-select: none; border-right: 1px solid var(--g700);
   }
-  th:hover { background: var(--blue-d); }
+  th:last-child { border-right: none; }
+  th:hover { background: var(--g700); }
   td {
-    border-bottom: 1px solid var(--g100); padding: 8px 12px; vertical-align: top;
-    color: var(--g700); font-size: 0.78rem; overflow: hidden; text-overflow: ellipsis;
+    border-bottom: 1px solid var(--g200); border-right: 1px solid var(--g100);
+    padding: 7px 10px; vertical-align: top; color: var(--g700);
+    font-size: 0.76rem; overflow: hidden; text-overflow: ellipsis;
   }
+  td:last-child { border-right: none; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--blue-ll); }
+
   .col-num { width: 70px; } .col-ref { width: 55px; } .col-date { width: 65px; }
   .col-inter { width: 90px; } .col-disp { width: 150px; } .col-avis { width: 45px; }
   .col-desc { width: 130px; } .col-obs { width: 220px; } .col-docs { width: 100px; }
   .col-suivi { width: 65px; } .col-repK { width: 180px; } .col-repL { width: 180px; }
   .col-lots { width: 80px; } .col-actions { width: 50px; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--blue-ll); }
 
   .badge {
-    display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 100px;
-    font-size: 0.7rem; font-weight: 600;
+    display: inline-flex; align-items: center; padding: 1px 7px;
+    font-size: 0.68rem; font-weight: 600; border: 1px solid transparent;
   }
-  .badge-oui { background: var(--green-l); color: #15803d; }
-  .badge-par { background: var(--gold-l); color: #92400e; }
-  .badge-non { background: var(--red-l); color: #b91c1c; }
-  .badge-empty { background: var(--g100); color: var(--g500); }
+  .badge-oui { background: var(--green-l); color: #15803d; border-color: #bbf7d0; }
+  .badge-par { background: var(--gold-l); color: #92400e; border-color: #fde68a; }
+  .badge-non { background: var(--red-l); color: #b91c1c; border-color: #fecaca; }
+  .badge-empty { background: var(--g100); color: var(--g500); border-color: var(--g200); }
   .rd6-tag {
     display: inline-block; background: var(--purple-l); color: var(--purple);
-    border-radius: 4px; padding: 0 4px; font-size: 0.6rem; font-weight: 700;
-    margin-left: 4px; font-family: var(--mono);
+    padding: 0 4px; font-size: 0.6rem; font-weight: 700; margin-left: 4px;
+    font-family: var(--mono); border: 1px solid #ddd6fe;
   }
   .empty-state {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 60px 20px; color: var(--g400); gap: 8px;
   }
 
-  /* PANEL LATERAL (redimensionnable) */
+  /* PANEL LATERAL */
   .overlay {
-    display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5);
-    backdrop-filter: blur(4px); z-index: 800;
+    display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.4);
+    z-index: 800;
   }
   .overlay.open { display: block; }
   .edit-panel {
     position: fixed; right: 0; top: 0; bottom: 0; width: 520px; min-width: 340px; max-width: 92vw;
-    background: white; box-shadow: -4px 0 24px rgba(0,0,0,0.1); z-index: 801;
+    background: white; box-shadow: -2px 0 12px rgba(0,0,0,0.1); z-index: 801;
     display: flex; flex-direction: column; transform: translateX(100%);
-    transition: transform 0.22s cubic-bezier(0.4,0,0.2,1);
+    transition: transform 0.2s ease;
   }
   .edit-panel.open { transform: translateX(0); }
   .ep-rh {
-    position: absolute; left: 0; top: 0; bottom: 0; width: 5px; cursor: ew-resize;
+    position: absolute; left: 0; top: 0; bottom: 0; width: 4px; cursor: ew-resize;
     z-index: 10; background: transparent; transition: background 0.15s;
   }
-  .ep-rh:hover, .ep-rh.dragging { background: var(--blue); opacity: 0.4; }
+  .ep-rh:hover, .ep-rh.dragging { background: var(--blue); opacity: 0.5; }
   .panel-hdr {
-    padding: 12px 20px; border-bottom: 1px solid var(--g200); background: var(--g100);
-    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; border-bottom: 1px solid var(--g200); background: var(--g50);
+    display: flex; align-items: center; gap: 10px;
   }
-  .panel-hdr .title { font-weight: 700; font-size: 0.9rem; flex: 1; }
-  .panel-body { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .panel-hdr .title { font-weight: 600; font-size: 0.85rem; flex: 1; }
+  .panel-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
   .form-section {
-    background: var(--g50); border: 1px solid var(--g200); border-radius: 12px; padding: 12px;
+    background: white; border: 1px solid var(--g200); padding: 10px;
   }
   .section-title {
-    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--g500);
-    margin-bottom: 8px; letter-spacing: 0.05em;
+    font-size: 0.67rem; font-weight: 700; text-transform: uppercase; color: var(--g500);
+    margin-bottom: 6px; letter-spacing: 0.06em;
   }
-  .form-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
-  .form-row label { font-size: 0.7rem; font-weight: 600; color: var(--g600); }
+  .form-row { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; }
+  .form-row label { font-size: 0.67rem; font-weight: 600; color: var(--g600); }
   .form-row input, .form-row textarea {
-    border: 1.5px solid var(--g200); border-radius: 8px; padding: 8px 10px;
-    font-family: var(--font); font-size: 0.8rem; background: white; outline: none; width: 100%;
+    border: 1px solid var(--g300); padding: 6px 8px;
+    font-family: var(--font); font-size: 0.78rem; background: white; outline: none; width: 100%;
   }
   .form-row input:focus, .form-row textarea:focus { border-color: var(--blue); }
-  .suivi-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .suivi-opts { display: flex; gap: 6px; flex-wrap: wrap; }
   .suivi-opt {
-    flex: 1; border: 2px solid var(--g200); border-radius: 8px; padding: 6px;
-    text-align: center; cursor: pointer; font-weight: 600; transition: all 0.1s;
+    flex: 1; border: 1px solid var(--g200); padding: 5px;
+    text-align: center; cursor: pointer; font-weight: 600; transition: all 0.1s; font-size: 0.73rem;
   }
   .suivi-opt.sel-oui { border-color: var(--green); background: var(--green-l); color: #15803d; }
   .suivi-opt.sel-par { border-color: var(--gold); background: var(--gold-l); color: #92400e; }
   .suivi-opt.sel-non { border-color: var(--red); background: var(--red-l); color: #b91c1c; }
   .suivi-opt.sel-vide { border-color: var(--g300); background: var(--g100); }
   .rd6-toggle {
-    display: flex; align-items: center; gap: 6px; padding: 6px 12px;
-    border: 1.5px solid var(--g200); border-radius: 30px; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; padding: 5px 10px;
+    border: 1px solid var(--g200); cursor: pointer;
   }
   .rd6-toggle.active { border-color: var(--purple); background: var(--purple-l); }
   .panel-ftr {
-    padding: 12px 20px; border-top: 1px solid var(--g200); display: flex;
-    gap: 8px; background: var(--g100);
+    padding: 10px 16px; border-top: 1px solid var(--g200); display: flex;
+    gap: 8px; background: var(--g50);
   }
   .save-feedback {
-    font-size: 0.75rem; font-weight: 600; color: var(--green); opacity: 0;
-    transition: opacity 0.2s; margin-left: auto;
+    font-size: 0.73rem; font-weight: 600; color: #16a34a; opacity: 0;
+    transition: opacity 0.2s; margin-left: auto; align-self: center;
   }
   .save-feedback.show { opacity: 1; }
   .obs-readonly {
-    background: var(--g100); border-radius: 8px; padding: 10px; min-height: 120px;
-    white-space: pre-wrap; font-size: 0.78rem; color: var(--g700); overflow-y: auto;
+    background: var(--g50); border: 1px solid var(--g200); padding: 8px; min-height: 100px;
+    white-space: pre-wrap; font-size: 0.76rem; color: var(--g700); overflow-y: auto;
   }
 
-  /* MODALS GENERIQUES */
+  /* MODALS */
   .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px); z-index: 900; align-items: center; justify-content: center;
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    z-index: 900; align-items: center; justify-content: center;
   }
   .modal-overlay.open { display: flex; }
   .modal {
-    background: white; border-radius: 16px; width: 550px; max-width: 95vw;
-    max-height: 85vh; overflow-y: auto; box-shadow: var(--sh-lg);
+    background: white; width: 550px; max-width: 95vw;
+    max-height: 85vh; overflow-y: auto; box-shadow: var(--sh-lg); border: 1px solid var(--g200);
   }
   .modal-hdr {
-    padding: 16px 20px; border-bottom: 1px solid var(--g200);
+    padding: 12px 16px; border-bottom: 1px solid var(--g200);
     display: flex; justify-content: space-between; align-items: center; font-weight: 700;
+    font-size: 0.85rem; background: var(--g50);
   }
-  .modal-body { padding: 20px; }
+  .modal-body { padding: 16px; }
   .modal-ftr {
-    padding: 12px 20px; border-top: 1px solid var(--g200);
+    padding: 10px 16px; border-top: 1px solid var(--g200);
     display: flex; justify-content: flex-end; gap: 8px;
   }
   .dropzone {
-    border: 2px dashed var(--g300); border-radius: 12px; padding: 30px;
+    border: 2px dashed var(--g300); padding: 28px;
     text-align: center; cursor: pointer;
   }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  /* ================= VERSION RAPIDE (style épuré, sans bordures) ================= */
+  /* VERSION RAPIDE */
   .rapide-modal {
     width: 960px; max-width: 97vw; height: 85vh; max-height: 750px;
     display: flex; flex-direction: column; overflow: hidden;
-    transition: all 0.2s ease;
   }
   .rapide-modal.fullscreen {
     width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh;
-    border-radius: 0;
   }
   .rapide-filters {
-    background: white; border-bottom: 1px solid var(--g200); padding: 8px 14px;
-    display: flex; flex-wrap: wrap; gap: 8px; align-items: center; flex-shrink: 0;
+    background: white; border-bottom: 1px solid var(--g200); padding: 7px 12px;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex-shrink: 0;
   }
   .rapide-filter-group {
     display: flex; align-items: center; gap: 5px; background: var(--g50);
-    border: 1px solid var(--g200); border-radius: 100px; padding: 3px 10px;
+    border: 1px solid var(--g200); padding: 3px 9px;
   }
   .rapide-filter-group label {
     font-size: 0.7rem; font-weight: 600; color: var(--g600);
@@ -275,12 +294,12 @@
   }
   .rapide-filter-group input { margin: 0; accent-color: var(--blue); }
   .rapide-reset {
-    background: white; border: 1.5px solid var(--g200); border-radius: 100px;
-    padding: 3px 12px; font-size: 0.7rem; font-weight: 600; cursor: pointer;
+    background: white; border: 1px solid var(--g300);
+    padding: 3px 10px; font-size: 0.7rem; font-weight: 500; cursor: pointer;
   }
   .stats-sdf {
     margin-left: auto; font-size: 0.75rem; font-weight: 700; font-family: var(--mono);
-    background: var(--g100); padding: 3px 12px; border-radius: 100px; white-space: nowrap;
+    background: var(--g100); padding: 3px 10px; white-space: nowrap;
   }
   .stats-sdf .s { color: var(--gold); }
   .stats-sdf .d { color: var(--red); }
@@ -292,13 +311,13 @@
     display: flex; flex-direction: column; overflow: hidden;
   }
   .rapide-list-header {
-    padding: 8px 12px; background: var(--g50); border-bottom: 1px solid var(--g200);
-    font-weight: 700; font-size: 0.75rem;
+    padding: 7px 10px; background: var(--g50); border-bottom: 1px solid var(--g200);
+    font-weight: 700; font-size: 0.73rem;
   }
-  .rapide-list { flex: 1; overflow-y: auto; padding: 6px; }
+  .rapide-list { flex: 1; overflow-y: auto; padding: 4px; }
   .rapide-item {
-    padding: 8px 10px; border: 1px solid transparent; border-radius: 8px;
-    margin-bottom: 4px; cursor: pointer; transition: all 0.1s;
+    padding: 7px 9px; border: 1px solid transparent;
+    margin-bottom: 2px; cursor: pointer; transition: background 0.1s;
   }
   .rapide-item:hover { background: var(--g50); border-color: var(--g200); }
   .rapide-item.selected { background: var(--blue-l); border-color: var(--blue); }
@@ -306,115 +325,85 @@
     font-family: var(--mono); font-weight: 700; color: var(--blue); font-size: 0.72rem;
   }
   .rapide-item-avis {
-    display: inline-block; padding: 1px 6px; border-radius: 4px;
+    display: inline-block; padding: 1px 5px;
     font-size: 0.63rem; font-weight: 700;
   }
   .rapide-item-preview {
-    font-size: 0.73rem; color: var(--g600); overflow: hidden;
+    font-size: 0.72rem; color: var(--g600); overflow: hidden;
     text-overflow: ellipsis; white-space: nowrap;
   }
-  .rapide-detail-col {
-    flex: 1; display: flex; flex-direction: column; overflow: hidden;
-  }
-  /* Scroll unique, sans boîtes décoratives */
+  .rapide-detail-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
   .rapide-detail-scroll {
-    flex: 1; overflow-y: auto; padding: 14px;
-    display: flex; flex-direction: column; gap: 16px;
+    flex: 1; overflow-y: auto; padding: 12px;
+    display: flex; flex-direction: column; gap: 12px;
   }
   .rapide-detail-text {
-    font-size: 0.82rem; line-height: 1.5; color: var(--g800);
+    font-size: 0.8rem; line-height: 1.55; color: var(--g800);
     white-space: pre-wrap; word-break: break-word;
   }
-  .rapide-edit-area {
-    display: flex; flex-direction: column; gap: 10px;
-    margin-top: 8px;
-  }
+  .rapide-edit-area { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
   .rapide-edit-area label {
-    font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--g500);
+    font-size: 0.63rem; font-weight: 700; text-transform: uppercase; color: var(--g500);
   }
   .rapide-edit-area textarea, .rapide-edit-area input {
-    border: 1.5px solid var(--g200); border-radius: 8px; padding: 8px 10px;
-    font-family: var(--font); font-size: 0.8rem; resize: vertical; width: 100%;
+    border: 1px solid var(--g300); padding: 7px 9px;
+    font-family: var(--font); font-size: 0.78rem; resize: vertical; width: 100%;
   }
   .rapide-edit-area textarea { min-height: 60px; }
   .rapide-footer {
-    padding: 8px 14px; border-top: 1px solid var(--g200); display: flex;
-    gap: 8px; flex-wrap: wrap; align-items: center; background: white; flex-shrink: 0;
+    padding: 7px 12px; border-top: 1px solid var(--g200); display: flex;
+    gap: 6px; flex-wrap: wrap; align-items: center; background: white; flex-shrink: 0;
   }
   .rap-stat-btn {
-    padding: 4px 12px; border-radius: 30px; border: 1.5px solid transparent;
-    font-weight: 700; cursor: pointer; transition: all 0.1s; font-size: 0.7rem;
+    padding: 4px 12px; border: 1px solid transparent;
+    font-weight: 600; cursor: pointer; transition: all 0.1s; font-size: 0.7rem;
   }
-  .rap-stat-btn.active {
-    filter: brightness(0.95); transform: scale(0.98); box-shadow: inset 0 0 0 1px currentColor;
-  }
-  .rsb-oui { background: var(--green-l); color: #15803d; border-color: rgba(34,197,94,0.3); }
-  .rsb-oui.active { background: #15803d; color: white; border-color: #15803d; }
-  .rsb-non { background: var(--red-l); color: #991b1b; border-color: rgba(239,68,68,0.3); }
-  .rsb-non.active { background: #991b1b; color: white; border-color: #991b1b; }
-  .rsb-par { background: var(--gold-l); color: #92400e; border-color: rgba(245,158,11,0.3); }
-  .rsb-par.active { background: #92400e; color: white; border-color: #92400e; }
-  .rsb-rd6 { background: var(--purple-l); color: var(--purple); border-color: rgba(124,58,237,0.3); }
-  .rsb-rd6.active { background: var(--purple); color: white; border-color: var(--purple); }
+  .rap-stat-btn.active { filter: brightness(0.92); box-shadow: inset 0 0 0 1px currentColor; }
+  .rsb-oui { background: var(--green-l); color: #15803d; border-color: #bbf7d0; }
+  .rsb-oui.active { background: #15803d; color: white; }
+  .rsb-non { background: var(--red-l); color: #991b1b; border-color: #fecaca; }
+  .rsb-non.active { background: #991b1b; color: white; }
+  .rsb-par { background: var(--gold-l); color: #92400e; border-color: #fde68a; }
+  .rsb-par.active { background: #92400e; color: white; }
+  .rsb-rd6 { background: var(--purple-l); color: var(--purple); border-color: #ddd6fe; }
+  .rsb-rd6.active { background: var(--purple); color: white; }
 
-  .col-picker-wrap { position: relative; }
-  .col-picker-panel {
-    position: absolute; top: 100%; right: 0; z-index: 350; background: white;
-    border: 1.5px solid var(--g200); border-radius: 12px; width: 240px;
-    box-shadow: var(--sh-lg); display: none;
-  }
-  .col-picker-panel.open { display: block; }
-  .col-picker-header {
-    padding: 8px 12px; background: var(--g50); border-bottom: 1px solid var(--g200);
-    display: flex; justify-content: space-between; font-weight: 600; font-size: 0.75rem;
-  }
-  .col-picker-list { padding: 6px; max-height: 260px; overflow-y: auto; }
-  .col-picker-item {
-    display: flex; align-items: center; gap: 8px; padding: 5px 8px;
-    border-radius: 6px; cursor: pointer;
-  }
-  .col-picker-item:hover { background: var(--g50); }
-  .col-picker-item input { accent-color: var(--blue); }
-
-  /* Boutons d'en-tête de modale supplémentaires */
-  .modal-header-actions {
-    display: flex; gap: 8px; align-items: center;
-  }
+  .modal-header-actions { display: flex; gap: 6px; align-items: center; }
   .modal-icon-btn {
     background: transparent; border: none; cursor: pointer;
-    font-size: 1rem; padding: 4px; border-radius: 6px;
-    color: var(--g500); transition: all 0.15s;
+    font-size: 0.85rem; padding: 4px 6px; color: var(--g500);
   }
   .modal-icon-btn:hover { background: var(--g200); color: var(--g700); }
+  .rapide-detail-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--g500); letter-spacing: 0.06em; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- HEADER (affaire/dossier masqués) -->
 <div class="syn-header">
-  <div class="header-info">
+  <div class="header-info" id="headerInfoContainer">
     <div class="info-row"><span class="label">AFFAIRE :</span><span class="value" id="affaireDisplay">—</span></div>
     <div class="info-row"><span class="label">DOSSIER :</span><input class="value" id="dossierInput" placeholder="N° dossier" value=""></div>
   </div>
   <div class="mini-stats">
-    <span><span class="dot dot-g"></span><span id="statOui">0</span></span>
-    <span><span class="dot dot-y"></span><span id="statPar">0</span></span>
-    <span><span class="dot dot-r"></span><span id="statNon">0</span></span>
-    <span><span id="statTotal">0</span> total</span>
+    <span style="display:none;"><span class="dot dot-g"></span><span id="statOui">0</span></span>
+    <span style="display:none;"><span class="dot dot-y"></span><span id="statPar">0</span></span>
+    <span style="display:none;"><span class="dot dot-r"></span><span id="statNon">0</span></span>
+    <span style="display:none;"><span id="statTotal">0</span> total</span>
   </div>
-  <button class="theme-btn" onclick="toggleTheme()">🌓</button>
+  <button class="theme-btn" onclick="toggleTheme()"style="display:none;">🌓</button>
 </div>
 
 <!-- TOOLBAR PRINCIPALE -->
 <div class="toolbar">
-  <button class="tb-btn active" id="tabV2" onclick="switchTab('v2')">RapsoV2</button>
-  <button class="tb-btn" id="tabV1" onclick="switchTab('v1')">RapsoV1</button>
+  <button class="tb-btn active" id="tabV2" onclick="switchTab('v2')"style="display:none;">RapsoV2</button>
+  <button class="tb-btn" id="tabV1" onclick="switchTab('v1')"style="display:none;">RapsoV1</button>
   <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
   <div class="quick-search"><span class="qs-label">N°</span><input id="qs_num" placeholder="avis" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label">📅</span><input id="qs_date" placeholder="jj/mm/aaaa" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label">📝</span><input id="qs_disp" placeholder="dispositions" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label">🔍</span><input id="qs_obs" placeholder="observations" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label">📎</span><input id="qs_docs" placeholder="documents" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Date</span><input id="qs_date" placeholder="jj/mm/aaaa" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Disp.</span><input id="qs_disp" placeholder="dispositions" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Obs.</span><input id="qs_obs" placeholder="observations" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Docs</span><input id="qs_docs" placeholder="documents" oninput="applyFilters()"></div>
   <div class="qs-checks">
     <label><input type="checkbox" id="qs_F" onchange="applyFilters()">F</label>
     <label><input type="checkbox" id="qs_S" onchange="applyFilters()">S</label>
@@ -422,9 +411,9 @@
     <label><input type="checkbox" id="qs_PM" onchange="applyFilters()">PM</label>
     <label><input type="checkbox" id="qs_SO" onchange="applyFilters()">SO</label>
   </div>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fOui" onchange="applyFilters()">✅</label>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPar" onchange="applyFilters()">⚠️</label>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fNon" onchange="applyFilters()">❌</label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fOui" onchange="applyFilters()">Levé</label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPar" onchange="applyFilters()">Partiel</label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fNon" onchange="applyFilters()">Maintenu</label>
   <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fRd6" onchange="applyFilters()">RD6</label>
   <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPA" onchange="applyFilters()">PA</label>
 
@@ -437,21 +426,30 @@
     <div class="mf-select-dropdown" id="mfLotDropdown"></div>
   </div>
 
-  <button class="tb-btn" onclick="resetFilters()">✕</button>
+  <button class="tb-btn" onclick="resetFilters()">Réinit.</button>
   <div style="flex:1;"></div>
+
+  <!-- Bouton INFO (affaire/dossier) -->
+  <button class="tb-btn" onclick="openInfoModal()">Info</button>
+
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
-  <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
-  <button class="tb-btn small" onclick="if(checkPasswordBeforeImport()) openImportModal()">📥 Importer</button>
-  <button class="tb-btn" onclick="openActualiserModal()">🔄 Actualiser</button>
-  <button class="tb-btn" onclick="openStatsModal()">📊 Stats</button>
-  <button class="tb-btn" onclick="exportJSON()">💾</button>
-  <button class="tb-btn" onclick="loadJSON()">📂</button>
-  <button class="tb-btn" onclick="window.print()">🖨️</button>
-  <button class="tb-btn" onclick="exportWithExcelJS()">📥 Télécharger Excel</button>
-  <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
-  <div class="col-picker-wrap">
-    <button class="tb-btn" id="colPickerBtn" onclick="toggleColPicker()">📋 Colonnes</button>
+  <button class="tb-btn" onclick="openRapide()">Vision rapide</button>
+
+  <!-- Menu déroulant "Actions" avec le panneau des colonnes intégré -->
+  <div class="actions-dropdown">
+    <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()">Actions ▾</button>
+    <div class="actions-menu" id="actionsMenu">
+      <button onclick="if(checkPasswordBeforeImport()) openImportModal(); closeActionsMenu();">Créer un dossier</button>
+      <button onclick="openActualiserModal(); closeActionsMenu();">Mettre à jour</button>
+      <button onclick="openStatsModal(); closeActionsMenu();">Statistiques</button>
+      <button onclick="exportJSON(); closeActionsMenu();">Enregistrer en local</button>
+      <button onclick="loadJSON(); closeActionsMenu();">Ouvrir un dossier local</button>
+      <button onclick="window.print(); closeActionsMenu();">Imprimer</button>
+      <button onclick="exportWithExcelJS(); closeActionsMenu();">Télécharger l'excel</button>
+      <button onclick="toggleColPicker(); closeActionsMenu();">Gérer les colonnes</button>
+    </div>
+    <!-- Panneau de gestion des colonnes -->
     <div class="col-picker-panel" id="colPickerPanel">
       <div class="col-picker-header"><span>Colonnes affichées</span><button onclick="resetColumns()" style="background:none;border:none;color:var(--blue);cursor:pointer;">Tout afficher</button></div>
       <div class="col-picker-list" id="colPickerList"></div>
@@ -462,10 +460,10 @@
 <!-- TABLEAU PRINCIPAL -->
 <div class="table-container">
   <table id="mainTable">
-    <thead id="mainThead"><tr id="headerRow"></td></thead>
+    <thead id="mainThead"><tr id="headerRow"></tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
-  <div class="empty-state" id="emptyState" style="display:none"><div>📋</div><div>Aucun avis trouvé</div></div>
+  <div class="empty-state" id="emptyState" style="display:none"><div style="font-size:1.5rem;color:var(--g300);">—</div><div>Aucun avis trouvé</div></div>
 </div>
 
 <!-- PANEL LATERAL -->
@@ -477,7 +475,7 @@
     <span style="font-family:var(--mono);font-size:0.7rem;" id="panelNum">—</span>
     <button class="tb-btn" onclick="navRow(-1)">↑</button>
     <button class="tb-btn" onclick="navRow(1)">↓</button>
-    <button class="tb-btn" onclick="closePanel()">✕</button>
+    <button class="tb-btn" onclick="closePanel()">×</button>
   </div>
   <div class="panel-body">
     <div class="form-section"><div class="section-title">Dispositions examinées</div><div style="white-space:pre-wrap;" id="e_lblColE">—</div></div>
@@ -492,9 +490,9 @@
       <div class="section-title">Statut de suivi</div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
         <div class="suivi-opts" style="flex:1;">
-          <div class="suivi-opt" id="opt_oui" onclick="setSuivi('Oui')">✅ Levé</div>
-          <div class="suivi-opt" id="opt_par" onclick="setSuivi('Par')">⚠️ Partiel</div>
-          <div class="suivi-opt" id="opt_non" onclick="setSuivi('Non')">❌ Maintenu</div>
+          <div class="suivi-opt" id="opt_oui" onclick="setSuivi('Oui')">✓ Levé</div>
+          <div class="suivi-opt" id="opt_par" onclick="setSuivi('Par')">~ Partiel</div>
+          <div class="suivi-opt" id="opt_non" onclick="setSuivi('Non')">✗ Maintenu</div>
           <div class="suivi-opt" onclick="setSuivi('')">—</div>
         </div>
         <label class="rd6-toggle" id="rd6Toggle" onclick="toggleRD6()"><input type="checkbox" id="e_rd6"> RD6</label>
@@ -502,36 +500,60 @@
     </div>
   </div>
   <div class="panel-ftr">
-    <button class="tb-btn green" onclick="saveRow()">💾 Enregistrer</button>
-    <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">🗑 Supprimer</button>
+    <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
+    <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Supprimer</button>
     <button class="tb-btn" onclick="closePanel()">Annuler</button>
     <span class="save-feedback" id="saveFeedback">✓ Enregistré !</span>
   </div>
 </div>
 
-<!-- MODAL PA -->
+<!-- MODAL INFO (AFFAIRE / DOSSIER) -->
+<div class="modal-overlay" id="infoModal">
+  <div class="modal" style="width:400px;">
+    <div class="modal-hdr">Informations du dossier<button class="tb-btn" onclick="closeInfoModal()">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>AFFAIRE</label>
+        <input type="text" id="infoAffaireInput" placeholder="Nom de l'affaire">
+      </div>
+      <div class="form-row">
+        <label>DOSSIER</label>
+        <input type="text" id="infoDossierInput" placeholder="N° de dossier">
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="tb-btn" onclick="closeInfoModal()">Annuler</button>
+      <button class="tb-btn green" onclick="saveInfoModal()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PA (avec champ date) -->
 <div class="modal-overlay" id="paModal">
-  <div class="modal"><div class="modal-hdr">Ajouter PA <button class="tb-btn" onclick="closePAModal()">✕</button></div>
-    <div class="modal-body"><div class="form-row"><label>Catégorie</label><div style="display:flex;gap:8px;"><label><input type="checkbox" id="pa_F">F</label><label><input type="checkbox" id="pa_S">S</label><label><input type="checkbox" id="pa_D">D</label><label><input type="checkbox" id="pa_PM">PM</label></div></div>
-    <div class="form-row"><label>Dispositions</label><textarea id="pa_disp"></textarea></div>
-    <div class="form-row"><label>Observations</label><textarea id="pa_obs"></textarea></div>
-    <div class="form-row"><label>Réponses MOE</label><textarea id="pa_repK"></textarea></div>
-    <div class="form-row"><label>Comm. SOCOTEC</label><textarea id="pa_repL"></textarea></div>
-    <div class="form-row"><label>Lots</label><input id="pa_lots"></div></div>
+  <div class="modal"><div class="modal-hdr">Ajouter PA <button class="tb-btn" onclick="closePAModal()">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Catégorie</label><div style="display:flex;gap:8px;"><label><input type="checkbox" id="pa_F">F</label><label><input type="checkbox" id="pa_S">S</label><label><input type="checkbox" id="pa_D">D</label><label><input type="checkbox" id="pa_PM">PM</label></div></div>
+      <div class="form-row"><label>Date</label><input type="date" id="pa_date"></div>
+      <div class="form-row"><label>Dispositions</label><textarea id="pa_disp"></textarea></div>
+      <div class="form-row"><label>Observations</label><textarea id="pa_obs"></textarea></div>
+      <div class="form-row"><label>Réponses MOE</label><textarea id="pa_repK"></textarea></div>
+      <div class="form-row"><label>Comm. SOCOTEC</label><textarea id="pa_repL"></textarea></div>
+      <div class="form-row"><label>Lots</label><input id="pa_lots"></div>
+    </div>
     <div class="modal-ftr"><button class="tb-btn" onclick="closePAModal()">Annuler</button><button class="tb-btn green" onclick="addPA()">Ajouter PA</button><span id="paFeedback"></span></div>
   </div>
 </div>
 
-<!-- VERSION RAPIDE AVEC BOUTONS TOGGLE ET SCROLL UNIQUE -->
+<!-- VERSION RAPIDE (inchangée) -->
 <div class="modal-overlay" id="rapideOverlay">
   <div class="modal rapide-modal" id="rapideModal">
-<div class="modal-hdr">
-  <span id="rapideAffaireTitle" style="font-weight:600; font-size:0.9rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">—</span>
-  <div class="modal-header-actions">
-    <button class="modal-icon-btn" onclick="toggleRapideFullscreen()">⛶</button>
-    <button class="modal-icon-btn" onclick="closeRapide()">✕</button>
-  </div>
-</div>
+    <div class="modal-hdr">
+      <span id="rapideAffaireTitle" style="font-weight:600; font-size:0.9rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">—</span>
+      <div class="modal-header-actions">
+        <button class="modal-icon-btn" onclick="toggleRapideFullscreen()">[ ]</button>
+        <button class="modal-icon-btn" onclick="closeRapide()">×</button>
+      </div>
+    </div>
     <div class="rapide-filters">
       <div class="rapide-filter-group">
         <span style="font-size:0.7rem;font-weight:600;">Lots</span>
@@ -559,7 +581,7 @@
         <label><input type="checkbox" id="rapF_rd6" onchange="rapApply()"> RD6</label>
         <label><input type="checkbox" id="rapF_pa" onchange="rapApply()"> PA</label>
       </div>
-      <button class="rapide-reset" onclick="rapReset()">✕</button>
+      <button class="rapide-reset" onclick="rapReset()">Réinit.</button>
       <div class="stats-sdf" id="rapStatsSDF">S=0 / D=0 / F=0</div>
     </div>
 
@@ -569,7 +591,6 @@
         <div class="rapide-list" id="rapideList"></div>
       </div>
       <div class="rapide-detail-col">
-        <!-- Scroll unique : pas de boîtes décoratives -->
         <div class="rapide-detail-scroll" id="rapideScrollContainer">
           <div class="rapide-detail-label">Observations</div>
           <div class="rapide-detail-text" id="rapideObsText">—</div>
@@ -582,12 +603,12 @@
       </div>
     </div>
     <div class="rapide-footer">
-      <button class="rap-stat-btn rsb-oui" id="rapBtnOui" onclick="rapToggleSuivi('Oui')">✅ Levé</button>
-      <button class="rap-stat-btn rsb-par" id="rapBtnPar" onclick="rapToggleSuivi('Par')">⚠️ Partiel</button>
-      <button class="rap-stat-btn rsb-non" id="rapBtnNon" onclick="rapToggleSuivi('Non')">❌ Maintenu</button>
-      <button class="rap-stat-btn rsb-rd6" id="rapBtnRd6" onclick="rapToggleRD6()">🔷 RD6</button>
+      <button class="rap-stat-btn rsb-oui" id="rapBtnOui" onclick="rapToggleSuivi('Oui')">✓ Levé</button>
+      <button class="rap-stat-btn rsb-par" id="rapBtnPar" onclick="rapToggleSuivi('Par')">~ Partiel</button>
+      <button class="rap-stat-btn rsb-non" id="rapBtnNon" onclick="rapToggleSuivi('Non')">✗ Maintenu</button>
+      <button class="rap-stat-btn rsb-rd6" id="rapBtnRd6" onclick="rapToggleRD6()">RD6</button>
       <div style="flex:1;"></div>
-      <button class="tb-btn green" id="rapSaveBtn" onclick="rapSaveTexts()" disabled>💾 Valider</button>
+      <button class="tb-btn green" id="rapSaveBtn" onclick="rapSaveTexts()" disabled>Valider</button>
       <button class="tb-btn" onclick="closeRapide()">Annuler</button>
     </div>
   </div>
@@ -595,12 +616,12 @@
 
 <!-- STATS MODAL -->
 <div class="modal-overlay" id="statsModal">
-  <div class="modal" style="width:520px;"><div class="modal-hdr">📊 Statistiques<button class="tb-btn" onclick="closeStatsModal()">✕</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div>
+  <div class="modal" style="width:520px;"><div class="modal-hdr">Statistiques<button class="tb-btn" onclick="closeStatsModal()">×</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div>
 </div>
 
 <!-- ADD MODAL -->
 <div class="modal-overlay" id="addModal">
-  <div class="modal"><div class="modal-hdr">Nouvel avis<button class="tb-btn" onclick="closeAddModal()">✕</button></div>
+  <div class="modal"><div class="modal-hdr">Nouvel avis<button class="tb-btn" onclick="closeAddModal()">×</button></div>
     <div class="modal-body">
       <div class="form-grid"><div class="form-row"><label>N° Avis</label><input type="text" id="a_num"></div><div class="form-row"><label>Id / Réf</label><input type="text" id="a_ref"></div><div class="form-row"><label>Date</label><input type="date" id="a_date"></div><div class="form-row"><label>Intervenant</label><input type="text" id="a_inter"></div></div>
       <div class="form-row"><label>Dispositions</label><textarea id="a_disp"></textarea></div>
@@ -616,19 +637,20 @@
 
 <!-- IMPORT MODAL -->
 <div class="modal-overlay" id="importModal">
-  <div class="modal" style="width:450px;"><div class="modal-hdr">Importer XLSX<button class="tb-btn" onclick="closeImportModal()">✕</button></div>
-    <div class="modal-body"><div class="dropzone" id="importDropzone" onclick="document.getElementById('fileInput').click()">📂 Cliquer ou glisser .xlsx/.xlsm</div><input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)"><div id="importStatus"></div></div>
+  <div class="modal" style="width:450px;"><div class="modal-hdr">Importer un fichier Excel<button class="tb-btn" onclick="closeImportModal()">×</button></div>
+    <div class="modal-body"><div class="dropzone" id="importDropzone" onclick="document.getElementById('fileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)"><div id="importStatus"></div></div>
     <div class="modal-ftr"><button class="tb-btn" onclick="closeImportModal()">Fermer</button></div>
   </div>
 </div>
 
 <!-- ACTUALISER MODAL -->
 <div class="modal-overlay" id="actualiserModal">
-  <div class="modal" style="width:450px;"><div class="modal-hdr">🔄 Actualiser (UPSERT)<button class="tb-btn" onclick="closeActualiserModal()">✕</button></div>
-    <div class="modal-body"><div class="dropzone" id="actualiserDropzone" onclick="document.getElementById('actualiserFileInput').click()">🔄 Glisser fichier XLSX</div><input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)"><div id="actualiserStatus"></div></div>
+  <div class="modal" style="width:450px;"><div class="modal-hdr">Actualiser les données<button class="tb-btn" onclick="closeActualiserModal()">×</button></div>
+    <div class="modal-body"><div class="dropzone" id="actualiserDropzone" onclick="document.getElementById('actualiserFileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)"><div id="actualiserStatus"></div></div>
     <div class="modal-ftr"><button class="tb-btn" onclick="closeActualiserModal()">Fermer</button></div>
   </div>
 </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -682,7 +704,7 @@ window.addEventListener('message', function(e) {
 // --- Injection parent ---
 (function(){if(window.RAPSO_SYNTH_DATA){try{const p=JSON.parse(window.RAPSO_SYNTH_DATA);if(p&&typeof p==='object'){data.v2=Array.isArray(p.v2)?p.v2:[];data.v1=Array.isArray(p.v1)?p.v1:[];localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:window.RAPSO_AFFAIRE||'',dossier:window.RAPSO_DOSSIER||''},data:{v2:data.v2,v1:data.v1}}));}}catch(e){}}setTimeout(()=>{
   const af=ge('affaireDisplay'),dos=ge('dossierInput');
-  if(af && window.RAPSO_AFFAIRE) af.innerText = window.RAPSO_AFFAIRE;  // ✅ Toujours appliquer
+  if(af && window.RAPSO_AFFAIRE) af.innerText = window.RAPSO_AFFAIRE;
   if(dos && window.RAPSO_DOSSIER) dos.value = window.RAPSO_DOSSIER;
   applyFilters();
 },0);})();
@@ -755,16 +777,16 @@ function resetFilters(){
 
 // --- Colonnes principales ---
 const COL_DEF = [
-  {key:'num', label:'N° Avis', visible:true, locked:true, width:'70px'},
-  {key:'ref', label:'Réf', visible:true, width:'55px'},
-  {key:'date', label:'Date', visible:true, width:'65px'},
+  {key:'num', label:'N°', visible:true, locked:true, width:'49px'},
+  {key:'ref', label:'Réf', visible:true, width:'49px'},
+  {key:'date', label:'Date', visible:true, width:'100px'},
   {key:'inter', label:'Intervenant', visible:true, width:'90px'},
   {key:'disp', label:'Dispositions', visible:true, width:'150px'},
-  {key:'avis', label:'Avis', visible:true, width:'45px'},
+  {key:'avis', label:'Avis', visible:true, width:'37px'},
   {key:'desc', label:'Description', visible:false, width:'130px'},
   {key:'obs', label:'Observations', visible:true, width:'220px'},
   {key:'docs', label:'Documents', visible:false, width:'100px'},
-  {key:'suivi', label:'Suivi', visible:true, width:'65px'},
+  {key:'suivi', label:'Suivi', visible:true, width:'61px'},
   {key:'repK', label:'Rép. MOE', visible:true, width:'180px'},
   {key:'repL', label:'Obs. SOCOTEC', visible:false, width:'180px'},
   {key:'lots', label:'Lots', visible:true, width:'80px'}
@@ -772,11 +794,21 @@ const COL_DEF = [
 function loadColPrefs(){try{const s=localStorage.getItem('rs_col_prefs');if(s){const p=JSON.parse(s);COL_DEF.forEach(c=>{if(p[c.key]!==undefined)c.visible=p[c.key];});}}catch(e){}}
 function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localStorage.setItem('rs_col_prefs',JSON.stringify(p));}
 function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.onclick=()=>sortBy(c.key);th.style.cursor='pointer';hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
-function toggleColPicker(){ge('colPickerPanel').classList.toggle('open');}
+function toggleColPicker(){
+  ge('colPickerPanel').classList.toggle('open');
+  // Fermer le menu actions si ouvert
+  if(ge('actionsMenu').classList.contains('show')) ge('actionsMenu').classList.remove('show');
+}
 function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
 function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();buildColPickerList();ge('colPickerPanel').classList.remove('open');}
-document.addEventListener('click',e=>{if(!e.target.closest('.col-picker-wrap'))ge('colPickerPanel').classList.remove('open');});
+// Fermer le panneau colonnes si clic en dehors de actions-dropdown
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.actions-dropdown')) {
+    ge('colPickerPanel').classList.remove('open');
+    ge('actionsMenu').classList.remove('show');
+  }
+});
 
 function fmtDate(d){if(!d)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}return d;}
 function renderTable(){
@@ -784,7 +816,7 @@ function renderTable(){
   if(!filteredRows.length){tbody.innerHTML='';empty.style.display='flex';return;}
   empty.style.display='none';
   tbody.innerHTML=filteredRows.map((r,i)=>{
-    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✅ Oui</span>':r.suivi==='Par'?'<span class="badge badge-par">⚠️ Par.</span>':r.suivi==='Non'?'<span class="badge badge-non">❌ Non</span>':'<span class="badge badge-empty">—</span>';
+    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✓ Levé</span>':r.suivi==='Par'?'<span class="badge badge-par">~ Par.</span>':r.suivi==='Non'?'<span class="badge badge-non">✗ Non</span>':'<span class="badge badge-empty">—</span>';
     const rd6=r.rd6?'<span class="rd6-tag">RD6</span>':'';
     const interClean=cleanIntervenant(r.inter);
     let cells='';
@@ -797,7 +829,7 @@ function renderTable(){
       else if(c.key==='inter')cells+=`<td>${escapeHtml(interClean)}</td>`;
       else cells+=`<td>${escapeHtml(r[c.key])}</td>`;
     });
-    cells+=`<td class="col-actions"><button class="tb-btn" onclick="openEditPanel(${i})" style="padding:2px 8px;">✏️</button></td>`;
+    cells+=`<td class="col-actions"><button class="tb-btn" onclick="openEditPanel(${i})" style="padding:2px 8px;">Edit</button></td>`;
     return `<tr ondblclick="openEditPanel(${i})" id="row-${i}">${cells}</tr>`;
   }).join('');
 }
@@ -863,18 +895,69 @@ function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx
   });
 })();
 
-// --- Modal PA ---
-function openPAModal(){['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>ge(id).checked=false);['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>ge(id).value='');ge('paFeedback').innerText='';ge('paModal').classList.add('open');}
+// --- Modal PA (avec date) ---
+function openPAModal(){
+  ['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>ge(id).checked=false);
+  ['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>ge(id).value='');
+  ge('pa_date').value = new Date().toISOString().slice(0,10); // date du jour
+  ge('paFeedback').innerText='';
+  ge('paModal').classList.add('open');
+}
 function closePAModal(){ge('paModal').classList.remove('open');}
 function addPA(){
   const cat=ge('pa_F').checked?'F':ge('pa_S').checked?'S':ge('pa_D').checked?'D':ge('pa_PM').checked?'PM':'';
   if(!cat){ge('paFeedback').innerText='⚠️ Cochez F, S, D ou PM';setTimeout(()=>ge('paFeedback').innerText='',2000);return;}
   let maxPA=0;getRows().forEach(r=>{if((r.num||'').startsWith('PA')){let n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
-  data[currentTab].push(makeRow({num:'PA'+(maxPA+1),date:new Date().toISOString().slice(0,10),disp:ge('pa_disp').value,avis:cat,obs:ge('pa_obs').value,repK:ge('pa_repK').value,repL:ge('pa_repL').value,lots:ge('pa_lots').value}));
+  const paDate = ge('pa_date').value || new Date().toISOString().slice(0,10);
+  data[currentTab].push(makeRow({
+    num:'PA'+(maxPA+1),
+    date: paDate,
+    disp:ge('pa_disp').value,
+    avis:cat,
+    obs:ge('pa_obs').value,
+    repK:ge('pa_repK').value,
+    repL:ge('pa_repL').value,
+    lots:ge('pa_lots').value
+  }));
   closePAModal();applyFilters();persistLocal();pushToParent();
 }
 
-// ======================= VERSION RAPIDE (boutons toggle, sauvegarde immédiate) =======================
+// --- Menu Actions déroulant ---
+function toggleActionsMenu() {
+  document.getElementById('actionsMenu').classList.toggle('show');
+  // Fermer le panneau colonnes si ouvert
+  ge('colPickerPanel').classList.remove('open');
+}
+function closeActionsMenu() {
+  document.getElementById('actionsMenu').classList.remove('show');
+}
+
+// --- Modal INFO (Affaire/Dossier) ---
+function openInfoModal() {
+  document.getElementById('infoAffaireInput').value = ge('affaireDisplay').innerText;
+  document.getElementById('infoDossierInput').value = ge('dossierInput').value;
+  document.getElementById('infoModal').classList.add('open');
+}
+function closeInfoModal() {
+  document.getElementById('infoModal').classList.remove('open');
+}
+function saveInfoModal() {
+  const affaire = document.getElementById('infoAffaireInput').value.trim();
+  const dossier = document.getElementById('infoDossierInput').value.trim();
+  ge('affaireDisplay').innerText = affaire || '—';
+  ge('dossierInput').value = dossier;
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage(
+      { type: 'rapso_update_affaire', canId: window.CANEVAS_ID, affaire: affaire },
+      '*'
+    );
+  }
+  persistLocal();
+  pushToParent();
+  closeInfoModal();
+}
+
+// ======================= VERSION RAPIDE (inchangée) =======================
 let rapCurrent = null, rapFiltered = [];
 let rapSelectedLots = new Set(), rapSelectedInters = new Set();
 
@@ -1168,7 +1251,6 @@ function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"
 function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
 function hasRappel(obs){if(!obs)return false;let s=String(obs);return s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l'observation précédente:")||s.includes("Rappel de l'observation précédente:");}
 
-// ✅ Fonction pour envoyer l'affaire au parent
 function updateParentAffaire(affaire) {
   if (window.parent && window.parent !== window) {
     window.parent.postMessage(
@@ -1182,7 +1264,6 @@ function processXLSX(file, mode){
   const sid = mode==='actualiser' ? 'actualiserStatus' : 'importStatus';
   ge(sid).textContent = 'Lecture...';
 
-  // ✅ Confirmation pour l'actualisation
   if (mode === 'actualiser') {
     const nomFichier = file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
     if (!confirm(`Attention ! Vous allez mettre à jour le dossier « ${nomFichier} ». Continuer ?`)) {
@@ -1200,7 +1281,6 @@ function processXLSX(file, mode){
       const raw = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
       const baseName = file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
       ge('affaireDisplay').innerText = baseName;
-      // ✅ Mettre à jour Firebase via le parent
       updateParentAffaire(baseName);
 
       const src = [];
@@ -1235,7 +1315,7 @@ function processXLSX(file, mode){
   reader.readAsArrayBuffer(file);
 }
 function checkPasswordBeforeImport() {
-  const motDePasse = "SOCOTEC"; // ou celui que vous voulez
+  const motDePasse = "SOCOTEC";
   let tentative = prompt(
     "Veuillez saisir le code d'accès pour lancer l'importation.\n\n" +
     "ATTENTION : Pour une simple mise à jour des données existantes, " +
@@ -1243,7 +1323,7 @@ function checkPasswordBeforeImport() {
     ""
   );
   if (tentative === null || tentative === "") {
-    return false; // Annulation
+    return false;
   }
   if (tentative === motDePasse) {
     return true;
