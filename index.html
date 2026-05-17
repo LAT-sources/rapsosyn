@@ -715,6 +715,7 @@ async function loadFromCloud() {
     canevas = toArray(record.canevas);
     const usersMap = fromUserList(record.users);
     users = toUsersArray(usersMap);
+    users.forEach(u => { if (!Array.isArray(u.favs)) u.favs = []; });
     nextCanId = canevas.length ? Math.max(...canevas.map(c => c.id)) + 1 : 1;
     isOnline = true;
     return true;
@@ -755,7 +756,7 @@ function doLogin() {
     .then(snap => {
       const uProfile = snap.val();
       if (!uProfile) throw new Error('Profil utilisateur introuvable');
-      currentUser = { ...uProfile, uid: auth.currentUser.uid };
+      currentUser = { ...uProfile, uid: auth.currentUser.uid }; currentUser.favs = uProfile.favs || [];
       return loadFromCloud();
     })
     .then(() => {
@@ -782,7 +783,7 @@ function createFirebaseUser(email, password, prenom, nom, role, initiales) {
   return auth.createUserWithEmailAndPassword(email, password).then(cred => {
     const uid = cred.user.uid;
     const color = COLORS[users.length % COLORS.length];
-    const newUser = { uid, prenom, nom, email, role, initiales: initiales || (prenom[0]+nom[0]).toUpperCase(), color, actif: true };
+    const newUser = { uid, prenom, nom, email, role, initiales: initiales || (prenom[0]+nom[0]).toUpperCase(), color, actif: true, favs: [] };
     users.push(newUser);
     return saveToCloud().then(() => newUser);
   });
@@ -892,7 +893,7 @@ function canVisible() {
       const intervenantMatch = Array.isArray(c.intervenants) && c.intervenants.includes(currentUser.initiales);
       if (!piloteMatch && !intervenantMatch) return false;
     }
-    if (favOnly && !c.fav) return false;
+    if (favOnly && !currentUser.favs.includes(c.id)) return false;
     const nom = gv('fNom').toLowerCase(), chrono = gv('fChrono').toLowerCase(),
           client = gv('fClient').toLowerCase(), ville = gv('fVille').toLowerCase(),
           statut = gv('fStatut'), pilote = gv('fPilote').toLowerCase();
@@ -926,7 +927,7 @@ function renderCanevas() {
     const stBadge = c.statut === 'Commandée' ? 'b-cmd' : c.statut === 'En attente' ? 'b-att' : 'b-act';
     const canEdit = currentUser.role === 'admin' || c.pilote === currentUser.initiales;
     return `<tr ondblclick="openSynthese(${c.id})">
-      <td><button class="star-btn ${c.fav?'on':''}" onclick="toggleStar(${c.id},event)">
+      <td><button class="star-btn ${currentUser.favs.includes(c.id) ? 'on' : ''}" onclick="toggleStar(${c.id},event)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="${c.fav?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       </button></td>
       <td><div class="td-name">${esc(c.nom)}</div></td>
@@ -943,7 +944,19 @@ function renderCanevas() {
     </tr>`;
   }).join('');
 }
-function toggleStar(id, e) { e.stopPropagation(); const c = canevas.find(x => x.id === id); if (c) { c.fav = !c.fav; saveToCloud(); renderCanevas(); } }
+function toggleStar(id, e) {
+  e.stopPropagation();
+  if (!currentUser) return;
+  if (!Array.isArray(currentUser.favs)) currentUser.favs = [];
+  const idx = currentUser.favs.indexOf(id);
+  if (idx >= 0) {
+    currentUser.favs.splice(idx, 1);
+  } else {
+    currentUser.favs.push(id);
+  }
+  saveToCloud();
+  renderCanevas();
+}
 function openModalCanevas(mode, id = null, e = null) {
   if (e) e.stopPropagation();
   editingCanId = id;
