@@ -758,6 +758,16 @@ function doLogin() {
       if (!uProfile) throw new Error('Profil utilisateur introuvable');
       currentUser = { ...uProfile, uid: auth.currentUser.uid }; currentUser.favs = uProfile.favs || [];
       return loadFromCloud();
+      .then(() => {
+  // ✅ Synchroniser currentUser avec l’objet du tableau `users`
+  const me = users.find(u => u.uid === currentUser.uid);
+  if (me) currentUser = me;
+
+  if (document.getElementById('sbAv')) {
+    // … (reste inchangé)
+  }
+  show('scApp'); hide('scLogin'); hide('scSynthese');
+  showPage('canevas');
     })
     .then(() => {
       if (document.getElementById('sbAv')) {
@@ -956,6 +966,11 @@ function toggleStar(id, e) {
     currentUser.favs.splice(idx, 1);
   } else {
     currentUser.favs.push(id);
+  }
+  // ✅ Répercute la modification dans le tableau `users`
+  const userInList = users.find(u => u.uid === currentUser.uid);
+  if (userInList) {
+    userInList.favs = currentUser.favs;
   }
   saveToCloud();
   renderCanevas();
@@ -1305,11 +1320,13 @@ window.addEventListener('load', async () => {
   await loadFromCloud();
   auth.onAuthStateChanged(async (firebaseUser) => {
     if (firebaseUser && currentUser && currentUser.uid === firebaseUser.uid) return;
-    if (firebaseUser) {
-      await loadFromCloud();
-      const snap = await db.ref('/users/' + firebaseUser.uid).once('value');
-      if (snap.exists()) {
-        currentUser = { ...snap.val(), uid: firebaseUser.uid };
+if (firebaseUser) {
+  await loadFromCloud();
+  const snap = await db.ref('/users/' + firebaseUser.uid).once('value');
+  if (snap.exists()) {
+    // ✅ Synchroniser avec l’élément du tableau
+    const me = users.find(u => u.uid === firebaseUser.uid);
+    currentUser = me || { ...snap.val(), uid: firebaseUser.uid };
         if (document.getElementById('sbAv')) {
           document.getElementById('sbAv').textContent = currentUser.initiales;
           document.getElementById('sbAv').style.background = currentUser.color;
