@@ -1005,10 +1005,23 @@ function buildRapMfOptions() {
   if (interDrop) interDrop.innerHTML = inters.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
   const lotDrop = document.getElementById('rapMfLotsDrop');
   if (lotDrop) lotDrop.innerHTML = lots.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
+  
+  // Mise à jour des compteurs
+  const interCount = document.getElementById('rapMfInterCount');
+  if (interCount) interCount.textContent = `(${rapSelectedInters.size})`;
+  const lotCount = document.getElementById('rapMfLotsCount');
+  if (lotCount) lotCount.textContent = `(${rapSelectedLots.size})`;
 }
 function toggleRapMulti(type, val, checked) {
   if (type === 'inter') checked ? rapSelectedInters.add(val) : rapSelectedInters.delete(val);
   else checked ? rapSelectedLots.add(val) : rapSelectedLots.delete(val);
+  
+  // Mise à jour des compteurs
+  const interCount = document.getElementById('rapMfInterCount');
+  if (interCount) interCount.textContent = `(${rapSelectedInters.size})`;
+  const lotCount = document.getElementById('rapMfLotsCount');
+  if (lotCount) lotCount.textContent = `(${rapSelectedLots.size})`;
+  
   rapApply();
 }
 function toggleRapMf(which) {
