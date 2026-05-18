@@ -555,21 +555,43 @@
         <button class="modal-icon-btn" onclick="closeRapide()">×</button>
       </div>
     </div>
-    <div class="rapide-filters">
-      <div class="rapide-filter-group">
-        <span style="font-size:0.7rem;font-weight:600;">Lots</span>
-        <div class="mf-select" style="display:inline-block;">
-          <div class="mf-select-button" onclick="toggleRapMf('lots')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
-          <div class="mf-select-dropdown" id="rapMfLotsDrop" style="min-width:140px;"></div>
-        </div>
+<div class="rapide-filters">
+
+  <div class="rapide-filter-group">
+    <span style="font-size:0.7rem;font-weight:600;">Lots</span>
+
+    <div class="mf-select" style="display:inline-block;">
+      <div class="mf-select-button"
+           onclick="toggleRapMf('lots')"
+           style="padding:2px 20px 2px 8px;font-size:0.7rem;">
+        Sélectionner <span id="rapMfLotsCount">(0)</span>
       </div>
-      <div class="rapide-filter-group">
-        <span style="font-size:0.7rem;font-weight:600;">Intervenant</span>
-        <div class="mf-select" style="display:inline-block;">
-          <div class="mf-select-button" onclick="toggleRapMf('inter')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
-          <div class="mf-select-dropdown" id="rapMfInterDrop" style="min-width:140px;"></div>
-        </div>
+
+      <div class="mf-select-dropdown"
+           id="rapMfLotsDrop"
+           style="min-width:140px;">
       </div>
+    </div>
+  </div>
+
+  <div class="rapide-filter-group">
+    <span style="font-size:0.7rem;font-weight:600;">Intervenant</span>
+
+    <div class="mf-select" style="display:inline-block;">
+      <div class="mf-select-button"
+           onclick="toggleRapMf('inter')"
+           style="padding:2px 20px 2px 8px;font-size:0.7rem;">
+        Sélectionner <span id="rapMfInterCount">(0)</span>
+      </div>
+
+      <div class="mf-select-dropdown"
+           id="rapMfInterDrop"
+           style="min-width:140px;">
+      </div>
+    </div>
+  </div>
+
+</div>
       <div class="rapide-filter-group">
         <label><input type="checkbox" id="rapF_F" onchange="rapApply()"> F</label>
         <label><input type="checkbox" id="rapF_S" onchange="rapApply()"> S</label>
