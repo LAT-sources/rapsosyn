@@ -555,42 +555,21 @@
         <button class="modal-icon-btn" onclick="closeRapide()">×</button>
       </div>
     </div>
-<div class="rapide-filters">
-
-  <div class="rapide-filter-group">
-    <span style="font-size:0.7rem;font-weight:600;">Lots</span>
-
-    <div class="mf-select" style="display:inline-block;">
-      <div class="mf-select-button"
-           onclick="toggleRapMf('lots')"
-           style="padding:2px 20px 2px 8px;font-size:0.7rem;">
-        Sélectionner <span id="rapMfLotsCount">(0)</span>
+    <div class="rapide-filters">
+      <div class="rapide-filter-group">
+        <span style="font-size:0.7rem;font-weight:600;">Lots</span>
+        <div class="mf-select" style="display:inline-block;">
+          <div class="mf-select-button" onclick="toggleRapMf('lots')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
+          <div class="mf-select-dropdown" id="rapMfLotsDrop" style="min-width:140px;"></div>
+        </div>
       </div>
-
-      <div class="mf-select-dropdown"
-           id="rapMfLotsDrop"
-           style="min-width:140px;">
+      <div class="rapide-filter-group">
+        <span style="font-size:0.7rem;font-weight:600;">Intervenant</span>
+        <div class="mf-select" style="display:inline-block;">
+          <div class="mf-select-button" onclick="toggleRapMf('inter')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
+          <div class="mf-select-dropdown" id="rapMfInterDrop" style="min-width:140px;"></div>
+        </div>
       </div>
-    </div>
-  </div>
-
-  <div class="rapide-filter-group">
-    <span style="font-size:0.7rem;font-weight:600;">Intervenant</span>
-
-    <div class="mf-select" style="display:inline-block;">
-      <div class="mf-select-button"
-           onclick="toggleRapMf('inter')"
-           style="padding:2px 20px 2px 8px;font-size:0.7rem;">
-        Sélectionner <span id="rapMfInterCount">(0)</span>
-      </div>
-
-      <div class="mf-select-dropdown"
-           id="rapMfInterDrop"
-           style="min-width:140px;">
-      </div>
-    </div>
-  </div>
-</div>
       <div class="rapide-filter-group">
         <label><input type="checkbox" id="rapF_F" onchange="rapApply()"> F</label>
         <label><input type="checkbox" id="rapF_S" onchange="rapApply()"> S</label>
@@ -819,8 +798,8 @@ const COL_DEF = [
   {key:'date', label:'Date', visible:true, width:'100px'},
   {key:'inter', label:'Intervenant', visible:true, width:'90px'},
   {key:'disp', label:'Dispositions', visible:true, width:'150px'},
-  {key:'desc', label:'Description', visible:false, width:'130px'},
   {key:'avis', label:'Avis', visible:true, width:'37px'},
+  {key:'desc', label:'Description', visible:false, width:'130px'},
   {key:'obs', label:'Observations', visible:true, width:'220px'},
   {key:'docs', label:'Documents', visible:false, width:'100px'},
   {key:'suivi', label:'Suivi', visible:true, width:'61px'},
@@ -1005,23 +984,10 @@ function buildRapMfOptions() {
   if (interDrop) interDrop.innerHTML = inters.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
   const lotDrop = document.getElementById('rapMfLotsDrop');
   if (lotDrop) lotDrop.innerHTML = lots.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
-  
-  // Mise à jour des compteurs
-  const interCount = document.getElementById('rapMfInterCount');
-  if (interCount) interCount.textContent = `(${rapSelectedInters.size})`;
-  const lotCount = document.getElementById('rapMfLotsCount');
-  if (lotCount) lotCount.textContent = `(${rapSelectedLots.size})`;
 }
 function toggleRapMulti(type, val, checked) {
   if (type === 'inter') checked ? rapSelectedInters.add(val) : rapSelectedInters.delete(val);
   else checked ? rapSelectedLots.add(val) : rapSelectedLots.delete(val);
-  
-  // Mise à jour des compteurs
-  const interCount = document.getElementById('rapMfInterCount');
-  if (interCount) interCount.textContent = `(${rapSelectedInters.size})`;
-  const lotCount = document.getElementById('rapMfLotsCount');
-  if (lotCount) lotCount.textContent = `(${rapSelectedLots.size})`;
-  
   rapApply();
 }
 function toggleRapMf(which) {
