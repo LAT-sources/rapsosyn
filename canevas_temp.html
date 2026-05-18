@@ -442,7 +442,7 @@
     <div class="actions-menu" id="actionsMenu">
       <button onclick="if(checkPasswordBeforeImport()) openImportModal(); closeActionsMenu();">Créer un dossier</button>
       <button onclick="openActualiserModal(); closeActionsMenu();">Mettre à jour</button>
-      <button onclick="openMigrationModal(); closeActionsMenu();">Migration</button>
+      <button onclick="if(checkPasswordBeforeMigration()) { openMigrationModal(); } closeActionsMenu();">Migration</button>
       <button onclick="openStatsModal(); closeActionsMenu();">Statistiques</button>
       <button onclick="exportJSON(); closeActionsMenu();">Enregistrer en local</button>
       <button onclick="loadJSON(); closeActionsMenu();">Ouvrir un dossier local</button>
@@ -1345,6 +1345,23 @@ function checkPasswordBeforeImport() {
     return false;
   }
 }
+function checkPasswordBeforeMigration() {
+  const motDePasse = "ALIBABA";
+  let tentative = prompt(
+    "Veuillez saisir le code d'accès pour lancer la migration.\n\n" +
+    "Nota : cette opération est reservée aux administrateurs.",
+    ""
+  );
+  if (tentative === null || tentative === "") {
+    return false;
+  }
+  if (tentative === motDePasse) {
+    return true;
+  } else {
+    alert("Mot de passe incorrect.");
+    return false;
+  }
+}  
 function openImportModal(){ge('importModal').classList.add('open');}
 function closeImportModal(){ge('importModal').classList.remove('open');}
 function openActualiserModal(){ge('actualiserModal').classList.add('open');}
