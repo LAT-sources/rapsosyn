@@ -655,9 +655,9 @@
 <!-- MODAL MIGRATION (nouvelle) -->
 <div class="modal-overlay" id="migrationModal">
   <div class="modal" style="width:450px;">
-    <div class="modal-hdr">Migration (A4 → M)<button class="tb-btn" onclick="closeMigrationModal()">×</button></div>
+    <div class="modal-hdr">Migration<button class="tb-btn" onclick="closeMigrationModal()">×</button></div>
     <div class="modal-body">
-      <div class="dropzone" id="migrationDropzone" onclick="document.getElementById('migrationFileInput').click()">Cliquez ou déposez un fichier Excel (colonnes A à M, ligne 4 et +)</div>
+      <div class="dropzone" id="migrationDropzone" onclick="document.getElementById('migrationFileInput').click()">Cliquez ou déposez un fichier Excel</div>
       <input type="file" id="migrationFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleMigrationFileImport(this)">
       <div id="migrationStatus" style="margin-top:8px;"></div>
     </div>
