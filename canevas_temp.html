@@ -1379,7 +1379,7 @@ function handleMigrationFileImport(input) {
       for (let i = 3; i < Math.min(raw.length, 500); i++) {
         const row = raw[i];
         if (!row || row.every(c => c === '')) continue;
-        // Colonnes A (0) à M (12) : Ref, N°, Date, Inter, Disp, Avis, Desc, Obs, Docs, Suivi, RepK, RepL, Lots
+        // Colonnes A (0) à M (12) : Ref, N°, Date, Inter, Disp, Desc, Avis, Obs, Docs, Suivi, RepK, RepL, Lots
         const ref = String(row[0] || '').trim();
         const num = String(row[1] || '').trim();
         const date = normalizeDate(row[2]);
@@ -1395,7 +1395,7 @@ function handleMigrationFileImport(input) {
         const lots = String(row[12] || '').trim();
 
         src.push(makeRow({
-          num, ref, date, inter, disp, avis, desc, obs, docs, suivi,
+          num, ref, date, inter, disp, desc, descavis, obs, docs, suivi,
           repK, repL, lots,
           rd6: num.includes('/RD6')
         }));
