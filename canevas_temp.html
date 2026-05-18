@@ -1395,7 +1395,7 @@ function handleMigrationFileImport(input) {
         const lots = String(row[12] || '').trim();
 
         src.push(makeRow({
-          num, ref, date, inter, disp, desc, descavis, obs, docs, suivi,
+          num, ref, date, inter, disp, desc, avis, obs, docs, suivi,
           repK, repL, lots,
           rd6: num.includes('/RD6')
         }));
