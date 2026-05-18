@@ -442,6 +442,7 @@
     <div class="actions-menu" id="actionsMenu">
       <button onclick="if(checkPasswordBeforeImport()) openImportModal(); closeActionsMenu();">Créer un dossier</button>
       <button onclick="openActualiserModal(); closeActionsMenu();">Mettre à jour</button>
+      <button onclick="openMigrationModal(); closeActionsMenu();">Migration</button>
       <button onclick="openStatsModal(); closeActionsMenu();">Statistiques</button>
       <button onclick="exportJSON(); closeActionsMenu();">Enregistrer en local</button>
       <button onclick="loadJSON(); closeActionsMenu();">Ouvrir un dossier local</button>
@@ -651,6 +652,21 @@
   </div>
 </div>
 
+<!-- MODAL MIGRATION (nouvelle) -->
+<div class="modal-overlay" id="migrationModal">
+  <div class="modal" style="width:450px;">
+    <div class="modal-hdr">Migration (A4 → M)<button class="tb-btn" onclick="closeMigrationModal()">×</button></div>
+    <div class="modal-body">
+      <div class="dropzone" id="migrationDropzone" onclick="document.getElementById('migrationFileInput').click()">Cliquez ou déposez un fichier Excel (colonnes A à M, ligne 4 et +)</div>
+      <input type="file" id="migrationFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleMigrationFileImport(this)">
+      <div id="migrationStatus" style="margin-top:8px;"></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="tb-btn" onclick="closeMigrationModal()">Fermer</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
@@ -796,13 +812,11 @@ function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localS
 function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.onclick=()=>sortBy(c.key);th.style.cursor='pointer';hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
 function toggleColPicker(){
   ge('colPickerPanel').classList.toggle('open');
-  // Fermer le menu actions si ouvert
   if(ge('actionsMenu').classList.contains('show')) ge('actionsMenu').classList.remove('show');
 }
 function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
 function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();buildColPickerList();ge('colPickerPanel').classList.remove('open');}
-// Fermer le panneau colonnes si clic en dehors de actions-dropdown
 document.addEventListener('click',e=>{
   if(!e.target.closest('.actions-dropdown')) {
     ge('colPickerPanel').classList.remove('open');
@@ -899,7 +913,7 @@ function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx
 function openPAModal(){
   ['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>ge(id).checked=false);
   ['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>ge(id).value='');
-  ge('pa_date').value = new Date().toISOString().slice(0,10); // date du jour
+  ge('pa_date').value = new Date().toISOString().slice(0,10);
   ge('paFeedback').innerText='';
   ge('paModal').classList.add('open');
 }
@@ -925,7 +939,6 @@ function addPA(){
 // --- Menu Actions déroulant ---
 function toggleActionsMenu() {
   document.getElementById('actionsMenu').classList.toggle('show');
-  // Fermer le panneau colonnes si ouvert
   ge('colPickerPanel').classList.remove('open');
 }
 function closeActionsMenu() {
@@ -1207,7 +1220,7 @@ function openStatsModal() {
 }
 function closeStatsModal(){ge('statsModal').classList.remove('open');}
 
-// --- Export / Actualiser XLSX ---
+// --- Export / Actualiser XLSX (inchangé) ---
 async function exportWithExcelJS() {
   if (typeof ExcelJS === 'undefined') { alert('La bibliothèque ExcelJS n\'est pas chargée…'); return; }
   try {
@@ -1245,7 +1258,7 @@ async function exportWithExcelJS() {
   } catch (err) { alert('Erreur : ' + err.message); }
 }
 
-// --- Import / Actualiser XLSX ---
+// --- Import / Actualiser XLSX (inchangé) ---
 function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
 function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
 function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
@@ -1339,6 +1352,94 @@ function closeActualiserModal(){ge('actualiserModal').classList.remove('open');}
 function handleFileImport(i){if(i.files[0])processXLSX(i.files[0],'import');}
 function handleActualiserFileImport(i){if(i.files[0])processXLSX(i.files[0],'actualiser');}
 ['importDropzone','actualiserDropzone'].forEach(id=>{const dz=ge(id);if(dz){dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--blue)';});dz.addEventListener('dragleave',()=>dz.style.borderColor='');dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f)processXLSX(f,id==='actualiserDropzone'?'actualiser':'import');});}});
+
+// --- Migration (nouvelle fonction, lit A4 à M) ---
+function openMigrationModal() {
+  document.getElementById('migrationModal').classList.add('open');
+}
+function closeMigrationModal() {
+  document.getElementById('migrationModal').classList.remove('open');
+}
+function handleMigrationFileImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('migrationStatus');
+  statusEl.textContent = 'Lecture...';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+      const sheetName = wb.SheetNames[0];
+      const ws = wb.Sheets[sheetName];
+      const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+      const src = [];
+      // Lire à partir de la ligne 4 (index 3)
+      for (let i = 3; i < Math.min(raw.length, 500); i++) {
+        const row = raw[i];
+        if (!row || row.every(c => c === '')) continue;
+        // Colonnes A (0) à M (12) : Ref, N°, Date, Inter, Disp, Avis, Desc, Obs, Docs, Suivi, RepK, RepL, Lots
+        const ref = String(row[0] || '').trim();
+        const num = String(row[1] || '').trim();
+        const date = normalizeDate(row[2]);
+        const inter = String(row[3] || '').trim();
+        const disp = String(row[4] || '').trim();
+        const avis = String(row[5] || '').trim();
+        const desc = String(row[6] || '').trim();
+        const obs = String(row[7] || '');
+        const docs = cleanDocs(String(row[8] || '').trim());
+        const suivi = String(row[9] || '').trim();
+        const repK = String(row[10] || '').trim();
+        const repL = String(row[11] || '').trim();
+        const lots = String(row[12] || '').trim();
+
+        src.push(makeRow({
+          num, ref, date, inter, disp, avis, desc, obs, docs, suivi,
+          repK, repL, lots,
+          rd6: num.includes('/RD6')
+        }));
+      }
+
+      if (src.length === 0) {
+        statusEl.textContent = 'Aucune donnée trouvée.';
+        return;
+      }
+
+      if (!confirm(`${src.length} avis vont être importés dans ${currentTab}. Continuer ?`)) {
+        statusEl.textContent = 'Annulé.';
+        return;
+      }
+
+      data[currentTab] = src;
+      selectedIntervenants.clear();
+      selectedLots.clear();
+      applyFilters();
+      persistLocal();
+      pushToParent();
+      statusEl.textContent = `✅ ${src.length} avis importés avec succès.`;
+      closeMigrationModal();
+    } catch (err) {
+      statusEl.textContent = '❌ Erreur : ' + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+// Glisser-déposer pour la migration
+const migrationDropzone = document.getElementById('migrationDropzone');
+if (migrationDropzone) {
+  migrationDropzone.addEventListener('dragover', e => { e.preventDefault(); migrationDropzone.style.borderColor = 'var(--blue)'; });
+  migrationDropzone.addEventListener('dragleave', () => migrationDropzone.style.borderColor = '');
+  migrationDropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    migrationDropzone.style.borderColor = '';
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      document.getElementById('migrationFileInput').files = e.dataTransfer.files; // pour cohérence
+      handleMigrationFileImport({ files: [file] });
+    }
+  });
+}
 
 // --- JSON ---
 function exportJSON(){const meta={affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value};const blob=new Blob([JSON.stringify({meta,data},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rapso_'+(meta.affaire||'data')+'.json';a.click();}
