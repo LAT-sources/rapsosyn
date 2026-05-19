@@ -701,7 +701,7 @@ function cleanIntervenant(inter){if(!inter)return '';const at=inter.indexOf('@')
 // --- Fonction utilitaire pour extraire les lots (uniquement séparateurs , ; )
 function splitLots(lotsStr) {
     if (!lotsStr) return [];
-    return String(lotsStr).split(/[,;]+/).map(l => l.trim()).filter(l => l !== '');
+    return String(lotsStr).split(/[,;/\]+/).map(l => l.trim()).filter(l => l !== '');
 }
 
 // --- Persistance & sync ---
