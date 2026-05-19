@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<!-- RAPSO_META -->
+<!-- RAPSO_DATA -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RapsoSynthèse - Version finale</title>
+<title>RapsoSynthèse - Lots complets + impression optimisée</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
   :root {
     --blue: #1a56db; --blue-d: #1447c0; --blue-l: #e8f0fe; --blue-ll: #f0f5ff;
     --gold: #f59e0b; --gold-l: #fef3c7;
@@ -15,64 +18,123 @@
     --g400: #94a3b8; --g500: #64748b; --g600: #475569; --g700: #334155;
     --g800: #1e293b; --g900: #0f172a;
     --font: 'Inter', sans-serif; --mono: 'JetBrains Mono', monospace;
+    --sh: 0 1px 3px rgba(0,0,0,.08);
+    --sh-lg: 0 4px 16px rgba(0,0,0,.12);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
+  body.dark {
+    --blue: #4f8ef7; --blue-d: #3b7be0; --blue-l: #1e2a47;
+    --gold-l: #3e2a1a; --red-l: #3b1e1e; --green-l: #1a3a2a; --purple-l: #2a1e4a;
+    --g50: #0f0f13; --g100: #1a1a22; --g200: #2a2a34; --g300: #3a3a48;
+    --g400: #70708a; --g500: #9090aa; --g600: #b0b0c0; --g700: #d0d0e0;
+    --g800: #e8e8f0; --g900: #ffffff;
+  }
+  *{box-sizing: border-box; margin: 0; padding: 0;}
+  body{
     background: var(--g100); color: var(--g800); font-family: var(--font);
     font-size: 13px; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
   }
+
+  /* HEADER */
   .syn-header {
     background: white; border-bottom: 1px solid var(--g200); padding: 6px 16px;
     display: flex; align-items: center; gap: 12px; flex-shrink: 0;
   }
+  .header-info { display: none; }
+  .mini-stats { display: flex; gap: 10px; font-family: var(--mono); font-size: 0.7rem; font-weight: 600; }
+  .mini-stats span { display: flex; align-items: center; gap: 4px; background: var(--g100); padding: 3px 7px; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .dot-g { background: var(--green); } .dot-y { background: var(--gold); } .dot-r { background: var(--red); }
+  .theme-btn { background: var(--g100); border: 1px solid var(--g200); padding: 4px 8px; cursor: pointer; font-size: 0.85rem; }
+
+  /* TOOLBAR */
   .toolbar {
     background: white; border-bottom: 1px solid var(--g200); padding: 5px 16px;
     display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex-shrink: 0;
   }
   .tb-btn {
-    padding: 4px 10px; border: 1px solid var(--g300); background: white; color: var(--g700);
-    font-family: var(--font); font-size: 0.73rem; font-weight: 500; cursor: pointer; border-radius: 6px;
+    padding: 4px 10px; border: 1px solid var(--g300);
+    background: white; color: var(--g700); font-family: var(--font); font-size: 0.73rem;
+    font-weight: 500; cursor: pointer; transition: background 0.1s, color 0.1s; white-space: nowrap;
   }
   .tb-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-ll); }
+  .tb-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
   .tb-btn.accent { background: var(--blue); border-color: var(--blue); color: white; }
   .tb-btn.green { background: #16a34a; border-color: #16a34a; color: white; }
   .quick-search {
     display: flex; align-items: center; gap: 3px; background: white;
-    border: 1px solid var(--g300); padding: 3px 7px; border-radius: 4px;
+    border: 1px solid var(--g300); padding: 3px 7px;
   }
-  .quick-search input { border: none; background: transparent; font-size: 0.72rem; outline: none; width: 90px; }
+  .quick-search input {
+    border: none; background: transparent; font-family: var(--font);
+    font-size: 0.72rem; outline: none; width: 90px; color: var(--g800);
+  }
+  .qs-label { font-size: 0.63rem; font-weight: 600; color: var(--g500); }
   .qs-checks {
-    display: flex; gap: 6px; background: white; border: 1px solid var(--g300); padding: 3px 8px; border-radius: 4px;
+    display: flex; gap: 6px; align-items: center; background: white;
+    border: 1px solid var(--g300); padding: 3px 8px;
   }
-  .qs-checks label { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; font-weight: 600; cursor: pointer; }
+  .qs-checks label {
+    display: flex; align-items: center; gap: 3px; font-size: 0.7rem;
+    font-weight: 600; cursor: pointer; color: var(--g700);
+  }
   .mf-select { position: relative; display: inline-block; }
   .mf-select-button {
-    background: white; border: 1px solid var(--g300); border-radius: 4px;
-    padding: 4px 22px 4px 10px; font-size: 0.72rem; font-weight: 500; cursor: pointer;
-    white-space: nowrap; position: relative;
+    background: white; border: 1px solid var(--g300);
+    padding: 4px 22px 4px 10px; font-size: 0.72rem; font-weight: 500;
+    color: var(--g700); cursor: pointer; white-space: nowrap; position: relative;
   }
-  .mf-select-button::after { content: "▾"; font-size: 0.65rem; position: absolute; right: 7px; top: 50%; transform: translateY(-50%); }
+  .mf-select-button::after {
+    content: "▾"; font-size: 0.65rem; position: absolute; right: 7px;
+    top: 50%; transform: translateY(-50%); color: var(--g500);
+  }
   .mf-select-dropdown {
     position: absolute; top: 100%; left: 0; z-index: 200; background: white;
-    border: 1px solid var(--g200); min-width: 180px; max-height: 250px; overflow-y: auto;
-    display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-top: 2px; padding: 4px 0; border-radius: 6px;
+    border: 1px solid var(--g200); min-width: 180px;
+    max-height: 250px; overflow-y: auto; display: none; box-shadow: var(--sh-lg);
+    margin-top: 2px; padding: 4px 0;
   }
   .mf-select-dropdown.show { display: block; }
-  .mf-select-dropdown label { display: flex; align-items: center; gap: 8px; padding: 5px 10px; font-size: 0.73rem; cursor: pointer; }
+  .mf-select-dropdown label {
+    display: flex; align-items: center; gap: 8px; padding: 5px 10px;
+    font-size: 0.73rem; cursor: pointer; font-weight: 400;
+  }
   .mf-select-dropdown label:hover { background: var(--g100); }
+  .mf-select-dropdown input { accent-color: var(--blue); margin: 0; }
+
+  /* Menu déroulant "MENU" */
   .actions-dropdown { position: relative; display: inline-block; }
   .actions-menu {
     position: absolute; top: 100%; right: 0; z-index: 300; background: white;
-    border: 1px solid var(--g200); border-radius: 6px; min-width: 210px; display: none; padding: 4px 0;
+    border: 1px solid var(--g200); box-shadow: var(--sh-lg); min-width: 210px;
+    display: none; padding: 4px 0; margin-top: 2px;
   }
   .actions-menu.show { display: block; }
-  .actions-menu button { display: block; width: 100%; text-align: left; padding: 7px 14px; background: none; border: none; font-size: 0.78rem; cursor: pointer; }
+  .actions-menu button {
+    display: block; width: 100%; text-align: left; padding: 7px 14px;
+    background: none; border: none; font-family: var(--font); font-size: 0.78rem;
+    font-weight: 400; color: var(--g700); cursor: pointer; transition: background 0.1s;
+  }
   .actions-menu button:hover { background: var(--g50); color: var(--blue); }
+
+  /* Panneau colonnes */
   .col-picker-panel {
     position: absolute; top: 100%; right: 0; z-index: 350; background: white;
-    border: 1px solid var(--g200); width: 230px; display: none; margin-top: 2px; border-radius: 6px;
+    border: 1px solid var(--g200); width: 230px; box-shadow: var(--sh-lg);
+    display: none; margin-top: 2px;
   }
   .col-picker-panel.open { display: block; }
+  .col-picker-header {
+    padding: 7px 10px; background: var(--g50); border-bottom: 1px solid var(--g200);
+    display: flex; justify-content: space-between; font-weight: 600; font-size: 0.73rem;
+  }
+  .col-picker-list { padding: 4px; max-height: 260px; overflow-y: auto; }
+  .col-picker-item {
+    display: flex; align-items: center; gap: 8px; padding: 4px 7px; cursor: pointer;
+  }
+  .col-picker-item:hover { background: var(--g50); }
+  .col-picker-item input { accent-color: var(--blue); }
+
+  /* TABLEAU PRINCIPAL */
   .table-container { flex: 1; overflow: auto; padding: 12px 16px; }
   table {
     width: 100%; border-collapse: collapse; background: white;
@@ -80,10 +142,11 @@
   }
   th {
     background: var(--g800); color: white; font-weight: 600; padding: 9px 10px;
-    text-align: left; font-size: 0.72rem; white-space: nowrap;
-    cursor: pointer; border-right: 1px solid var(--g700);
+    text-align: left; font-size: 0.72rem; letter-spacing: 0.02em; white-space: nowrap;
+    cursor: pointer; user-select: none; border-right: 1px solid var(--g700);
   }
   th:last-child { border-right: none; }
+  th:hover { background: var(--g700); }
   td {
     border-bottom: 1px solid var(--g200); border-right: 1px solid var(--g100);
     padding: 7px 10px; vertical-align: top; color: var(--g700);
@@ -92,9 +155,16 @@
   td:last-child { border-right: none; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--blue-ll); }
+
+  .col-num { width: 70px; } .col-ref { width: 55px; } .col-date { width: 65px; }
+  .col-inter { width: 90px; } .col-disp { width: 150px; } .col-avis { width: 45px; }
+  .col-desc { width: 130px; } .col-obs { width: 220px; } .col-docs { width: 100px; }
+  .col-suivi { width: 65px; } .col-repK { width: 180px; } .col-repL { width: 180px; }
+  .col-lots { width: 80px; } .col-actions { width: 50px; }
+
   .badge {
     display: inline-flex; align-items: center; padding: 1px 7px;
-    font-size: 0.68rem; font-weight: 600; border: 1px solid transparent; border-radius: 20px;
+    font-size: 0.68rem; font-weight: 600; border: 1px solid transparent;
   }
   .badge-oui { background: var(--green-l); color: #15803d; border-color: #bbf7d0; }
   .badge-par { background: var(--gold-l); color: #92400e; border-color: #fde68a; }
@@ -103,39 +173,64 @@
   .rd6-tag {
     display: inline-block; background: var(--purple-l); color: var(--purple);
     padding: 0 4px; font-size: 0.6rem; font-weight: 700; margin-left: 4px;
-    font-family: var(--mono); border-radius: 4px;
+    font-family: var(--mono); border: 1px solid #ddd6fe;
   }
   .empty-state {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 60px 20px; color: var(--g400); gap: 8px;
   }
+
+  /* PANEL LATERAL */
   .overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 800;
+    display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.4);
+    z-index: 800;
   }
   .overlay.open { display: block; }
   .edit-panel {
-    position: fixed; right: 0; top: 0; bottom: 0; width: 520px; background: white;
-    box-shadow: -2px 0 12px rgba(0,0,0,0.1); z-index: 801; display: flex; flex-direction: column;
-    transform: translateX(100%); transition: transform 0.2s ease;
+    position: fixed; right: 0; top: 0; bottom: 0; width: 520px; min-width: 340px; max-width: 92vw;
+    background: white; box-shadow: -2px 0 12px rgba(0,0,0,0.1); z-index: 801;
+    display: flex; flex-direction: column; transform: translateX(100%);
+    transition: transform 0.2s ease;
   }
   .edit-panel.open { transform: translateX(0); }
+  .ep-rh {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 4px; cursor: ew-resize;
+    z-index: 10; background: transparent; transition: background 0.15s;
+  }
+  .ep-rh:hover, .ep-rh.dragging { background: var(--blue); opacity: 0.5; }
   .panel-hdr {
     padding: 10px 16px; border-bottom: 1px solid var(--g200); background: var(--g50);
     display: flex; align-items: center; gap: 10px;
   }
+  .panel-hdr .title { font-weight: 600; font-size: 0.85rem; flex: 1; }
   .panel-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-  .form-section { border: 1px solid var(--g200); padding: 10px; border-radius: 6px; }
+  .form-section {
+    background: white; border: 1px solid var(--g200); padding: 10px;
+  }
+  .section-title {
+    font-size: 0.67rem; font-weight: 700; text-transform: uppercase; color: var(--g500);
+    margin-bottom: 6px; letter-spacing: 0.06em;
+  }
   .form-row { display: flex; flex-direction: column; gap: 3px; margin-bottom: 8px; }
-  .form-row label { font-size: 0.67rem; font-weight: 600; }
-  .form-row input, .form-row textarea { border: 1px solid var(--g300); padding: 6px 8px; border-radius: 4px; font-size: 0.78rem; width: 100%; }
+  .form-row label { font-size: 0.67rem; font-weight: 600; color: var(--g600); }
+  .form-row input, .form-row textarea {
+    border: 1px solid var(--g300); padding: 6px 8px;
+    font-family: var(--font); font-size: 0.78rem; background: white; outline: none; width: 100%;
+  }
+  .form-row input:focus, .form-row textarea:focus { border-color: var(--blue); }
+  .suivi-opts { display: flex; gap: 6px; flex-wrap: wrap; }
   .suivi-opt {
-    flex: 1; border: 1px solid var(--g200); padding: 5px; text-align: center; cursor: pointer;
-    font-weight: 600; border-radius: 4px;
+    flex: 1; border: 1px solid var(--g200); padding: 5px;
+    text-align: center; cursor: pointer; font-weight: 600; transition: all 0.1s; font-size: 0.73rem;
   }
   .suivi-opt.sel-oui { border-color: var(--green); background: var(--green-l); color: #15803d; }
   .suivi-opt.sel-par { border-color: var(--gold); background: var(--gold-l); color: #92400e; }
   .suivi-opt.sel-non { border-color: var(--red); background: var(--red-l); color: #b91c1c; }
-  .rd6-toggle { display: flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--g200); cursor: pointer; border-radius: 4px; }
+  .suivi-opt.sel-vide { border-color: var(--g300); background: var(--g100); }
+  .rd6-toggle {
+    display: flex; align-items: center; gap: 6px; padding: 5px 10px;
+    border: 1px solid var(--g200); cursor: pointer;
+  }
   .rd6-toggle.active { border-color: var(--purple); background: var(--purple-l); }
   .panel-ftr {
     padding: 10px 16px; border-top: 1px solid var(--g200); display: flex;
@@ -148,20 +243,23 @@
   .save-feedback.show { opacity: 1; }
   .obs-readonly {
     background: var(--g50); border: 1px solid var(--g200); padding: 8px; min-height: 100px;
-    white-space: pre-wrap; font-size: 0.76rem; border-radius: 4px;
+    white-space: pre-wrap; font-size: 0.76rem; color: var(--g700); overflow-y: auto;
   }
+
+  /* MODALS */
   .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 900;
-    align-items: center; justify-content: center;
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    z-index: 900; align-items: center; justify-content: center;
   }
   .modal-overlay.open { display: flex; }
   .modal {
-    background: white; width: 550px; max-width: 95vw; max-height: 85vh; overflow-y: auto;
-    border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    background: white; width: 550px; max-width: 95vw;
+    max-height: 85vh; overflow-y: auto; box-shadow: var(--sh-lg); border: 1px solid var(--g200);
   }
   .modal-hdr {
     padding: 12px 16px; border-bottom: 1px solid var(--g200);
-    display: flex; justify-content: space-between; font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center; font-weight: 700;
+    font-size: 0.85rem; background: var(--g50);
   }
   .modal-body { padding: 16px; }
   .modal-ftr {
@@ -169,74 +267,261 @@
     display: flex; justify-content: flex-end; gap: 8px;
   }
   .dropzone {
-    border: 2px dashed var(--g300); padding: 28px; text-align: center; cursor: pointer; border-radius: 8px;
+    border: 2px dashed var(--g300); padding: 28px;
+    text-align: center; cursor: pointer;
   }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
   .col-picker-item {
     display: flex; align-items: center; gap: 10px; padding: 6px 0; cursor: pointer; font-size: 0.85rem;
   }
   .col-picker-item input { accent-color: var(--blue); margin: 0; }
+
+  /* VERSION RAPIDE */
   .rapide-modal {
-    width: 960px; max-width: 97vw; height: 85vh; display: flex; flex-direction: column;
+    width: 960px; max-width: 97vw; height: 85vh; max-height: 750px;
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .rapide-modal.fullscreen {
+    width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh;
   }
   .rapide-filters {
     background: white; border-bottom: 1px solid var(--g200); padding: 7px 12px;
-    display: flex; flex-wrap: wrap; gap: 6px;
+    display: flex; flex-wrap: wrap; gap: 6px; align-items: center; flex-shrink: 0;
   }
   .rapide-filter-group {
     display: flex; align-items: center; gap: 5px; background: var(--g50);
-    border: 1px solid var(--g200); padding: 3px 9px; border-radius: 4px;
+    border: 1px solid var(--g200); padding: 3px 9px;
   }
+  .rapide-filter-group label {
+    font-size: 0.7rem; font-weight: 600; color: var(--g600);
+    display: flex; align-items: center; gap: 3px; cursor: pointer;
+  }
+  .rapide-filter-group input { margin: 0; accent-color: var(--blue); }
+  .rapide-reset {
+    background: white; border: 1px solid var(--g300);
+    padding: 3px 10px; font-size: 0.7rem; font-weight: 500; cursor: pointer;
+  }
+  .stats-sdf {
+    margin-left: auto; font-size: 0.75rem; font-weight: 700; font-family: var(--mono);
+    background: var(--g100); padding: 3px 10px; white-space: nowrap;
+  }
+  .stats-sdf .s { color: var(--gold); }
+  .stats-sdf .d { color: var(--red); }
+  .stats-sdf .f { color: var(--green); }
   .rapide-body { flex: 1; display: flex; overflow: hidden; }
-  .rapide-list-col { width: 34%; border-right: 1px solid var(--g200); display: flex; flex-direction: column; }
-  .rapide-list-header { padding: 7px 10px; background: var(--g50); border-bottom: 1px solid var(--g200); font-weight: 700; }
-  .rapide-list { flex: 1; overflow-y: auto; padding: 4px; }
-  .rapide-item { padding: 7px 9px; border: 1px solid transparent; cursor: pointer; border-radius: 4px; }
-  .rapide-item.selected { background: var(--blue-l); border-color: var(--blue); }
-  .rapide-detail-col { flex: 1; display: flex; flex-direction: column; }
-  .rapide-detail-scroll { flex: 1; overflow-y: auto; padding: 12px; }
-  .rapide-footer { padding: 7px 12px; border-top: 1px solid var(--g200); display: flex; gap: 6px; background: white; }
-  .rap-stat-btn {
-    padding: 4px 12px; border: 1px solid transparent; font-weight: 600; cursor: pointer;
-    border-radius: 20px;
+  .rapide-list-col {
+    width: 34%; border-right: 1px solid var(--g200);
+    display: flex; flex-direction: column; overflow: hidden;
   }
-  .rsb-oui { background: var(--green-l); color: #15803d; }
+  .rapide-list-header {
+    padding: 7px 10px; background: var(--g50); border-bottom: 1px solid var(--g200);
+    font-weight: 700; font-size: 0.73rem;
+  }
+  .rapide-list { flex: 1; overflow-y: auto; padding: 4px; }
+  .rapide-item {
+    padding: 7px 9px; border: 1px solid transparent;
+    margin-bottom: 2px; cursor: pointer; transition: background 0.1s;
+  }
+  .rapide-item:hover { background: var(--g50); border-color: var(--g200); }
+  .rapide-item.selected { background: var(--blue-l); border-color: var(--blue); }
+  .rapide-item-num { font-family: var(--mono); font-weight: 700; color: var(--blue); font-size: 0.72rem; }
+  .rapide-item-avis { display: inline-block; padding: 1px 5px; font-size: 0.63rem; font-weight: 700; }
+  .rapide-item-preview { font-size: 0.72rem; color: var(--g600); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rapide-detail-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .rapide-detail-scroll { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .rapide-detail-text { font-size: 0.8rem; line-height: 1.55; color: var(--g800); white-space: pre-wrap; word-break: break-word; }
+  .rapide-edit-area { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .rapide-edit-area label { font-size: 0.63rem; font-weight: 700; text-transform: uppercase; color: var(--g500); }
+  .rapide-edit-area textarea, .rapide-edit-area input { border: 1px solid var(--g300); padding: 7px 9px; font-family: var(--font); font-size: 0.78rem; resize: vertical; width: 100%; }
+  .rapide-edit-area textarea { min-height: 60px; }
+  .rapide-footer {
+    padding: 7px 12px; border-top: 1px solid var(--g200); display: flex;
+    gap: 6px; flex-wrap: wrap; align-items: center; background: white; flex-shrink: 0;
+  }
+  .rap-stat-btn { padding: 4px 12px; border: 1px solid transparent; font-weight: 600; cursor: pointer; transition: all 0.1s; font-size: 0.7rem; }
+  .rap-stat-btn.active { filter: brightness(0.92); box-shadow: inset 0 0 0 1px currentColor; }
+  .rsb-oui { background: var(--green-l); color: #15803d; border-color: #bbf7d0; }
   .rsb-oui.active { background: #15803d; color: white; }
-  .rsb-par { background: var(--gold-l); color: #92400e; }
+  .rsb-non { background: var(--red-l); color: #991b1b; border-color: #fecaca; }
+  .rsb-non.active { background: #991b1b; color: white; }
+  .rsb-par { background: var(--gold-l); color: #92400e; border-color: #fde68a; }
   .rsb-par.active { background: #92400e; color: white; }
-  .rsb-non { background: var(--red-l); color: #b91c1c; }
-  .rsb-non.active { background: #b91c1c; color: white; }
-  .rsb-rd6 { background: var(--purple-l); color: var(--purple); }
+  .rsb-rd6 { background: var(--purple-l); color: var(--purple); border-color: #ddd6fe; }
   .rsb-rd6.active { background: var(--purple); color: white; }
+  .modal-header-actions { display: flex; gap: 6px; align-items: center; }
+  .modal-icon-btn { background: transparent; border: none; cursor: pointer; font-size: 0.85rem; padding: 4px 6px; color: var(--g500); }
+  .modal-icon-btn:hover { background: var(--g200); color: var(--g700); }
+  .rapide-detail-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--g500); letter-spacing: 0.06em; }
 
-  /* Impression */
-  .print-header, .print-footer { display: none; }
+  /* ============================================================
+     EN-TÊTE D'IMPRESSION (invisible à l'écran)
+     ============================================================ */
+  .print-header { display: none; }
+  .print-footer { display: none; }
+
+  /* ============================================================
+     IMPRESSION - Fidèle au PDF RapsoSynthèse
+     Orientation paysage A3, toutes colonnes, en-tête compact
+     ============================================================ */
   @media print {
     @page { size: A3 landscape; margin: 8mm 6mm 12mm 6mm; }
-    .syn-header, .toolbar, .overlay, .edit-panel, .modal-overlay, .empty-state, #colModal { display: none !important; }
-    .print-header { display: block !important; margin-bottom: 3mm; border-bottom: 1.5px solid #1a56db; }
-    .print-header-top { display: flex; justify-content: space-between; align-items: flex-start; }
-    .print-title { font-size: 10pt; font-weight: 700; }
-    .print-subtitle { font-size: 7.5pt; color: #475569; }
-    .print-date-print { font-size: 7pt; text-align: right; }
-    .print-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2mm; margin-top: 2mm; }
-    .print-stat-block { background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5mm 2mm; font-size: 6.5pt; }
-    .print-legend { margin-top: 1.5mm; font-size: 6pt; border-top: 1px solid #e2e8f0; padding-top: 1mm; }
-    .print-footer { display: block; position: fixed; bottom: 3mm; left: 6mm; right: 6mm; font-size: 5.5pt; color: #94a3b8; display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 1mm; }
-    body { background: white; height: auto; overflow: visible; font-size: 7pt; color: black; display: block; }
-    .table-container { overflow: visible; padding: 0; }
-    table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 6.5pt; border: 1px solid #334155; }
-    th, td { border: 1px solid #cbd5e1; padding: 3px 4px; word-break: break-word; }
-    th { background: #1e293b; color: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .badge { font-size: 6pt; padding: 1px 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .rd6-tag { font-size: 5pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    tr:nth-child(even) td { background: #f8fafc; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .syn-header, .toolbar, .overlay, .edit-panel,
+    .modal-overlay, .empty-state, #colModal { display: none !important; }
+    .print-header {
+      display: block !important;
+      margin-bottom: 3mm;
+      padding-bottom: 2mm;
+      border-bottom: 1.5px solid #1a56db;
+    }
+    .print-header-top {
+      display: flex !important;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2mm;
+    }
+    .print-title { font-size: 10pt; font-weight: 700; color: #1e293b; }
+    .print-subtitle { font-size: 7.5pt; color: #475569; margin-top: 1mm; }
+    .print-date-print { font-size: 7pt; color: #64748b; text-align: right; }
+    .print-stats-grid {
+      display: grid !important;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2mm;
+      margin-top: 2mm;
+    }
+    .print-stat-block {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 1.5mm 2mm;
+      font-size: 6.5pt;
+    }
+    .print-stat-block .pstat-label { color: #64748b; margin-bottom: 0.5mm; }
+    .print-stat-block .pstat-row { display: flex; justify-content: space-between; }
+    .print-stat-block .pstat-val { font-weight: 700; }
+    .print-stat-block .pstat-val.green { color: #15803d; }
+    .print-stat-block .pstat-val.gold  { color: #92400e; }
+    .print-stat-block .pstat-val.red   { color: #b91c1c; }
+    .print-stat-block .pstat-val.blue  { color: #1a56db; }
+    .print-legend {
+      margin-top: 1.5mm;
+      font-size: 6pt;
+      color: #64748b;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 1mm;
+    }
+    .print-footer {
+      display: block !important;
+      position: fixed;
+      bottom: 3mm;
+      left: 6mm;
+      right: 6mm;
+      font-size: 5.5pt;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 1mm;
+    }
+    body {
+      background: white !important;
+      height: auto !important;
+      overflow: visible !important;
+      font-size: 7pt !important;
+      font-family: 'Inter', Arial, sans-serif !important;
+      color: #000 !important;
+      display: block !important;
+    }
+    .table-container {
+      flex: unset !important;
+      overflow: visible !important;
+      padding: 0 !important;
+    }
+    table {
+      width: 100% !important;
+      table-layout: fixed !important;
+      border-collapse: collapse !important;
+      font-size: 6.5pt !important;
+      page-break-inside: auto;
+      border: 1px solid #334155 !important;
+    }
+    thead { display: table-header-group; }
+    tfoot { display: table-footer-group; }
+    tr { page-break-inside: avoid; }
+    th {
+      background: #1e293b !important;
+      color: #fff !important;
+      font-size: 6pt !important;
+      font-weight: 700 !important;
+      padding: 3px 4px !important;
+      border-right: 1px solid #475569 !important;
+      white-space: normal !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      cursor: default !important;
+    }
+    td {
+      font-size: 6.5pt !important;
+      padding: 3px 4px !important;
+      border-bottom: 1px solid #e2e8f0 !important;
+      border-right: 1px solid #e2e8f0 !important;
+      vertical-align: top !important;
+      word-break: break-word !important;
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: unset !important;
+      color: #1e293b !important;
+    }
+    /* Largeurs colonnes A3 paysage basées sur COL_DEF (somme px = 1426) */
+    th:nth-child(1), td:nth-child(1) { width: 14mm !important; min-width: 14mm; } /* N° (49px) */
+    th:nth-child(2), td:nth-child(2) { width: 14mm !important; min-width: 14mm; } /* Réf (49px) */
+    th:nth-child(3), td:nth-child(3) { width: 28mm !important; min-width: 28mm; } /* Date (100px) */
+    th:nth-child(4), td:nth-child(4) { width: 25mm !important; min-width: 25mm; } /* Intervenant (90px) */
+    th:nth-child(5), td:nth-child(5) { width: 42mm !important; min-width: 42mm; } /* Dispositions (150px) */
+    th:nth-child(6), td:nth-child(6) { width: 36mm !important; min-width: 36mm; } /* Description (130px) */
+    th:nth-child(7), td:nth-child(7) { width: 10mm !important; min-width: 10mm; text-align: center; } /* Avis (37px) */
+    th:nth-child(8), td:nth-child(8) { width: 62mm !important; min-width: 62mm; } /* Observations (220px) */
+    th:nth-child(9), td:nth-child(9) { width: 28mm !important; min-width: 28mm; } /* Documents (100px) */
+    th:nth-child(10), td:nth-child(10) { width: 17mm !important; min-width: 17mm; text-align: center; } /* Suivi (61px) */
+    th:nth-child(11), td:nth-child(11) { width: 50mm !important; min-width: 50mm; } /* Rép. MOE (180px) */
+    th:nth-child(12), td:nth-child(12) { width: 50mm !important; min-width: 50mm; } /* Obs. SOCOTEC (180px) */
+    th:nth-child(13), td:nth-child(13) { width: 22mm !important; min-width: 22mm; } /* Lots (80px) */
+    /* La colonne Actions (bouton Edit) est masquée */
     th:last-child, td:last-child { display: none !important; }
+    .badge {
+      font-size: 6pt !important;
+      padding: 1px 3px !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      border: 1px solid transparent !important;
+    }
+    .badge-oui { background: #dcfce7 !important; color: #15803d !important; border-color: #bbf7d0 !important; }
+    .badge-par { background: #fef3c7 !important; color: #92400e !important; border-color: #fde68a !important; }
+    .badge-non { background: #fee2e2 !important; color: #b91c1c !important; border-color: #fecaca !important; }
+    .badge-empty { background: #f1f5f9 !important; color: #64748b !important; }
+    .rd6-tag {
+      font-size: 5pt !important;
+      background: #ede9fe !important;
+      color: #7c3aed !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    tr:nth-child(even) td {
+      background: #f8fafc !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    /* Forcer toutes les colonnes visibles à l'impression */
+    th[data-col="desc"], td[data-col="desc"],
+    th[data-col="docs"], td[data-col="docs"],
+    th[data-col="repL"], td[data-col="repL"] {
+      display: table-cell !important;
+    }
   }
 </style>
 </head>
 <body>
 
-<!-- EN-TÊTE D'IMPRESSION (sera rempli dynamiquement) -->
+<!-- EN-TÊTE D'IMPRESSION (visible uniquement à l'impression) -->
 <div class="print-header" id="printHeader">
   <div class="print-header-top">
     <div>
@@ -245,26 +530,72 @@
     </div>
     <div class="print-date-print" id="printDateNow"></div>
   </div>
-  <div class="print-stats-grid" id="printStatsGrid"></div>
+  <div class="print-stats-grid" id="printStatsGrid">
+    <div class="print-stat-block">
+      <div class="pstat-label">Avis par type</div>
+      <div class="pstat-row"><span>Favorables (F)</span><span class="pstat-val green" id="pF">0</span></div>
+      <div class="pstat-row"><span>Suspendus (S)</span><span class="pstat-val gold" id="pS">0</span></div>
+      <div class="pstat-row"><span>Défavorables (D)</span><span class="pstat-val red" id="pD">0</span></div>
+    </div>
+    <div class="print-stat-block">
+      <div class="pstat-label">Autres avis</div>
+      <div class="pstat-row"><span>Pour mémoire (PM)</span><span class="pstat-val" id="pPM">0</span></div>
+      <div class="pstat-row"><span>Hors mission (HM)</span><span class="pstat-val" id="pHM">0</span></div>
+      <div class="pstat-row"><span>Sans objet (SO)</span><span class="pstat-val" id="pSO">0</span></div>
+    </div>
+    <div class="print-stat-block">
+      <div class="pstat-label">Suivi des avis</div>
+      <div class="pstat-row"><span>✅ Levés</span><span class="pstat-val green" id="pOui">0</span></div>
+      <div class="pstat-row"><span>⚠ Partiels</span><span class="pstat-val gold" id="pPar">0</span></div>
+      <div class="pstat-row"><span>❌ Maintenus</span><span class="pstat-val red" id="pNon">0</span></div>
+    </div>
+    <div class="print-stat-block">
+      <div class="pstat-label">Réponses</div>
+      <div class="pstat-row"><span>En cours</span><span class="pstat-val blue" id="pEnCours">0</span></div>
+      <div class="pstat-row"><span>Sans réponse</span><span class="pstat-val" id="pSansRep">0</span></div>
+      <div class="pstat-row"><span>Total avis levés</span><span class="pstat-val green" id="pTotalLeves">0</span></div>
+    </div>
+    <div class="print-stat-block">
+      <div class="pstat-label">Interventions</div>
+      <div class="pstat-row"><span>Première</span><span class="pstat-val" id="pFirstDate">—</span></div>
+      <div class="pstat-row"><span>Dernière</span><span class="pstat-val" id="pLastDate">—</span></div>
+      <div class="pstat-row"><span>Total avis</span><span class="pstat-val blue" id="pTotal">0</span></div>
+    </div>
+  </div>
   <div class="print-legend">
-    F: Favorables / S: Suspendus / D: Défavorables / SO: Sans Objet / HM: Hors Mission / PM: Pour mémoire &nbsp;|&nbsp; ✅ Levés / ⚠ Partiels / ❌ Maintenus
+    F: Favorables / S: Suspendus / D: Défavorables / SO: Sans Objet / HM: Hors Mission / PM: Pour mémoire &nbsp;|&nbsp; ✅ Oui: avis levés / ⚠ Par: avis partiellement levés / ❌ Non: avis maintenus
   </div>
 </div>
-<div class="print-footer" id="printFooter"><span id="printFooterLeft">SOCOTEC</span><span>Imprimé le <span id="printFooterDate"></span></span></div>
 
-<!-- HEADER APPLICATION -->
+<div class="print-footer" id="printFooter">
+  <span id="printFooterLeft">SOCOTEC — Récapitulatif des avis</span>
+  <span>Imprimé le <span id="printFooterDate"></span></span>
+</div>
+
+<!-- HEADER (affaire/dossier masqués) -->
 <div class="syn-header">
-  <div><strong>AFFAIRE :</strong> <span id="affaireDisplay">—</span></div>
-  <div><strong>DOSSIER :</strong> <input id="dossierInput" placeholder="N° dossier" value=""></div>
+  <div class="header-info" id="headerInfoContainer">
+    <div class="info-row"><span class="label">AFFAIRE :</span><span class="value" id="affaireDisplay">—</span></div>
+    <div class="info-row"><span class="label">DOSSIER :</span><input class="value" id="dossierInput" placeholder="N° dossier" value=""></div>
+  </div>
+  <div class="mini-stats">
+    <span style="display:none;"><span class="dot dot-g"></span><span id="statOui">0</span></span>
+    <span style="display:none;"><span class="dot dot-y"></span><span id="statPar">0</span></span>
+    <span style="display:none;"><span class="dot dot-r"></span><span id="statNon">0</span></span>
+    <span style="display:none;"><span id="statTotal">0</span> total</span>
+  </div>
   <button class="theme-btn" onclick="toggleTheme()" style="display:none;">🌓</button>
 </div>
 
-<!-- TOOLBAR -->
+<!-- TOOLBAR PRINCIPALE -->
 <div class="toolbar">
-  <div class="quick-search"><span>N°</span><input id="qs_num" placeholder="avis" oninput="applyFilters()"></div>
-  <div class="quick-search"><span>Date</span><input id="qs_date" placeholder="jj/mm/aaaa" oninput="applyFilters()"></div>
-  <div class="quick-search"><span>Disp.</span><input id="qs_disp" placeholder="dispositions" oninput="applyFilters()"></div>
-  <div class="quick-search"><span>Obs.</span><input id="qs_obs" placeholder="observations" oninput="applyFilters()"></div>
+  <button class="tb-btn active" id="tabV2" onclick="switchTab('v2')" style="display:none;">RapsoV2</button>
+  <button class="tb-btn" id="tabV1" onclick="switchTab('v1')" style="display:none;">RapsoV1</button>
+  <div class="quick-search"><span class="qs-label">N°</span><input id="qs_num" placeholder="avis" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Date</span><input id="qs_date" placeholder="jj/mm/aaaa" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Disp.</span><input id="qs_disp" placeholder="dispositions" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Obs.</span><input id="qs_obs" placeholder="observations" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Docs</span><input id="qs_docs" placeholder="documents" oninput="applyFilters()"></div>
   <div class="qs-checks">
     <label><input type="checkbox" id="qs_F" onchange="applyFilters()">F</label>
     <label><input type="checkbox" id="qs_S" onchange="applyFilters()">S</label>
@@ -272,11 +603,11 @@
     <label><input type="checkbox" id="qs_PM" onchange="applyFilters()">PM</label>
     <label><input type="checkbox" id="qs_SO" onchange="applyFilters()">SO</label>
   </div>
-  <label><input type="checkbox" id="fOui" onchange="applyFilters()">Levé</label>
-  <label><input type="checkbox" id="fPar" onchange="applyFilters()">Partiel</label>
-  <label><input type="checkbox" id="fNon" onchange="applyFilters()">Maintenu</label>
-  <label><input type="checkbox" id="fRd6" onchange="applyFilters()">RD6</label>
-  <label><input type="checkbox" id="fPA" onchange="applyFilters()">PA</label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fOui" onchange="applyFilters()">Levé</label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPar" onchange="applyFilters()">Partiel</label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fNon" onchange="applyFilters()">Maintenu</label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fRd6" onchange="applyFilters()">RD6</label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPA" onchange="applyFilters()">PA</label>
   <div class="mf-select">
     <div class="mf-select-button" onclick="toggleMfSelect('inter')">Intervenants <span id="mfInterCount">(0)</span></div>
     <div class="mf-select-dropdown" id="mfInterDropdown"></div>
@@ -285,26 +616,30 @@
     <div class="mf-select-button" onclick="toggleMfSelect('lot')">Lots <span id="mfLotCount">(0)</span></div>
     <div class="mf-select-dropdown" id="mfLotDropdown"></div>
   </div>
-  <button class="tb-btn" onclick="resetFilters()">✕</button>
+  <button class="tb-btn" onclick="resetFilters()" title="Réinitialiser les filtres">✕</button>
   <div style="flex:1;"></div>
+  <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
-  <button class="tb-btn" onclick="openInfoModal()">ⓘ</button>
+  <button class="tb-btn" onclick="openInfoModal()" title="Infos">ⓘ</button>
   <div class="actions-dropdown">
-    <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()">☰ MENU ▾</button>
+    <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()"> ☰ MENU ▾</button>
     <div class="actions-menu" id="actionsMenu">
       <button onclick="openActualiserModal(); closeActionsMenu();">⟳ Mettre à jour</button>
-      <button onclick="if(checkPasswordBeforeImport()) openImportModal(); closeActionsMenu();">↺ Réinitialiser</button>
-      <button onclick="if(checkPasswordBeforeMigration()) openMigrationModal(); closeActionsMenu();">⇄ Migration</button>
-      <button onclick="exportJSON(); closeActionsMenu();">⤓ Enregistrer local</button>
-      <button onclick="loadJSON(); closeActionsMenu();">⤒ Ouvrir dossier local</button>
+      <button onclick="if(checkPasswordBeforeImport()) openImportModal(); closeActionsMenu();">↺ Rénitialiser le canevas</button>
+      <button onclick="if(checkPasswordBeforeMigration()) { openMigrationModal(); } closeActionsMenu();">⇄ Migration</button>
+      <button onclick="exportJSON(); closeActionsMenu();">⤓ Enregistrer en local</button>
+      <button onclick="loadJSON(); closeActionsMenu();">⤒ Ouvrir un dossier local</button>
       <button onclick="openStatsModal(); closeActionsMenu();">◔ Statistiques</button>
       <button onclick="printReport(); closeActionsMenu();">⎙ Imprimer</button>
-      <button onclick="exportWithExcelJS(); closeActionsMenu();">⌗ Télécharger Excel</button>
+      <button onclick="exportWithExcelJS(); closeActionsMenu();">⌗ Télécharger l'excel</button>
       <button onclick="toggleColPicker(); closeActionsMenu();">☷ Gérer les colonnes</button>
     </div>
-    <div class="col-picker-panel" id="colPickerPanel"></div>
+    <div class="col-picker-panel" id="colPickerPanel">
+      <div class="col-picker-header"><span>Colonnes affichées</span><button onclick="resetColumns()" style="background:none;border:none;color:var(--blue);cursor:pointer;">Tout afficher</button></div>
+      <div class="col-picker-list" id="colPickerList"></div>
+    </div>
   </div>
 </div>
 
@@ -314,133 +649,355 @@
     <thead id="mainThead"><tr id="headerRow"><tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
-  <div class="empty-state" id="emptyState" style="display:none">Aucun avis trouvé</div>
+  <div class="empty-state" id="emptyState" style="display:none"><div style="font-size:1.5rem;color:var(--g300);">—</div><div>Aucun avis trouvé</div></div>
 </div>
 
-<!-- PANEL LATÉRAL -->
+<!-- PANEL LATERAL -->
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="edit-panel" id="editPanel">
+  <div class="ep-rh" id="epRh"></div>
   <div class="panel-hdr">
     <span class="title" id="panelTitle">Avis n°: —</span>
+    <span style="font-family:var(--mono);font-size:0.7rem;" id="panelNum">—</span>
     <button class="tb-btn" onclick="navRow(-1)">Pré ↑</button>
     <button class="tb-btn" onclick="navRow(1)">↓ Sui</button>
     <button class="tb-btn" onclick="closePanel()">×</button>
   </div>
   <div class="panel-body">
-    <div class="form-section"><div class="section-title">Dispositions</div><div style="white-space:pre-wrap;" id="e_lblColE">—</div></div>
+    <div class="form-section"><div class="section-title">Dispositions examinées</div><div style="white-space:pre-wrap;" id="e_lblColE">—</div></div>
     <div class="form-section"><div class="section-title">Observations</div><div class="obs-readonly" id="e_obs_readonly">—</div></div>
     <div class="form-section">
       <div class="section-title">Réponses</div>
       <div class="form-row"><label>Réponses ENT / MOE</label><textarea id="e_repK" rows="3"></textarea></div>
-      <div class="form-row"><label>Obs. SOCOTEC</label><textarea id="e_repL" rows="3"></textarea></div>
-      <div class="form-row"><label>Lots</label><input type="text" id="e_lots"></div>
+      <div class="form-row"><label>Observations-commentaires SOCOTEC</label><textarea id="e_repL" rows="3"></textarea></div>
+      <div class="form-row"><label>Lots concernés</label><input type="text" id="e_lots"></div>
     </div>
     <div class="form-section">
-      <div class="section-title">Suivi</div>
-      <div style="display:flex;gap:8px;">
-        <div class="suivi-opt" id="opt_oui" onclick="setSuivi('Oui')">✓ Levé</div>
-        <div class="suivi-opt" id="opt_par" onclick="setSuivi('Par')">~ Partiel</div>
-        <div class="suivi-opt" id="opt_non" onclick="setSuivi('Non')">✗ Maintenu</div>
-        <div class="suivi-opt" onclick="setSuivi('')">—</div>
+      <div class="section-title">Statut de suivi</div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <div class="suivi-opts" style="flex:1;">
+          <div class="suivi-opt" id="opt_oui" onclick="setSuivi('Oui')">✓ Levé</div>
+          <div class="suivi-opt" id="opt_par" onclick="setSuivi('Par')">~ Partiel</div>
+          <div class="suivi-opt" id="opt_non" onclick="setSuivi('Non')">✗ Maintenu</div>
+          <div class="suivi-opt" onclick="setSuivi('')">—</div>
+        </div>
+        <label class="rd6-toggle" id="rd6Toggle" onclick="toggleRD6()"><input type="checkbox" id="e_rd6"> RD6</label>
       </div>
-      <label class="rd6-toggle"><input type="checkbox" id="e_rd6"> RD6</label>
     </div>
   </div>
   <div class="panel-ftr">
     <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
-    <button class="tb-btn" onclick="deleteRow()" style="color:red;">Supprimer</button>
+    <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Supprimer</button>
     <button class="tb-btn" onclick="closePanel()">Annuler</button>
     <span class="save-feedback" id="saveFeedback">✓ Enregistré !</span>
   </div>
 </div>
 
-<!-- MODALS -->
-<div class="modal-overlay" id="infoModal"><div class="modal"><div class="modal-hdr">Infos</div><div class="modal-body"><input id="infoAffaireInput" placeholder="Affaire"><input id="infoDossierInput" placeholder="Dossier"></div><div class="modal-ftr"><button onclick="closeInfoModal()">Annuler</button><button class="green" onclick="saveInfoModal()">Enregistrer</button></div></div></div>
-<div class="modal-overlay" id="paModal"><div class="modal"><div class="modal-hdr">Ajouter PA</div><div class="modal-body"><div><label><input type="checkbox" id="pa_F">F</label><label><input type="checkbox" id="pa_S">S</label><label><input type="checkbox" id="pa_D">D</label><label><input type="checkbox" id="pa_PM">PM</label></div><input type="date" id="pa_date"><textarea id="pa_disp" placeholder="Dispositions"></textarea><textarea id="pa_obs" placeholder="Observations"></textarea><textarea id="pa_repK" placeholder="Réponses MOE"></textarea><textarea id="pa_repL" placeholder="Comm. SOCOTEC"></textarea><input id="pa_lots" placeholder="Lots"></div><div class="modal-ftr"><button onclick="closePAModal()">Annuler</button><button class="green" onclick="addPA()">Ajouter</button><span id="paFeedback"></span></div></div></div>
-<div class="modal-overlay" id="rapideOverlay"><div class="modal rapide-modal"><div class="modal-hdr">Vision rapide<button onclick="closeRapide()">×</button></div><div class="rapide-filters"><div class="rapide-filter-group"><span>Lots</span><div class="mf-select"><div class="mf-select-button" onclick="toggleRapMf('lots')">Sélectionner</div><div class="mf-select-dropdown" id="rapMfLotsDrop"></div></div></div><div class="rapide-filter-group"><span>Intervenant</span><div class="mf-select"><div class="mf-select-button" onclick="toggleRapMf('inter')">Sélectionner</div><div class="mf-select-dropdown" id="rapMfInterDrop"></div></div></div><div class="rapide-filter-group"><label><input type="checkbox" id="rapF_F" onchange="rapApply()"> F</label><label><input type="checkbox" id="rapF_S" onchange="rapApply()"> S</label><label><input type="checkbox" id="rapF_D" onchange="rapApply()"> D</label></div><div class="rapide-filter-group"><label><input type="checkbox" id="rapF_lev" onchange="rapApply()"> Levés</label><label><input type="checkbox" id="rapF_par" onchange="rapApply()"> Partiels</label><label><input type="checkbox" id="rapF_non" onchange="rapApply()"> Maintenus</label><label><input type="checkbox" id="rapF_rd6" onchange="rapApply()"> RD6</label><label><input type="checkbox" id="rapF_pa" onchange="rapApply()"> PA</label></div><button class="rapide-reset" onclick="rapReset()">✕</button><div class="stats-sdf" id="rapStatsSDF"></div></div><div class="rapide-body"><div class="rapide-list-col"><div class="rapide-list-header">Avis</div><div class="rapide-list" id="rapideList"></div></div><div class="rapide-detail-col"><div class="rapide-detail-scroll" id="rapideDetail"></div></div></div><div class="rapide-footer"><button class="rap-stat-btn rsb-oui" id="rapBtnOui" onclick="rapToggleSuivi('Oui')">✓ Levé</button><button class="rap-stat-btn rsb-par" id="rapBtnPar" onclick="rapToggleSuivi('Par')">~ Partiel</button><button class="rap-stat-btn rsb-non" id="rapBtnNon" onclick="rapToggleSuivi('Non')">✗ Maintenu</button><button class="rap-stat-btn rsb-rd6" id="rapBtnRd6" onclick="rapToggleRD6()">RD6</button><button class="tb-btn green" id="rapSaveBtn" onclick="rapSaveTexts()" disabled>Valider</button><button onclick="closeRapide()">Fermer</button></div></div></div>
-<div class="modal-overlay" id="statsModal"><div class="modal"><div class="modal-hdr">Statistiques</div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button onclick="closeStatsModal()">Fermer</button></div></div></div>
-<div class="modal-overlay" id="addModal"><div class="modal"><div class="modal-hdr">Nouvel avis</div><div class="modal-body"><input id="a_num" placeholder="N°"><input id="a_inter" placeholder="Intervenant"><textarea id="a_disp" placeholder="Dispositions"></textarea><input id="a_lots" placeholder="Lots"></div><div class="modal-ftr"><button onclick="closeAddModal()">Annuler</button><button class="green" onclick="addRow()">Ajouter</button></div></div></div>
-<div class="modal-overlay" id="importModal"><div class="modal"><div class="modal-hdr">Importer</div><div class="modal-body"><div class="dropzone" onclick="document.getElementById('fileInput').click()">Cliquez ou déposez un fichier .xlsx</div><input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)"><div id="importStatus"></div></div><div class="modal-ftr"><button onclick="closeImportModal()">Fermer</button></div></div></div>
-<div class="modal-overlay" id="actualiserModal"><div class="modal"><div class="modal-hdr">Actualiser</div><div class="modal-body"><div class="dropzone" onclick="document.getElementById('actualiserFileInput').click()">Cliquez ou déposez un fichier .xlsx</div><input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)"><div id="actualiserStatus"></div></div><div class="modal-ftr"><button onclick="closeActualiserModal()">Fermer</button></div></div></div>
-<div class="modal-overlay" id="migrationModal"><div class="modal"><div class="modal-hdr">Migration</div><div class="modal-body"><div class="dropzone" onclick="document.getElementById('migrationFileInput').click()">Cliquez ou déposez un fichier Excel</div><input type="file" id="migrationFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleMigrationFileImport(this)"><div id="migrationStatus"></div></div><div class="modal-ftr"><button onclick="closeMigrationModal()">Fermer</button></div></div></div>
-<div class="modal-overlay" id="colModal"><div class="modal"><div class="modal-hdr">Colonnes</div><div class="modal-body" id="colModalBody"></div><div class="modal-ftr"><button onclick="resetColumns()">Tout afficher</button><button class="green" onclick="closeColModal()">Fermer</button></div></div></div>
+<!-- MODAL INFO -->
+<div class="modal-overlay" id="infoModal">
+  <div class="modal" style="width:400px;">
+    <div class="modal-hdr">Informations du dossier<button class="tb-btn" onclick="closeInfoModal()">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>AFFAIRE</label><input type="text" id="infoAffaireInput" placeholder="Nom de l'affaire"></div>
+      <div class="form-row"><label>DOSSIER</label><input type="text" id="infoDossierInput" placeholder="N° de dossier"></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="tb-btn" onclick="closeInfoModal()">Annuler</button>
+      <button class="tb-btn green" onclick="saveInfoModal()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PA -->
+<div class="modal-overlay" id="paModal">
+  <div class="modal"><div class="modal-hdr">Ajouter PA <button class="tb-btn" onclick="closePAModal()">×</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label>Catégorie</label><div style="display:flex;gap:8px;"><label><input type="checkbox" id="pa_F">F</label><label><input type="checkbox" id="pa_S">S</label><label><input type="checkbox" id="pa_D">D</label><label><input type="checkbox" id="pa_PM">PM</label></div></div>
+      <div class="form-row"><label>Date</label><input type="date" id="pa_date"></div>
+      <div class="form-row"><label>Dispositions</label><textarea id="pa_disp"></textarea></div>
+      <div class="form-row"><label>Observations</label><textarea id="pa_obs"></textarea></div>
+      <div class="form-row"><label>Réponses MOE</label><textarea id="pa_repK"></textarea></div>
+      <div class="form-row"><label>Comm. SOCOTEC</label><textarea id="pa_repL"></textarea></div>
+      <div class="form-row"><label>Lots</label><input id="pa_lots"></div>
+    </div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closePAModal()">Annuler</button><button class="tb-btn green" onclick="addPA()">Ajouter PA</button><span id="paFeedback"></span></div>
+  </div>
+</div>
+
+<!-- VERSION RAPIDE -->
+<div class="modal-overlay" id="rapideOverlay">
+  <div class="modal rapide-modal" id="rapideModal">
+    <div class="modal-hdr">
+      <span id="rapideAffaireTitle" style="font-weight:600;font-size:0.9rem;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span>
+      <div class="modal-header-actions">
+        <button class="modal-icon-btn" onclick="toggleRapideFullscreen()">[ ]</button>
+        <button class="modal-icon-btn" onclick="closeRapide()">×</button>
+      </div>
+    </div>
+    <div class="rapide-filters">
+      <div class="rapide-filter-group">
+        <span style="font-size:0.7rem;font-weight:600;">Lots</span>
+        <div class="mf-select" style="display:inline-block;">
+          <div class="mf-select-button" onclick="toggleRapMf('lots')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
+          <div class="mf-select-dropdown" id="rapMfLotsDrop" style="min-width:140px;"></div>
+        </div>
+      </div>
+      <div class="rapide-filter-group">
+        <span style="font-size:0.7rem;font-weight:600;">Intervenant</span>
+        <div class="mf-select" style="display:inline-block;">
+          <div class="mf-select-button" onclick="toggleRapMf('inter')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
+          <div class="mf-select-dropdown" id="rapMfInterDrop" style="min-width:140px;"></div>
+        </div>
+      </div>
+      <div class="rapide-filter-group">
+        <label><input type="checkbox" id="rapF_F" onchange="rapApply()"> F</label>
+        <label><input type="checkbox" id="rapF_S" onchange="rapApply()"> S</label>
+        <label><input type="checkbox" id="rapF_D" onchange="rapApply()"> D</label>
+      </div>
+      <div class="rapide-filter-group">
+        <label><input type="checkbox" id="rapF_lev" onchange="rapApply()"> Levés</label>
+        <label><input type="checkbox" id="rapF_par" onchange="rapApply()"> Partiels</label>
+        <label><input type="checkbox" id="rapF_non" onchange="rapApply()"> Maintenus</label>
+        <label><input type="checkbox" id="rapF_rd6" onchange="rapApply()"> RD6</label>
+        <label><input type="checkbox" id="rapF_pa" onchange="rapApply()"> PA</label>
+      </div>
+      <button class="rapide-reset" onclick="rapReset()"> ✕ </button>
+      <div class="stats-sdf" id="rapStatsSDF">S=0 / D=0 / F=0</div>
+    </div>
+    <div class="rapide-body">
+      <div class="rapide-list-col">
+        <div class="rapide-list-header">Avis <span id="rapCnt"></span></div>
+        <div class="rapide-list" id="rapideList"></div>
+      </div>
+      <div class="rapide-detail-col">
+        <div class="rapide-detail-scroll" id="rapideScrollContainer">
+          <div class="rapide-detail-label">Observations</div>
+          <div class="rapide-detail-text" id="rapideObsText">—</div>
+          <div class="rapide-edit-area" id="rapideEditArea" style="display:none">
+            <label>Réponses ENT / MOE</label><textarea id="rq_repK" rows="2"></textarea>
+            <label>Observations-commentaires SOCOTEC</label><textarea id="rq_repL" rows="2"></textarea>
+            <label>Lots concernés</label><input type="text" id="rq_lots">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="rapide-footer">
+      <button class="rap-stat-btn rsb-oui" id="rapBtnOui" onclick="rapToggleSuivi('Oui')">✓ Levé</button>
+      <button class="rap-stat-btn rsb-par" id="rapBtnPar" onclick="rapToggleSuivi('Par')">~ Partiel</button>
+      <button class="rap-stat-btn rsb-non" id="rapBtnNon" onclick="rapToggleSuivi('Non')">✗ Maintenu</button>
+      <button class="rap-stat-btn rsb-rd6" id="rapBtnRd6" onclick="rapToggleRD6()">RD6</button>
+      <div style="flex:1;"></div>
+      <button class="tb-btn green" id="rapSaveBtn" onclick="rapSaveTexts()" disabled>Valider</button>
+      <button class="tb-btn" onclick="closeRapide()">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATS MODAL -->
+<div class="modal-overlay" id="statsModal">
+  <div class="modal" style="width:520px;"><div class="modal-hdr">Statistiques<button class="tb-btn" onclick="closeStatsModal()">×</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal"><div class="modal-hdr">Nouvel avis<button class="tb-btn" onclick="closeAddModal()">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid"><div class="form-row"><label>N° Avis</label><input type="text" id="a_num"></div><div class="form-row"><label>Id / Réf</label><input type="text" id="a_ref"></div><div class="form-row"><label>Date</label><input type="date" id="a_date"></div><div class="form-row"><label>Intervenant</label><input type="text" id="a_inter"></div></div>
+      <div class="form-row"><label>Dispositions</label><textarea id="a_disp"></textarea></div>
+      <div class="form-row"><label>Description</label><textarea id="a_desc"></textarea></div>
+      <div class="form-row"><label>Avis</label><textarea id="a_avis"></textarea></div>
+      <div class="form-row"><label>Observations</label><textarea id="a_obs"></textarea></div>
+      <div class="form-row"><label>Documents</label><textarea id="a_docs"></textarea></div>
+      <div class="form-row"><label>Lots</label><input type="text" id="a_lots"></div>
+    </div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeAddModal()">Annuler</button><button class="tb-btn green" onclick="addRow()">+ Ajouter</button></div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal" style="width:450px;"><div class="modal-hdr">Importer un fichier Excel<button class="tb-btn" onclick="closeImportModal()">×</button></div>
+    <div class="modal-body"><div class="dropzone" id="importDropzone" onclick="document.getElementById('fileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)"><div id="importStatus"></div></div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeImportModal()">Fermer</button></div>
+  </div>
+</div>
+
+<!-- ACTUALISER MODAL -->
+<div class="modal-overlay" id="actualiserModal">
+  <div class="modal" style="width:450px;"><div class="modal-hdr">Actualiser les données<button class="tb-btn" onclick="closeActualiserModal()">×</button></div>
+    <div class="modal-body"><div class="dropzone" id="actualiserDropzone" onclick="document.getElementById('actualiserFileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)"><div id="actualiserStatus"></div></div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeActualiserModal()">Fermer</button></div>
+  </div>
+</div>
+
+<!-- MODAL MIGRATION -->
+<div class="modal-overlay" id="migrationModal">
+  <div class="modal" style="width:450px;">
+    <div class="modal-hdr">Migration<button class="tb-btn" onclick="closeMigrationModal()">×</button></div>
+    <div class="modal-body">
+      <div class="dropzone" id="migrationDropzone" onclick="document.getElementById('migrationFileInput').click()">Cliquez ou déposez un fichier Excel</div>
+      <input type="file" id="migrationFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleMigrationFileImport(this)">
+      <div id="migrationStatus" style="margin-top:8px;"></div>
+    </div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeMigrationModal()">Fermer</button></div>
+  </div>
+</div>
+
+<!-- MODAL GESTION DES COLONNES -->
+<div class="modal-overlay" id="colModal">
+  <div class="modal" style="width:400px;">
+    <div class="modal-hdr">Colonnes affichées<button class="tb-btn" onclick="closeColModal()">✕</button></div>
+    <div class="modal-body" id="colModalBody"></div>
+    <div class="modal-ftr">
+      <button class="tb-btn" onclick="resetColumns()">Tout afficher</button>
+      <button class="tb-btn green" onclick="closeColModal()">Fermer</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// ====================== CODE COMPLET ======================
-const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
+// ============================================================
+//  RAPSOSYNTHÈSE - VERSION CORRIGÉE (lots complets + data-* + impression)
+// ============================================================
 
-function toggleTheme(){document.body.classList.toggle('dark');}
+// --- Thème ---
+function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('rapso_theme',document.body.classList.contains('dark')?'dark':'light');}
+(()=>{if((localStorage.getItem('rapso_theme')||'light')==='dark')document.body.classList.add('dark');})();
+
+// --- Données globales ---
 let currentTab='v2', data={v2:[], v1:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='';
-let selectedIntervenants = new Set(), selectedLots = new Set();
+let selectedIntervenants = new Set();
+let selectedLots = new Set();
 
 function cleanIntervenant(inter){if(!inter)return '';const at=inter.indexOf('@');return at>0?inter.substring(0,at).trim():inter;}
-function getLotsArray(r) { const val = r.lots ? r.lots.trim() : ''; return val ? [val] : []; }
+
+// ---------- FONCTION POUR LOTS (CHAÎNE COMPLÈTE) ----------
+function getLotsArray(r) {
+    const val = r.lots ? r.lots.trim() : '';
+    return val ? [val] : [];
+}
+// ---------------------------------------------------------
+
+// --- Persistance & sync ---
+function persistLocal(){try{localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));}catch(e){}}
+function pushToParent(){if(!window.parent||window.parent===window)return;const canId=window.CANEVAS_ID;if(canId===undefined)return;try{const raw=localStorage.getItem('rapsotracker');if(raw){const parsed=JSON.parse(raw);if(parsed?.data)window.parent.postMessage({type:'rapso_save',canId,data:parsed.data},'*');}}catch(e){}}
+setInterval(pushToParent,4000);const _origSet=localStorage.setItem.bind(localStorage);
+localStorage.setItem=function(k,v){_origSet(k,v);if(k==='rapsotracker'){clearTimeout(window._rsST);window._rsST=setTimeout(pushToParent,250);}};
+window.addEventListener('beforeunload',pushToParent);
+window.addEventListener('message', function(e) {
+  if (e.data?.type === 'rapso_request_save') pushToParent();
+  if (e.data?.type === 'rapso_inject') {
+    try {
+      const inj = e.data.data || { v2: [], v1: [] };
+      data.v2 = Array.isArray(inj.v2) ? inj.v2.map(makeRow) : [];
+      data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
+      if (e.data.affaire) {
+        ge('affaireDisplay').innerText = e.data.affaire;
+        const rapTitle = document.getElementById('rapideAffaireTitle');
+        if (rapTitle) rapTitle.innerText = cleanAffaireForRapide(e.data.affaire);
+      }
+      if (e.data.dossier) ge('dossierInput').value = e.data.dossier;
+      selectedIntervenants.clear();
+      selectedLots.clear();
+      persistLocal();
+      applyFilters();
+      if (window.parent) window.parent.postMessage({ type: 'rapso_inject_ack', data: { v2: data.v2, v1: data.v1 } }, '*');
+    } catch (err) { console.warn(err); }
+  }
+  if (e.data?.type === 'rapso_action') {
+    const action = e.data.action;
+    switch (action) {
+      case 'import': if (checkPasswordBeforeImport()) openImportModal(); break;
+      case 'actualiser': openActualiserModal(); break;
+      case 'migration': if (checkPasswordBeforeMigration()) openMigrationModal(); break;
+      case 'stats': openStatsModal(); break;
+      case 'exportJSON': exportJSON(); break;
+      case 'loadJSON': loadJSON(); break;
+      case 'print': printReport(); break;
+      case 'exportExcel': exportWithExcelJS(); break;
+      case 'toggleColumns': toggleColPicker(); break;
+    }
+  }
+});
+
+(function(){if(window.RAPSO_SYNTH_DATA){try{const p=JSON.parse(window.RAPSO_SYNTH_DATA);if(p&&typeof p==='object'){data.v2=Array.isArray(p.v2)?p.v2:[];data.v1=Array.isArray(p.v1)?p.v1:[];localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:window.RAPSO_AFFAIRE||'',dossier:window.RAPSO_DOSSIER||''},data:{v2:data.v2,v1:data.v1}}));}}catch(e){}}setTimeout(()=>{
+  const af=ge('affaireDisplay'),dos=ge('dossierInput');
+  if(af && window.RAPSO_AFFAIRE) af.innerText = window.RAPSO_AFFAIRE;
+  if(dos && window.RAPSO_DOSSIER) dos.value = window.RAPSO_DOSSIER;
+  applyFilters();
+},0);})();
+
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
-function ge(id){return document.getElementById(id);}
-function persistLocal(){localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));}
-function pushToParent(){if(window.parent&&window.parent!==window){try{const raw=localStorage.getItem('rapsotracker');if(raw)window.parent.postMessage({type:'rapso_save',canId:window.CANEVAS_ID,data:JSON.parse(raw).data},'*');}catch(e){}}}
-setInterval(pushToParent,4000);
 
-// --- Construction des menus déroulants (data-*) ---
+// --- Construction multi-select (avec data-lot et data-inter) ---
 function buildMfSelectOptions() {
   const rows = getRows();
-  const intervenants = [...new Set(rows.map(r=>cleanIntervenant(r.inter)).filter(v=>v))];
-  const interDiv = ge('mfInterDropdown');
-  if(interDiv) interDiv.innerHTML = intervenants.map(inter=>{
-    const safe = inter.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    return `<label><input type="checkbox" value="${safe}" data-inter="${inter.replace(/"/g,'&quot;')}" ${selectedIntervenants.has(inter)?'checked':''} onchange="toggleMultiFilter('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(inter)}</label>`;
-  }).join('');
-  ge('mfInterCount').innerText = `(${selectedIntervenants.size})`;
-  const allLots = rows.flatMap(r=>getLotsArray(r));
+  const intervenants = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v => v && v !== ''))];
+  const interDiv = document.getElementById('mfInterDropdown');
+  if (interDiv) {
+    interDiv.innerHTML = intervenants.map(inter => {
+      const safe = escapeHtmlAttr(inter);
+      return `<label><input type="checkbox" value="${safe}" data-inter="${inter.replace(/"/g, '&quot;')}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(inter)}</label>`;
+    }).join('');
+  }
+  document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
+
+  const allLots = rows.flatMap(r => getLotsArray(r));
   const lots = [...new Set(allLots)];
-  const lotDiv = ge('mfLotDropdown');
-  if(lotDiv) lotDiv.innerHTML = lots.map(lot=>{
-    const safe = lot.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    return `<label><input type="checkbox" value="${safe}" data-lot="${lot.replace(/"/g,'&quot;')}" ${selectedLots.has(lot)?'checked':''} onchange="toggleMultiFilter('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(lot)}</label>`;
-  }).join('');
-  ge('mfLotCount').innerText = `(${selectedLots.size})`;
+  const lotDiv = document.getElementById('mfLotDropdown');
+  if (lotDiv) {
+    lotDiv.innerHTML = lots.map(lot => {
+      const safe = escapeHtmlAttr(lot);
+      return `<label><input type="checkbox" value="${safe}" data-lot="${lot.replace(/"/g, '&quot;')}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(lot)}</label>`;
+    }).join('');
+  }
+  document.getElementById('mfLotCount').innerText = `(${selectedLots.size})`;
 }
 function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function escapeHtmlAttr(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
 function toggleMultiFilter(type,val,chk){if(type==='inter')chk?selectedIntervenants.add(val):selectedIntervenants.delete(val);else chk?selectedLots.add(val):selectedLots.delete(val);applyFilters();}
-function toggleMfSelect(which){ge(which==='inter'?'mfInterDropdown':'mfLotDropdown').classList.toggle('show');}
+function toggleMfSelect(which){const id=which==='inter'?'mfInterDropdown':'mfLotDropdown';ge(id).classList.toggle('show');const other=which==='inter'?'mfLotDropdown':'mfInterDropdown';if(ge(other)&&ge(other)!==ge(id))ge(other).classList.remove('show');}
 document.addEventListener('click',e=>{if(!e.target.closest('.mf-select'))document.querySelectorAll('.mf-select-dropdown').forEach(d=>d.classList.remove('show'));});
 
-// --- Filtres ---
+// --- Filtres principaux (avec getLotsArray) ---
 function gcf(id){return(ge(id)?.value||'').toLowerCase();}
-function matchDate(stored,q){if(!q)return true;const p=q.split('/');if(p.length>=2&&stored&&/^\d{4}-\d{2}-\d{2}$/.test(stored)){const[y,m,d]=stored.split('-');const fr=d+'/'+m+'/'+y;return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0'));}return String(stored||'').toLowerCase().includes(q.toLowerCase());}
+function matchDate(stored,q){if(!q)return true;q=q.trim();const p=q.split('/');if(p.length>=2&&stored&&/^\d{4}-\d{2}-\d{2}$/.test(stored)){const[y,m,d]=stored.split('-'),fr=d+'/'+m+'/'+y;if(p.length>=3){let yy=p[2];if(yy.length===2)yy='20'+yy;return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0')+'/'+yy);}return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0'));}return String(stored||'').toLowerCase().includes(q);}
 function applyFilters(){
   buildMfSelectOptions();
-  const qn=gcf('qs_num'),qd=ge('qs_date')?.value||'',qdi=gcf('qs_disp'),qo=gcf('qs_obs');
-  const qF=ge('qs_F').checked,qS=ge('qs_S').checked,qD=ge('qs_D').checked,qPM=ge('qs_PM').checked,qSO=ge('qs_SO').checked;
-  const fOui=ge('fOui').checked,fPar=ge('fPar').checked,fNon=ge('fNon').checked,fRd6=ge('fRd6').checked,fPA=ge('fPA').checked;
-  let rows = getRows().filter(r=>{
-    if(qn && !String(r.num||'').toLowerCase().includes(qn)) return false;
-    if(qd && !matchDate(r.date,qd)) return false;
-    if(qdi && !String(r.disp||'').toLowerCase().includes(qdi)) return false;
-    if(qo && !String(r.obs||'').toLowerCase().includes(qo)) return false;
-    if(qF||qS||qD||qPM||qSO){ const a=(r.avis||'').toUpperCase().trim(); if(!((qF&&a==='F')||(qS&&a==='S')||(qD&&a==='D')||(qPM&&a==='PM')||(qSO&&a==='SO'))) return false; }
-    if(fOui||fPar||fNon){ if(!((fOui&&r.suivi==='Oui')||(fPar&&r.suivi==='Par')||(fNon&&r.suivi==='Non'))) return false; }
-    if(fRd6 && !r.rd6) return false;
-    if(fPA && !(r.num||'').toUpperCase().startsWith('PA')) return false;
-    if(selectedIntervenants.size && !selectedIntervenants.has(cleanIntervenant(r.inter))) return false;
-    if(selectedLots.size){ const lotsArr = getLotsArray(r); if(!lotsArr.some(l=>selectedLots.has(l))) return false; }
+  const qn=gcf('qs_num'),qd=ge('qs_date')?.value||'',qdi=gcf('qs_disp'),qo=gcf('qs_obs'),qdo=gcf('qs_docs');
+  const qF=ge('qs_F').checked,qS=ge('qs_S').checked,qD=ge('qs_D').checked,qPM=ge('qs_PM').checked,qSO=ge('qs_SO').checked;const anyQS=qF||qS||qD||qPM||qSO;
+  const fOui=ge('fOui').checked,fPar=ge('fPar').checked,fNon=ge('fNon').checked,fRd6=ge('fRd6').checked,fPA=ge('fPA').checked;const anySt=fOui||fPar||fNon;
+  let rows=getRows().filter(r=>{
+    if(qn&&!String(r.num||'').toLowerCase().includes(qn))return false;
+    if(qd&&!matchDate(r.date,qd))return false;
+    if(qdi&&!String(r.disp||'').toLowerCase().includes(qdi))return false;
+    if(qo&&!String(r.obs||'').toLowerCase().includes(qo))return false;
+    if(qdo&&!String(r.docs||'').toLowerCase().includes(qdo))return false;
+    if(anyQS){const a=(r.avis||'').toUpperCase().trim();if(!((qF&&a==='F')||(qS&&a==='S')||(qD&&a==='D')||(qPM&&a==='PM')||(qSO&&a==='SO')))return false;}
+    if(anySt){if(!((fOui&&r.suivi==='Oui')||(fPar&&r.suivi==='Par')||(fNon&&r.suivi==='Non')))return false;}
+    if(fRd6&&!r.rd6)return false;
+    if(fPA&&!(r.num||'').toUpperCase().startsWith('PA'))return false;
+    if(selectedIntervenants.size>0&&!selectedIntervenants.has(cleanIntervenant(r.inter)))return false;
+    if(selectedLots.size>0){
+      const lotsArr = getLotsArray(r);
+      if(!lotsArr.some(l=>selectedLots.has(l))) return false;
+    }
     return true;
   });
-  if(sortKey) rows.sort((a,b)=>String(a[sortKey]||'').localeCompare(String(b[sortKey]||'')) * sortDir);
-  filteredRows=rows; renderTable(); updateStats();
+  if(sortKey)rows.sort((a,b)=>{const av=String(a[sortKey]||''),bv=String(b[sortKey]||'');return av<bv?-sortDir:av>bv?sortDir:0;});
+  filteredRows=rows;renderTable();updateStats();
 }
-function sortBy(k){ sortKey===k?sortDir*=-1:(sortKey=k,sortDir=1); applyFilters(); }
+function sortBy(k){sortKey===k?sortDir*=-1:(sortKey=k,sortDir=1);applyFilters();}
 function resetFilters(){
-  ['qs_num','qs_date','qs_disp','qs_obs'].forEach(id=>{const el=ge(id);if(el)el.value='';});
+  ['qs_num','qs_date','qs_disp','qs_obs','qs_docs'].forEach(id=>{const el=ge(id);if(el)el.value='';});
   ['qs_F','qs_S','qs_D','qs_PM','qs_SO','fOui','fPar','fNon','fRd6','fPA'].forEach(id=>ge(id).checked=false);
-  selectedIntervenants.clear(); selectedLots.clear(); applyFilters();
+  selectedIntervenants.clear();selectedLots.clear();sortKey=null;sortDir=1;applyFilters();
 }
 
-// --- Colonnes ---
+// --- Colonnes principales ---
 const COL_DEF = [
   {key:'num', label:'N°', visible:true, locked:true, width:'49px'},
   {key:'ref', label:'Réf', visible:true, width:'49px'},
@@ -458,30 +1015,12 @@ const COL_DEF = [
 ];
 function loadColPrefs(){try{const s=localStorage.getItem('rs_col_prefs');if(s){const p=JSON.parse(s);COL_DEF.forEach(c=>{if(p[c.key]!==undefined)c.visible=p[c.key];});}}catch(e){}}
 function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localStorage.setItem('rs_col_prefs',JSON.stringify(p));}
-function rebuildTableHeader(){
-  const hr=ge('headerRow'); hr.innerHTML='';
-  COL_DEF.forEach(c=>{
-    if(c.visible){
-      const th=document.createElement('th');
-      th.textContent=c.label;
-      th.style.width=c.width;
-      th.style.minWidth=c.width;
-      th.onclick=()=>sortBy(c.key);
-      hr.appendChild(th);
-    }
-  });
-  const thAct=document.createElement('th'); thAct.textContent=''; thAct.style.width='44px'; thAct.style.textAlign='center';
-  hr.appendChild(thAct);
-}
-function toggleColPicker(){
-  const listDiv=ge('colModalBody');
-  listDiv.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');
-  ge('colModal').classList.add('open');
-}
-function closeColModal(){ge('colModal').classList.remove('open');}
-function buildColPickerList(){const list=ge('colPickerList'); if(list) list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
+function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.setAttribute('data-col',c.key);th.onclick=()=>sortBy(c.key);hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
+function toggleColPicker(){const listDiv=document.getElementById('colModalBody');listDiv.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');document.getElementById('colModal').classList.add('open');}
+function closeColModal(){document.getElementById('colModal').classList.remove('open');}
+function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
-function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();}
+function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();const mb=document.getElementById('colModalBody');if(mb)mb.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function fmtDate(d){if(!d)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}return d;}
 function renderTable(){
   const tbody=ge('tableBody'),empty=ge('emptyState');
@@ -495,190 +1034,210 @@ function renderTable(){
     COL_DEF.forEach(c=>{
       if(!c.visible)return;
       if(c.key==='suivi')cells+=`<td data-col="suivi">${badge}</td>`;
-      else if(c.key==='num')cells+=`<td data-col="num"><strong>${escapeHtml(r.num)}</strong>${rd6}</td>`;
-      else if(c.key==='date')cells+=`<td data-col="date" style="white-space:nowrap">${fmtDate(r.date)}</td>`;
-      else cells+=`<td data-col="${c.key}">${escapeHtml(r[c.key]||'')}</td>`;
+      else if(c.key==='num')cells+=`<td data-col="num"><span style="font-family:var(--mono);">${escapeHtml(r.num)}</span>${rd6}</td>`;
+      else if(c.key==='date')cells+=`<td data-col="date" style="font-family:var(--mono);white-space:nowrap">${escapeHtml(fmtDate(r.date))}</td>`;
+      else if(c.key==='ref')cells+=`<td data-col="ref" style="font-family:var(--mono);font-size:.68rem">${escapeHtml(r.ref)}</td>`;
+      else if(c.key==='inter')cells+=`<td data-col="inter">${escapeHtml(interClean)}</td>`;
+      else cells+=`<td data-col="${c.key}">${escapeHtml(r[c.key])}</td>`;
     });
-    cells+=`<td class="col-actions"><button class="tb-btn" onclick="openEditPanel(${i})">Edit</button></td>`;
-    return `<tr ondblclick="openEditPanel(${i})">${cells}</tr>`;
+    cells+=`<td class="col-actions"><button class="tb-btn" onclick="openEditPanel(${i})" style="padding:2px 8px;">Edit</button></td>`;
+    return `<tr ondblclick="openEditPanel(${i})" id="row-${i}">${cells}</tr>`;
   }).join('');
 }
-function updateStats(){ const rows=getRows(); ge('statOui').textContent=rows.filter(r=>r.suivi==='Oui').length; ge('statPar').textContent=rows.filter(r=>r.suivi==='Par').length; ge('statNon').textContent=rows.filter(r=>r.suivi==='Non').length; ge('statTotal').textContent=rows.length; }
-function switchTab(t){currentTab=t; resetFilters();}
+function updateStats(){const rows=getRows();ge('statOui').textContent=rows.filter(r=>r.suivi==='Oui').length;ge('statPar').textContent=rows.filter(r=>r.suivi==='Par').length;ge('statNon').textContent=rows.filter(r=>r.suivi==='Non').length;ge('statTotal').textContent=rows.length;}
+function switchTab(t){currentTab=t;ge('tabV2').classList.toggle('active',t==='v2');ge('tabV1').classList.toggle('active',t==='v1');resetFilters();}
 
-// --- Édition ---
-function openEditPanel(i){
-  editingIdx=i; const r=filteredRows[i];
-  ge('panelTitle').innerHTML=`Avis n°: ${r.num}`;
-  ge('e_lblColE').innerText=r.disp||'';
-  ge('e_obs_readonly').innerText=r.obs||'';
-  ge('e_repK').value=r.repK||''; ge('e_repL').value=r.repL||''; ge('e_lots').value=r.lots||'';
-  ge('e_rd6').checked=r.rd6;
-  currentSuivi=r.suivi;
-  ge('overlay').classList.add('open'); ge('editPanel').classList.add('open');
+// --- Panel édition ---
+function openEditPanel(fi){
+  editingIdx=fi;const r=filteredRows[fi];
+  ge('panelTitle').innerHTML=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - Avis : ${r.avis||'-'}`;
+  ge('panelNum').innerText=r.num||'(sans n°)';
+  ge('e_lblColE').innerText=r.disp||'—';
+  ge('e_obs_readonly').innerText=r.obs||'—';
+  ge('e_repK').value=r.repK||'';ge('e_repL').value=r.repL||'';ge('e_lots').value=r.lots||'';
+  ge('e_rd6').checked=r.rd6;ge('rd6Toggle').classList.toggle('active',r.rd6);
+  currentSuivi=r.suivi;updateSuiviUI();
+  ge('overlay').classList.add('open');ge('editPanel').classList.add('open');
+  document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
+  const el=ge('row-'+fi);if(el)el.classList.add('row-highlight');
 }
-function closePanel(){ ge('overlay').classList.remove('open'); ge('editPanel').classList.remove('open'); editingIdx=null; }
-function navRow(d){ if(editingIdx!==null){ let n=editingIdx+d; if(n>=0&&n<filteredRows.length) openEditPanel(n); } }
-function setSuivi(v){ currentSuivi=v; }
+function closePanel(){ge('overlay').classList.remove('open');ge('editPanel').classList.remove('open');editingIdx=null;}
+function navRow(d){if(editingIdx!==null){let n=editingIdx+d;if(n>=0&&n<filteredRows.length)openEditPanel(n);}}
+function setSuivi(v){currentSuivi=v;updateSuiviUI();}
+function updateSuiviUI(){['oui','par','non','vide'].forEach(k=>{const el=ge('opt_'+k);if(el)el.classList.remove('sel-oui','sel-par','sel-non','sel-vide');});if(currentSuivi==='Oui')ge('opt_oui').classList.add('sel-oui');else if(currentSuivi==='Par')ge('opt_par').classList.add('sel-par');else if(currentSuivi==='Non')ge('opt_non').classList.add('sel-non');else ge('opt_vide')?.classList.add('sel-vide');}
+function toggleRD6(){const cb=ge('e_rd6');cb.checked=!cb.checked;ge('rd6Toggle').classList.toggle('active',cb.checked);}
 function saveRow(){
-  if(editingIdx===null) return;
-  const r=filteredRows[editingIdx];
-  const gi=getRows().findIndex(x=>x.id===r.id);
-  if(gi>=0){
-    data[currentTab][gi].repK=ge('e_repK').value;
-    data[currentTab][gi].repL=ge('e_repL').value;
-    data[currentTab][gi].lots=ge('e_lots').value;
-    data[currentTab][gi].suivi=currentSuivi;
-    data[currentTab][gi].rd6=ge('e_rd6').checked;
-    applyFilters(); persistLocal(); pushToParent(); closePanel();
-  }
+  if(editingIdx===null)return;
+  const r=filteredRows[editingIdx];const gi=getRows().findIndex(x=>x.id===r.id);if(gi===-1)return;
+  data[currentTab][gi]={...r,repK:ge('e_repK').value,repL:ge('e_repL').value,lots:ge('e_lots').value,suivi:currentSuivi,rd6:ge('e_rd6').checked};
+  if(data[currentTab][gi].rd6&&!data[currentTab][gi].num.includes('/RD6'))data[currentTab][gi].num+='/RD6';
+  else if(!data[currentTab][gi].rd6)data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
+  applyFilters();ge('saveFeedback').classList.add('show');setTimeout(()=>ge('saveFeedback').classList.remove('show'),1800);
+  persistLocal();pushToParent();
 }
-function deleteRow(){
-  if(editingIdx===null) return;
-  const r=filteredRows[editingIdx];
-  if(confirm(`Supprimer ${r.num} ?`)){
-    const gi=getRows().findIndex(x=>x.id===r.id);
-    if(gi>=0){ data[currentTab].splice(gi,1); applyFilters(); persistLocal(); pushToParent(); closePanel(); }
-  }
-}
+function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx];if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;const gi=getRows().findIndex(x=>x.id===r.id);if(gi>=0){data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}}
 
-// --- PA, Add, etc. ---
-function openPAModal(){ ge('paModal').classList.add('open'); }
-function closePAModal(){ ge('paModal').classList.remove('open'); }
+// --- Redimensionnement panel ---
+(function(){
+  const h=document.getElementById('epRh'),ep=document.getElementById('editPanel');
+  let drag=false,sx=0,sw=0;
+  const sv=parseInt(localStorage.getItem('rs_ep_w')||'520');
+  ep.style.width=Math.max(340,Math.min(sv,window.innerWidth*0.9))+'px';
+  h.addEventListener('mousedown',function(e){drag=true;sx=e.clientX;sw=ep.offsetWidth;h.classList.add('dragging');document.body.style.cssText='cursor:ew-resize;user-select:none';e.preventDefault();});
+  document.addEventListener('mousemove',function(e){if(!drag)return;const nw=Math.max(340,Math.min(sw+(sx-e.clientX),window.innerWidth*0.9));ep.style.width=nw+'px';});
+  document.addEventListener('mouseup',function(){if(!drag)return;drag=false;h.classList.remove('dragging');document.body.style.cssText='';localStorage.setItem('rs_ep_w',ep.offsetWidth);});
+})();
+
+// --- Modal PA ---
+function openPAModal(){['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>ge(id).checked=false);['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>ge(id).value='');ge('pa_date').value=new Date().toISOString().slice(0,10);ge('paFeedback').innerText='';ge('paModal').classList.add('open');}
+function closePAModal(){ge('paModal').classList.remove('open');}
 function addPA(){
   const cat=ge('pa_F').checked?'F':ge('pa_S').checked?'S':ge('pa_D').checked?'D':ge('pa_PM').checked?'PM':'';
-  if(!cat){ ge('paFeedback').innerText='Cochez une catégorie'; return; }
-  let maxPA=0; getRows().forEach(r=>{ if((r.num||'').startsWith('PA')){ let n=parseInt(r.num.replace('PA','')); if(n>maxPA) maxPA=n; } });
-  data[currentTab].push(makeRow({
-    num:'PA'+(maxPA+1), date:ge('pa_date').value||new Date().toISOString().slice(0,10),
-    disp:ge('pa_disp').value, avis:cat, obs:ge('pa_obs').value,
-    repK:ge('pa_repK').value, repL:ge('pa_repL').value, lots:ge('pa_lots').value
-  }));
-  closePAModal(); applyFilters(); persistLocal(); pushToParent();
+  if(!cat){ge('paFeedback').innerText='⚠️ Cochez F, S, D ou PM';setTimeout(()=>ge('paFeedback').innerText='',2000);return;}
+  let maxPA=0;getRows().forEach(r=>{if((r.num||'').startsWith('PA')){let n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
+  data[currentTab].push(makeRow({num:'PA'+(maxPA+1),date:ge('pa_date').value||new Date().toISOString().slice(0,10),disp:ge('pa_disp').value,avis:cat,obs:ge('pa_obs').value,repK:ge('pa_repK').value,repL:ge('pa_repL').value,lots:ge('pa_lots').value}));
+  closePAModal();applyFilters();persistLocal();pushToParent();
 }
-function openAddModal(){ ge('addModal').classList.add('open'); }
-function closeAddModal(){ ge('addModal').classList.remove('open'); }
-function addRow(){
-  if(!ge('a_num').value.trim()){ alert('Numéro requis'); return; }
-  data[currentTab].push(makeRow({num:ge('a_num').value, inter:ge('a_inter').value, disp:ge('a_disp').value, lots:ge('a_lots').value}));
-  closeAddModal(); applyFilters(); persistLocal(); pushToParent();
-}
-function openInfoModal(){ ge('infoModal').classList.add('open'); }
-function closeInfoModal(){ ge('infoModal').classList.remove('open'); }
-function saveInfoModal(){
-  const affaire=ge('infoAffaireInput').value.trim();
-  const dossier=ge('infoDossierInput').value.trim();
-  ge('affaireDisplay').innerText=affaire||'—';
-  ge('dossierInput').value=dossier;
-  persistLocal(); pushToParent(); closeInfoModal();
-}
-function openStatsModal(){
-  const rows=getRows();
-  let F=0,S=0,D=0,SO=0,HM=0,PM=0,oui=0,par=0,non=0,first=null,last=null;
-  for(const r of rows){
-    const av=(r.avis||'').toUpperCase().trim();
-    if(av==='F')F++; else if(av==='S')S++; else if(av==='D')D++; else if(av==='SO')SO++; else if(av==='HM')HM++; else if(av==='PM')PM++;
-    if(r.suivi==='Oui')oui++; else if(r.suivi==='Par')par++; else if(r.suivi==='Non')non++;
-    if(r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date)){ const d=new Date(r.date); if(!first||d<first) first=d; if(!last||d>last) last=d; }
-  }
-  ge('statsContent').innerHTML=`
-    <div><strong>Favorables F:</strong> ${F}</div><div><strong>Suspendus S:</strong> ${S}</div><div><strong>Défavorables D:</strong> ${D}</div>
-    <div><strong>PM:</strong> ${PM} <strong>HM:</strong> ${HM} <strong>SO:</strong> ${SO}</div>
-    <div><strong>Levés:</strong> ${oui} <strong>Partiels:</strong> ${par} <strong>Non suivis:</strong> ${non}</div>
-    <div><strong>Première intervention:</strong> ${first?first.toLocaleDateString('fr-FR'):'—'}</div>
-    <div><strong>Dernière intervention:</strong> ${last?last.toLocaleDateString('fr-FR'):'—'}</div>
-  `;
-  ge('statsModal').classList.add('open');
-}
-function closeStatsModal(){ ge('statsModal').classList.remove('open'); }
-function toggleActionsMenu(){ ge('actionsMenu').classList.toggle('show'); }
-function closeActionsMenu(){ ge('actionsMenu').classList.remove('show'); }
 
-// --- Impression avec statistiques Excel ---
+// --- Menu Actions ---
+function toggleActionsMenu(){document.getElementById('actionsMenu').classList.toggle('show');ge('colPickerPanel').classList.remove('open');}
+function closeActionsMenu(){document.getElementById('actionsMenu').classList.remove('show');}
+
+// --- Modal INFO ---
+function openInfoModal(){document.getElementById('infoAffaireInput').value=ge('affaireDisplay').innerText;document.getElementById('infoDossierInput').value=ge('dossierInput').value;document.getElementById('infoModal').classList.add('open');}
+function closeInfoModal(){document.getElementById('infoModal').classList.remove('open');}
+function saveInfoModal(){
+  const affaire=document.getElementById('infoAffaireInput').value.trim();
+  const dossier=document.getElementById('infoDossierInput').value.trim();
+  ge('affaireDisplay').innerText=affaire||'—';ge('dossierInput').value=dossier;
+  if(window.parent&&window.parent!==window)window.parent.postMessage({type:'rapso_update_affaire',canId:window.CANEVAS_ID,affaire},'*');
+  persistLocal();pushToParent();closeInfoModal();
+}
+
+// =============================================================
+//  IMPRESSION — mise à jour de l'en-tête avant window.print()
+// =============================================================
 function printReport() {
   const rows = getRows();
-  const affaire = ge('affaireDisplay').innerText || '';
+  const affaire = ge('affaireDisplay').innerText || 'Récapitulatif des avis';
   const dossier = ge('dossierInput').value || '';
-  ge('printAffaire').innerHTML = 'Récapitulatif des avis — ' + affaire;
-  ge('printDossier').innerHTML = dossier ? 'Dossier : ' + dossier : '';
+  ge('printAffaire').textContent = 'Récapitulatif des avis — ' + affaire;
+  ge('printDossier').textContent = dossier ? 'Dossier : ' + dossier : '';
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  ge('printDateNow').innerHTML = 'Imprimé le ' + dateStr;
-  ge('printFooterDate').innerHTML = dateStr;
-  ge('printFooterLeft').innerHTML = 'SOCOTEC — ' + affaire;
-
-  // Calculs selon la formule Excel
-  const datesValides = rows.map(r => r.date).filter(d => d && /^\d{4}-\d{2}-\d{2}$/.test(d)).map(d => new Date(d));
-  const premiere = datesValides.length ? new Date(Math.min(...datesValides)) : null;
-  const derniere = datesValides.length ? new Date(Math.max(...datesValides)) : null;
-  const nbSuivis = rows.filter(r => r.suivi === 'Oui').length;
-  const nbPartiels = rows.filter(r => r.suivi === 'Par').length;
-  const nbNonSuivis = rows.filter(r => r.suivi === 'Non').length;
-  const nbEnCours = rows.filter(r => r.suivi === 'Oui' || r.suivi === 'Par' || r.suivi === 'Non').length; // selon formule : NB.SI(J4:J501;"OUI")+NB.SI(J4:J501;"NON")+NB.SI(J4:J501;"PAR")
-  // Avis S/D : nombre d'avis avec avis = 'S' ou 'D'
-  const nbSD = rows.filter(r => (r.avis||'').toUpperCase() === 'S' || (r.avis||'').toUpperCase() === 'D').length;
-  // Points d'attention/action : numéros commençant par "PA"
-  const nbPA = rows.filter(r => (r.num||'').toUpperCase().startsWith('PA')).length;
-  const nbAvisLeves = nbSuivis;
-  const nbAvisRestants = nbSD - nbSuivis;
-  const nbRD6 = rows.filter(r => (r.num||'').includes('/RD6')).length;
-  // Avis sans réponses : (nombre de S + D) - (suivis + non suivis) + partiels ? La formule donnée est obscure, mais on va prendre : nbSD - nbSuivis - nbNonSuivis + nbPartiels ? non. 
-  // Relecture de la formule Excel : =NB.SI(G4:G501;"S")+NB.SI(G4:G501;"D")-NB.SI(J4:J501;"OUI")-NB.SI(J4:J501;"NON")+NB.SI(J4:J501;"PAR")
-  // Soit nbSD - nbSuivis - nbNonSuivis + nbPartiels
-  const nbSansRep = nbSD - nbSuivis - nbNonSuivis + nbPartiels;
-
-  // Construction du grid HTML
-  const statsHtml = `
-    <div class="print-stat-block">
-      <div class="pstat-label">Première intervention</div>
-      <div>${premiere ? premiere.toLocaleDateString('fr-FR') : '…'}</div>
-      <div class="pstat-label">Dernière intervention</div>
-      <div>${derniere ? derniere.toLocaleDateString('fr-FR') : '…'}</div>
-    </div>
-    <div class="print-stat-block">
-      <div class="pstat-label">Avis suivis :</div><div>${nbSuivis}</div>
-      <div class="pstat-label">Partiellement suivis :</div><div>${nbPartiels}</div>
-      <div class="pstat-label">Non suivis :</div><div>${nbNonSuivis}</div>
-    </div>
-    <div class="print-stat-block">
-      <div class="pstat-label">En cours de traitement :</div><div>${nbEnCours}</div>
-      <div class="pstat-label">Avis sans réponses :</div><div>${nbSansRep}</div>
-      <div class="pstat-label">Avis S/D :</div><div>${nbSD}</div>
-    </div>
-    <div class="print-stat-block">
-      <div class="pstat-label">Points d’attention/action :</div><div>${nbPA}</div>
-      <div class="pstat-label">Total avis levés :</div><div>${nbAvisLeves}</div>
-      <div class="pstat-label">⚠ Avis restants :</div><div>${nbAvisRestants}</div>
-    </div>
-    <div class="print-stat-block">
-      <div class="pstat-label">❌ Avis/Comm intégrés RD6 :</div><div>${nbRD6}</div>
-    </div>
-  `;
-  ge('printStatsGrid').innerHTML = statsHtml;
-
-  // Largeurs proportionnelles pour les colonnes visibles
-  const visibleCols = COL_DEF.filter(c => c.visible);
-  const totalPx = visibleCols.reduce((sum,c)=>sum+parseInt(c.width),0);
-  const totalMm = 397;
-  let styleRules = '';
-  let idx=1;
-  for(let col of visibleCols){
-    let mm = (parseInt(col.width)/totalPx)*totalMm;
-    styleRules += `#mainTable th:nth-child(${idx}), #mainTable td:nth-child(${idx}) { width: ${mm.toFixed(1)}mm !important; min-width: ${mm.toFixed(1)}mm !important; }\n`;
-    idx++;
+  ge('printDateNow').textContent = 'Imprimé le ' + dateStr;
+  let F=0,S=0,D=0,SO=0,HM=0,PM=0,oui=0,par=0,non=0,avecRep=0,sansRep=0;
+  let firstDate=null,lastDate=null;
+  for(const r of rows){
+    const av=(r.avis||'').toUpperCase().trim();
+    if(av==='F')F++;else if(av==='S')S++;else if(av==='D')D++;else if(av==='SO')SO++;else if(av==='HM')HM++;else if(av==='PM')PM++;
+    if(r.suivi==='Oui')oui++;else if(r.suivi==='Par')par++;else if(r.suivi==='Non')non++;
+    if(r.repK||r.repL)avecRep++;else sansRep++;
+    if(r.date&&/^\d{4}-\d{2}-\d{2}$/.test(r.date)){const d=new Date(r.date);if(!firstDate||d<firstDate)firstDate=d;if(!lastDate||d>lastDate)lastDate=d;}
   }
-  styleRules += `#mainTable th:last-child, #mainTable td:last-child { display: none !important; }\n`;
-  const printStyle = document.createElement('style');
-  printStyle.id = 'print-col-widths';
-  printStyle.textContent = styleRules;
-  document.head.appendChild(printStyle);
+  const fmt=d=>d?d.toLocaleDateString('fr-FR'):'—';
+  ge('pF').textContent=F; ge('pS').textContent=S; ge('pD').textContent=D;
+  ge('pPM').textContent=PM; ge('pHM').textContent=HM; ge('pSO').textContent=SO;
+  ge('pOui').textContent=oui; ge('pPar').textContent=par; ge('pNon').textContent=non;
+  ge('pEnCours').textContent=avecRep; ge('pSansRep').textContent=sansRep;
+  ge('pTotalLeves').textContent=oui;
+  ge('pFirstDate').textContent=fmt(firstDate); ge('pLastDate').textContent=fmt(lastDate);
+  ge('pTotal').textContent=rows.length;
+  ge('printFooterLeft').textContent='SOCOTEC — ' + affaire;
+  ge('printFooterDate').textContent=dateStr;
+  const hiddenCols=COL_DEF.filter(c=>!c.visible).map(c=>c.key);
+  COL_DEF.forEach(c=>c.visible=true);
   rebuildTableHeader(); renderTable();
   window.print();
-  printStyle.remove();
+  COL_DEF.forEach(c=>{if(hiddenCols.includes(c.key))c.visible=false;});
   rebuildTableHeader(); renderTable();
 }
 
-// --- Import/Export Excel ---
+// ======================= VERSION RAPIDE (corrigée avec data-*) =======================
+let rapCurrent=null,rapFiltered=[];
+let rapSelectedLots=new Set(),rapSelectedInters=new Set();
+function toggleRapideFullscreen(){document.getElementById('rapideModal').classList.toggle('fullscreen');}
+function buildRapMfOptions(){
+  const rows=getRows();
+  const inters=[...new Set(rows.map(r=>cleanIntervenant(r.inter)).filter(v=>v))];
+  const allLots=rows.flatMap(r=>getLotsArray(r));
+  const lots=[...new Set(allLots)];
+  const interDrop=document.getElementById('rapMfInterDrop');
+  if(interDrop){
+    interDrop.innerHTML=inters.map(v=>{
+      const safe=escapeHtmlAttr(v);
+      return `<label><input type="checkbox" value="${safe}" data-inter="${v.replace(/"/g,'&quot;')}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(v)}</label>`;
+    }).join('')||'<div style="padding:8px;">Aucun</div>';
+  }
+  const lotDrop=document.getElementById('rapMfLotsDrop');
+  if(lotDrop){
+    lotDrop.innerHTML=lots.map(v=>{
+      const safe=escapeHtmlAttr(v);
+      return `<label><input type="checkbox" value="${safe}" data-lot="${v.replace(/"/g,'&quot;')}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(v)}</label>`;
+    }).join('')||'<div style="padding:8px;">Aucun</div>';
+  }
+}
+function toggleRapMulti(type,val,checked){if(type==='inter')checked?rapSelectedInters.add(val):rapSelectedInters.delete(val);else checked?rapSelectedLots.add(val):rapSelectedLots.delete(val);rapApply();}
+function toggleRapMf(which){const id=which==='inter'?'rapMfInterDrop':'rapMfLotsDrop';const el=document.getElementById(id);el.classList.toggle('show');const other=which==='inter'?'rapMfLotsDrop':'rapMfInterDrop';const otherEl=document.getElementById(other);if(otherEl&&otherEl!==el)otherEl.classList.remove('show');}
+function cleanAffaireForRapide(raw){if(!raw)return'—';let cleaned=raw.replace(/^\d{2}-\d{2}-\d{2}\s*-\s*/,'');cleaned=cleaned.replace(/(-Rapport.*)$/,'');return cleaned.trim();}
+function openRapide(){rapCurrent=null;rapSelectedLots.clear();rapSelectedInters.clear();buildRapMfOptions();const affaireRaw=document.getElementById('affaireDisplay').innerText;const titre=document.getElementById('rapideAffaireTitle');if(titre)titre.innerText=cleanAffaireForRapide(affaireRaw);['rapF_F','rapF_S','rapF_D','rapF_lev','rapF_par','rapF_non','rapF_rd6','rapF_pa'].forEach(id=>{const ch=ge(id);if(ch)ch.checked=false;});document.getElementById('rapideOverlay').classList.add('open');document.getElementById('rapideEditArea').style.display='none';document.getElementById('rapSaveBtn').disabled=true;document.getElementById('rapideObsText').innerHTML='—';rapApply();}
+function closeRapide(){document.getElementById('rapideOverlay').classList.remove('open');}
+function rapReset(){['rapF_F','rapF_S','rapF_D','rapF_lev','rapF_par','rapF_non','rapF_rd6','rapF_pa'].forEach(id=>{const ch=ge(id);if(ch)ch.checked=false;});rapSelectedLots.clear();rapSelectedInters.clear();buildRapMfOptions();rapApply();}
+function rapApply(){
+  const lotsFilter=Array.from(rapSelectedLots),interFilter=Array.from(rapSelectedInters);
+  const rfF=ge('rapF_F')?.checked||false,rfS=ge('rapF_S')?.checked||false,rfD=ge('rapF_D')?.checked||false;const anyType=rfF||rfS||rfD;
+  const rfLev=ge('rapF_lev')?.checked||false,rfPar=ge('rapF_par')?.checked||false,rfNon=ge('rapF_non')?.checked||false,rfRd6=ge('rapF_rd6')?.checked||false,rfPa=ge('rapF_pa')?.checked||false;
+  rapFiltered=getRows().filter(r=>{
+    if(lotsFilter.length>0){const lotsArr=getLotsArray(r);if(!lotsArr.some(l=>lotsFilter.includes(l)))return false;}
+    if(interFilter.length>0&&!interFilter.includes(cleanIntervenant(r.inter)))return false;
+    if(anyType){const a=(r.avis||'').toUpperCase().trim();if(!((rfF&&a==='F')||(rfS&&a==='S')||(rfD&&a==='D')))return false;}
+    if(rfLev&&r.suivi!=='Oui')return false;if(rfPar&&r.suivi!=='Par')return false;if(rfNon&&r.suivi!=='Non')return false;
+    if(rfRd6&&!r.rd6)return false;if(rfPa&&!(r.num||'').toUpperCase().startsWith('PA'))return false;
+    return true;
+  });
+  const sCount=rapFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='S').length;
+  const dCount=rapFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='D').length;
+  const fCount=rapFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='F').length;
+  ge('rapStatsSDF').innerHTML=`<span class="s">S=${sCount}</span> / <span class="d">D=${dCount}</span> / <span class="f">F=${fCount}</span>`;
+  ge('rapCnt').innerHTML=`(${rapFiltered.length})`;
+  const listDiv=ge('rapideList');
+  if(!rapFiltered.length){listDiv.innerHTML='<div class="empty-state" style="padding:20px"><div>Aucun avis</div></div>';return;}
+  listDiv.innerHTML=rapFiltered.map((r,i)=>{
+    let badge='';
+    if(r.suivi==='Oui')badge='<span class="badge badge-oui" style="font-size:0.6rem;margin-right:4px;">✅</span>';
+    else if(r.suivi==='Par')badge='<span class="badge badge-par" style="font-size:0.6rem;margin-right:4px;">⚠️</span>';
+    else if(r.suivi==='Non')badge='<span class="badge badge-non" style="font-size:0.6rem;margin-right:4px;">❌</span>';
+    const avisBg=(r.avis||'').toUpperCase()==='F'?'#dcfce7':(r.avis||'').toUpperCase()==='S'?'#fef3c7':(r.avis||'').toUpperCase()==='D'?'#fee2e2':'var(--g100)';
+    const avisCol=(r.avis||'').toUpperCase()==='F'?'#15803d':(r.avis||'').toUpperCase()==='S'?'#92400e':(r.avis||'').toUpperCase()==='D'?'#991b1b':'var(--g500)';
+    const sel=(rapCurrent&&rapCurrent.id===r.id)?'selected':'';
+    return `<div class="rapide-item ${sel}" onclick="rapSelect(${i})"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;"><span class="rapide-item-num">${escapeHtml(r.num)}</span><span class="rapide-item-avis" style="background:${avisBg};color:${avisCol};">${escapeHtml(r.avis)}</span>${badge}${r.rd6?'<span class="rd6-tag" style="font-size:0.55rem;">RD6</span>':''}<span style="font-family:var(--mono);font-size:0.65rem;color:var(--g400);">${escapeHtml(fmtDate(r.date))}</span></div><div class="rapide-item-preview">${escapeHtml(r.disp)||escapeHtml(r.obs)||'—'}</div></div>`;
+  }).join('');
+  if(rapCurrent){const idx=rapFiltered.findIndex(r=>r.id===rapCurrent.id);if(idx>=0)rapSelect(idx,false);}
+  updateRapButtonsState();
+}
+function updateRapButtonsState(){const oui=ge('rapBtnOui'),par=ge('rapBtnPar'),non=ge('rapBtnNon'),rd6=ge('rapBtnRd6');if(rapCurrent){oui.classList.toggle('active',rapCurrent.suivi==='Oui');par.classList.toggle('active',rapCurrent.suivi==='Par');non.classList.toggle('active',rapCurrent.suivi==='Non');rd6.classList.toggle('active',rapCurrent.rd6===true);}else{oui.classList.remove('active');par.classList.remove('active');non.classList.remove('active');rd6.classList.remove('active');}}
+function rapSelect(i,scroll=true){rapCurrent=rapFiltered[i];document.querySelectorAll('.rapide-item').forEach((el,idx)=>el.classList.toggle('selected',idx===i));if(scroll)document.querySelectorAll('.rapide-item')[i]?.scrollIntoView({block:'nearest'});const r=rapCurrent;ge('rapideObsText').innerHTML=escapeHtml(r.obs)||'—';const editArea=ge('rapideEditArea');editArea.style.display='flex';ge('rq_repK').value=r.repK||'';ge('rq_repL').value=r.repL||'';ge('rq_lots').value=r.lots||'';ge('rapSaveBtn').disabled=false;updateRapButtonsState();}
+function rapToggleSuivi(v){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].suivi=(data[currentTab][gi].suivi===v)?'':v;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();}
+function rapToggleRD6(){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].rd6=!data[currentTab][gi].rd6;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();}
+function rapSaveTexts(){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].repK=ge('rq_repK').value;data[currentTab][gi].repL=ge('rq_repL').value;data[currentTab][gi].lots=ge('rq_lots').value;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();const btn=ge('rapSaveBtn');btn.textContent='✓';setTimeout(()=>{btn.textContent='💾 Valider';btn.disabled=true;},2000);}
+
+// --- Ajout manuel ---
+function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>ge(id).value='');ge('addModal').classList.add('open');}
+function closeAddModal(){ge('addModal').classList.remove('open');}
+function addRow(){if(!ge('a_num').value.trim()){alert('Numéro d\'avis requis');return;}data[currentTab].push(makeRow({num:ge('a_num').value,ref:ge('a_ref').value,date:ge('a_date').value,inter:ge('a_inter').value,disp:ge('a_disp').value,avis:ge('a_avis').value,desc:ge('a_desc').value,obs:ge('a_obs').value,docs:ge('a_docs').value,lots:ge('a_lots').value}));closeAddModal();applyFilters();persistLocal();pushToParent();}
+
+// --- Statistiques ---
+function openStatsModal(){
+  const rows=getRows();
+  let F=0,S=0,D=0,SO=0,HM=0,PM=0,suivis=0,partiels=0,nonSuivis=0,avisLevesTotal=0,firstIntervention=null,lastIntervention=null;
+  for(const r of rows){const av=(r.avis||'').toUpperCase().trim();if(av==='F')F++;else if(av==='S')S++;else if(av==='D')D++;else if(av==='SO')SO++;else if(av==='HM')HM++;else if(av==='PM')PM++;if(r.suivi==='Oui'){suivis++;avisLevesTotal++;}else if(r.suivi==='Par')partiels++;else if(r.suivi==='Non')nonSuivis++;if(r.date&&/^\d{4}-\d{2}-\d{2}$/.test(r.date)){const d=new Date(r.date);if(!firstIntervention||d<firstIntervention)firstIntervention=d;if(!lastIntervention||d>lastIntervention)lastIntervention=d;}}
+  const fmt=d=>d?d.toLocaleDateString('fr-FR'):'—';
+  ge('statsContent').innerHTML=`<div style="display:flex;flex-direction:column;gap:8px;"><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;"><div style="background:var(--green-l);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#15803d">${F}</div><div style="font-size:.74rem;color:#15803d">Favorables (F)</div></div><div style="background:var(--gold-l);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#92400e">${S}</div><div style="font-size:.74rem;color:#92400e">Suspendus (S)</div></div><div style="background:var(--red-l);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:1.4rem;font-weight:800;color:#991b1b">${D}</div><div style="font-size:.74rem;color:#991b1b">Défavorables (D)</div></div></div><div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;"><div><strong>Avis Sans Objet :</strong> ${SO}</div><div><strong>Avis Hors Mission :</strong> ${HM}</div><div><strong>Avis Pour Mémoire :</strong> ${PM}</div><div><strong>Nombre Total d'Avis Levés :</strong> ${avisLevesTotal}</div></div><div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;"><div><strong>Première intervention :</strong> ${fmt(firstIntervention)}</div><div><strong>Dernière intervention :</strong> ${fmt(lastIntervention)}</div></div><div style="background:var(--g50);border-radius:8px;padding:10px;font-size:.8rem;"><div><strong>Avis suivis :</strong> ${suivis}</div><div><strong>Avis partiellement suivis :</strong> ${partiels}</div><div><strong>Avis non suivis :</strong> ${nonSuivis}</div></div></div>`;
+  ge('statsModal').classList.add('open');
+}
+function closeStatsModal(){ge('statsModal').classList.remove('open');}
+
+// --- Export / Import Excel (avec lecture colonne M) ---
 async function exportWithExcelJS(){
   if(typeof ExcelJS==='undefined'){alert('ExcelJS non chargé');return;}
   try{
@@ -693,11 +1252,12 @@ async function exportWithExcelJS(){
     const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`Rapso_${affaire.replace(/[\\/:*?"<>|]/g,'_')}.xlsx`;a.click();URL.revokeObjectURL(url);alert('Excel exporté');
   }catch(err){alert('Erreur: '+err.message);}
 }
-function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100) yy+=2000; return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return isNaN(pd.getTime())?'':pd.toISOString().slice(0,10); }
-function cleanDocs(v){if(!v) return ''; let c=v.replace(/},{/g,'}\n{').replace(/[\[\]{}"ref":null,]/g,'').replace(/name/g,''); return c.split('\n').map(l=>l.trim()).filter(l=>l).join('\n'); }
-function extractKey(v){ let p=v.indexOf('/'); return p>0?v.substring(0,p).trim():v.trim(); }
-function hasRappel(obs){ return obs && (obs.includes("Rappel de l'observation précédente") || obs.includes("Rappel de l'observation précédente :")); }
+function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
+function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
+function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
+function hasRappel(obs){if(!obs)return false;let s=String(obs);return s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l'observation précédente:")||s.includes("Rappel de l'observation précédente :");}
 function updateParentAffaire(affaire){if(window.parent&&window.parent!==window)window.parent.postMessage({type:'rapso_update_affaire',canId:window.CANEVAS_ID,affaire},'*');}
+
 function processXLSX(file,mode){
   const sid=mode==='actualiser'?'actualiserStatus':'importStatus';ge(sid).textContent='Lecture...';
   if(mode==='actualiser'){const nomFichier=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');if(!confirm(`Mettre à jour « ${nomFichier} » ?`)){ge(sid).textContent='Annulé';return;}}
@@ -735,82 +1295,21 @@ function closeActualiserModal(){ge('actualiserModal').classList.remove('open');}
 function handleFileImport(i){if(i.files[0])processXLSX(i.files[0],'import');}
 function handleActualiserFileImport(i){if(i.files[0])processXLSX(i.files[0],'actualiser');}
 ['importDropzone','actualiserDropzone'].forEach(id=>{const dz=ge(id);if(dz){dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--blue)';});dz.addEventListener('dragleave',()=>dz.style.borderColor='');dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f)processXLSX(f,id==='actualiserDropzone'?'actualiser':'import');});}});
-function openMigrationModal(){ge('migrationModal').classList.add('open');}
-function closeMigrationModal(){ge('migrationModal').classList.remove('open');}
+
+function openMigrationModal(){document.getElementById('migrationModal').classList.add('open');}
+function closeMigrationModal(){document.getElementById('migrationModal').classList.remove('open');}
 function handleMigrationFileImport(input){
-  const file=input.files[0];if(!file)return;const statusEl=ge('migrationStatus');
+  const file=input.files[0];if(!file)return;const statusEl=document.getElementById('migrationStatus');statusEl.textContent='Lecture...';
   const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
-      const ws=wb.Sheets[wb.SheetNames[0]];
-      const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-      const src=[];
-      for(let i=3;i<Math.min(raw.length,500);i++){
-        const row=raw[i];if(!row||row.every(c=>c===''))continue;
-        src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));
-      }
-      if(src.length===0){statusEl.textContent='Aucune donnée';return;}
-      if(!confirm(`${src.length} avis → ${currentTab} ?`)){statusEl.textContent='Annulé';return;}
-      data[currentTab]=src;selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} avis importés`;closeMigrationModal();
-    }catch(err){statusEl.textContent='❌ '+err.message;}
-  };reader.readAsArrayBuffer(file);
+  reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent='Aucune donnée';return;}if(!confirm(`${src.length} avis → ${currentTab} ?`)){statusEl.textContent='Annulé';return;}data[currentTab]=src;selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} avis importés`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);
 }
-const migrationDropzone=ge('migrationDropzone');
+const migrationDropzone=document.getElementById('migrationDropzone');
 if(migrationDropzone){migrationDropzone.addEventListener('dragover',e=>{e.preventDefault();migrationDropzone.style.borderColor='var(--blue)';});migrationDropzone.addEventListener('dragleave',()=>migrationDropzone.style.borderColor='');migrationDropzone.addEventListener('drop',e=>{e.preventDefault();migrationDropzone.style.borderColor='';const file=e.dataTransfer.files[0];if(file)handleMigrationFileImport({files:[file]});});}
 
-function exportJSON(){const blob=new Blob([JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rapso.json';a.click();}
-function loadJSON(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];const r=new FileReader();r.onload=ev=>{const o=JSON.parse(ev.target.result);if(o.meta){ge('affaireDisplay').innerText=o.meta.affaire||'';ge('dossierInput').value=o.meta.dossier||'';}if(o.data){data.v2=(o.data.v2||[]).map(makeRow);data.v1=(o.data.v1||[]).map(makeRow);}applyFilters();persistLocal();};r.readAsText(f);};inp.click();}
-function loadLocal(){try{const r=localStorage.getItem('rapsotracker');if(r){const o=JSON.parse(r);if(o.meta){ge('affaireDisplay').innerText=o.meta.affaire||'';ge('dossierInput').value=o.meta.dossier||'';}if(o.data){data.v2=(o.data.v2||[]).map(makeRow);data.v1=(o.data.v1||[]).map(makeRow);}applyFilters();}}catch(e){}}
-
-// --- Vision rapide ---
-let rapCurrent=null,rapFiltered=[];
-let rapSelectedLots=new Set(),rapSelectedInters=new Set();
-function buildRapMfOptions(){
-  const rows=getRows();
-  const inters=[...new Set(rows.map(r=>cleanIntervenant(r.inter)).filter(v=>v))];
-  const allLots=rows.flatMap(r=>getLotsArray(r));
-  const lots=[...new Set(allLots)];
-  const interDrop=ge('rapMfInterDrop');
-  if(interDrop) interDrop.innerHTML=inters.map(v=>{
-    const safe=escapeHtmlAttr(v);
-    return `<label><input type="checkbox" value="${safe}" data-inter="${v.replace(/"/g,'&quot;')}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(v)}</label>`;
-  }).join('')||'<div>Aucun</div>';
-  const lotDrop=ge('rapMfLotsDrop');
-  if(lotDrop) lotDrop.innerHTML=lots.map(v=>{
-    const safe=escapeHtmlAttr(v);
-    return `<label><input type="checkbox" value="${safe}" data-lot="${v.replace(/"/g,'&quot;')}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(v)}</label>`;
-  }).join('')||'<div>Aucun</div>';
-}
-function toggleRapMulti(type,val,chk){if(type==='inter')chk?rapSelectedInters.add(val):rapSelectedInters.delete(val);else chk?rapSelectedLots.add(val):rapSelectedLots.delete(val);rapApply();}
-function toggleRapMf(which){const id=which==='inter'?'rapMfInterDrop':'rapMfLotsDrop';const el=ge(id);if(el)el.classList.toggle('show');}
-function rapApply(){
-  const lotsFilter=Array.from(rapSelectedLots), interFilter=Array.from(rapSelectedInters);
-  const rfF=ge('rapF_F')?.checked,rfS=ge('rapF_S')?.checked,rfD=ge('rapF_D')?.checked;
-  const rfLev=ge('rapF_lev')?.checked,rfPar=ge('rapF_par')?.checked,rfNon=ge('rapF_non')?.checked,rfRd6=ge('rapF_rd6')?.checked,rfPa=ge('rapF_pa')?.checked;
-  rapFiltered=getRows().filter(r=>{
-    if(lotsFilter.length && !getLotsArray(r).some(l=>lotsFilter.includes(l))) return false;
-    if(interFilter.length && !interFilter.includes(cleanIntervenant(r.inter))) return false;
-    if((rfF||rfS||rfD)){const a=(r.avis||'').toUpperCase().trim();if(!((rfF&&a==='F')||(rfS&&a==='S')||(rfD&&a==='D'))) return false;}
-    if(rfLev && r.suivi!=='Oui') return false; if(rfPar && r.suivi!=='Par') return false; if(rfNon && r.suivi!=='Non') return false;
-    if(rfRd6 && !r.rd6) return false; if(rfPa && !(r.num||'').toUpperCase().startsWith('PA')) return false;
-    return true;
-  });
-  const sCount=rapFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='S').length;
-  const dCount=rapFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='D').length;
-  const fCount=rapFiltered.filter(r=>(r.avis||'').toUpperCase().trim()==='F').length;
-  ge('rapStatsSDF').innerHTML=`<span class="s">S=${sCount}</span> / <span class="d">D=${dCount}</span> / <span class="f">F=${fCount}</span>`;
-  const listDiv=ge('rapideList');
-  if(!rapFiltered.length){listDiv.innerHTML='<div>Aucun avis</div>';return;}
-  listDiv.innerHTML=rapFiltered.map((r,i)=>`<div class="rapide-item" onclick="rapSelect(${i})">${escapeHtml(r.num)} - ${escapeHtml(r.disp||'')}</div>`).join('');
-}
-function rapSelect(i){ rapCurrent=rapFiltered[i]; }
-function rapToggleSuivi(v){}
-function rapToggleRD6(){}
-function rapSaveTexts(){}
-function openRapide(){ge('rapideOverlay').classList.add('open'); buildRapMfOptions(); rapApply();}
-function closeRapide(){ge('rapideOverlay').classList.remove('open');}
-function rapReset(){rapSelectedLots.clear();rapSelectedInters.clear();buildRapMfOptions();rapApply();}
+function exportJSON(){const meta={affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value};const blob=new Blob([JSON.stringify({meta,data},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rapso_'+(meta.affaire||'data')+'.json';a.click();}
+function loadJSON(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const o=JSON.parse(ev.target.result);if(o.meta){ge('affaireDisplay').innerText=o.meta.affaire||'';ge('dossierInput').value=o.meta.dossier||'';}if(o.data){data.v2=(o.data.v2||[]).map(makeRow);data.v1=(o.data.v1||[]).map(makeRow);}selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();alert('✅');}catch(e){alert('JSON invalide');}};r.readAsText(f);};inp.click();}
+function loadLocal(){if(window.RAPSO_SYNTH_DATA)return;try{const r=localStorage.getItem('rapsotracker');if(!r)return;const o=JSON.parse(r);if(o.meta){ge('affaireDisplay').innerText=o.meta.affaire||'';ge('dossierInput').value=o.meta.dossier||'';}if(o.data){data.v2=(o.data.v2||[]).map(makeRow);data.v1=(o.data.v1||[]).map(makeRow);}applyFilters();}catch(e){}}
+function ge(id){return document.getElementById(id);}
 
 loadColPrefs(); buildColPickerList(); rebuildTableHeader(); loadLocal(); applyFilters();
 </script>
