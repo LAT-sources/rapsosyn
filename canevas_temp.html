@@ -1097,7 +1097,7 @@ function printReport() {
   ge('printAffaire').textContent = 'Récapitulatif des avis — ' + affaire;
   ge('printDossier').textContent = dossier ? 'Dossier : ' + dossier : '';
   const now = new Date();
-  const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  const dateStr = now.toLocaleDateString('fr-FR');
   ge('printDateNow').textContent = 'Imprimé le ' + dateStr;
   ge('printFooterDate').textContent = dateStr;
   ge('printFooterLeft').textContent = 'SOCOTEC — ' + affaire;
@@ -1158,6 +1158,7 @@ function printReport() {
       <div>Nbr d'avis S/D : <span class="pstat-val red">${nbSD}</span></div>
       <div>Nbr de point d'attention/action : ${nbPA}</div>
       ${false ? `<div>Nbr total d'avis levés : <span class="pstat-val green">${nbAvisLeves}</span></div>` : ''}
+      <div style="height:12px;"></div>
       <div style="height:12px;"></div>
       <div>⚠ Nbr avis restants : <span class="pstat-val gold">${nbAvisRestants}</span></div>
       <div>❌ Nbr d’Avis/Comm intégrés au RD6 : <span class="pstat-val red">${nbRD6}</span></div>
