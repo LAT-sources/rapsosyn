@@ -1109,7 +1109,7 @@ function printReport() {
   let aujourdhui = new Date();
   aujourdhui.setHours(0,0,0,0);
   let hasToday = datesValides.some(d => d.toDateString() === aujourdhui.toDateString());
-  let derniere = hasToday ? null : aujourdhui; // Si aucune date n'est aujourd'hui, on affiche aujourd'hui comme "Dernière intervention"
+  let derniere = hasToday ? null : aujourdhui;
 
   // Statistiques
   let F=0, S=0, D=0, SO=0, HM=0, PM=0;
@@ -1139,7 +1139,6 @@ function printReport() {
   const nbAvisRestants = nbSD - suivis;
   const nbSansRep = nbSD - suivis - nonSuivis + partiels;
 
-  // Construction du HTML avec couleurs
   const statsHtml = `
     <div class="print-stat-block">
       <div>Première intervention : ${premiere ? premiere.toLocaleDateString('fr-FR') : '…'}</div>
@@ -1150,16 +1149,14 @@ function printReport() {
       <div>Nbr d'avis suivis : <span class="pstat-val green">${suivis}</span></div>
       <div>Nbr d'avis partiellement suivis : <span class="pstat-val gold">${partiels}</span></div>
       <div>Nbr d'avis non suivis : <span class="pstat-val red">${nonSuivis}</span></div>
-      <div style="height:12px;"></div>
+      <div style="height:6px;"></div>
       <div>Nbr d'avis en cours de traitement : ${nbEnCours}</div>
       <div>Nbr d'avis sans réponses : ${nbSansRep}</div>
     </div>
     <div class="print-stat-block">
       <div>Nbr d'avis S/D : <span class="pstat-val red">${nbSD}</span></div>
       <div>Nbr de point d'attention/action : ${nbPA}</div>
-      ${false ? `<div>Nbr total d'avis levés : <span class="pstat-val green">${nbAvisLeves}</span></div>` : ''}
-      <div style="height:12px;"></div>
-      <div style="height:12px;"></div>
+      <div style="height:6px;"></div>
       <div>⚠ Nbr avis restants : <span class="pstat-val gold">${nbAvisRestants}</span></div>
       <div>❌ Nbr d’Avis/Comm intégrés au RD6 : <span class="pstat-val red">${nbRD6}</span></div>
     </div>
@@ -1183,6 +1180,7 @@ function printReport() {
   printStyle.textContent = styleRules;
   document.head.appendChild(printStyle);
   rebuildTableHeader(); renderTable();
+
   // === MODIFICATION POUR LE NOM DU PDF ===
   const originalTitle = document.title;
   document.title = affaire || 'RapsoSynthèse';
