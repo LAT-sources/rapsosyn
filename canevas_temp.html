@@ -512,11 +512,13 @@
       print-color-adjust: exact;
     }
     /* Forcer toutes les colonnes visibles à l'impression */
-    th[data-col="desc"], td[data-col="desc"],
-    th[data-col="docs"], td[data-col="docs"],
-    th[data-col="repL"], td[data-col="repL"] {
-      display: table-cell !important;
-    }
+th[data-col="desc"], td[data-col="desc"],
+th[data-col="docs"], td[data-col="docs"],
+th[data-col="repK"], td[data-col="repK"],
+th[data-col="repL"], td[data-col="repL"] {
+  display: table-cell !important;
+  text-align: left !important;
+}
   }
 </style>
 </head>
