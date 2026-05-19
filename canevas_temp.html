@@ -366,8 +366,7 @@
      ============================================================ */
 @media print {
   @page { size: A3 landscape; margin: 8mm 6mm 12mm 6mm; }
-  .syn-header, .toolbar, .overlay, .edit-panel,
-  .modal-overlay, .empty-state, #colModal { display: none !important; }
+  .syn-header, .toolbar, .overlay, .edit-panel, .modal-overlay, .empty-state, #colModal { display: none !important; }
   .print-header { display: block !important; margin-bottom: 3mm; padding-bottom: 2mm; border-bottom: 1.5px solid #1a56db; }
   .print-header-top { display: flex !important; justify-content: space-between; align-items: flex-start; margin-bottom: 2mm; }
   .print-title { font-size: 10pt; font-weight: 700; color: #1e293b; }
@@ -386,10 +385,7 @@
   .print-footer { display: block !important; position: fixed; bottom: 3mm; left: 6mm; right: 6mm; font-size: 5.5pt; color: #94a3b8; display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 1mm; }
   body { background: white !important; height: auto !important; overflow: visible !important; font-size: 7pt !important; font-family: 'Inter', Arial, sans-serif !important; color: #000 !important; display: block !important; }
   .table-container { flex: unset !important; overflow: visible !important; padding: 0 !important; }
-  table { width: 100% !important; table-layout: auto !important; border-collapse: collapse !important; font-size: 6.5pt !important; page-break-inside: auto; border: 1px solid #334155 !important; }
-  thead { display: table-header-group; }
-  tfoot { display: table-footer-group; }
-  tr { page-break-inside: avoid; }
+  table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; font-size: 6.5pt !important; border: 1px solid #334155 !important; }
   th, td { border: 1px solid #cbd5e1 !important; padding: 3px 4px !important; vertical-align: top !important; word-break: break-word !important; }
   th { background: #1e293b !important; color: white !important; font-size: 6pt !important; font-weight: 700 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .badge { font-size: 6pt !important; padding: 1px 3px !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -398,6 +394,7 @@
   .badge-non { background: #fee2e2 !important; color: #b91c1c !important; }
   .rd6-tag { font-size: 5pt !important; background: #ede9fe !important; color: #7c3aed !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   tr:nth-child(even) td { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
   /* La colonne Actions (bouton Edit) est masquée quelle que soit sa position */
   td:last-child, th:last-child { display: none !important; }
 }
@@ -945,7 +942,29 @@ const COL_DEF = [
 ];
 function loadColPrefs(){try{const s=localStorage.getItem('rs_col_prefs');if(s){const p=JSON.parse(s);COL_DEF.forEach(c=>{if(p[c.key]!==undefined)c.visible=p[c.key];});}}catch(e){}}
 function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localStorage.setItem('rs_col_prefs',JSON.stringify(p));}
-function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.setAttribute('data-col',c.key);th.onclick=()=>sortBy(c.key);hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
+function rebuildTableHeader() {
+  const hr = ge('headerRow');
+  hr.innerHTML = '';
+  COL_DEF.forEach(c => {
+    if (c.visible) {
+      const th = document.createElement('th');
+      th.textContent = c.label;
+      // Application stricte de la largeur depuis COL_DEF
+      th.style.width = c.width;
+      th.style.minWidth = c.width;
+      th.setAttribute('data-col', c.key);
+      th.onclick = () => sortBy(c.key);
+      hr.appendChild(th);
+    }
+  });
+  // Colonne Actions (bouton Edit) toujours visible à l'écran
+  const thAct = document.createElement('th');
+  thAct.textContent = '';
+  thAct.style.width = '44px';
+  thAct.style.minWidth = '44px';
+  thAct.style.textAlign = 'center';
+  hr.appendChild(thAct);
+}
 function toggleColPicker(){const listDiv=document.getElementById('colModalBody');listDiv.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');document.getElementById('colModal').classList.add('open');}
 function closeColModal(){document.getElementById('colModal').classList.remove('open');}
 function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
@@ -1080,23 +1099,23 @@ function printReport() {
   // --- Calcul des largeurs d'impression proportionnelles ---
   const visibleCols = COL_DEF.filter(c => c.visible);
   const totalPx = visibleCols.reduce((sum, c) => sum + parseInt(c.width), 0);
-  const totalMm = 397; // Largeur utile A3 paysage (environ)
+  const totalMm = 397; // Largeur utile A3 paysage
   let styleRules = '';
   let colIndex = 1; // index réel dans le tableau (1 = première colonne visible)
   for (let col of visibleCols) {
     let px = parseInt(col.width);
     let mm = (px / totalPx) * totalMm;
-    styleRules += `#mainTable th:nth-child(${colIndex}), #mainTable td:nth-child(${colIndex}) { width: ${mm.toFixed(1)}mm !important; }\n`;
+    styleRules += `#mainTable th:nth-child(${colIndex}), #mainTable td:nth-child(${colIndex}) { width: ${mm.toFixed(1)}mm !important; min-width: ${mm.toFixed(1)}mm !important; }\n`;
     colIndex++;
   }
-  // Masquer la colonne "Actions" (bouton Edit)
+  // Masquer la colonne "Actions" (bouton Edit) à l'impression
   styleRules += `#mainTable th:last-child, #mainTable td:last-child { display: none !important; }\n`;
   const printStyle = document.createElement('style');
   printStyle.id = 'print-col-widths';
   printStyle.textContent = styleRules;
   document.head.appendChild(printStyle);
 
-  // Reconstruire le tableau avec les colonnes visibles actuelles
+  // Reconstruire le tableau avec les colonnes visibles actuelles (sans modifier COL_DEF)
   rebuildTableHeader();
   renderTable();
 
@@ -1104,7 +1123,11 @@ function printReport() {
 
   // Nettoyer le style temporaire
   printStyle.remove();
-  // Aucune restauration nécessaire (les colonnes n'ont pas été modifiées)
+
+  // Important : restaurer l'affichage initial (les largeurs éventuellement écrasées par l'impression)
+  // On reconstruit simplement l'en-tête avec les largeurs COL_DEF
+  rebuildTableHeader();
+  renderTable();
 }
 
 // ======================= VERSION RAPIDE (corrigée avec data-*) =======================
