@@ -471,19 +471,22 @@
       text-overflow: unset !important;
       color: #1e293b !important;
     }
-    /* Largeurs colonnes A3 paysage (~397mm utilisables) */
-    th:nth-child(1), td:nth-child(1) { width: 22mm !important; min-width: 22mm; } /* N° */
-    th:nth-child(2), td:nth-child(2) { width: 13mm !important; min-width: 13mm; } /* Réf */
-    th:nth-child(3), td:nth-child(3) { width: 16mm !important; min-width: 16mm; } /* Date */
-    th:nth-child(4), td:nth-child(4) { width: 18mm !important; min-width: 18mm; } /* Intervenant */
-    th:nth-child(5), td:nth-child(5) { width: 42mm !important; } /* Dispositions */
-    th:nth-child(6), td:nth-child(6) { width: 8mm !important; min-width: 8mm; text-align: center; } /* Avis */
-    th:nth-child(7), td:nth-child(7) { width: 70mm !important; } /* Observations */
-    th:nth-child(8), td:nth-child(8) { width: 14mm !important; min-width: 14mm; text-align: center; } /* Suivi */
-    th:nth-child(9), td:nth-child(9) { width: 55mm !important; } /* Rép. MOE */
-    th:nth-child(10), td:nth-child(10) { width: 55mm !important; } /* Obs. SOCOTEC */
-    th:nth-child(11), td:nth-child(11) { width: 18mm !important; } /* Lots */
-    th:last-child, td:last-child { display: none !important; } /* Actions */
+    /* Largeurs colonnes A3 paysage basées sur COL_DEF (somme px = 1426) */
+    th:nth-child(1), td:nth-child(1) { width: 14mm !important; min-width: 14mm; } /* N° (49px) */
+    th:nth-child(2), td:nth-child(2) { width: 14mm !important; min-width: 14mm; } /* Réf (49px) */
+    th:nth-child(3), td:nth-child(3) { width: 28mm !important; min-width: 28mm; } /* Date (100px) */
+    th:nth-child(4), td:nth-child(4) { width: 25mm !important; min-width: 25mm; } /* Intervenant (90px) */
+    th:nth-child(5), td:nth-child(5) { width: 42mm !important; min-width: 42mm; } /* Dispositions (150px) */
+    th:nth-child(6), td:nth-child(6) { width: 36mm !important; min-width: 36mm; } /* Description (130px) */
+    th:nth-child(7), td:nth-child(7) { width: 10mm !important; min-width: 10mm; text-align: center; } /* Avis (37px) */
+    th:nth-child(8), td:nth-child(8) { width: 62mm !important; min-width: 62mm; } /* Observations (220px) */
+    th:nth-child(9), td:nth-child(9) { width: 28mm !important; min-width: 28mm; } /* Documents (100px) */
+    th:nth-child(10), td:nth-child(10) { width: 17mm !important; min-width: 17mm; text-align: center; } /* Suivi (61px) */
+    th:nth-child(11), td:nth-child(11) { width: 50mm !important; min-width: 50mm; } /* Rép. MOE (180px) */
+    th:nth-child(12), td:nth-child(12) { width: 50mm !important; min-width: 50mm; } /* Obs. SOCOTEC (180px) */
+    th:nth-child(13), td:nth-child(13) { width: 22mm !important; min-width: 22mm; } /* Lots (80px) */
+    /* La colonne Actions (bouton Edit) est masquée */
+    th:last-child, td:last-child { display: none !important; }
     .badge {
       font-size: 6pt !important;
       padding: 1px 3px !important;
