@@ -253,6 +253,52 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--g300);border-radius:3px;}
+
+/* Menu Actions (intégré dans la topbar sombre) */
+.actions-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 2px;
+}
+.actions-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 999;
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 10px;
+  min-width: 230px;
+  display: none;
+  padding: 6px 0;
+  margin-top: 6px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+}
+.actions-menu.show {
+  display: block;
+}
+.actions-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.75);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+.actions-menu button:hover {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
+.actions-menu button + button {
+  border-top: 1px solid rgba(255,255,255,.06);
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -480,9 +526,23 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </button>
     <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde" style="margin-left:2px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      
     </button>
-  </div>
+
+    <!-- Bouton Actions -->
+    <div class="actions-dropdown">
+      <button class="syn-refresh" onclick="toggleActionsMenu(event)" title="Actions">🛠️ Actions ▾</button>
+      <div class="actions-menu" id="actionsMenu">
+        <button onclick="postAction('import'); closeActionsMenu();">➕ Créer un dossier</button>
+        <button onclick="postAction('actualiser'); closeActionsMenu();">🔄 Mettre à jour</button>
+        <button onclick="postAction('migration'); closeActionsMenu();">📦 Migration</button>
+        <button onclick="postAction('stats'); closeActionsMenu();">📊 Statistiques</button>
+        <button onclick="postAction('exportJSON'); closeActionsMenu();">💾 Enregistrer en local</button>
+        <button onclick="postAction('loadJSON'); closeActionsMenu();">📂 Ouvrir un dossier local</button>
+        <button onclick="postAction('print'); closeActionsMenu();">🖨️ Imprimer</button>
+        <button onclick="postAction('exportExcel'); closeActionsMenu();">📥 Télécharger l'excel</button>
+        <button onclick="postAction('toggleColumns'); closeActionsMenu();">📋 Gérer les colonnes</button>
+      </div>
+    </div>
   <div class="syn-pending-bar" id="synPendingBar">
     <span class="pb-icon">🔔</span>
     <div class="pb-meta">
@@ -1399,6 +1459,30 @@ window.addEventListener('load', async () => {
     }
   });
 });
+   /* ─── Menu Actions ─── */
+function toggleActionsMenu(e) {
+  if (e) e.stopPropagation();
+  document.getElementById('actionsMenu').classList.toggle('show');
+}
+function closeActionsMenu() {
+  document.getElementById('actionsMenu').classList.remove('show');
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.actions-dropdown')) {
+    closeActionsMenu();
+  }
+});
+
+/* ─── Communication avec RapsoSynthèse (iframe) ─── */
+function postAction(action) {
+  const iframe = document.getElementById('synFrame');
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.postMessage({ type: 'rapso_action', action: action }, '*');
+    toast('Action envoyée : ' + action, 'b');
+  } else {
+    toast('Impossible de communiquer avec le canevas', 'r');
+  }
+}
 </script>
 </body>
 </html>
