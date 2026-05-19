@@ -998,7 +998,7 @@ function renderTable(){
   if(!filteredRows.length){tbody.innerHTML='';empty.style.display='flex';return;}
   empty.style.display='none';
   tbody.innerHTML=filteredRows.map((r,i)=>{
-    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✓ Levé</span>':r.suivi==='Par'?'<span class="badge badge-par">~ Par.</span>':r.suivi==='Non'?'<span class="badge badge-non">✗ Non</span>':'<span class="badge badge-empty">—</span>';
+    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✓ Oui</span>':r.suivi==='Par'?'<span class="badge badge-par">~ Par</span>':r.suivi==='Non'?'<span class="badge badge-non">✗ Non</span>':'<span class="badge badge-empty">—</span>';
     const rd6=r.rd6?'<span class="rd6-tag">RD6</span>':'';
     const interClean=cleanIntervenant(r.inter);
     let cells='';
@@ -1142,26 +1142,23 @@ function printReport() {
   // Construction du HTML avec couleurs
   const statsHtml = `
     <div class="print-stat-block">
-      <div class="pstat-label">Première intervention</div>
-      <div>${premiere ? premiere.toLocaleDateString('fr-FR') : '…'}</div>
-      <div class="pstat-label" style="margin-top:1mm;">Intervention la plus récente</div>
-      <div>${plusRecente ? plusRecente.toLocaleDateString('fr-FR') : '…'}</div>
-      <div class="pstat-label" style="margin-top:1mm;">Dernière intervention</div>
-      <div>${derniere ? derniere.toLocaleDateString('fr-FR') : '—'}</div>
+      <div>Première intervention : ${premiere ? premiere.toLocaleDateString('fr-FR') : '…'}</div>
+      <div>Intervention la plus récente : ${plusRecente ? plusRecente.toLocaleDateString('fr-FR') : '…'}</div>
+      <div>Dernière intervention : ${derniere ? derniere.toLocaleDateString('fr-FR') : '—'}</div>
     </div>
     <div class="print-stat-block">
-      <div class="pstat-label">Nbr d'avis suivis</div><div class="pstat-val green">${suivis}</div>
-      <div class="pstat-label">Nbr d'avis partiellement suivis</div><div class="pstat-val gold">${partiels}</div>
-      <div class="pstat-label">Nbr d'avis non suivis</div><div class="pstat-val red">${nonSuivis}</div>
-      <div class="pstat-label">Nbr d'avis en cours de traitement</div><div>${nbEnCours}</div>
-      <div class="pstat-label">Nbr d'avis sans réponses</div><div>${nbSansRep}</div>
+      <div>Nbr d'avis suivis : <span class="pstat-val green">${suivis}</span></div>
+      <div>Nbr d'avis partiellement suivis : <span class="pstat-val gold">${partiels}</span></div>
+      <div>Nbr d'avis non suivis : <span class="pstat-val red">${nonSuivis}</span></div>
+      <div>Nbr d'avis en cours de traitement : ${nbEnCours}</div>
+      <div>Nbr d'avis sans réponses : ${nbSansRep}</div>
     </div>
     <div class="print-stat-block">
-      <div class="pstat-label">Nbr d'avis S/D</div><div class="pstat-val red">${nbSD}</div>
-      <div class="pstat-label">Nbr de point d'attention/action</div><div>${nbPA}</div>
-      <div class="pstat-label">Nbr total d'avis levés</div><div class="pstat-val green">${nbAvisLeves}</div>
-      <div class="pstat-label">⚠ Nbr avis restants</div><div class="pstat-val gold">${nbAvisRestants}</div>
-      <div class="pstat-label">❌ Nbr d’Avis/Comm intégrés au RD6</div><div class="pstat-val red">${nbRD6}</div>
+      <div>Nbr d'avis S/D : <span class="pstat-val red">${nbSD}</span></div>
+      <div>Nbr de point d'attention/action : ${nbPA}</div>
+      <div>Nbr total d'avis levés : <span class="pstat-val green">${nbAvisLeves}</span></div>
+      <div>⚠ Nbr avis restants : <span class="pstat-val gold">${nbAvisRestants}</span></div>
+      <div>❌ Nbr d’Avis/Comm intégrés au RD6 : <span class="pstat-val red">${nbRD6}</span></div>
     </div>
   `;
   ge('printStatsGrid').innerHTML = statsHtml;
