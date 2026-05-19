@@ -394,9 +394,9 @@
   .badge-non { background: #fee2e2 !important; color: #b91c1c !important; }
   .rd6-tag { font-size: 5pt !important; background: #ede9fe !important; color: #7c3aed !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   tr:nth-child(even) td { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-}
-  /* La colonne Actions (bouton Edit) est masquée quelle que soit sa position */
-  td:last-child, th:last-child { display: none !important; }
+
+  /* Largeurs proportionnelles calculées dynamiquement par printReport() */
+  /* Les règles nth-child ne sont pas nécessaires ici car elles sont injectées par JavaScript */
 }
     /* Largeurs colonnes A3 paysage basées sur COL_DEF (somme px = 1426) */
     th:nth-child(1), td:nth-child(1) { width: 14mm !important; min-width: 14mm; } /* N° (49px) */
