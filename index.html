@@ -482,22 +482,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       
     </button>
-<!-- Nouveau bouton Actions -->
-<div class="actions-dropdown" style="position:relative;display:inline-block;margin-left:6px;">
-  <button class="syn-refresh" onclick="toggleActionsMenu()" title="Actions">🛠️ Actions ▾</button>
-  <div class="actions-menu" id="actionsMenu" style="position:absolute;top:100%;right:0;background:white;border:1px solid #ccc;border-radius:8px;min-width:210px;display:none;z-index:300;padding:4px 0;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-    <button onclick="postAction('import');closeActionsMenu();" style="display:block;width:100%;text-align:left;padding:7px 14px;background:none;border:none;font-size:0.78rem;cursor:pointer;">➕ Créer un dossier</button>
-    <button onclick="postAction('actualiser');closeActionsMenu();" style="display:block;width:100%;text-align:left;padding:7px 14px;background:none;border:none;font-size:0.78rem;cursor:pointer;">🔄 Mettre à jour</button>
-    <button onclick="postAction('migration');closeActionsMenu();" style="display:block;width:100%;text-align:left;padding:7px 14px;background:none;border:none;font-size:0.78rem;cursor:pointer;">📦 Migration</button>
-    <button onclick="postAction('stats');closeActionsMenu();" style="display:block;width:100%;text-align:left;padding:7px 14px;background:none;border:none;font-size:0.78rem;cursor:pointer;">📊 Statistiques</button>
-    <button onclick="postAction('exportJSON');closeActionsMenu();" style="display:block;width:100%;text-align:left;padding:7px 14px;background:none;border:none;font-size:0.78rem;cursor:pointer;">💾 Enregistrer JSON</button>
-    <button onclick="postAction('loadJSON');closeActionsMenu();" style="display:block;width:100%;text-align:left;padding:7px 14px;background:none;border:none;font-size:0.78rem;cursor:pointer;">📂 Ouvrir JSON</button>
-    <button onclick="postAction('print');closeActionsMenu();" style="display:block;width:100%;text-align:left;padding:7px 14px;background:none;border:none;font-size:0.78rem;cursor:pointer;">🖨️ Imprimer</button>
-    <button onclick="postAction('exportExcel');closeActionsMenu();" style="display:block;width:100%;text-align:left;padding:7px 14px;background:none;border:none;font-size:0.78rem;cursor:pointer;">📥 Télécharger Excel</button>
-    <button onclick="postAction('toggleColumns');closeActionsMenu();" style="display:block;width:100%;text-align:left;padding:7px 14px;background:none;border:none;font-size:0.78rem;cursor:pointer;">📋 Colonnes</button>
   </div>
-</div>
-   
   <div class="syn-pending-bar" id="synPendingBar">
     <span class="pb-icon">🔔</span>
     <div class="pb-meta">
@@ -982,26 +967,7 @@ function toggleStar(id, e) {
   saveToCloud();
   renderCanevas();
 }
- function postAction(action) {
-    const iframe = document.getElementById('rapsosynth-iframe'); // adaptez l'ID
-    if (iframe && iframe.contentWindow) {
-      iframe.contentWindow.postMessage({ type: 'rapso_action', action: action }, '*');
-    }
-  }
-function toggleActionsMenu() {
-  document.getElementById('actionsMenu').style.display =
-    document.getElementById('actionsMenu').style.display === 'block' ? 'none' : 'block';
-}
-function closeActionsMenu() {
-  document.getElementById('actionsMenu').style.display = 'none';
-}
-// Fermer le menu si on clique ailleurs
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.actions-dropdown')) {
-    closeActionsMenu();
-  }
-});
-   
+
 // ─── Glisser‑déposer création canevas ───
 function setupCanevasDrop() {
   const dropZone = document.getElementById('canevasDropZone');
