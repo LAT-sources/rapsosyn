@@ -1092,15 +1092,20 @@ function saveInfoModal(){
 // =============================================================
 function printReport() {
   const rows = getRows();
-  const affaire = ge('affaireDisplay').innerText || 'Récapitulatif des avis';
-  const dossier = ge('dossierInput').value || '';
+  const affaireRaw = ge('affaireDisplay').innerText || '';
+  const affaire = (affaireRaw && affaireRaw !== '—') ? affaireRaw : '';
+
+  ge('printAffaire').textContent = affaire
+    ? 'Récapitulatif des avis — ' + affaire
+    : 'Récapitulatif des avis';
+  ge('printDossier').textContent = ge('dossierInput').value ? 'Dossier : ' + ge('dossierInput').value : '';
   ge('printAffaire').textContent = 'Récapitulatif des avis — ' + affaire;
   ge('printDossier').textContent = dossier ? 'Dossier : ' + dossier : '';
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR');
   ge('printDateNow').textContent = 'Imprimé le ' + dateStr;
   ge('printFooterDate').textContent = dateStr;
-  ge('printFooterLeft').textContent = 'SOCOTEC — ' + affaire;
+  ge('printFooterLeft').textContent = 'SOCOTEC' + (affaire ? ' — ' + affaire : '');
 
   // Calcul des dates
   let datesValides = rows.map(r => r.date).filter(d => d && /^\d{4}-\d{2}-\d{2}$/.test(d)).map(d => new Date(d));
