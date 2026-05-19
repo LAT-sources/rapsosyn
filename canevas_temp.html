@@ -699,11 +699,10 @@ let selectedLots = new Set();
 function cleanIntervenant(inter){if(!inter)return '';const at=inter.indexOf('@');return at>0?inter.substring(0,at).trim():inter;}
 
 // --- Fonction utilitaire pour extraire les lots (uniquement séparateurs , ; )
-function splitLots(lotsStr) {
-    if (!lotsStr) return [];
-    return String(lotsStr).split(/[,;]+/).map(l => l.trim()).filter(l => l !== '');
+function getLotsArray(r) {
+    const val = r.lots ? r.lots.trim() : '';
+    return val ? [val] : [];
 }
-
 // --- Persistance & sync ---
 function persistLocal(){try{localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));}catch(e){}}
 function pushToParent(){if(!window.parent||window.parent===window)return;const canId=window.CANEVAS_ID;if(canId===undefined)return;try{const raw=localStorage.getItem('rapsotracker');if(raw){const parsed=JSON.parse(raw);if(parsed?.data)window.parent.postMessage({type:'rapso_save',canId,data:parsed.data},'*');}}catch(e){}}
@@ -763,7 +762,7 @@ function buildMfSelectOptions() {
   }
   document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
 
-  const allLots = rows.flatMap(r => splitLots(r.lots));
+  const allLots = rows.flatMap(r => getLotsArray(r));
   const lots = [...new Set(allLots)];
   const lotDiv = document.getElementById('mfLotDropdown');
   if (lotDiv) {
@@ -798,7 +797,11 @@ function applyFilters(){
     if(fRd6&&!r.rd6)return false;
     if(fPA&&!(r.num||'').toUpperCase().startsWith('PA'))return false;
     if(selectedIntervenants.size>0&&!selectedIntervenants.has(cleanIntervenant(r.inter)))return false;
-    if(selectedLots.size>0){const lr=splitLots(r.lots);if(!lr.some(l=>selectedLots.has(l)))return false;}
+    // Filtre lots : comparaison exacte sur la chaîne complète
+    if(selectedLots.size>0){
+      const lotsArray = getLotsArray(r);
+      if(!lotsArray.some(l=>selectedLots.has(l))) return false;
+    }
     return true;
   });
   if(sortKey)rows.sort((a,b)=>{const av=String(a[sortKey]||''),bv=String(b[sortKey]||'');return av<bv?-sortDir:av>bv?sortDir:0;});
@@ -974,7 +977,7 @@ function toggleRapideFullscreen() { document.getElementById('rapideModal').class
 function buildRapMfOptions() {
   const rows = getRows();
   const inters = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v=>v))];
-  const allLots = rows.flatMap(r => splitLots(r.lots));
+  const allLots = rows.flatMap(r => getLotsArray(r));
   const lots = [...new Set(allLots)];
   const interDrop = document.getElementById('rapMfInterDrop');
   if (interDrop) interDrop.innerHTML = inters.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
@@ -994,7 +997,10 @@ function rapApply() {
   const anyType = rfF||rfS||rfD;
   const rfLev = ge('rapF_lev')?.checked||false, rfPar = ge('rapF_par')?.checked||false, rfNon = ge('rapF_non')?.checked||false, rfRd6 = ge('rapF_rd6')?.checked||false, rfPa = ge('rapF_pa')?.checked||false;
   rapFiltered = getRows().filter(r => {
-    if (lotsFilter.length > 0) { const rowLots = splitLots(r.lots); if (!rowLots.some(l => lotsFilter.includes(l))) return false; }
+    if (lotsFilter.length > 0) {
+      const lotsArray = getLotsArray(r);
+      if (!lotsArray.some(l => lotsFilter.includes(l))) return false;
+    }
     if (interFilter.length > 0 && !interFilter.includes(cleanIntervenant(r.inter))) return false;
     if (anyType) { const a = (r.avis||'').toUpperCase().trim(); if (!((rfF&&a==='F')||(rfS&&a==='S')||(rfD&&a==='D'))) return false; }
     if (rfLev && r.suivi !== 'Oui') return false;
