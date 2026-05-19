@@ -859,7 +859,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 // ============================================================
-//  RAPSOSYNTHÈSE - VERSION CORRIGÉE (lots complets + data-* + impression)
+//  RAPSOSYNTHÈSE - VERSION FINALE
+//  Lots complets, colonnes sélectionnables, impression statistiques exactes
 // ============================================================
 
 // --- Thème ---
@@ -1115,7 +1116,7 @@ function saveInfoModal(){
 }
 
 // =============================================================
-//  IMPRESSION — mise à jour de l'en-tête avant window.print()
+//  IMPRESSION — mise à jour de l'en-tête avec les statistiques Excel
 // =============================================================
 function printReport() {
   const rows = getRows();
@@ -1126,30 +1127,107 @@ function printReport() {
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   ge('printDateNow').textContent = 'Imprimé le ' + dateStr;
-  let F=0,S=0,D=0,SO=0,HM=0,PM=0,oui=0,par=0,non=0,avecRep=0,sansRep=0;
-  let firstDate=null,lastDate=null;
-  for(const r of rows){
-    const av=(r.avis||'').toUpperCase().trim();
-    if(av==='F')F++;else if(av==='S')S++;else if(av==='D')D++;else if(av==='SO')SO++;else if(av==='HM')HM++;else if(av==='PM')PM++;
-    if(r.suivi==='Oui')oui++;else if(r.suivi==='Par')par++;else if(r.suivi==='Non')non++;
-    if(r.repK||r.repL)avecRep++;else sansRep++;
-    if(r.date&&/^\d{4}-\d{2}-\d{2}$/.test(r.date)){const d=new Date(r.date);if(!firstDate||d<firstDate)firstDate=d;if(!lastDate||d>lastDate)lastDate=d;}
+  ge('printFooterDate').textContent = dateStr;
+  ge('printFooterLeft').textContent = 'SOCOTEC — ' + affaire;
+
+  // Statistiques selon formules Excel
+  let F=0, S=0, D=0, SO=0, HM=0, PM=0;
+  let suivis=0, partiels=0, nonSuivis=0;
+  let datesValides = [];
+  let nbPA=0, nbRD6=0;
+
+  for (const r of rows) {
+    const av = (r.avis || '').toUpperCase().trim();
+    if (av === 'F') F++;
+    else if (av === 'S') S++;
+    else if (av === 'D') D++;
+    else if (av === 'SO') SO++;
+    else if (av === 'HM') HM++;
+    else if (av === 'PM') PM++;
+
+    if (r.suivi === 'Oui') suivis++;
+    else if (r.suivi === 'Par') partiels++;
+    else if (r.suivi === 'Non') nonSuivis++;
+
+    if (r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date)) {
+      datesValides.push(new Date(r.date));
+    }
+    if ((r.num || '').toUpperCase().startsWith('PA')) nbPA++;
+    if ((r.num || '').includes('/RD6')) nbRD6++;
   }
-  const fmt=d=>d?d.toLocaleDateString('fr-FR'):'—';
-  ge('pF').textContent=F; ge('pS').textContent=S; ge('pD').textContent=D;
-  ge('pPM').textContent=PM; ge('pHM').textContent=HM; ge('pSO').textContent=SO;
-  ge('pOui').textContent=oui; ge('pPar').textContent=par; ge('pNon').textContent=non;
-  ge('pEnCours').textContent=avecRep; ge('pSansRep').textContent=sansRep;
-  ge('pTotalLeves').textContent=oui;
-  ge('pFirstDate').textContent=fmt(firstDate); ge('pLastDate').textContent=fmt(lastDate);
-  ge('pTotal').textContent=rows.length;
-  ge('printFooterLeft').textContent='SOCOTEC — ' + affaire;
-  ge('printFooterDate').textContent=dateStr;
-  const hiddenCols=COL_DEF.filter(c=>!c.visible).map(c=>c.key);
-  COL_DEF.forEach(c=>c.visible=true);
+
+  const premiere = datesValides.length ? new Date(Math.min(...datesValides)) : null;
+  const derniere = datesValides.length ? new Date(Math.max(...datesValides)) : null;
+
+  // Calculs spécifiques
+  const nbSD = S + D;
+  const nbEnCours = suivis + partiels + nonSuivis;  // selon NB.SI(J4:J501;"OUI")+NB.SI(...;"NON")+NB.SI(...;"PAR")
+  const nbAvisLeves = suivis;
+  const nbAvisRestants = nbSD - suivis;
+  // Avis sans réponses = NB.SI(G4:G501;"S")+NB.SI(G4:G501;"D") - NB.SI(J4:J501;"OUI") - NB.SI(J4:J501;"NON") + NB.SI(J4:J501;"PAR")
+  const nbSansRep = nbSD - suivis - nonSuivis + partiels;
+
+  // Mise à jour des éléments du DOM de l'en-tête d'impression
+  ge('pF').textContent = F;
+  ge('pS').textContent = S;
+  ge('pD').textContent = D;
+  ge('pPM').textContent = PM;
+  ge('pHM').textContent = HM;
+  ge('pSO').textContent = SO;
+  ge('pOui').textContent = suivis;
+  ge('pPar').textContent = partiels;
+  ge('pNon').textContent = nonSuivis;
+  ge('pEnCours').textContent = nbEnCours;
+  ge('pSansRep').textContent = nbSansRep;
+  ge('pTotalLeves').textContent = nbAvisLeves;
+  ge('pFirstDate').textContent = premiere ? premiere.toLocaleDateString('fr-FR') : '…';
+  ge('pLastDate').textContent = derniere ? derniere.toLocaleDateString('fr-FR') : '…';
+  ge('pTotal').textContent = rows.length;
+
+  // Ajout des indicateurs supplémentaires directement dans le grid HTML (modification dynamique)
+  const statsGrid = document.getElementById('printStatsGrid');
+  // On garde les 5 blocs existants, mais on remplace le contenu du dernier bloc pour y mettre les nouvelles stats
+  // (Points d'attention, avis restants, RD6)
+  const extraHtml = `
+    <div class="print-stat-block">
+      <div class="pstat-label">Points d’attention/action :</div>
+      <div>${nbPA}</div>
+      <div class="pstat-label">⚠ Avis restants :</div>
+      <div>${nbAvisRestants}</div>
+      <div class="pstat-label">❌ Avis/Comm intégrés RD6 :</div>
+      <div>${nbRD6}</div>
+    </div>
+  `;
+  // Remplacer le dernier bloc (Interventions) par un bloc combiné ou ajouter ?
+  // Pour simplifier, on remplace le contenu du 5ème bloc (Interventions) par ces nouvelles lignes.
+  const blocks = statsGrid.children;
+  if (blocks.length >= 5) {
+    const lastBlock = blocks[4];
+    lastBlock.innerHTML = extraHtml;
+  } else {
+    // fallback
+    statsGrid.insertAdjacentHTML('beforeend', extraHtml);
+  }
+
+  // Largeurs proportionnelles pour les colonnes visibles
+  const visibleCols = COL_DEF.filter(c => c.visible);
+  const totalPx = visibleCols.reduce((sum,c)=>sum+parseInt(c.width),0);
+  const totalMm = 397;
+  let styleRules = '';
+  let idx=1;
+  for(let col of visibleCols){
+    let mm = (parseInt(col.width)/totalPx)*totalMm;
+    styleRules += `#mainTable th:nth-child(${idx}), #mainTable td:nth-child(${idx}) { width: ${mm.toFixed(1)}mm !important; min-width: ${mm.toFixed(1)}mm !important; }\n`;
+    idx++;
+  }
+  styleRules += `#mainTable th:last-child, #mainTable td:last-child { display: none !important; }\n`;
+  const printStyle = document.createElement('style');
+  printStyle.id = 'print-col-widths';
+  printStyle.textContent = styleRules;
+  document.head.appendChild(printStyle);
   rebuildTableHeader(); renderTable();
   window.print();
-  COL_DEF.forEach(c=>{if(hiddenCols.includes(c.key))c.visible=false;});
+  printStyle.remove();
   rebuildTableHeader(); renderTable();
 }
 
@@ -1226,7 +1304,7 @@ function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a
 function closeAddModal(){ge('addModal').classList.remove('open');}
 function addRow(){if(!ge('a_num').value.trim()){alert('Numéro d\'avis requis');return;}data[currentTab].push(makeRow({num:ge('a_num').value,ref:ge('a_ref').value,date:ge('a_date').value,inter:ge('a_inter').value,disp:ge('a_disp').value,avis:ge('a_avis').value,desc:ge('a_desc').value,obs:ge('a_obs').value,docs:ge('a_docs').value,lots:ge('a_lots').value}));closeAddModal();applyFilters();persistLocal();pushToParent();}
 
-// --- Statistiques ---
+// --- Statistiques (modal) ---
 function openStatsModal(){
   const rows=getRows();
   let F=0,S=0,D=0,SO=0,HM=0,PM=0,suivis=0,partiels=0,nonSuivis=0,avisLevesTotal=0,firstIntervention=null,lastIntervention=null;
@@ -1237,7 +1315,7 @@ function openStatsModal(){
 }
 function closeStatsModal(){ge('statsModal').classList.remove('open');}
 
-// --- Export / Import Excel (avec lecture colonne M) ---
+// --- Export / Import Excel ---
 async function exportWithExcelJS(){
   if(typeof ExcelJS==='undefined'){alert('ExcelJS non chargé');return;}
   try{
