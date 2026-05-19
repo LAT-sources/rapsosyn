@@ -364,113 +364,43 @@
      IMPRESSION - Fidèle au PDF RapsoSynthèse
      Orientation paysage A3, toutes colonnes, en-tête compact
      ============================================================ */
-  @media print {
-    @page { size: A3 landscape; margin: 8mm 6mm 12mm 6mm; }
-    .syn-header, .toolbar, .overlay, .edit-panel,
-    .modal-overlay, .empty-state, #colModal { display: none !important; }
-    .print-header {
-      display: block !important;
-      margin-bottom: 3mm;
-      padding-bottom: 2mm;
-      border-bottom: 1.5px solid #1a56db;
-    }
-    .print-header-top {
-      display: flex !important;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 2mm;
-    }
-    .print-title { font-size: 10pt; font-weight: 700; color: #1e293b; }
-    .print-subtitle { font-size: 7.5pt; color: #475569; margin-top: 1mm; }
-    .print-date-print { font-size: 7pt; color: #64748b; text-align: right; }
-    .print-stats-grid {
-      display: grid !important;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 2mm;
-      margin-top: 2mm;
-    }
-    .print-stat-block {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      padding: 1.5mm 2mm;
-      font-size: 6.5pt;
-    }
-    .print-stat-block .pstat-label { color: #64748b; margin-bottom: 0.5mm; }
-    .print-stat-block .pstat-row { display: flex; justify-content: space-between; }
-    .print-stat-block .pstat-val { font-weight: 700; }
-    .print-stat-block .pstat-val.green { color: #15803d; }
-    .print-stat-block .pstat-val.gold  { color: #92400e; }
-    .print-stat-block .pstat-val.red   { color: #b91c1c; }
-    .print-stat-block .pstat-val.blue  { color: #1a56db; }
-    .print-legend {
-      margin-top: 1.5mm;
-      font-size: 6pt;
-      color: #64748b;
-      border-top: 1px solid #e2e8f0;
-      padding-top: 1mm;
-    }
-    .print-footer {
-      display: block !important;
-      position: fixed;
-      bottom: 3mm;
-      left: 6mm;
-      right: 6mm;
-      font-size: 5.5pt;
-      color: #94a3b8;
-      display: flex;
-      justify-content: space-between;
-      border-top: 1px solid #e2e8f0;
-      padding-top: 1mm;
-    }
-    body {
-      background: white !important;
-      height: auto !important;
-      overflow: visible !important;
-      font-size: 7pt !important;
-      font-family: 'Inter', Arial, sans-serif !important;
-      color: #000 !important;
-      display: block !important;
-    }
-    .table-container {
-      flex: unset !important;
-      overflow: visible !important;
-      padding: 0 !important;
-    }
-    table {
-      width: 100% !important;
-      table-layout: fixed !important;
-      border-collapse: collapse !important;
-      font-size: 6.5pt !important;
-      page-break-inside: auto;
-      border: 1px solid #334155 !important;
-    }
-    thead { display: table-header-group; }
-    tfoot { display: table-footer-group; }
-    tr { page-break-inside: avoid; }
-    th {
-      background: #1e293b !important;
-      color: #fff !important;
-      font-size: 6pt !important;
-      font-weight: 700 !important;
-      padding: 3px 4px !important;
-      border-right: 1px solid #475569 !important;
-      white-space: normal !important;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-      cursor: default !important;
-    }
-    td {
-      font-size: 6.5pt !important;
-      padding: 3px 4px !important;
-      border-bottom: 1px solid #e2e8f0 !important;
-      border-right: 1px solid #e2e8f0 !important;
-      vertical-align: top !important;
-      word-break: break-word !important;
-      white-space: normal !important;
-      overflow: visible !important;
-      text-overflow: unset !important;
-      color: #1e293b !important;
-    }
+@media print {
+  @page { size: A3 landscape; margin: 8mm 6mm 12mm 6mm; }
+  .syn-header, .toolbar, .overlay, .edit-panel,
+  .modal-overlay, .empty-state, #colModal { display: none !important; }
+  .print-header { display: block !important; margin-bottom: 3mm; padding-bottom: 2mm; border-bottom: 1.5px solid #1a56db; }
+  .print-header-top { display: flex !important; justify-content: space-between; align-items: flex-start; margin-bottom: 2mm; }
+  .print-title { font-size: 10pt; font-weight: 700; color: #1e293b; }
+  .print-subtitle { font-size: 7.5pt; color: #475569; margin-top: 1mm; }
+  .print-date-print { font-size: 7pt; color: #64748b; text-align: right; }
+  .print-stats-grid { display: grid !important; grid-template-columns: repeat(5, 1fr); gap: 2mm; margin-top: 2mm; }
+  .print-stat-block { background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5mm 2mm; font-size: 6.5pt; }
+  .print-stat-block .pstat-label { color: #64748b; margin-bottom: 0.5mm; }
+  .print-stat-block .pstat-row { display: flex; justify-content: space-between; }
+  .print-stat-block .pstat-val { font-weight: 700; }
+  .print-stat-block .pstat-val.green { color: #15803d; }
+  .print-stat-block .pstat-val.gold  { color: #92400e; }
+  .print-stat-block .pstat-val.red   { color: #b91c1c; }
+  .print-stat-block .pstat-val.blue  { color: #1a56db; }
+  .print-legend { margin-top: 1.5mm; font-size: 6pt; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 1mm; }
+  .print-footer { display: block !important; position: fixed; bottom: 3mm; left: 6mm; right: 6mm; font-size: 5.5pt; color: #94a3b8; display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 1mm; }
+  body { background: white !important; height: auto !important; overflow: visible !important; font-size: 7pt !important; font-family: 'Inter', Arial, sans-serif !important; color: #000 !important; display: block !important; }
+  .table-container { flex: unset !important; overflow: visible !important; padding: 0 !important; }
+  table { width: 100% !important; table-layout: auto !important; border-collapse: collapse !important; font-size: 6.5pt !important; page-break-inside: auto; border: 1px solid #334155 !important; }
+  thead { display: table-header-group; }
+  tfoot { display: table-footer-group; }
+  tr { page-break-inside: avoid; }
+  th, td { border: 1px solid #cbd5e1 !important; padding: 3px 4px !important; vertical-align: top !important; word-break: break-word !important; }
+  th { background: #1e293b !important; color: white !important; font-size: 6pt !important; font-weight: 700 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .badge { font-size: 6pt !important; padding: 1px 3px !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .badge-oui { background: #dcfce7 !important; color: #15803d !important; }
+  .badge-par { background: #fef3c7 !important; color: #92400e !important; }
+  .badge-non { background: #fee2e2 !important; color: #b91c1c !important; }
+  .rd6-tag { font-size: 5pt !important; background: #ede9fe !important; color: #7c3aed !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tr:nth-child(even) td { background: #f8fafc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  /* La colonne Actions (bouton Edit) est masquée quelle que soit sa position */
+  td:last-child, th:last-child { display: none !important; }
+}
     /* Largeurs colonnes A3 paysage basées sur COL_DEF (somme px = 1426) */
     th:nth-child(1), td:nth-child(1) { width: 14mm !important; min-width: 14mm; } /* N° (49px) */
     th:nth-child(2), td:nth-child(2) { width: 14mm !important; min-width: 14mm; } /* Réf (49px) */
@@ -1145,6 +1075,17 @@ function printReport() {
   ge('pTotal').textContent=rows.length;
   ge('printFooterLeft').textContent='SOCOTEC — ' + affaire;
   ge('printFooterDate').textContent=dateStr;
+    // On conserve l'état actuel des colonnes (visible = true pour celles affichées)
+  // On n'a pas besoin de modifier COL_DEF
+
+  // On force une reconstruction du tableau avec les colonnes actuelles
+  rebuildTableHeader();
+  renderTable();
+
+  window.print();
+
+  // Pas de restauration nécessaire car on n'a pas modifié COL_DEF
+}
   const hiddenCols=COL_DEF.filter(c=>!c.visible).map(c=>c.key);
   COL_DEF.forEach(c=>c.visible=true);
   rebuildTableHeader(); renderTable();
