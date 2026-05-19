@@ -375,6 +375,64 @@
   }
   .modal-icon-btn:hover { background: var(--g200); color: var(--g700); }
   .rapide-detail-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--g500); letter-spacing: 0.06em; }
+  /* Overlay et conteneur de la modale colonnes */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 900;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open {
+  display: flex;
+}
+.modal {
+  background: white;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 95vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+}
+.modal-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.modal-body {
+  padding: 16px;
+  flex: 1;
+}
+.modal-ftr {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid #e2e8f0;
+}
+/* Style des items de colonnes (identique à l’ancien panneau) */
+.col-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.col-picker-item input {
+  accent-color: var(--blue);
+  margin: 0;
+}
 </style>
 </head>
 <body>
@@ -840,9 +898,20 @@ const COL_DEF = [
 function loadColPrefs(){try{const s=localStorage.getItem('rs_col_prefs');if(s){const p=JSON.parse(s);COL_DEF.forEach(c=>{if(p[c.key]!==undefined)c.visible=p[c.key];});}}catch(e){}}
 function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localStorage.setItem('rs_col_prefs',JSON.stringify(p));}
 function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.onclick=()=>sortBy(c.key);th.style.cursor='pointer';hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
-function toggleColPicker(){
-  ge('colPickerPanel').classList.toggle('open');
-  if(ge('actionsMenu').classList.contains('show')) ge('actionsMenu').classList.remove('show');
+function toggleColPicker() {
+  // Construire la liste des colonnes
+  const listDiv = document.getElementById('colModalBody');
+  listDiv.innerHTML = COL_DEF.map(c => `
+    <label class="col-picker-item">
+      <input type="checkbox" ${c.visible ? 'checked' : ''} ${c.locked ? 'disabled' : ''} 
+             onchange="toggleColumn('${c.key}', this.checked)">
+      <span>${c.label}</span>
+    </label>
+  `).join('');
+  document.getElementById('colModal').classList.add('open');
+}
+function closeColModal() {
+  document.getElementById('colModal').classList.remove('open');
 }
 function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
@@ -1496,5 +1565,21 @@ function ge(id){return document.getElementById(id);}
 
 loadColPrefs(); buildColPickerList(); rebuildTableHeader(); loadLocal(); applyFilters();
 </script>
+<!-- MODAL GESTION DES COLONNES -->
+<div class="modal-overlay" id="colModal">
+  <div class="modal" style="width:400px;">
+    <div class="modal-hdr">
+      📋 Colonnes affichées
+      <button class="tb-btn" onclick="closeColModal()">✕</button>
+    </div>
+    <div class="modal-body" id="colModalBody">
+      <!-- la liste sera injectée ici -->
+    </div>
+    <div class="modal-ftr">
+      <button class="tb-btn" onclick="resetColumns()">Tout afficher</button>
+      <button class="tb-btn green" onclick="closeColModal()">Fermer</button>
+    </div>
+  </div>
+</div>  
 </body>
 </html>
