@@ -993,6 +993,20 @@ function toggleStar(id, e) {
       iframe.contentWindow.postMessage({ type: 'rapso_action', action: action }, '*');
     }
   }
+
+   function toggleActionsMenu() {
+  document.getElementById('actionsMenu').style.display =
+    document.getElementById('actionsMenu').style.display === 'block' ? 'none' : 'block';
+}
+function closeActionsMenu() {
+  document.getElementById('actionsMenu').style.display = 'none';
+}
+// Fermer le menu si on clique ailleurs
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.actions-dropdown')) {
+    closeActionsMenu();
+  }
+});
    
 // ─── Glisser‑déposer création canevas ───
 function setupCanevasDrop() {
