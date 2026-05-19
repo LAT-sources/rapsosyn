@@ -384,26 +384,23 @@
     .print-subtitle { font-size: 7.5pt; color: #475569; margin-top: 1mm; }
     .print-date-print { font-size: 7pt; color: #64748b; text-align: right; }
     .print-stats-grid {
-      display: grid !important;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 2mm;
+      display: flex !important;
+      flex-wrap: wrap;
+      gap: 3mm;
       margin-top: 2mm;
     }
     .print-stat-block {
       background: #f8fafc;
       border: 1px solid #e2e8f0;
-      padding: 1.5mm 2mm;
+      padding: 2mm 3mm;
       font-size: 6.5pt;
+      flex: 1;
+      min-width: 140px;
     }
-    .print-stat-block .pstat-label { color: #64748b; margin-bottom: 0.5mm; }
+    .print-stat-block .pstat-label { font-weight: 700; margin-bottom: 1mm; }
     .print-stat-block .pstat-row { display: flex; justify-content: space-between; }
-    .print-stat-block .pstat-val { font-weight: 700; }
-    .print-stat-block .pstat-val.green { color: #15803d; }
-    .print-stat-block .pstat-val.gold  { color: #92400e; }
-    .print-stat-block .pstat-val.red   { color: #b91c1c; }
-    .print-stat-block .pstat-val.blue  { color: #1a56db; }
     .print-legend {
-      margin-top: 1.5mm;
+      margin-top: 2mm;
       font-size: 6pt;
       color: #64748b;
       border-top: 1px solid #e2e8f0;
@@ -530,38 +527,7 @@
     </div>
     <div class="print-date-print" id="printDateNow"></div>
   </div>
-  <div class="print-stats-grid" id="printStatsGrid">
-    <div class="print-stat-block">
-      <div class="pstat-label">Avis par type</div>
-      <div class="pstat-row"><span>Favorables (F)</span><span class="pstat-val green" id="pF">0</span></div>
-      <div class="pstat-row"><span>Suspendus (S)</span><span class="pstat-val gold" id="pS">0</span></div>
-      <div class="pstat-row"><span>Défavorables (D)</span><span class="pstat-val red" id="pD">0</span></div>
-    </div>
-    <div class="print-stat-block">
-      <div class="pstat-label">Autres avis</div>
-      <div class="pstat-row"><span>Pour mémoire (PM)</span><span class="pstat-val" id="pPM">0</span></div>
-      <div class="pstat-row"><span>Hors mission (HM)</span><span class="pstat-val" id="pHM">0</span></div>
-      <div class="pstat-row"><span>Sans objet (SO)</span><span class="pstat-val" id="pSO">0</span></div>
-    </div>
-    <div class="print-stat-block">
-      <div class="pstat-label">Suivi des avis</div>
-      <div class="pstat-row"><span>✅ Levés</span><span class="pstat-val green" id="pOui">0</span></div>
-      <div class="pstat-row"><span>⚠ Partiels</span><span class="pstat-val gold" id="pPar">0</span></div>
-      <div class="pstat-row"><span>❌ Maintenus</span><span class="pstat-val red" id="pNon">0</span></div>
-    </div>
-    <div class="print-stat-block">
-      <div class="pstat-label">Réponses</div>
-      <div class="pstat-row"><span>En cours</span><span class="pstat-val blue" id="pEnCours">0</span></div>
-      <div class="pstat-row"><span>Sans réponse</span><span class="pstat-val" id="pSansRep">0</span></div>
-      <div class="pstat-row"><span>Total avis levés</span><span class="pstat-val green" id="pTotalLeves">0</span></div>
-    </div>
-    <div class="print-stat-block">
-      <div class="pstat-label">Interventions</div>
-      <div class="pstat-row"><span>Première</span><span class="pstat-val" id="pFirstDate">—</span></div>
-      <div class="pstat-row"><span>Dernière</span><span class="pstat-val" id="pLastDate">—</span></div>
-      <div class="pstat-row"><span>Total avis</span><span class="pstat-val blue" id="pTotal">0</span></div>
-    </div>
-  </div>
+  <div class="print-stats-grid" id="printStatsGrid"></div>
   <div class="print-legend">
     F: Favorables / S: Suspendus / D: Défavorables / SO: Sans Objet / HM: Hors Mission / PM: Pour mémoire &nbsp;|&nbsp; ✅ Oui: avis levés / ⚠ Par: avis partiellement levés / ❌ Non: avis maintenus
   </div>
@@ -860,10 +826,9 @@
 <script>
 
 const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
-  
+
 // ============================================================
-//  RAPSOSYNTHÈSE - VERSION FINALE
-//  Lots complets, colonnes sélectionnables, impression statistiques exactes
+//  RAPSOSYNTHÈSE - VERSION FINALE AVEC STATISTIQUES IMPRESSION CORRIGÉES
 // ============================================================
 
 // --- Thème ---
@@ -1045,7 +1010,7 @@ function renderTable(){
       else cells+=`<td data-col="${c.key}">${escapeHtml(r[c.key])}</td>`;
     });
     cells+=`<td class="col-actions"><button class="tb-btn" onclick="openEditPanel(${i})" style="padding:2px 8px;">Edit</button></td>`;
-    return `<tr ondblclick="openEditPanel(${i})" id="row-${i}">${cells}</tr>`;
+    return `<tr ondblclick="openEditPanel(${i})" id="row-${i}">${cells}<tr>`;
   }).join('');
 }
 function updateStats(){const rows=getRows();ge('statOui').textContent=rows.filter(r=>r.suivi==='Oui').length;ge('statPar').textContent=rows.filter(r=>r.suivi==='Par').length;ge('statNon').textContent=rows.filter(r=>r.suivi==='Non').length;ge('statTotal').textContent=rows.length;}
@@ -1119,7 +1084,7 @@ function saveInfoModal(){
 }
 
 // =============================================================
-//  IMPRESSION — mise à jour de l'en-tête avec les statistiques Excel
+//  IMPRESSION — MISE À JOUR DE L'EN-TÊTE AVEC STATISTIQUES DEMANDÉES
 // =============================================================
 function printReport() {
   const rows = getRows();
@@ -1133,7 +1098,7 @@ function printReport() {
   ge('printFooterDate').textContent = dateStr;
   ge('printFooterLeft').textContent = 'SOCOTEC — ' + affaire;
 
-  // Statistiques selon formules Excel
+  // Calcul des statistiques selon les formules demandées
   let F=0, S=0, D=0, SO=0, HM=0, PM=0;
   let suivis=0, partiels=0, nonSuivis=0;
   let datesValides = [];
@@ -1161,56 +1126,36 @@ function printReport() {
 
   const premiere = datesValides.length ? new Date(Math.min(...datesValides)) : null;
   const derniere = datesValides.length ? new Date(Math.max(...datesValides)) : null;
-
-  // Calculs spécifiques
   const nbSD = S + D;
-  const nbEnCours = suivis + partiels + nonSuivis;  // selon NB.SI(J4:J501;"OUI")+NB.SI(...;"NON")+NB.SI(...;"PAR")
+  const nbEnCours = suivis + partiels + nonSuivis;
   const nbAvisLeves = suivis;
   const nbAvisRestants = nbSD - suivis;
-  // Avis sans réponses = NB.SI(G4:G501;"S")+NB.SI(G4:G501;"D") - NB.SI(J4:J501;"OUI") - NB.SI(J4:J501;"NON") + NB.SI(J4:J501;"PAR")
-  const nbSansRep = nbSD - suivis - nonSuivis + partiels;
+  const nbSansRep = nbSD - suivis - nonSuivis + partiels; // selon la formule Excel
 
-  // Mise à jour des éléments du DOM de l'en-tête d'impression
-  ge('pF').textContent = F;
-  ge('pS').textContent = S;
-  ge('pD').textContent = D;
-  ge('pPM').textContent = PM;
-  ge('pHM').textContent = HM;
-  ge('pSO').textContent = SO;
-  ge('pOui').textContent = suivis;
-  ge('pPar').textContent = partiels;
-  ge('pNon').textContent = nonSuivis;
-  ge('pEnCours').textContent = nbEnCours;
-  ge('pSansRep').textContent = nbSansRep;
-  ge('pTotalLeves').textContent = nbAvisLeves;
-  ge('pFirstDate').textContent = premiere ? premiere.toLocaleDateString('fr-FR') : '…';
-  ge('pLastDate').textContent = derniere ? derniere.toLocaleDateString('fr-FR') : '…';
-  ge('pTotal').textContent = rows.length;
-
-  // Ajout des indicateurs supplémentaires directement dans le grid HTML (modification dynamique)
-  const statsGrid = document.getElementById('printStatsGrid');
-  // On garde les 5 blocs existants, mais on remplace le contenu du dernier bloc pour y mettre les nouvelles stats
-  // (Points d'attention, avis restants, RD6)
-  const extraHtml = `
+  // Construction des blocs HTML pour l'en-tête d'impression
+  const statsHtml = `
     <div class="print-stat-block">
-      <div class="pstat-label">Points d’attention/action :</div>
-      <div>${nbPA}</div>
-      <div class="pstat-label">⚠ Avis restants :</div>
-      <div>${nbAvisRestants}</div>
-      <div class="pstat-label">❌ Avis/Comm intégrés RD6 :</div>
-      <div>${nbRD6}</div>
+      <div class="pstat-label">Première intervention</div>
+      <div>${premiere ? premiere.toLocaleDateString('fr-FR') : '…'}</div>
+      <div class="pstat-label" style="margin-top:1mm;">Intervention la plus récente</div>
+      <div>${derniere ? derniere.toLocaleDateString('fr-FR') : '…'}</div>
+    </div>
+    <div class="print-stat-block">
+      <div class="pstat-label">Nbr d'avis suivis</div><div>${suivis}</div>
+      <div class="pstat-label">Nbr d'avis partiellement suivis</div><div>${partiels}</div>
+      <div class="pstat-label">Nbr d'avis non suivis</div><div>${nonSuivis}</div>
+      <div class="pstat-label">Nbr d'avis en cours de traitement</div><div>${nbEnCours}</div>
+      <div class="pstat-label">Nbr d'avis sans réponses</div><div>${nbSansRep}</div>
+    </div>
+    <div class="print-stat-block">
+      <div class="pstat-label">Nbr d'avis S/D</div><div>${nbSD}</div>
+      <div class="pstat-label">Nbr de point d'attention/action</div><div>${nbPA}</div>
+      <div class="pstat-label">Nbr total d'avis levés</div><div>${nbAvisLeves}</div>
+      <div class="pstat-label">⚠ Nbr avis restants</div><div>${nbAvisRestants}</div>
+      <div class="pstat-label">❌ Nbr d’Avis/Comm intégrés au RD6</div><div>${nbRD6}</div>
     </div>
   `;
-  // Remplacer le dernier bloc (Interventions) par un bloc combiné ou ajouter ?
-  // Pour simplifier, on remplace le contenu du 5ème bloc (Interventions) par ces nouvelles lignes.
-  const blocks = statsGrid.children;
-  if (blocks.length >= 5) {
-    const lastBlock = blocks[4];
-    lastBlock.innerHTML = extraHtml;
-  } else {
-    // fallback
-    statsGrid.insertAdjacentHTML('beforeend', extraHtml);
-  }
+  ge('printStatsGrid').innerHTML = statsHtml;
 
   // Largeurs proportionnelles pour les colonnes visibles
   const visibleCols = COL_DEF.filter(c => c.visible);
@@ -1338,7 +1283,6 @@ function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"
 function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
 function hasRappel(obs){if(!obs)return false;let s=String(obs);return s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l'observation précédente:")||s.includes("Rappel de l'observation précédente :");}
 function updateParentAffaire(affaire){if(window.parent&&window.parent!==window)window.parent.postMessage({type:'rapso_update_affaire',canId:window.CANEVAS_ID,affaire},'*');}
-
 function processXLSX(file,mode){
   const sid=mode==='actualiser'?'actualiserStatus':'importStatus';ge(sid).textContent='Lecture...';
   if(mode==='actualiser'){const nomFichier=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');if(!confirm(`Mettre à jour « ${nomFichier} » ?`)){ge(sid).textContent='Annulé';return;}}
@@ -1376,7 +1320,6 @@ function closeActualiserModal(){ge('actualiserModal').classList.remove('open');}
 function handleFileImport(i){if(i.files[0])processXLSX(i.files[0],'import');}
 function handleActualiserFileImport(i){if(i.files[0])processXLSX(i.files[0],'actualiser');}
 ['importDropzone','actualiserDropzone'].forEach(id=>{const dz=ge(id);if(dz){dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--blue)';});dz.addEventListener('dragleave',()=>dz.style.borderColor='');dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f)processXLSX(f,id==='actualiserDropzone'?'actualiser':'import');});}});
-
 function openMigrationModal(){document.getElementById('migrationModal').classList.add('open');}
 function closeMigrationModal(){document.getElementById('migrationModal').classList.remove('open');}
 function handleMigrationFileImport(input){
