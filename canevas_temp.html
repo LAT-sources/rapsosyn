@@ -1095,6 +1095,10 @@ function printReport() {
   const affaireRaw = ge('affaireDisplay').innerText || '';
   const affaire = (affaireRaw && affaireRaw !== '—') ? affaireRaw : '';
 
+  // Met à jour le titre de la page pour l'impression
+  const oldTitle = document.title;
+  document.title = affaire || 'Récapitulatif des avis';
+
   ge('printAffaire').textContent = affaire
     ? 'Récapitulatif des avis — ' + affaire
     : 'Récapitulatif des avis';
@@ -1189,6 +1193,9 @@ function printReport() {
   document.head.appendChild(printStyle);
   rebuildTableHeader(); renderTable();
   window.print();
+
+  // Restaure le titre après impression
+  document.title = oldTitle;
   printStyle.remove();
   rebuildTableHeader(); renderTable();
 }
