@@ -482,11 +482,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       
     </button>
-<!-- Dans la syn-topbar, après le bouton Forcer sauvegarde -->
-<button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde" style="margin-left:2px;">
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-</button>
-
 <!-- Nouveau bouton Actions -->
 <div class="actions-dropdown" style="position:relative;display:inline-block;margin-left:6px;">
   <button class="syn-refresh" onclick="toggleActionsMenu()" title="Actions">🛠️ Actions ▾</button>
@@ -993,8 +988,7 @@ function toggleStar(id, e) {
       iframe.contentWindow.postMessage({ type: 'rapso_action', action: action }, '*');
     }
   }
-
-   function toggleActionsMenu() {
+function toggleActionsMenu() {
   document.getElementById('actionsMenu').style.display =
     document.getElementById('actionsMenu').style.display === 'block' ? 'none' : 'block';
 }
