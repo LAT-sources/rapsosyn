@@ -1094,6 +1094,7 @@ function printReport() {
   const rows = getRows();
   const affaireRaw = ge('affaireDisplay').innerText || '';
   const affaire = (affaireRaw && affaireRaw !== '—') ? affaireRaw : '';
+  const dossier = ge('dossierInput').value || '';
 
   // Met à jour le titre de la page pour l'impression
   const oldTitle = document.title;
@@ -1102,8 +1103,6 @@ function printReport() {
   ge('printAffaire').textContent = affaire
     ? 'Récapitulatif des avis — ' + affaire
     : 'Récapitulatif des avis';
-  ge('printDossier').textContent = ge('dossierInput').value ? 'Dossier : ' + ge('dossierInput').value : '';
-  ge('printAffaire').textContent = 'Récapitulatif des avis — ' + affaire;
   ge('printDossier').textContent = dossier ? 'Dossier : ' + dossier : '';
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR');
@@ -1118,7 +1117,7 @@ function printReport() {
   let aujourdhui = new Date();
   aujourdhui.setHours(0,0,0,0);
   let hasToday = datesValides.some(d => d.toDateString() === aujourdhui.toDateString());
-  let derniere = hasToday ? null : aujourdhui; // Si aucune date n'est aujourd'hui, on affiche aujourd'hui comme "Dernière intervention"
+  let derniere = hasToday ? null : aujourdhui;
 
   // Statistiques
   let F=0, S=0, D=0, SO=0, HM=0, PM=0;
@@ -1148,7 +1147,6 @@ function printReport() {
   const nbAvisRestants = nbSD - suivis;
   const nbSansRep = nbSD - suivis - nonSuivis + partiels;
 
-  // Construction du HTML avec couleurs
   const statsHtml = `
     <div class="print-stat-block">
       <div>Première intervention : ${premiere ? premiere.toLocaleDateString('fr-FR') : '…'}</div>
@@ -1166,16 +1164,14 @@ function printReport() {
     <div class="print-stat-block">
       <div>Nbr d'avis S/D : <span class="pstat-val red">${nbSD}</span></div>
       <div>Nbr de point d'attention/action : ${nbPA}</div>
-      ${false ? `<div>Nbr total d'avis levés : <span class="pstat-val green">${nbAvisLeves}</span></div>` : ''}
       <div style="height:12px;"></div>
       <div style="height:12px;"></div>
       <div>⚠ Nbr avis restants : <span class="pstat-val gold">${nbAvisRestants}</span></div>
-      <div>❌ Nbr d’Avis/Comm intégrés au RD6 : <span class="pstat-val red">${nbRD6}</span></div>
+      <div>❌ Nbr d'Avis/Comm intégrés au RD6 : <span class="pstat-val red">${nbRD6}</span></div>
     </div>
   `;
   ge('printStatsGrid').innerHTML = statsHtml;
 
-  // Largeurs proportionnelles pour les colonnes visibles
   const visibleCols = COL_DEF.filter(c => c.visible);
   const totalPx = visibleCols.reduce((sum,c)=>sum+parseInt(c.width),0);
   const totalMm = 397;
@@ -1194,7 +1190,7 @@ function printReport() {
   rebuildTableHeader(); renderTable();
   window.print();
 
-  // Restaure le titre après impression
+  // Restauration après impression
   document.title = oldTitle;
   printStyle.remove();
   rebuildTableHeader(); renderTable();
