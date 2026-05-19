@@ -272,6 +272,18 @@
   }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+  .col-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.col-picker-item input {
+  accent-color: var(--blue);
+  margin: 0;
+}
   /* VERSION RAPIDE */
   .rapide-modal {
     width: 960px; max-width: 97vw; height: 85vh; max-height: 750px;
@@ -375,64 +387,6 @@
   }
   .modal-icon-btn:hover { background: var(--g200); color: var(--g700); }
   .rapide-detail-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--g500); letter-spacing: 0.06em; }
-  /* Overlay et conteneur de la modale colonnes */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(4px);
-  z-index: 900;
-  align-items: center;
-  justify-content: center;
-}
-.modal-overlay.open {
-  display: flex;
-}
-.modal {
-  background: white;
-  border-radius: 12px;
-  width: 400px;
-  max-width: 95vw;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  display: flex;
-  flex-direction: column;
-}
-.modal-hdr {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-.modal-body {
-  padding: 16px;
-  flex: 1;
-}
-.modal-ftr {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding: 12px 16px;
-  border-top: 1px solid #e2e8f0;
-}
-/* Style des items de colonnes (identique à l’ancien panneau) */
-.col-picker-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 0;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-.col-picker-item input {
-  accent-color: var(--blue);
-  margin: 0;
-}
 </style>
 </head>
 <body>
