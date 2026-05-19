@@ -695,10 +695,9 @@ let currentTab='v2', data={v2:[], v1:[]}, filteredRows=[], sortKey=null, sortDir
 let selectedIntervenants = new Set();
 let selectedLots = new Set();
 
-// --- Helper cleanIntervenant ---
 function cleanIntervenant(inter){if(!inter)return '';const at=inter.indexOf('@');return at>0?inter.substring(0,at).trim():inter;}
 
-// ---------- NOUVELLE FONCTION POUR LES LOTS (CHAÎNE COMPLÈTE) ----------
+// NOUVELLE FONCTION : lot = chaîne complète
 function getLotsArray(r) {
     const val = r.lots ? r.lots.trim() : '';
     return val ? [val] : [];
@@ -707,6 +706,11 @@ function getLotsArray(r) {
 
 // --- Persistance & sync ---
 function persistLocal(){try{localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));}catch(e){}}
+function pushToParent(){if(!window.parent||window.parent===window)return;const canId=window.CANEVAS_ID;if(canId===undefined)return;try{const raw=localStorage.getItem('rapsotracker');if(raw){const parsed=JSON.parse(raw);if(parsed?.data)window.parent.postMessage({type:'rapso_save',canId,data:parsed.data},'*');}}catch(e){}}
+setInterval(pushToParent,4000);const _origSet=localStorage.setItem.bind(localStorage);
+localStorage.setItem=function(k,v){_origSet(k,v);if(k==='rapsotracker'){clearTimeout(window._rsST);window._rsST=setTimeout(pushToParent,250);}};
+window.addEventListener('beforeunload',pushToParent);
+window.addEventListener('message', function(e) { /* inchangé, reprenez votre version */ });
 function pushToParent(){if(!window.parent||window.parent===window)return;const canId=window.CANEVAS_ID;if(canId===undefined)return;try{const raw=localStorage.getItem('rapsotracker');if(raw){const parsed=JSON.parse(raw);if(parsed?.data)window.parent.postMessage({type:'rapso_save',canId,data:parsed.data},'*');}}catch(e){}}
 setInterval(pushToParent,4000);const _origSet=localStorage.setItem.bind(localStorage);
 localStorage.setItem=function(k,v){_origSet(k,v);if(k==='rapsotracker'){clearTimeout(window._rsST);window._rsST=setTimeout(pushToParent,250);}};
@@ -757,63 +761,96 @@ window.addEventListener('message', function(e) {
 
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
+function ge(id){return document.getElementById(id);}
+function getRows(){return data[currentTab];}
 
 // --- Construction multi-select (avec getLotsArray) ---
 function buildMfSelectOptions() {
   const rows = getRows();
-  const intervenants = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v => v && v !== ''))];
-  const interDiv = document.getElementById('mfInterDropdown');
+  const intervenants = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v=>v))];
+  const interDiv = ge('mfInterDropdown');
   if (interDiv) {
-    interDiv.innerHTML = intervenants.map(inter => `
-      <label><input type="checkbox" value="${escapeHtmlAttr(inter)}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', '${escapeHtmlAttr(inter)}', this.checked)"> ${escapeHtml(inter)}</label>
-    `).join('');
+    interDiv.innerHTML = intervenants.map(inter => {
+      const safeInter = inter.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      return `<label><input type="checkbox" value="${safeInter}" data-inter="${inter.replace(/"/g, '&quot;')}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(inter)}</label>`;
+    }).join('');
   }
-  document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
+  ge('mfInterCount').innerText = `(${selectedIntervenants.size})`;
 
   const allLots = rows.flatMap(r => getLotsArray(r));
   const lots = [...new Set(allLots)];
-  const lotDiv = document.getElementById('mfLotDropdown');
+  const lotDiv = ge('mfLotDropdown');
   if (lotDiv) {
-    lotDiv.innerHTML = lots.map(lot => `
-      <label><input type="checkbox" value="${escapeHtmlAttr(lot)}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', '${escapeHtmlAttr(lot)}', this.checked)"> ${escapeHtml(lot)}</label>
-    `).join('');
+    lotDiv.innerHTML = lots.map(lot => {
+      const safeLot = lot.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      return `<label><input type="checkbox" value="${safeLot}" data-lot="${lot.replace(/"/g, '&quot;')}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(lot)}</label>`;
+    }).join('');
   }
-  document.getElementById('mfLotCount').innerText = `(${selectedLots.size})`;
+  ge('mfLotCount').innerText = `(${selectedLots.size})`;
 }
 function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function escapeHtmlAttr(s){return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
-function toggleMultiFilter(type,val,chk){if(type==='inter')chk?selectedIntervenants.add(val):selectedIntervenants.delete(val);else chk?selectedLots.add(val):selectedLots.delete(val);applyFilters();}
+function toggleMultiFilter(type, val, chk) {
+  if (type === 'inter') {
+    if (chk) selectedIntervenants.add(val);
+    else selectedIntervenants.delete(val);
+  } else {
+    if (chk) selectedLots.add(val);
+    else selectedLots.delete(val);
+  }
+  applyFilters();
+}
 function toggleMfSelect(which){const id=which==='inter'?'mfInterDropdown':'mfLotDropdown';ge(id).classList.toggle('show');const other=which==='inter'?'mfLotDropdown':'mfInterDropdown';if(ge(other)&&ge(other)!==ge(id))ge(other).classList.remove('show');}
 document.addEventListener('click',e=>{if(!e.target.closest('.mf-select'))document.querySelectorAll('.mf-select-dropdown').forEach(d=>d.classList.remove('show'));});
 
 // --- Filtres principaux (avec getLotsArray) ---
 function gcf(id){return(ge(id)?.value||'').toLowerCase();}
 function matchDate(stored,q){if(!q)return true;q=q.trim();const p=q.split('/');if(p.length>=2&&stored&&/^\d{4}-\d{2}-\d{2}$/.test(stored)){const[y,m,d]=stored.split('-'),fr=d+'/'+m+'/'+y;if(p.length>=3){let yy=p[2];if(yy.length===2)yy='20'+yy;return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0')+'/'+yy);}return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0'));}return String(stored||'').toLowerCase().includes(q);}
-function applyFilters(){
+function applyFilters() {
   buildMfSelectOptions();
-  const qn=gcf('qs_num'),qd=ge('qs_date')?.value||'',qdi=gcf('qs_disp'),qo=gcf('qs_obs'),qdo=gcf('qs_docs');
-  const qF=ge('qs_F').checked,qS=ge('qs_S').checked,qD=ge('qs_D').checked,qPM=ge('qs_PM').checked,qSO=ge('qs_SO').checked;const anyQS=qF||qS||qD||qPM||qSO;
-  const fOui=ge('fOui').checked,fPar=ge('fPar').checked,fNon=ge('fNon').checked,fRd6=ge('fRd6').checked,fPA=ge('fPA').checked;const anySt=fOui||fPar||fNon;
-  let rows=getRows().filter(r=>{
-    if(qn&&!String(r.num||'').toLowerCase().includes(qn))return false;
-    if(qd&&!matchDate(r.date,qd))return false;
-    if(qdi&&!String(r.disp||'').toLowerCase().includes(qdi))return false;
-    if(qo&&!String(r.obs||'').toLowerCase().includes(qo))return false;
-    if(qdo&&!String(r.docs||'').toLowerCase().includes(qdo))return false;
-    if(anyQS){const a=(r.avis||'').toUpperCase().trim();if(!((qF&&a==='F')||(qS&&a==='S')||(qD&&a==='D')||(qPM&&a==='PM')||(qSO&&a==='SO')))return false;}
-    if(anySt){if(!((fOui&&r.suivi==='Oui')||(fPar&&r.suivi==='Par')||(fNon&&r.suivi==='Non')))return false;}
-    if(fRd6&&!r.rd6)return false;
-    if(fPA&&!(r.num||'').toUpperCase().startsWith('PA'))return false;
-    if(selectedIntervenants.size>0&&!selectedIntervenants.has(cleanIntervenant(r.inter)))return false;
-    // Filtre lots : comparaison exacte sur la chaîne complète
-    if(selectedLots.size>0){
+  const qn = ge('qs_num')?.value.toLowerCase()||'';
+  const qd = ge('qs_date')?.value||'';
+  const qdi = ge('qs_disp')?.value.toLowerCase()||'';
+  const qo = ge('qs_obs')?.value.toLowerCase()||'';
+  const qdo = ge('qs_docs')?.value.toLowerCase()||'';
+  const qF = ge('qs_F')?.checked;
+  const qS = ge('qs_S')?.checked;
+  const qD = ge('qs_D')?.checked;
+  const qPM = ge('qs_PM')?.checked;
+  const qSO = ge('qs_SO')?.checked;
+  const fOui = ge('fOui')?.checked;
+  const fPar = ge('fPar')?.checked;
+  const fNon = ge('fNon')?.checked;
+  const fRd6 = ge('fRd6')?.checked;
+  const fPA = ge('fPA')?.checked;
+  
+  let rows = getRows().filter(r => {
+    if (qn && !String(r.num||'').toLowerCase().includes(qn)) return false;
+    if (qd && !matchDate(r.date,qd)) return false;
+    if (qdi && !String(r.disp||'').toLowerCase().includes(qdi)) return false;
+    if (qo && !String(r.obs||'').toLowerCase().includes(qo)) return false;
+    if (qdo && !String(r.docs||'').toLowerCase().includes(qdo)) return false;
+    if (qF||qS||qD||qPM||qSO) {
+      const a = (r.avis||'').toUpperCase().trim();
+      if (!((qF&&a==='F')||(qS&&a==='S')||(qD&&a==='D')||(qPM&&a==='PM')||(qSO&&a==='SO'))) return false;
+    }
+    if (fOui||fPar||fNon) {
+      if (!((fOui&&r.suivi==='Oui')||(fPar&&r.suivi==='Par')||(fNon&&r.suivi==='Non'))) return false;
+    }
+    if (fRd6 && !r.rd6) return false;
+    if (fPA && !(r.num||'').toUpperCase().startsWith('PA')) return false;
+    if (selectedIntervenants.size && !selectedIntervenants.has(cleanIntervenant(r.inter))) return false;
+    // Filtre lots : comparaison sur chaîne brute
+    if (selectedLots.size) {
       const lotsArr = getLotsArray(r);
-      if(!lotsArr.some(l=>selectedLots.has(l))) return false;
+      if (!lotsArr.some(l => selectedLots.has(l))) return false;
     }
     return true;
   });
-  if(sortKey)rows.sort((a,b)=>{const av=String(a[sortKey]||''),bv=String(b[sortKey]||'');return av<bv?-sortDir:av>bv?sortDir:0;});
-  filteredRows=rows;renderTable();updateStats();
+  if (sortKey) rows.sort((a,b)=>String(a[sortKey]||'').localeCompare(String(b[sortKey]||'')) * sortDir);
+  filteredRows = rows;
+  renderTable();
+  updateStats();
 }
 function sortBy(k){sortKey===k?sortDir*=-1:(sortKey=k,sortDir=1);applyFilters();}
 function resetFilters(){
@@ -1002,10 +1039,16 @@ function buildRapMfOptions() {
   const inters = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v=>v))];
   const allLots = rows.flatMap(r => getLotsArray(r));
   const lots = [...new Set(allLots)];
-  const interDrop = document.getElementById('rapMfInterDrop');
-  if (interDrop) interDrop.innerHTML = inters.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
-  const lotDrop = document.getElementById('rapMfLotsDrop');
-  if (lotDrop) lotDrop.innerHTML = lots.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
+  const interDrop = ge('rapMfInterDrop');
+  if (interDrop) interDrop.innerHTML = inters.map(v => {
+    const safe = v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return `<label><input type="checkbox" value="${safe}" data-inter="${v.replace(/"/g, '&quot;')}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(v)}</label>`;
+  }).join('') || '<div style="padding:8px;">Aucun</div>';
+  const lotDrop = ge('rapMfLotsDrop');
+  if (lotDrop) lotDrop.innerHTML = lots.map(v => {
+    const safe = v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return `<label><input type="checkbox" value="${safe}" data-lot="${v.replace(/"/g, '&quot;')}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(v)}</label>`;
+  }).join('') || '<div style="padding:8px;">Aucun</div>';
 }
 function toggleRapMulti(type, val, checked) { if (type === 'inter') checked ? rapSelectedInters.add(val) : rapSelectedInters.delete(val); else checked ? rapSelectedLots.add(val) : rapSelectedLots.delete(val); rapApply(); }
 function toggleRapMf(which) { const id = which === 'inter' ? 'rapMfInterDrop' : 'rapMfLotsDrop'; const el = document.getElementById(id); el.classList.toggle('show'); const other = which === 'inter' ? 'rapMfLotsDrop' : 'rapMfInterDrop'; const otherEl = document.getElementById(other); if (otherEl && otherEl !== el) otherEl.classList.remove('show'); }
