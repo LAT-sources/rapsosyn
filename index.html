@@ -483,6 +483,20 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       
     </button>
   </div>
+
+   <!-- Ruban supérieur -->
+<div class="parent-toolbar">
+  <button onclick="postAction('import')">➕ Créer un dossier</button>
+  <button onclick="postAction('actualiser')">🔄 Mettre à jour</button>
+  <button onclick="postAction('migration')">📦 Migration</button>
+  <button onclick="postAction('stats')">📊 Statistiques</button>
+  <button onclick="postAction('exportJSON')">💾 Enregistrer JSON</button>
+  <button onclick="postAction('loadJSON')">📂 Ouvrir JSON</button>
+  <button onclick="postAction('print')">🖨️ Imprimer</button>
+  <button onclick="postAction('exportExcel')">📥 Télécharger Excel</button>
+  <button onclick="postAction('toggleColumns')">📋 Colonnes</button>
+</div>
+   
   <div class="syn-pending-bar" id="synPendingBar">
     <span class="pb-icon">🔔</span>
     <div class="pb-meta">
@@ -967,7 +981,13 @@ function toggleStar(id, e) {
   saveToCloud();
   renderCanevas();
 }
-
+ function postAction(action) {
+    const iframe = document.getElementById('rapsosynth-iframe'); // adaptez l'ID
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage({ type: 'rapso_action', action: action }, '*');
+    }
+  }
+   
 // ─── Glisser‑déposer création canevas ───
 function setupCanevasDrop() {
   const dropZone = document.getElementById('canevasDropZone');
