@@ -996,7 +996,7 @@ function renderTable(){
   if(!filteredRows.length){tbody.innerHTML='';empty.style.display='flex';return;}
   empty.style.display='none';
   tbody.innerHTML=filteredRows.map((r,i)=>{
-    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✓ Levé</span>':r.suivi==='Par'?'<span class="badge badge-par">~ Par.</span>':r.suivi==='Non'?'<span class="badge badge-non">✗ Non</span>':'<span class="badge badge-empty">—</span>';
+    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✓ Oui</span>':r.suivi==='Par'?'<span class="badge badge-par">~ Par.</span>':r.suivi==='Non'?'<span class="badge badge-non">✗ Non</span>':'<span class="badge badge-empty">—</span>';
     const rd6=r.rd6?'<span class="rd6-tag">RD6</span>':'';
     const interClean=cleanIntervenant(r.inter);
     let cells='';
