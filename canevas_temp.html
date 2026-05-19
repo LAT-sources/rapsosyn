@@ -272,18 +272,6 @@
   }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  .col-picker-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 0;
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-.col-picker-item input {
-  accent-color: var(--blue);
-  margin: 0;
-}
   /* VERSION RAPIDE */
   .rapide-modal {
     width: 960px; max-width: 97vw; height: 85vh; max-height: 750px;
@@ -466,7 +454,7 @@
     </div>
   </div>
 </div>
-</div>
+
 <!-- TABLEAU PRINCIPAL -->
 <div class="table-container">
   <table id="mainTable">
@@ -724,39 +712,6 @@ window.addEventListener('message', function(e) {
       if (window.parent) window.parent.postMessage({ type: 'rapso_inject_ack', data: { v2: data.v2, v1: data.v1 } }, '*');
     } catch (err) { console.warn(err); }
   }
-    // Nouveau cas : action demandée par le parent
-  if (e.data?.type === 'rapso_action') {
-    const action = e.data.action;
-    switch (action) {
-      case 'import':
-        if (checkPasswordBeforeImport()) openImportModal();
-        break;
-      case 'actualiser':
-        openActualiserModal();
-        break;
-      case 'migration':
-        if (checkPasswordBeforeMigration()) openMigrationModal();
-        break;
-      case 'stats':
-        openStatsModal();
-        break;
-      case 'exportJSON':
-        exportJSON();
-        break;
-      case 'loadJSON':
-        loadJSON();
-        break;
-      case 'print':
-        window.print();
-        break;
-      case 'exportExcel':
-        exportWithExcelJS();
-        break;
-      case 'toggleColumns':
-        toggleColPicker();
-        break;
-    }
-  }
 });
 
 // --- Injection parent ---
@@ -852,42 +807,20 @@ const COL_DEF = [
 function loadColPrefs(){try{const s=localStorage.getItem('rs_col_prefs');if(s){const p=JSON.parse(s);COL_DEF.forEach(c=>{if(p[c.key]!==undefined)c.visible=p[c.key];});}}catch(e){}}
 function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localStorage.setItem('rs_col_prefs',JSON.stringify(p));}
 function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.onclick=()=>sortBy(c.key);th.style.cursor='pointer';hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
-function toggleColPicker() {
-  // Construire la liste des colonnes
-  const listDiv = document.getElementById('colModalBody');
-  listDiv.innerHTML = COL_DEF.map(c => `
-    <label class="col-picker-item">
-      <input type="checkbox" ${c.visible ? 'checked' : ''} ${c.locked ? 'disabled' : ''} 
-             onchange="toggleColumn('${c.key}', this.checked)">
-      <span>${c.label}</span>
-    </label>
-  `).join('');
-  document.getElementById('colModal').classList.add('open');
-}
-function closeColModal() {
-  document.getElementById('colModal').classList.remove('open');
+function toggleColPicker(){
+  ge('colPickerPanel').classList.toggle('open');
+  if(ge('actionsMenu').classList.contains('show')) ge('actionsMenu').classList.remove('show');
 }
 function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
-function resetColumns() {
-  // Réactiver toutes les colonnes non verrouillées
-  COL_DEF.forEach(c => { if (!c.locked) c.visible = true; });
-  saveColPrefs();
-  rebuildTableHeader();
-  renderTable();
-
-  // Mettre à jour la liste affichée dans la modale "Gérer les colonnes"
-  const modalBody = document.getElementById('colModalBody');
-  if (modalBody) {
-    modalBody.innerHTML = COL_DEF.map(c => `
-      <label class="col-picker-item">
-        <input type="checkbox" ${c.visible ? 'checked' : ''} ${c.locked ? 'disabled' : ''} 
-               onchange="toggleColumn('${c.key}', this.checked)">
-        <span>${c.label}</span>
-      </label>
-    `).join('');
+function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();buildColPickerList();ge('colPickerPanel').classList.remove('open');}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.actions-dropdown')) {
+    ge('colPickerPanel').classList.remove('open');
+    ge('actionsMenu').classList.remove('show');
   }
-}
+});
+
 function fmtDate(d){if(!d)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}return d;}
 function renderTable(){
   const tbody=ge('tableBody'),empty=ge('emptyState');
@@ -1530,21 +1463,5 @@ function ge(id){return document.getElementById(id);}
 
 loadColPrefs(); buildColPickerList(); rebuildTableHeader(); loadLocal(); applyFilters();
 </script>
-<!-- MODAL GESTION DES COLONNES -->
-<div class="modal-overlay" id="colModal">
-  <div class="modal" style="width:400px;">
-    <div class="modal-hdr">
-      Colonnes affichées
-      <button class="tb-btn" onclick="closeColModal()">✕</button>
-    </div>
-    <div class="modal-body" id="colModalBody">
-      <!-- la liste sera injectée ici -->
-    </div>
-    <div class="modal-ftr">
-      <button class="tb-btn" onclick="resetColumns()">Tout afficher</button>
-      <button class="tb-btn green" onclick="closeColModal()">Fermer</button>
-    </div>
-  </div>
-</div>  
 </body>
 </html>
