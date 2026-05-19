@@ -915,14 +915,26 @@ function closeColModal() {
 }
 function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
-function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();buildColPickerList();ge('colPickerPanel').classList.remove('open');}
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.actions-dropdown')) {
-    ge('colPickerPanel').classList.remove('open');
-    ge('actionsMenu').classList.remove('show');
-  }
-});
+function resetColumns() {
+  // Réactiver toutes les colonnes non verrouillées
+  COL_DEF.forEach(c => { if (!c.locked) c.visible = true; });
+  saveColPrefs();
+  rebuildTableHeader();
+  renderTable();
 
+  // Mettre à jour la liste affichée dans la modale "Gérer les colonnes"
+  const modalBody = document.getElementById('colModalBody');
+  if (modalBody) {
+    modalBody.innerHTML = COL_DEF.map(c => `
+      <label class="col-picker-item">
+        <input type="checkbox" ${c.visible ? 'checked' : ''} ${c.locked ? 'disabled' : ''} 
+               onchange="toggleColumn('${c.key}', this.checked)">
+        <span>${c.label}</span>
+      </label>
+    `).join('');
+  }
+}
+});
 function fmtDate(d){if(!d)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}return d;}
 function renderTable(){
   const tbody=ge('tableBody'),empty=ge('emptyState');
