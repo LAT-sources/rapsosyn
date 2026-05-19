@@ -530,17 +530,17 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
     <!-- Bouton Actions -->
     <div class="actions-dropdown">
-      <button class="syn-refresh" onclick="toggleActionsMenu(event)" title="Actions">🛠️ Actions ▾</button>
+      <button class="syn-refresh" onclick="toggleActionsMenu(event)">☰ MENU ▾</button>
       <div class="actions-menu" id="actionsMenu">
-        <button onclick="postAction('import'); closeActionsMenu();">➕ Créer un dossier</button>
-        <button onclick="postAction('actualiser'); closeActionsMenu();">🔄 Mettre à jour</button>
-        <button onclick="postAction('migration'); closeActionsMenu();">📦 Migration</button>
-        <button onclick="postAction('stats'); closeActionsMenu();">📊 Statistiques</button>
-        <button onclick="postAction('exportJSON'); closeActionsMenu();">💾 Enregistrer en local</button>
-        <button onclick="postAction('loadJSON'); closeActionsMenu();">📂 Ouvrir un dossier local</button>
-        <button onclick="postAction('print'); closeActionsMenu();">🖨️ Imprimer</button>
-        <button onclick="postAction('exportExcel'); closeActionsMenu();">📥 Télécharger l'excel</button>
-        <button onclick="postAction('toggleColumns'); closeActionsMenu();">📋 Gérer les colonnes</button>
+        <button onclick="postAction('actualiser'); closeActionsMenu();">⟳ Mettre à jour</button>
+        <button onclick="postAction('import'); closeActionsMenu();">↺ Rénitialiser le canevas</button>
+        <button onclick="postAction('migration'); closeActionsMenu();">⇄ Migration</button>
+        <button onclick="postAction('exportJSON'); closeActionsMenu();">⤓ Enregistrer en local</button>
+        <button onclick="postAction('loadJSON'); closeActionsMenu();">⤒ Ouvrir un dossier local</button>
+        <button onclick="postAction('stats'); closeActionsMenu();">◔ Statistiques</button>
+        <button onclick="postAction('print'); closeActionsMenu();">⎙ Imprimer</button>
+        <button onclick="postAction('exportExcel'); closeActionsMenu();">⌗ Télécharger l'excel</button>
+        <button onclick="postAction('toggleColumns'); closeActionsMenu();">☷ Gérer les colonnes</button>
       </div>
     </div>
   </div>  
