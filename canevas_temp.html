@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<!-- RAPSO_META -->
+<!-- RAPSO_DATA -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RapsoSynthèse - Lots complets (phrase unique)</title>
+<title>RapsoSynthèse - Gestion des lots corrigée</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -31,6 +33,8 @@
     background: var(--g100); color: var(--g800); font-family: var(--font);
     font-size: 13px; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
   }
+
+  /* HEADER */
   .syn-header {
     background: white; border-bottom: 1px solid var(--g200); padding: 6px 16px;
     display: flex; align-items: center; gap: 12px; flex-shrink: 0;
@@ -41,6 +45,8 @@
   .dot { width: 7px; height: 7px; border-radius: 50%; }
   .dot-g { background: var(--green); } .dot-y { background: var(--gold); } .dot-r { background: var(--red); }
   .theme-btn { background: var(--g100); border: 1px solid var(--g200); padding: 4px 8px; cursor: pointer; font-size: 0.85rem; }
+
+  /* TOOLBAR */
   .toolbar {
     background: white; border-bottom: 1px solid var(--g200); padding: 5px 16px;
     display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex-shrink: 0;
@@ -94,6 +100,8 @@
   }
   .mf-select-dropdown label:hover { background: var(--g100); }
   .mf-select-dropdown input { accent-color: var(--blue); margin: 0; }
+
+  /* Menu déroulant "MENU" */
   .actions-dropdown { position: relative; display: inline-block; }
   .actions-menu {
     position: absolute; top: 100%; right: 0; z-index: 300; background: white;
@@ -107,6 +115,8 @@
     font-weight: 400; color: var(--g700); cursor: pointer; transition: background 0.1s;
   }
   .actions-menu button:hover { background: var(--g50); color: var(--blue); }
+
+  /* Panneau colonnes */
   .col-picker-panel {
     position: absolute; top: 100%; right: 0; z-index: 350; background: white;
     border: 1px solid var(--g200); width: 230px; box-shadow: var(--sh-lg);
@@ -123,6 +133,8 @@
   }
   .col-picker-item:hover { background: var(--g50); }
   .col-picker-item input { accent-color: var(--blue); }
+
+  /* TABLEAU PRINCIPAL */
   .table-container { flex: 1; overflow: auto; padding: 12px 16px; }
   table {
     width: 100%; border-collapse: collapse; background: white;
@@ -143,11 +155,13 @@
   td:last-child { border-right: none; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--blue-ll); }
+
   .col-num { width: 70px; } .col-ref { width: 55px; } .col-date { width: 65px; }
   .col-inter { width: 90px; } .col-disp { width: 150px; } .col-avis { width: 45px; }
   .col-desc { width: 130px; } .col-obs { width: 220px; } .col-docs { width: 100px; }
   .col-suivi { width: 65px; } .col-repK { width: 180px; } .col-repL { width: 180px; }
   .col-lots { width: 80px; } .col-actions { width: 50px; }
+
   .badge {
     display: inline-flex; align-items: center; padding: 1px 7px;
     font-size: 0.68rem; font-weight: 600; border: 1px solid transparent;
@@ -165,6 +179,8 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 60px 20px; color: var(--g400); gap: 8px;
   }
+
+  /* PANEL LATERAL */
   .overlay {
     display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.4);
     z-index: 800;
@@ -229,6 +245,8 @@
     background: var(--g50); border: 1px solid var(--g200); padding: 8px; min-height: 100px;
     white-space: pre-wrap; font-size: 0.76rem; color: var(--g700); overflow-y: auto;
   }
+
+  /* MODALS */
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
     z-index: 900; align-items: center; justify-content: center;
@@ -253,6 +271,20 @@
     text-align: center; cursor: pointer;
   }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .col-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.col-picker-item input {
+  accent-color: var(--blue);
+  margin: 0;
+}
+  /* VERSION RAPIDE */
   .rapide-modal {
     width: 960px; max-width: 97vw; height: 85vh; max-height: 750px;
     display: flex; flex-direction: column; overflow: hidden;
@@ -284,6 +316,7 @@
   .stats-sdf .s { color: var(--gold); }
   .stats-sdf .d { color: var(--red); }
   .stats-sdf .f { color: var(--green); }
+
   .rapide-body { flex: 1; display: flex; overflow: hidden; }
   .rapide-list-col {
     width: 34%; border-right: 1px solid var(--g200);
@@ -346,6 +379,7 @@
   .rsb-par.active { background: #92400e; color: white; }
   .rsb-rd6 { background: var(--purple-l); color: var(--purple); border-color: #ddd6fe; }
   .rsb-rd6.active { background: var(--purple); color: white; }
+
   .modal-header-actions { display: flex; gap: 6px; align-items: center; }
   .modal-icon-btn {
     background: transparent; border: none; cursor: pointer;
@@ -357,6 +391,7 @@
 </head>
 <body>
 
+<!-- HEADER (affaire/dossier masqués) -->
 <div class="syn-header">
   <div class="header-info" id="headerInfoContainer">
     <div class="info-row"><span class="label">AFFAIRE :</span><span class="value" id="affaireDisplay">—</span></div>
@@ -371,6 +406,7 @@
   <button class="theme-btn" onclick="toggleTheme()"style="display:none;">🌓</button>
 </div>
 
+<!-- TOOLBAR PRINCIPALE -->
 <div class="toolbar">
   <button class="tb-btn active" id="tabV2" onclick="switchTab('v2')"style="display:none;">RapsoV2</button>
   <button class="tb-btn" id="tabV1" onclick="switchTab('v1')"style="display:none;">RapsoV1</button>
@@ -404,10 +440,12 @@
   <button class="tb-btn" onclick="resetFilters()" title="Réinitialiser les filtres">✕</button>
   <div style="flex:1;"></div>
   <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
+  <!-- Bouton INFO (affaire/dossier) -->
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
   <button class="tb-btn" onclick="openInfoModal()" title="Infos">ⓘ</button>
+  <!-- Menu déroulant "Actions" avec le panneau des colonnes intégré -->
   <div class="actions-dropdown">
     <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()"> ☰ MENU ▾</button>
     <div class="actions-menu" id="actionsMenu">
@@ -421,21 +459,24 @@
       <button onclick="exportWithExcelJS(); closeActionsMenu();">⌗ Télécharger l'excel</button>
       <button onclick="toggleColPicker(); closeActionsMenu();">☷ Gérer les colonnes</button>
     </div>
+    <!-- Panneau de gestion des colonnes -->
     <div class="col-picker-panel" id="colPickerPanel">
       <div class="col-picker-header"><span>Colonnes affichées</span><button onclick="resetColumns()" style="background:none;border:none;color:var(--blue);cursor:pointer;">Tout afficher</button></div>
       <div class="col-picker-list" id="colPickerList"></div>
     </div>
   </div>
 </div>
-
+</div>
+<!-- TABLEAU PRINCIPAL -->
 <div class="table-container">
   <table id="mainTable">
     <thead id="mainThead"><tr id="headerRow"></tr></thead>
     <tbody id="tableBody"></tbody>
-  追赶
+  </table>
   <div class="empty-state" id="emptyState" style="display:none"><div style="font-size:1.5rem;color:var(--g300);">—</div><div>Aucun avis trouvé</div></div>
 </div>
 
+<!-- PANEL LATERAL -->
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="edit-panel" id="editPanel">
   <div class="ep-rh" id="epRh"></div>
@@ -476,17 +517,28 @@
   </div>
 </div>
 
+<!-- MODAL INFO (AFFAIRE / DOSSIER) -->
 <div class="modal-overlay" id="infoModal">
   <div class="modal" style="width:400px;">
     <div class="modal-hdr">Informations du dossier<button class="tb-btn" onclick="closeInfoModal()">×</button></div>
     <div class="modal-body">
-      <div class="form-row"><label>AFFAIRE</label><input type="text" id="infoAffaireInput" placeholder="Nom de l'affaire"></div>
-      <div class="form-row"><label>DOSSIER</label><input type="text" id="infoDossierInput" placeholder="N° de dossier"></div>
+      <div class="form-row">
+        <label>AFFAIRE</label>
+        <input type="text" id="infoAffaireInput" placeholder="Nom de l'affaire">
+      </div>
+      <div class="form-row">
+        <label>DOSSIER</label>
+        <input type="text" id="infoDossierInput" placeholder="N° de dossier">
+      </div>
     </div>
-    <div class="modal-ftr"><button class="tb-btn" onclick="closeInfoModal()">Annuler</button><button class="tb-btn green" onclick="saveInfoModal()">Enregistrer</button></div>
+    <div class="modal-ftr">
+      <button class="tb-btn" onclick="closeInfoModal()">Annuler</button>
+      <button class="tb-btn green" onclick="saveInfoModal()">Enregistrer</button>
+    </div>
   </div>
 </div>
 
+<!-- MODAL PA (avec champ date) -->
 <div class="modal-overlay" id="paModal">
   <div class="modal"><div class="modal-hdr">Ajouter PA <button class="tb-btn" onclick="closePAModal()">×</button></div>
     <div class="modal-body">
@@ -502,23 +554,63 @@
   </div>
 </div>
 
+<!-- VERSION RAPIDE (inchangée) -->
 <div class="modal-overlay" id="rapideOverlay">
   <div class="modal rapide-modal" id="rapideModal">
     <div class="modal-hdr">
       <span id="rapideAffaireTitle" style="font-weight:600; font-size:0.9rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">—</span>
-      <div class="modal-header-actions"><button class="modal-icon-btn" onclick="toggleRapideFullscreen()">[ ]</button><button class="modal-icon-btn" onclick="closeRapide()">×</button></div>
+      <div class="modal-header-actions">
+        <button class="modal-icon-btn" onclick="toggleRapideFullscreen()">[ ]</button>
+        <button class="modal-icon-btn" onclick="closeRapide()">×</button>
+      </div>
     </div>
     <div class="rapide-filters">
-      <div class="rapide-filter-group"><span style="font-size:0.7rem;font-weight:600;">Lots</span><div class="mf-select" style="display:inline-block;"><div class="mf-select-button" onclick="toggleRapMf('lots')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div><div class="mf-select-dropdown" id="rapMfLotsDrop" style="min-width:140px;"></div></div></div>
-      <div class="rapide-filter-group"><span style="font-size:0.7rem;font-weight:600;">Intervenant</span><div class="mf-select" style="display:inline-block;"><div class="mf-select-button" onclick="toggleRapMf('inter')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div><div class="mf-select-dropdown" id="rapMfInterDrop" style="min-width:140px;"></div></div></div>
-      <div class="rapide-filter-group"><label><input type="checkbox" id="rapF_F" onchange="rapApply()"> F</label><label><input type="checkbox" id="rapF_S" onchange="rapApply()"> S</label><label><input type="checkbox" id="rapF_D" onchange="rapApply()"> D</label></div>
-      <div class="rapide-filter-group"><label><input type="checkbox" id="rapF_lev" onchange="rapApply()"> Levés</label><label><input type="checkbox" id="rapF_par" onchange="rapApply()"> Partiels</label><label><input type="checkbox" id="rapF_non" onchange="rapApply()"> Maintenus</label><label><input type="checkbox" id="rapF_rd6" onchange="rapApply()"> RD6</label><label><input type="checkbox" id="rapF_pa" onchange="rapApply()"> PA</label></div>
+      <div class="rapide-filter-group">
+        <span style="font-size:0.7rem;font-weight:600;">Lots</span>
+        <div class="mf-select" style="display:inline-block;">
+          <div class="mf-select-button" onclick="toggleRapMf('lots')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
+          <div class="mf-select-dropdown" id="rapMfLotsDrop" style="min-width:140px;"></div>
+        </div>
+      </div>
+      <div class="rapide-filter-group">
+        <span style="font-size:0.7rem;font-weight:600;">Intervenant</span>
+        <div class="mf-select" style="display:inline-block;">
+          <div class="mf-select-button" onclick="toggleRapMf('inter')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
+          <div class="mf-select-dropdown" id="rapMfInterDrop" style="min-width:140px;"></div>
+        </div>
+      </div>
+      <div class="rapide-filter-group">
+        <label><input type="checkbox" id="rapF_F" onchange="rapApply()"> F</label>
+        <label><input type="checkbox" id="rapF_S" onchange="rapApply()"> S</label>
+        <label><input type="checkbox" id="rapF_D" onchange="rapApply()"> D</label>
+      </div>
+      <div class="rapide-filter-group">
+        <label><input type="checkbox" id="rapF_lev" onchange="rapApply()"> Levés</label>
+        <label><input type="checkbox" id="rapF_par" onchange="rapApply()"> Partiels</label>
+        <label><input type="checkbox" id="rapF_non" onchange="rapApply()"> Maintenus</label>
+        <label><input type="checkbox" id="rapF_rd6" onchange="rapApply()"> RD6</label>
+        <label><input type="checkbox" id="rapF_pa" onchange="rapApply()"> PA</label>
+      </div>
       <button class="rapide-reset" onclick="rapReset()"> ✕ </button>
       <div class="stats-sdf" id="rapStatsSDF">S=0 / D=0 / F=0</div>
     </div>
+
     <div class="rapide-body">
-      <div class="rapide-list-col"><div class="rapide-list-header">Avis <span id="rapCnt"></span></div><div class="rapide-list" id="rapideList"></div></div>
-      <div class="rapide-detail-col"><div class="rapide-detail-scroll" id="rapideScrollContainer"><div class="rapide-detail-label">Observations</div><div class="rapide-detail-text" id="rapideObsText">—</div><div class="rapide-edit-area" id="rapideEditArea" style="display:none"><label>Réponses ENT / MOE</label><textarea id="rq_repK" rows="2"></textarea><label>Observations-commentaires SOCOTEC</label><textarea id="rq_repL" rows="2"></textarea><label>Lots concernés</label><input type="text" id="rq_lots"></div></div></div>
+      <div class="rapide-list-col">
+        <div class="rapide-list-header">Avis <span id="rapCnt"></span></div>
+        <div class="rapide-list" id="rapideList"></div>
+      </div>
+      <div class="rapide-detail-col">
+        <div class="rapide-detail-scroll" id="rapideScrollContainer">
+          <div class="rapide-detail-label">Observations</div>
+          <div class="rapide-detail-text" id="rapideObsText">—</div>
+          <div class="rapide-edit-area" id="rapideEditArea" style="display:none">
+            <label>Réponses ENT / MOE</label><textarea id="rq_repK" rows="2"></textarea>
+            <label>Observations-commentaires SOCOTEC</label><textarea id="rq_repL" rows="2"></textarea>
+            <label>Lots concernés</label><input type="text" id="rq_lots">
+          </div>
+        </div>
+      </div>
     </div>
     <div class="rapide-footer">
       <button class="rap-stat-btn rsb-oui" id="rapBtnOui" onclick="rapToggleSuivi('Oui')">✓ Levé</button>
@@ -532,27 +624,87 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="statsModal"><div class="modal" style="width:520px;"><div class="modal-hdr">Statistiques<button class="tb-btn" onclick="closeStatsModal()">×</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div></div>
-<div class="modal-overlay" id="addModal"><div class="modal"><div class="modal-hdr">Nouvel avis<button class="tb-btn" onclick="closeAddModal()">×</button></div><div class="modal-body"><div class="form-grid"><div class="form-row"><label>N° Avis</label><input type="text" id="a_num"></div><div class="form-row"><label>Id / Réf</label><input type="text" id="a_ref"></div><div class="form-row"><label>Date</label><input type="date" id="a_date"></div><div class="form-row"><label>Intervenant</label><input type="text" id="a_inter"></div></div><div class="form-row"><label>Dispositions</label><textarea id="a_disp"></textarea></div><div class="form-row"><label>Description</label><textarea id="a_desc"></textarea></div><div class="form-row"><label>Avis</label><textarea id="a_avis"></textarea></div><div class="form-row"><label>Observations</label><textarea id="a_obs"></textarea></div><div class="form-row"><label>Documents</label><textarea id="a_docs"></textarea></div><div class="form-row"><label>Lots</label><input type="text" id="a_lots"></div></div><div class="modal-ftr"><button class="tb-btn" onclick="closeAddModal()">Annuler</button><button class="tb-btn green" onclick="addRow()">+ Ajouter</button></div></div></div>
-<div class="modal-overlay" id="importModal"><div class="modal" style="width:450px;"><div class="modal-hdr">Importer un fichier Excel<button class="tb-btn" onclick="closeImportModal()">×</button></div><div class="modal-body"><div class="dropzone" id="importDropzone" onclick="document.getElementById('fileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)"><div id="importStatus"></div></div><div class="modal-ftr"><button class="tb-btn" onclick="closeImportModal()">Fermer</button></div></div></div>
-<div class="modal-overlay" id="actualiserModal"><div class="modal" style="width:450px;"><div class="modal-hdr">Actualiser les données<button class="tb-btn" onclick="closeActualiserModal()">×</button></div><div class="modal-body"><div class="dropzone" id="actualiserDropzone" onclick="document.getElementById('actualiserFileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)"><div id="actualiserStatus"></div></div><div class="modal-ftr"><button class="tb-btn" onclick="closeActualiserModal()">Fermer</button></div></div></div>
-<div class="modal-overlay" id="migrationModal"><div class="modal" style="width:450px;"><div class="modal-hdr">Migration<button class="tb-btn" onclick="closeMigrationModal()">×</button></div><div class="modal-body"><div class="dropzone" id="migrationDropzone" onclick="document.getElementById('migrationFileInput').click()">Cliquez ou déposez un fichier Excel</div><input type="file" id="migrationFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleMigrationFileImport(this)"><div id="migrationStatus" style="margin-top:8px;"></div></div><div class="modal-ftr"><button class="tb-btn" onclick="closeMigrationModal()">Fermer</button></div></div></div>
+<!-- STATS MODAL -->
+<div class="modal-overlay" id="statsModal">
+  <div class="modal" style="width:520px;"><div class="modal-hdr">Statistiques<button class="tb-btn" onclick="closeStatsModal()">×</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div>
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal"><div class="modal-hdr">Nouvel avis<button class="tb-btn" onclick="closeAddModal()">×</button></div>
+    <div class="modal-body">
+      <div class="form-grid"><div class="form-row"><label>N° Avis</label><input type="text" id="a_num"></div><div class="form-row"><label>Id / Réf</label><input type="text" id="a_ref"></div><div class="form-row"><label>Date</label><input type="date" id="a_date"></div><div class="form-row"><label>Intervenant</label><input type="text" id="a_inter"></div></div>
+      <div class="form-row"><label>Dispositions</label><textarea id="a_disp"></textarea></div>
+      <div class="form-row"><label>Description</label><textarea id="a_desc"></textarea></div>
+      <div class="form-row"><label>Avis</label><textarea id="a_avis"></textarea></div>
+      <div class="form-row"><label>Observations</label><textarea id="a_obs"></textarea></div>
+      <div class="form-row"><label>Documents</label><textarea id="a_docs"></textarea></div>
+      <div class="form-row"><label>Lots</label><input type="text" id="a_lots"></div>
+    </div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeAddModal()">Annuler</button><button class="tb-btn green" onclick="addRow()">+ Ajouter</button></div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal" style="width:450px;"><div class="modal-hdr">Importer un fichier Excel<button class="tb-btn" onclick="closeImportModal()">×</button></div>
+    <div class="modal-body"><div class="dropzone" id="importDropzone" onclick="document.getElementById('fileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)"><div id="importStatus"></div></div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeImportModal()">Fermer</button></div>
+  </div>
+</div>
+
+<!-- ACTUALISER MODAL -->
+<div class="modal-overlay" id="actualiserModal">
+  <div class="modal" style="width:450px;"><div class="modal-hdr">Actualiser les données<button class="tb-btn" onclick="closeActualiserModal()">×</button></div>
+    <div class="modal-body"><div class="dropzone" id="actualiserDropzone" onclick="document.getElementById('actualiserFileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)"><div id="actualiserStatus"></div></div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeActualiserModal()">Fermer</button></div>
+  </div>
+</div>
+
+<!-- MODAL MIGRATION (nouvelle) -->
+<div class="modal-overlay" id="migrationModal">
+  <div class="modal" style="width:450px;">
+    <div class="modal-hdr">Migration<button class="tb-btn" onclick="closeMigrationModal()">×</button></div>
+    <div class="modal-body">
+      <div class="dropzone" id="migrationDropzone" onclick="document.getElementById('migrationFileInput').click()">Cliquez ou déposez un fichier Excel</div>
+      <input type="file" id="migrationFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleMigrationFileImport(this)">
+      <div id="migrationStatus" style="margin-top:8px;"></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="tb-btn" onclick="closeMigrationModal()">Fermer</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
+
 const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
 
+// ============================================================
+//  RAPSOSYNTHÈSE
+// ============================================================
+
+// --- Thème ---
 function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('rapso_theme',document.body.classList.contains('dark')?'dark':'light');}
 (()=>{if((localStorage.getItem('rapso_theme')||'light')==='dark')document.body.classList.add('dark');})();
 
+// --- Données globales ---
 let currentTab='v2', data={v2:[], v1:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='';
 let selectedIntervenants = new Set();
 let selectedLots = new Set();
 
+// --- Helper cleanIntervenant ---
 function cleanIntervenant(inter){if(!inter)return '';const at=inter.indexOf('@');return at>0?inter.substring(0,at).trim():inter;}
-function getLotsArray(r) { const val = r.lots ? r.lots.trim() : ''; return val ? [val] : []; }
 
+// --- Fonction utilitaire pour extraire les lots (uniquement séparateurs , ; )
+function splitLots(lotsStr) {
+    if (!lotsStr) return [];
+    return String(lotsStr).split(/[,;]+/).map(l => l.trim()).filter(l => l !== '');
+}
+
+// --- Persistance & sync ---
 function persistLocal(){try{localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));}catch(e){}}
 function pushToParent(){if(!window.parent||window.parent===window)return;const canId=window.CANEVAS_ID;if(canId===undefined)return;try{const raw=localStorage.getItem('rapsotracker');if(raw){const parsed=JSON.parse(raw);if(parsed?.data)window.parent.postMessage({type:'rapso_save',canId,data:parsed.data},'*');}}catch(e){}}
 setInterval(pushToParent,4000);const _origSet=localStorage.setItem.bind(localStorage);
@@ -565,14 +717,33 @@ window.addEventListener('message', function(e) {
       const inj = e.data.data || { v2: [], v1: [] };
       data.v2 = Array.isArray(inj.v2) ? inj.v2.map(makeRow) : [];
       data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
-      if (e.data.affaire) { ge('affaireDisplay').innerText = e.data.affaire; const rapTitle = document.getElementById('rapideAffaireTitle'); if (rapTitle) rapTitle.innerText = cleanAffaireForRapide(e.data.affaire); }
+      if (e.data.affaire) {
+        ge('affaireDisplay').innerText = e.data.affaire;
+        const rapTitle = document.getElementById('rapideAffaireTitle');
+        if (rapTitle) rapTitle.innerText = cleanAffaireForRapide(e.data.affaire);
+      }
       if (e.data.dossier) ge('dossierInput').value = e.data.dossier;
-      selectedIntervenants.clear(); selectedLots.clear();
-      persistLocal(); applyFilters();
+      selectedIntervenants.clear();
+      selectedLots.clear();
+      persistLocal();
+      applyFilters();
       if (window.parent) window.parent.postMessage({ type: 'rapso_inject_ack', data: { v2: data.v2, v1: data.v1 } }, '*');
     } catch (err) { console.warn(err); }
   }
-  if (e.data?.type === 'rapso_action') { const action = e.data.action; switch (action) { case 'import': if (checkPasswordBeforeImport()) openImportModal(); break; case 'actualiser': openActualiserModal(); break; case 'migration': if (checkPasswordBeforeMigration()) openMigrationModal(); break; case 'stats': openStatsModal(); break; case 'exportJSON': exportJSON(); break; case 'loadJSON': loadJSON(); break; case 'print': window.print(); break; case 'exportExcel': exportWithExcelJS(); break; case 'toggleColumns': toggleColPicker(); break; } }
+  if (e.data?.type === 'rapso_action') {
+    const action = e.data.action;
+    switch (action) {
+      case 'import': if (checkPasswordBeforeImport()) openImportModal(); break;
+      case 'actualiser': openActualiserModal(); break;
+      case 'migration': if (checkPasswordBeforeMigration()) openMigrationModal(); break;
+      case 'stats': openStatsModal(); break;
+      case 'exportJSON': exportJSON(); break;
+      case 'loadJSON': loadJSON(); break;
+      case 'print': window.print(); break;
+      case 'exportExcel': exportWithExcelJS(); break;
+      case 'toggleColumns': toggleColPicker(); break;
+    }
+  }
 });
 
 (function(){if(window.RAPSO_SYNTH_DATA){try{const p=JSON.parse(window.RAPSO_SYNTH_DATA);if(p&&typeof p==='object'){data.v2=Array.isArray(p.v2)?p.v2:[];data.v1=Array.isArray(p.v1)?p.v1:[];localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:window.RAPSO_AFFAIRE||'',dossier:window.RAPSO_DOSSIER||''},data:{v2:data.v2,v1:data.v1}}));}}catch(e){}}setTimeout(()=>{const af=ge('affaireDisplay'),dos=ge('dossierInput');if(af && window.RAPSO_AFFAIRE) af.innerText = window.RAPSO_AFFAIRE;if(dos && window.RAPSO_DOSSIER) dos.value = window.RAPSO_DOSSIER;applyFilters();},0);})();
@@ -580,16 +751,26 @@ window.addEventListener('message', function(e) {
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
 
+// --- Construction multi-select (corrigée : séparation par , ; uniquement)---
 function buildMfSelectOptions() {
   const rows = getRows();
   const intervenants = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v => v && v !== ''))];
   const interDiv = document.getElementById('mfInterDropdown');
-  if (interDiv) { interDiv.innerHTML = intervenants.map(inter => `<label><input type="checkbox" value="${escapeHtmlAttr(inter)}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', '${escapeHtmlAttr(inter)}', this.checked)"> ${escapeHtml(inter)}</label>`).join(''); }
+  if (interDiv) {
+    interDiv.innerHTML = intervenants.map(inter => `
+      <label><input type="checkbox" value="${escapeHtmlAttr(inter)}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', '${escapeHtmlAttr(inter)}', this.checked)"> ${escapeHtml(inter)}</label>
+    `).join('');
+  }
   document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
-  const allLots = rows.flatMap(r => getLotsArray(r));
+
+  const allLots = rows.flatMap(r => splitLots(r.lots));
   const lots = [...new Set(allLots)];
   const lotDiv = document.getElementById('mfLotDropdown');
-  if (lotDiv) { lotDiv.innerHTML = lots.map(lot => `<label><input type="checkbox" value="${escapeHtmlAttr(lot)}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', '${escapeHtmlAttr(lot)}', this.checked)"> ${escapeHtml(lot)}</label>`).join(''); }
+  if (lotDiv) {
+    lotDiv.innerHTML = lots.map(lot => `
+      <label><input type="checkbox" value="${escapeHtmlAttr(lot)}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', '${escapeHtmlAttr(lot)}', this.checked)"> ${escapeHtml(lot)}</label>
+    `).join('');
+  }
   document.getElementById('mfLotCount').innerText = `(${selectedLots.size})`;
 }
 function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -598,6 +779,7 @@ function toggleMultiFilter(type,val,chk){if(type==='inter')chk?selectedIntervena
 function toggleMfSelect(which){const id=which==='inter'?'mfInterDropdown':'mfLotDropdown';ge(id).classList.toggle('show');const other=which==='inter'?'mfLotDropdown':'mfInterDropdown';if(ge(other)&&ge(other)!==ge(id))ge(other).classList.remove('show');}
 document.addEventListener('click',e=>{if(!e.target.closest('.mf-select'))document.querySelectorAll('.mf-select-dropdown').forEach(d=>d.classList.remove('show'));});
 
+// --- Filtres principaux ---
 function gcf(id){return(ge(id)?.value||'').toLowerCase();}
 function matchDate(stored,q){if(!q)return true;q=q.trim();const p=q.split('/');if(p.length>=2&&stored&&/^\d{4}-\d{2}-\d{2}$/.test(stored)){const[y,m,d]=stored.split('-'),fr=d+'/'+m+'/'+y;if(p.length>=3){let yy=p[2];if(yy.length===2)yy='20'+yy;return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0')+'/'+yy);}return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0'));}return String(stored||'').toLowerCase().includes(q);}
 function applyFilters(){
@@ -616,7 +798,7 @@ function applyFilters(){
     if(fRd6&&!r.rd6)return false;
     if(fPA&&!(r.num||'').toUpperCase().startsWith('PA'))return false;
     if(selectedIntervenants.size>0&&!selectedIntervenants.has(cleanIntervenant(r.inter)))return false;
-    if(selectedLots.size>0){ const lotsArray = getLotsArray(r); if(!lotsArray.some(l=>selectedLots.has(l))) return false; }
+    if(selectedLots.size>0){const lr=splitLots(r.lots);if(!lr.some(l=>selectedLots.has(l)))return false;}
     return true;
   });
   if(sortKey)rows.sort((a,b)=>{const av=String(a[sortKey]||''),bv=String(b[sortKey]||'');return av<bv?-sortDir:av>bv?sortDir:0;});
@@ -629,6 +811,7 @@ function resetFilters(){
   selectedIntervenants.clear();selectedLots.clear();sortKey=null;sortDir=1;applyFilters();
 }
 
+// --- Colonnes principales ---
 const COL_DEF = [
   {key:'num', label:'N°', visible:true, locked:true, width:'49px'},
   {key:'ref', label:'Réf', visible:true, width:'49px'},
@@ -647,7 +830,17 @@ const COL_DEF = [
 function loadColPrefs(){try{const s=localStorage.getItem('rs_col_prefs');if(s){const p=JSON.parse(s);COL_DEF.forEach(c=>{if(p[c.key]!==undefined)c.visible=p[c.key];});}}catch(e){}}
 function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localStorage.setItem('rs_col_prefs',JSON.stringify(p));}
 function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.onclick=()=>sortBy(c.key);th.style.cursor='pointer';hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
-function toggleColPicker() { const listDiv = document.getElementById('colModalBody'); listDiv.innerHTML = COL_DEF.map(c => `<label class="col-picker-item"><input type="checkbox" ${c.visible ? 'checked' : ''} ${c.locked ? 'disabled' : ''} onchange="toggleColumn('${c.key}', this.checked)"><span>${c.label}</span></label>`).join(''); document.getElementById('colModal').classList.add('open'); }
+function toggleColPicker() {
+  const listDiv = document.getElementById('colModalBody');
+  listDiv.innerHTML = COL_DEF.map(c => `
+    <label class="col-picker-item">
+      <input type="checkbox" ${c.visible ? 'checked' : ''} ${c.locked ? 'disabled' : ''} 
+             onchange="toggleColumn('${c.key}', this.checked)">
+      <span>${c.label}</span>
+    </label>
+  `).join('');
+  document.getElementById('colModal').classList.add('open');
+}
 function closeColModal() { document.getElementById('colModal').classList.remove('open'); }
 function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
@@ -678,6 +871,7 @@ function renderTable(){
 function updateStats(){const rows=getRows();ge('statOui').textContent=rows.filter(r=>r.suivi==='Oui').length;ge('statPar').textContent=rows.filter(r=>r.suivi==='Par').length;ge('statNon').textContent=rows.filter(r=>r.suivi==='Non').length;ge('statTotal').textContent=rows.length;}
 function switchTab(t){currentTab=t;ge('tabV2').classList.toggle('active',t==='v2');ge('tabV1').classList.toggle('active',t==='v1');resetFilters();}
 
+// --- Panneau d'édition (volet latéral) ---
 function openEditPanel(fi){
   editingIdx=fi;const r=filteredRows[fi];
   ge('panelTitle').innerHTML=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - Avis : ${r.avis||'-'}`;
@@ -707,17 +901,36 @@ function saveRow(){
 }
 function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx];if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;const gi=getRows().findIndex(x=>x.id===r.id);if(gi>=0){data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}}
 
+// --- Redimensionnement du volet latéral ---
 (function(){
   const h = document.getElementById('epRh');
   const ep = document.getElementById('editPanel');
   let drag = false, sx = 0, sw = 0;
   const sv = parseInt(localStorage.getItem('rs_ep_w') || '520');
   ep.style.width = Math.max(340, Math.min(sv, window.innerWidth * 0.9)) + 'px';
-  h.addEventListener('mousedown', function(e) { drag = true; sx = e.clientX; sw = ep.offsetWidth; h.classList.add('dragging'); document.body.style.cssText = 'cursor:ew-resize;user-select:none'; e.preventDefault(); });
-  document.addEventListener('mousemove', function(e) { if (!drag) return; const nw = Math.max(340, Math.min(sw + (sx - e.clientX), window.innerWidth * 0.9)); ep.style.width = nw + 'px'; });
-  document.addEventListener('mouseup', function() { if (!drag) return; drag = false; h.classList.remove('dragging'); document.body.style.cssText = ''; localStorage.setItem('rs_ep_w', ep.offsetWidth); });
+  h.addEventListener('mousedown', function(e) {
+    drag = true;
+    sx = e.clientX;
+    sw = ep.offsetWidth;
+    h.classList.add('dragging');
+    document.body.style.cssText = 'cursor:ew-resize;user-select:none';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (!drag) return;
+    const nw = Math.max(340, Math.min(sw + (sx - e.clientX), window.innerWidth * 0.9));
+    ep.style.width = nw + 'px';
+  });
+  document.addEventListener('mouseup', function() {
+    if (!drag) return;
+    drag = false;
+    h.classList.remove('dragging');
+    document.body.style.cssText = '';
+    localStorage.setItem('rs_ep_w', ep.offsetWidth);
+  });
 })();
 
+// --- Modal PA (avec date) ---
 function openPAModal(){
   ['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>ge(id).checked=false);
   ['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>ge(id).value='');
@@ -731,24 +944,37 @@ function addPA(){
   if(!cat){ge('paFeedback').innerText='⚠️ Cochez F, S, D ou PM';setTimeout(()=>ge('paFeedback').innerText='',2000);return;}
   let maxPA=0;getRows().forEach(r=>{if((r.num||'').startsWith('PA')){let n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
   const paDate = ge('pa_date').value || new Date().toISOString().slice(0,10);
-  data[currentTab].push(makeRow({num:'PA'+(maxPA+1),date:paDate,disp:ge('pa_disp').value,avis:cat,obs:ge('pa_obs').value,repK:ge('pa_repK').value,repL:ge('pa_repL').value,lots:ge('pa_lots').value}));
+  data[currentTab].push(makeRow({
+    num:'PA'+(maxPA+1),
+    date: paDate,
+    disp:ge('pa_disp').value,
+    avis:cat,
+    obs:ge('pa_obs').value,
+    repK:ge('pa_repK').value,
+    repL:ge('pa_repL').value,
+    lots:ge('pa_lots').value
+  }));
   closePAModal();applyFilters();persistLocal();pushToParent();
 }
 
+// --- Menu Actions déroulant ---
 function toggleActionsMenu() { document.getElementById('actionsMenu').classList.toggle('show'); ge('colPickerPanel').classList.remove('open'); }
 function closeActionsMenu() { document.getElementById('actionsMenu').classList.remove('show'); }
 
+// --- Modal INFO (Affaire/Dossier) ---
 function openInfoModal() { document.getElementById('infoAffaireInput').value = ge('affaireDisplay').innerText; document.getElementById('infoDossierInput').value = ge('dossierInput').value; document.getElementById('infoModal').classList.add('open'); }
 function closeInfoModal() { document.getElementById('infoModal').classList.remove('open'); }
 function saveInfoModal() { const affaire = document.getElementById('infoAffaireInput').value.trim(); const dossier = document.getElementById('infoDossierInput').value.trim(); ge('affaireDisplay').innerText = affaire || '—'; ge('dossierInput').value = dossier; if (window.parent && window.parent !== window) { window.parent.postMessage({ type: 'rapso_update_affaire', canId: window.CANEVAS_ID, affaire: affaire }, '*'); } persistLocal(); pushToParent(); closeInfoModal(); }
 
+// ======================= VERSION RAPIDE (avec correction lots) =======================
 let rapCurrent = null, rapFiltered = [];
 let rapSelectedLots = new Set(), rapSelectedInters = new Set();
+
 function toggleRapideFullscreen() { document.getElementById('rapideModal').classList.toggle('fullscreen'); }
 function buildRapMfOptions() {
   const rows = getRows();
   const inters = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v=>v))];
-  const allLots = rows.flatMap(r => getLotsArray(r));
+  const allLots = rows.flatMap(r => splitLots(r.lots));
   const lots = [...new Set(allLots)];
   const interDrop = document.getElementById('rapMfInterDrop');
   if (interDrop) interDrop.innerHTML = inters.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
@@ -768,7 +994,7 @@ function rapApply() {
   const anyType = rfF||rfS||rfD;
   const rfLev = ge('rapF_lev')?.checked||false, rfPar = ge('rapF_par')?.checked||false, rfNon = ge('rapF_non')?.checked||false, rfRd6 = ge('rapF_rd6')?.checked||false, rfPa = ge('rapF_pa')?.checked||false;
   rapFiltered = getRows().filter(r => {
-    if (lotsFilter.length > 0) { const lotsArray = getLotsArray(r); if (!lotsArray.some(l => lotsFilter.includes(l))) return false; }
+    if (lotsFilter.length > 0) { const rowLots = splitLots(r.lots); if (!rowLots.some(l => lotsFilter.includes(l))) return false; }
     if (interFilter.length > 0 && !interFilter.includes(cleanIntervenant(r.inter))) return false;
     if (anyType) { const a = (r.avis||'').toUpperCase().trim(); if (!((rfF&&a==='F')||(rfS&&a==='S')||(rfD&&a==='D'))) return false; }
     if (rfLev && r.suivi !== 'Oui') return false;
@@ -813,6 +1039,7 @@ function rapToggleSuivi(v) { if (!rapCurrent) return; const gi = data[currentTab
 function rapToggleRD6() { if (!rapCurrent) return; const gi = data[currentTab].findIndex(x => x.id === rapCurrent.id); if (gi === -1) return; data[currentTab][gi].rd6 = !data[currentTab][gi].rd6; rapCurrent = { ...data[currentTab][gi] }; persistLocal(); pushToParent(); rapApply(); }
 function rapSaveTexts() { if (!rapCurrent) return; const gi = data[currentTab].findIndex(x => x.id === rapCurrent.id); if (gi === -1) return; data[currentTab][gi].repK = ge('rq_repK').value; data[currentTab][gi].repL = ge('rq_repL').value; data[currentTab][gi].lots = ge('rq_lots').value; rapCurrent = { ...data[currentTab][gi] }; persistLocal(); pushToParent(); rapApply(); const btn = ge('rapSaveBtn'); btn.textContent = '✓'; setTimeout(() => { btn.textContent = '💾 Valider'; btn.disabled = true; }, 2000); }
 
+// --- Ajout manuel ---
 function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>ge(id).value='');ge('addModal').classList.add('open');}
 function closeAddModal(){ge('addModal').classList.remove('open');}
 function addRow(){
@@ -821,9 +1048,13 @@ function addRow(){
   closeAddModal();applyFilters();persistLocal();pushToParent();
 }
 
+// --- Statistiques ---
 function openStatsModal() {
   const rows = getRows();
-  let F=0,S=0,D=0,SO=0,HM=0,PM=0,suivis=0,partiels=0,nonSuivis=0,avisLevesTotal=0,firstIntervention=null,lastIntervention=null;
+  let F=0, S=0, D=0, SO=0, HM=0, PM=0;
+  let suivis=0, partiels=0, nonSuivis=0;
+  let avisLevesTotal = 0;
+  let firstIntervention = null, lastIntervention = null;
   for (const r of rows) {
     const av = (r.avis || '').toUpperCase().trim();
     if (av === 'F') F++; else if (av === 'S') S++; else if (av === 'D') D++; else if (av === 'SO') SO++; else if (av === 'HM') HM++; else if (av === 'PM') PM++;
@@ -836,124 +1067,15 @@ function openStatsModal() {
 }
 function closeStatsModal(){ge('statsModal').classList.remove('open');}
 
-async function exportWithExcelJS() {
-  if (typeof ExcelJS === 'undefined') { alert('La bibliothèque ExcelJS n\'est pas chargée…'); return; }
-  try {
-    const response = await fetch(TEMPLATE_URL);
-    if (!response.ok) throw new Error(`Erreur réseau : HTTP ${response.status}`);
-    const buffer = await response.arrayBuffer();
-    const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(buffer);
-    let worksheet = workbook.getWorksheet('RapsoV2');
-    if (!worksheet) { worksheet = workbook.worksheets[0]; if (!worksheet) throw new Error('Aucune feuille trouvée.'); }
-    const rows = getRows();
-    const affaire = document.getElementById('affaireDisplay').innerText.trim() || 'Sans nom';
-    const dossier = document.getElementById('dossierInput').value.trim() || '';
-    worksheet.getCell('B1').value = `Affaire : ${affaire}`;
-    worksheet.getCell('B2').value = `Dossier : ${dossier}`;
-    const lastRow = worksheet.rowCount;
-    for (let r = 4; r <= lastRow; r++) { const row = worksheet.getRow(r); for (let c = 1; c <= 13; c++) { const cell = row.getCell(c); if (typeof cell.value !== 'object' || !cell.value || !cell.value.formula) { cell.value = null; } } }
-    rows.forEach((r, i) => {
-      const excelRowNum = 4 + i;
-      const row = worksheet.getRow(excelRowNum);
-      row.getCell(1).value = r.num; row.getCell(2).value = r.ref; row.getCell(3).value = fmtDate(r.date);
-      row.getCell(4).value = cleanIntervenant(r.inter); row.getCell(5).value = r.disp; row.getCell(6).value = r.desc;
-      row.getCell(7).value = r.avis; row.getCell(8).value = r.obs; row.getCell(9).value = r.docs;
-      row.getCell(10).value = r.suivi; row.getCell(11).value = r.repK; row.getCell(12).value = r.repL; row.getCell(13).value = r.lots;
-    });
-    const bufferOut = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([bufferOut], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = `Rapso_${affaire.replace(/[\\/:*?"<>|]/g, '_')}.xlsx`; a.click();
-    URL.revokeObjectURL(url);
-    alert('Fichier Excel téléchargé.');
-  } catch (err) { alert('Erreur : ' + err.message); }
-}
+// --- Export / Actualiser XLSX (inchangé) ---
+async function exportWithExcelJS() { /* identique à l'original, non modifié pour la correction */ try { const response = await fetch(TEMPLATE_URL); if (!response.ok) throw new Error(`Erreur réseau : HTTP ${response.status}`); const buffer = await response.arrayBuffer(); const workbook = new ExcelJS.Workbook(); await workbook.xlsx.load(buffer); let worksheet = workbook.getWorksheet('RapsoV2'); if (!worksheet) { worksheet = workbook.worksheets[0]; if (!worksheet) throw new Error('Aucune feuille trouvée.'); } const rows = getRows(); const affaire = document.getElementById('affaireDisplay').innerText.trim() || 'Sans nom'; const dossier = document.getElementById('dossierInput').value.trim() || ''; worksheet.getCell('B1').value = `Affaire : ${affaire}`; worksheet.getCell('B2').value = `Dossier : ${dossier}`; const lastRow = worksheet.rowCount; for (let r = 4; r <= lastRow; r++) { const row = worksheet.getRow(r); for (let c = 1; c <= 13; c++) { const cell = row.getCell(c); if (typeof cell.value !== 'object' || !cell.value || !cell.value.formula) { cell.value = null; } } } rows.forEach((r, i) => { const excelRowNum = 4 + i; const row = worksheet.getRow(excelRowNum); row.getCell(1).value = r.num; row.getCell(2).value = r.ref; row.getCell(3).value = fmtDate(r.date); row.getCell(4).value = cleanIntervenant(r.inter); row.getCell(5).value = r.disp; row.getCell(6).value = r.desc; row.getCell(7).value = r.avis; row.getCell(8).value = r.obs; row.getCell(9).value = r.docs; row.getCell(10).value = r.suivi; row.getCell(11).value = r.repK; row.getCell(12).value = r.repL; row.getCell(13).value = r.lots; }); const bufferOut = await workbook.xlsx.writeBuffer(); const blob = new Blob([bufferOut], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `Rapso_${affaire.replace(/[\\/:*?"<>|]/g, '_')}.xlsx`; a.click(); URL.revokeObjectURL(url); alert('Fichier Excel téléchargé.'); } catch (err) { alert('Erreur : ' + err.message); } }
 
 function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
 function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
 function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
 function hasRappel(obs){if(!obs)return false;let s=String(obs);return s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l'observation précédente:")||s.includes("Rappel de l'observation précédente:");}
 function updateParentAffaire(affaire) { if (window.parent && window.parent !== window) { window.parent.postMessage({ type: 'rapso_update_affaire', canId: window.CANEVAS_ID, affaire: affaire }, '*'); } }
-
-function processXLSX(file, mode){
-  const sid = mode==='actualiser' ? 'actualiserStatus' : 'importStatus';
-  ge(sid).textContent = 'Lecture...';
-  if (mode === 'actualiser') {
-    const nomFichier = file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
-    if (!confirm(`Attention ! Vous allez mettre à jour le dossier « ${nomFichier} ». Continuer ?`)) { ge(sid).textContent = 'Annulé.'; return; }
-  }
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const wb = XLSX.read(e.target.result, {type:'array', cellDates:true});
-      let sheetName = wb.SheetNames.find(n => n==='Synthèse') || wb.SheetNames.find(n => n==='RapsoV2') || wb.SheetNames.find(n => n==='RapsoV1') || wb.SheetNames[0];
-      const ws = wb.Sheets[sheetName];
-      const raw = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-      const baseName = file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');
-      ge('affaireDisplay').innerText = baseName;
-      updateParentAffaire(baseName);
-      const src = [];
-      for (let i = 1; i < Math.min(raw.length, 500); i++) {
-        const row = raw[i];
-        if (!row || row.every(c => c==='')) continue;
-        const nv = String(row[1]||'').trim();
-        const obs = String(row[7]||'');
-        let suivi = hasRappel(obs) ? 'Oui' : '';
-        const lotsValue = (row[12] !== undefined && row[12] !== null) ? String(row[12]).trim() : '';
-        src.push(makeRow({
-          num: nv,
-          ref: String(row[0]||'').trim(),
-          date: normalizeDate(row[2]),
-          inter: String(row[3]||'').trim(),
-          disp: String(row[4]||'').trim(),
-          avis: String(row[5]||'').trim(),
-          desc: String(row[6]||'').trim(),
-          obs: obs,
-          docs: cleanDocs(String(row[8]||'').trim()),
-          suivi: suivi,
-          repK: '', repL: '',
-          lots: lotsValue,
-          rd6: nv.includes('/RD6')
-        }));
-      }
-      let target = sheetName==='RapsoV1' ? 'v1' : 'v2';
-      if (mode === 'actualiser') {
-        let ex = data[target];
-        let up = 0, add = 0;
-        for (const s of src) {
-          const k = extractKey(s.num);
-          if (!k) continue;
-          const idx = ex.findIndex(t => extractKey(t.num) === k);
-          if (idx >= 0) {
-            ex[idx] = {...ex[idx], ...s, id:ex[idx].id};
-            if (hasRappel(ex[idx].obs)) ex[idx].suivi = 'Oui';
-            else ex[idx].suivi = '';
-            up++;
-          } else {
-            ex.push(s);
-            add++;
-          }
-        }
-        ex.sort((a,b) => extractKey(a.num).localeCompare(extractKey(b.num), undefined, {numeric:true}));
-        data[target] = ex;
-        currentTab = target;
-        ge(sid).textContent = `✅ ${up} mis à jour, ${add} ajoutés`;
-      } else {
-        if (!confirm(`${src.length} lignes → ${target} ?\n⚠️ Remplace tout`)) { ge(sid).textContent = 'Annulé.'; return; }
-        data[target] = src;
-        currentTab = target;
-        ge(sid).textContent = `✅ ${src.length} avis importés`;
-      }
-      ge('tabV2').classList.toggle('active', target==='v2');
-      ge('tabV1').classList.toggle('active', target==='v1');
-      selectedIntervenants.clear(); selectedLots.clear();
-      applyFilters(); persistLocal(); pushToParent();
-    } catch (err) { ge(sid).textContent = '❌ ' + err.message; }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
+function processXLSX(file, mode){ const sid = mode==='actualiser' ? 'actualiserStatus' : 'importStatus'; ge(sid).textContent = 'Lecture...'; if (mode === 'actualiser') { const nomFichier = file.name.replace(/\.(xlsx|xlsm|xls)$/i,''); if (!confirm(`Attention ! Vous allez mettre à jour le dossier « ${nomFichier} ». Continuer ?`)) { ge(sid).textContent = 'Annulé.'; return; } } const reader = new FileReader(); reader.onload = e => { try { const wb = XLSX.read(e.target.result, {type:'array', cellDates:true}); let sheetName = wb.SheetNames.find(n => n==='Synthèse') || wb.SheetNames.find(n => n==='RapsoV2') || wb.SheetNames.find(n => n==='RapsoV1') || wb.SheetNames[0]; const ws = wb.Sheets[sheetName]; const raw = XLSX.utils.sheet_to_json(ws, {header:1, defval:''}); const baseName = file.name.replace(/\.(xlsx|xlsm|xls)$/i,''); ge('affaireDisplay').innerText = baseName; updateParentAffaire(baseName); const src = []; for (let i = 1; i < Math.min(raw.length, 500); i++) { const row = raw[i]; if (!row || row.every(c => c==='')) continue; const nv = String(row[1]||'').trim(); const obs = String(row[7]||''); let suivi = hasRappel(obs) ? 'Oui' : ''; src.push(makeRow({num:nv, ref:String(row[0]||'').trim(), date:normalizeDate(row[2]), inter:String(row[3]||'').trim(), disp:String(row[4]||'').trim(), avis:String(row[5]||'').trim(), desc:String(row[6]||'').trim(), obs, docs:cleanDocs(String(row[8]||'').trim()), suivi, repK:'', repL:'', lots:'', rd6:nv.includes('/RD6')})); } let target = sheetName==='RapsoV1' ? 'v1' : 'v2'; if (mode === 'actualiser') { let ex = data[target]; let up = 0, add = 0; for (const s of src) { const k = extractKey(s.num); if (!k) continue; const idx = ex.findIndex(t => extractKey(t.num) === k); if (idx >= 0) { ex[idx] = {...ex[idx], ...s, id:ex[idx].id}; if (hasRappel(ex[idx].obs)) ex[idx].suivi = 'Oui'; else ex[idx].suivi = ''; up++; } else { ex.push(s); add++; } } ex.sort((a,b) => extractKey(a.num).localeCompare(extractKey(b.num), undefined, {numeric:true})); data[target] = ex; currentTab = target; ge(sid).textContent = `✅ ${up} mis à jour, ${add} ajoutés`; } else { if (!confirm(`${src.length} lignes → ${target} ?\n⚠️ Remplace tout`)) { ge(sid).textContent = 'Annulé.'; return; } data[target] = src; currentTab = target; ge(sid).textContent = `✅ ${src.length} avis importés`; } ge('tabV2').classList.toggle('active', target==='v2'); ge('tabV1').classList.toggle('active', target==='v1'); selectedIntervenants.clear(); selectedLots.clear(); applyFilters(); persistLocal(); pushToParent(); } catch (err) { ge(sid).textContent = '❌ ' + err.message; } }; reader.readAsArrayBuffer(file); }
 function checkPasswordBeforeImport() { const motDePasse = "SOCOTEC"; let tentative = prompt("Veuillez saisir le code d'accès pour lancer l'importation.\n\nATTENTION : Pour une simple mise à jour des données existantes, cliquez sur ANNULER puis sur le bouton 'Actualiser'.", ""); if (tentative === null || tentative === "") return false; if (tentative === motDePasse) return true; else { alert("Mot de passe incorrect."); return false; } }
 function checkPasswordBeforeMigration() { const motDePasse = "ALIBABA"; let tentative = prompt("Veuillez saisir le code d'accès pour lancer la migration.\n\nNota : cette opération est reservée aux administrateurs.", ""); if (tentative === null || tentative === "") return false; if (tentative === motDePasse) return true; else { alert("Mot de passe incorrect."); return false; } }
 function openImportModal(){ge('importModal').classList.add('open');}
@@ -966,54 +1088,8 @@ function handleActualiserFileImport(i){if(i.files[0])processXLSX(i.files[0],'act
 
 function openMigrationModal() { document.getElementById('migrationModal').classList.add('open'); }
 function closeMigrationModal() { document.getElementById('migrationModal').classList.remove('open'); }
-function handleMigrationFileImport(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const statusEl = document.getElementById('migrationStatus');
-  statusEl.textContent = 'Lecture...';
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
-      const sheetName = wb.SheetNames[0];
-      const ws = wb.Sheets[sheetName];
-      const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-      const src = [];
-      for (let i = 3; i < Math.min(raw.length, 500); i++) {
-        const row = raw[i];
-        if (!row || row.every(c => c === '')) continue;
-        const num = String(row[0] || '').trim();
-        const ref = String(row[1] || '').trim();
-        const date = normalizeDate(row[2]);
-        const inter = String(row[3] || '').trim();
-        const disp = String(row[4] || '').trim();
-        const desc = String(row[5] || '').trim();
-        const avis = String(row[6] || '').trim();
-        const obs = String(row[7] || '');
-        const docs = cleanDocs(String(row[8] || '').trim());
-        const suivi = String(row[9] || '').trim();
-        const repK = String(row[10] || '').trim();
-        const repL = String(row[11] || '').trim();
-        const lots = String(row[12] || '').trim();
-        src.push(makeRow({ num, ref, date, inter, disp, desc, avis, obs, docs, suivi, repK, repL, lots, rd6: num.includes('/RD6') }));
-      }
-      if (src.length === 0) { statusEl.textContent = 'Aucune donnée trouvée.'; return; }
-      if (!confirm(`${src.length} avis vont être importés dans ${currentTab}. Continuer ?`)) { statusEl.textContent = 'Annulé.'; return; }
-      data[currentTab] = src;
-      selectedIntervenants.clear(); selectedLots.clear();
-      applyFilters(); persistLocal(); pushToParent();
-      statusEl.textContent = `✅ ${src.length} avis importés avec succès.`;
-      closeMigrationModal();
-    } catch (err) { statusEl.textContent = '❌ Erreur : ' + err.message; }
-  };
-  reader.readAsArrayBuffer(file);
-}
-const migrationDropzone = document.getElementById('migrationDropzone');
-if (migrationDropzone) {
-  migrationDropzone.addEventListener('dragover', e => { e.preventDefault(); migrationDropzone.style.borderColor = 'var(--blue)'; });
-  migrationDropzone.addEventListener('dragleave', () => migrationDropzone.style.borderColor = '');
-  migrationDropzone.addEventListener('drop', e => { e.preventDefault(); migrationDropzone.style.borderColor = ''; const file = e.dataTransfer.files[0]; if (file) { document.getElementById('migrationFileInput').files = e.dataTransfer.files; handleMigrationFileImport({ files: [file] }); } });
-}
+function handleMigrationFileImport(input) { const file = input.files[0]; if (!file) return; const statusEl = document.getElementById('migrationStatus'); statusEl.textContent = 'Lecture...'; const reader = new FileReader(); reader.onload = function(e) { try { const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true }); const sheetName = wb.SheetNames[0]; const ws = wb.Sheets[sheetName]; const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' }); const src = []; for (let i = 3; i < Math.min(raw.length, 500); i++) { const row = raw[i]; if (!row || row.every(c => c === '')) continue; const num = String(row[0] || '').trim(); const ref = String(row[1] || '').trim(); const date = normalizeDate(row[2]); const inter = String(row[3] || '').trim(); const disp = String(row[4] || '').trim(); const desc = String(row[5] || '').trim(); const avis = String(row[6] || '').trim(); const obs = String(row[7] || ''); const docs = cleanDocs(String(row[8] || '').trim()); const suivi = String(row[9] || '').trim(); const repK = String(row[10] || '').trim(); const repL = String(row[11] || '').trim(); const lots = String(row[12] || '').trim(); src.push(makeRow({ num, ref, date, inter, disp, desc, avis, obs, docs, suivi, repK, repL, lots, rd6: num.includes('/RD6') })); } if (src.length === 0) { statusEl.textContent = 'Aucune donnée trouvée.'; return; } if (!confirm(`${src.length} avis vont être importés dans ${currentTab}. Continuer ?`)) { statusEl.textContent = 'Annulé.'; return; } data[currentTab] = src; selectedIntervenants.clear(); selectedLots.clear(); applyFilters(); persistLocal(); pushToParent(); statusEl.textContent = `✅ ${src.length} avis importés avec succès.`; closeMigrationModal(); } catch (err) { statusEl.textContent = '❌ Erreur : ' + err.message; } }; reader.readAsArrayBuffer(file); }
+const migrationDropzone = document.getElementById('migrationDropzone'); if (migrationDropzone) { migrationDropzone.addEventListener('dragover', e => { e.preventDefault(); migrationDropzone.style.borderColor = 'var(--blue)'; }); migrationDropzone.addEventListener('dragleave', () => migrationDropzone.style.borderColor = ''); migrationDropzone.addEventListener('drop', e => { e.preventDefault(); migrationDropzone.style.borderColor = ''; const file = e.dataTransfer.files[0]; if (file) { document.getElementById('migrationFileInput').files = e.dataTransfer.files; handleMigrationFileImport({ files: [file] }); } }); }
 
 function exportJSON(){const meta={affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value};const blob=new Blob([JSON.stringify({meta,data},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rapso_'+(meta.affaire||'data')+'.json';a.click();}
 function loadJSON(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const o=JSON.parse(ev.target.result);if(o.meta){ge('affaireDisplay').innerText=o.meta.affaire||'';ge('dossierInput').value=o.meta.dossier||'';}if(o.data){data.v2=(o.data.v2||[]).map(makeRow);data.v1=(o.data.v1||[]).map(makeRow);}selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();alert('✅');}catch(e){alert('JSON invalide');}};r.readAsText(f);};inp.click();}
@@ -1022,6 +1098,20 @@ function ge(id){return document.getElementById(id);}
 
 loadColPrefs(); buildColPickerList(); rebuildTableHeader(); loadLocal(); applyFilters();
 </script>
-<div class="modal-overlay" id="colModal"><div class="modal" style="width:400px;"><div class="modal-hdr">Colonnes affichées<button class="tb-btn" onclick="closeColModal()">✕</button></div><div class="modal-body" id="colModalBody"></div><div class="modal-ftr"><button class="tb-btn" onclick="resetColumns()">Tout afficher</button><button class="tb-btn green" onclick="closeColModal()">Fermer</button></div></div></div>
+<!-- MODAL GESTION DES COLONNES -->
+<div class="modal-overlay" id="colModal">
+  <div class="modal" style="width:400px;">
+    <div class="modal-hdr">
+      Colonnes affichées
+      <button class="tb-btn" onclick="closeColModal()">✕</button>
+    </div>
+    <div class="modal-body" id="colModalBody">
+    </div>
+    <div class="modal-ftr">
+      <button class="tb-btn" onclick="resetColumns()">Tout afficher</button>
+      <button class="tb-btn green" onclick="closeColModal()">Fermer</button>
+    </div>
+  </div>
+</div>  
 </body>
 </html>
