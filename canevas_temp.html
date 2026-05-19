@@ -1056,6 +1056,7 @@ function printReport() {
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   ge('printDateNow').textContent = 'Imprimé le ' + dateStr;
+
   let F=0,S=0,D=0,SO=0,HM=0,PM=0,oui=0,par=0,non=0,avecRep=0,sansRep=0;
   let firstDate=null,lastDate=null;
   for(const r of rows){
@@ -1075,23 +1076,14 @@ function printReport() {
   ge('pTotal').textContent=rows.length;
   ge('printFooterLeft').textContent='SOCOTEC — ' + affaire;
   ge('printFooterDate').textContent=dateStr;
-    // On conserve l'état actuel des colonnes (visible = true pour celles affichées)
-  // On n'a pas besoin de modifier COL_DEF
 
-  // On force une reconstruction du tableau avec les colonnes actuelles
+  // On imprime avec les colonnes actuellement visibles (sans les modifier)
   rebuildTableHeader();
   renderTable();
 
   window.print();
 
-  // Pas de restauration nécessaire car on n'a pas modifié COL_DEF
-}
-  const hiddenCols=COL_DEF.filter(c=>!c.visible).map(c=>c.key);
-  COL_DEF.forEach(c=>c.visible=true);
-  rebuildTableHeader(); renderTable();
-  window.print();
-  COL_DEF.forEach(c=>{if(hiddenCols.includes(c.key))c.visible=false;});
-  rebuildTableHeader(); renderTable();
+  // Aucune restauration nécessaire (on n'a pas changé l'état)
 }
 
 // ======================= VERSION RAPIDE (corrigée avec data-*) =======================
