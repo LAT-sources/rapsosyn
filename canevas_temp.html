@@ -1183,11 +1183,18 @@ function printReport() {
   printStyle.textContent = styleRules;
   document.head.appendChild(printStyle);
   rebuildTableHeader(); renderTable();
+  // === MODIFICATION POUR LE NOM DU PDF ===
+  const originalTitle = document.title;
+  document.title = affaire || 'RapsoSynthèse';
+
   window.print();
+
+  document.title = originalTitle;
+  // =====================================
+
   printStyle.remove();
   rebuildTableHeader(); renderTable();
 }
-
 // ======================= VERSION RAPIDE (corrigée avec data-*) =======================
 let rapCurrent=null,rapFiltered=[];
 let rapSelectedLots=new Set(),rapSelectedInters=new Set();
