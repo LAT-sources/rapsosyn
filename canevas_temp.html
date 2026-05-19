@@ -1091,16 +1091,26 @@ function saveInfoModal(){
 //  + Couleurs spécifiques
 // =============================================================
 function printReport() {
-  const rows = getRows();
-  const affaire = ge('affaireDisplay').innerText || 'Récapitulatif des avis';
-  const dossier = ge('dossierInput').value || '';
-  ge('printAffaire').textContent = 'Récapitulatif des avis — ' + affaire;
-  ge('printDossier').textContent = dossier ? 'Dossier : ' + dossier : '';
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('fr-FR');
-  ge('printDateNow').textContent = 'Imprimé le ' + dateStr;
-  ge('printFooterDate').textContent = dateStr;
-  ge('printFooterLeft').textContent = 'SOCOTEC — ' + affaire;
+  try {
+    const rows = getRows();
+    const affaire = (ge('affaireDisplay')?.innerText || 'Récapitulatif des avis').trim();
+    const dossier = ge('dossierInput')?.value || '';
+    
+    // Mise à jour des éléments d'impression
+    const printAffaire = ge('printAffaire');
+    const printDossier = ge('printDossier');
+    const printDateNow = ge('printDateNow');
+    const printFooterDate = ge('printFooterDate');
+    const printFooterLeft = ge('printFooterLeft');
+    
+    if (printAffaire) printAffaire.textContent = 'Récapitulatif des avis — ' + affaire;
+    if (printDossier) printDossier.textContent = dossier ? 'Dossier : ' + dossier : '';
+    
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('fr-FR');
+    if (printDateNow) printDateNow.textContent = 'Imprimé le ' + dateStr;
+    if (printFooterDate) printFooterDate.textContent = dateStr;
+    if (printFooterLeft) printFooterLeft.textContent = 'SOCOTEC — ' + affaire;
 
   // Calcul des dates
   let datesValides = rows.map(r => r.date).filter(d => d && /^\d{4}-\d{2}-\d{2}$/.test(d)).map(d => new Date(d));
@@ -1181,17 +1191,17 @@ function printReport() {
   document.head.appendChild(printStyle);
   rebuildTableHeader(); renderTable();
 
-  // === MODIFICATION POUR LE NOM DU PDF ===
-  const originalTitle = document.title;
-  document.title = affaire || 'RapsoSynthèse';
-
-  window.print();
-
-  document.title = originalTitle;
-  // =====================================
-
-  printStyle.remove();
-  rebuildTableHeader(); renderTable();
+ // Changement du titre pour le nom du PDF
+    const originalTitle = document.title;
+    document.title = affaire || 'RapsoSynthèse';
+    
+    window.print();
+    
+    document.title = originalTitle;
+  } catch (err) {
+    console.error('Erreur lors de l\'impression :', err);
+    alert('Une erreur est survenue. Vérifiez la console.');
+  }
 }
 // ======================= VERSION RAPIDE (corrigée avec data-*) =======================
 let rapCurrent=null,rapFiltered=[];
