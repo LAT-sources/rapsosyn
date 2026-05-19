@@ -712,6 +712,39 @@ window.addEventListener('message', function(e) {
       if (window.parent) window.parent.postMessage({ type: 'rapso_inject_ack', data: { v2: data.v2, v1: data.v1 } }, '*');
     } catch (err) { console.warn(err); }
   }
+    // Nouveau cas : action demandée par le parent
+  if (e.data?.type === 'rapso_action') {
+    const action = e.data.action;
+    switch (action) {
+      case 'import':
+        if (checkPasswordBeforeImport()) openImportModal();
+        break;
+      case 'actualiser':
+        openActualiserModal();
+        break;
+      case 'migration':
+        if (checkPasswordBeforeMigration()) openMigrationModal();
+        break;
+      case 'stats':
+        openStatsModal();
+        break;
+      case 'exportJSON':
+        exportJSON();
+        break;
+      case 'loadJSON':
+        loadJSON();
+        break;
+      case 'print':
+        window.print();
+        break;
+      case 'exportExcel':
+        exportWithExcelJS();
+        break;
+      case 'toggleColumns':
+        toggleColPicker();
+        break;
+    }
+  }
 });
 
 // --- Injection parent ---
