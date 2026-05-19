@@ -694,6 +694,10 @@ let selectedLots = new Set();
 // --- Helper cleanIntervenant ---
 function cleanIntervenant(inter){if(!inter)return '';const at=inter.indexOf('@');return at>0?inter.substring(0,at).trim():inter;}
 
+  // Retourne le lot tel quel, sans découpage
+function getLotsAsString(r) {
+    return r.lots ? r.lots.trim() : '';
+}
 // ====================== CORRECTION LOTS ======================
 // Les lots sont utilisés tels quels, sans découpage.
 function getLotsAsString(r) {
@@ -712,7 +716,7 @@ function buildMfSelectOptions() {
   }
   document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
 
-  // Lots : chaînes complètes
+  // LOTS : valeurs brutes, sans split
   const allLots = rows.map(r => getLotsAsString(r)).filter(v => v !== '');
   const lots = [...new Set(allLots)];
   const lotDiv = document.getElementById('mfLotDropdown');
@@ -749,9 +753,9 @@ function applyFilters(){
     if(fPA&&!(r.num||'').toUpperCase().startsWith('PA'))return false;
     if(selectedIntervenants.size>0&&!selectedIntervenants.has(cleanIntervenant(r.inter)))return false;
     // Filtre lots : comparaison exacte sur la chaîne complète
-    if(selectedLots.size>0){
-      const lotValue = getLotsAsString(r);
-      if(!selectedLots.has(lotValue))return false;
+    if (lotsFilter.length > 0) {
+       const lotValue = getLotsAsString(r);
+       if (!lotsFilter.includes(lotValue)) return false;
     }
     return true;
   });
@@ -773,7 +777,7 @@ const COL_DEF = [
   {key:'inter', label:'Intervenant', visible:true, width:'90px'},
   {key:'disp', label:'Dispositions', visible:true, width:'150px'},
   {key:'desc', label:'Description', visible:false, width:'130px'},
-  {key:'avis', label:'Avis', visible:true, width:'39px'},
+  {key:'avis', label:'Avis', visible:true, width:'37px'},
   {key:'obs', label:'Observations', visible:true, width:'220px'},
   {key:'docs', label:'Documents', visible:false, width:'100px'},
   {key:'suivi', label:'Suivi', visible:true, width:'61px'},
@@ -999,8 +1003,9 @@ function rapApply() {
   const rfLev = ge('rapF_lev')?.checked||false, rfPar = ge('rapF_par')?.checked||false, rfNon = ge('rapF_non')?.checked||false, rfRd6 = ge('rapF_rd6')?.checked||false, rfPa = ge('rapF_pa')?.checked||false;
   rapFiltered = getRows().filter(r => {
     if (lotsFilter.length > 0) {
-      const lotValue = getLotsAsString(r);
-      if (!lotsFilter.includes(lotValue)) return false;
+       const lotValue = getLotsAsString(r);
+       if (!lotsFilter.includes(lotValue)) return false;
+    }
     }
     if (interFilter.length > 0 && !interFilter.includes(cleanIntervenant(r.inter))) return false;
     if (anyType) { const a = (r.avis||'').toUpperCase().trim(); if (!((rfF&&a==='F')||(rfS&&a==='S')||(rfD&&a==='D'))) return false; }
