@@ -1150,13 +1150,15 @@ function printReport() {
       <div>Nbr d'avis suivis : <span class="pstat-val green">${suivis}</span></div>
       <div>Nbr d'avis partiellement suivis : <span class="pstat-val gold">${partiels}</span></div>
       <div>Nbr d'avis non suivis : <span class="pstat-val red">${nonSuivis}</span></div>
+      <div style="height:12px;"></div>
       <div>Nbr d'avis en cours de traitement : ${nbEnCours}</div>
       <div>Nbr d'avis sans réponses : ${nbSansRep}</div>
     </div>
     <div class="print-stat-block">
       <div>Nbr d'avis S/D : <span class="pstat-val red">${nbSD}</span></div>
       <div>Nbr de point d'attention/action : ${nbPA}</div>
-      <div>Nbr total d'avis levés : <span class="pstat-val green">${nbAvisLeves}</span></div>
+      ${false ? `<div>Nbr total d'avis levés : <span class="pstat-val green">${nbAvisLeves}</span></div>` : ''}
+      <div style="height:12px;"></div>
       <div>⚠ Nbr avis restants : <span class="pstat-val gold">${nbAvisRestants}</span></div>
       <div>❌ Nbr d’Avis/Comm intégrés au RD6 : <span class="pstat-val red">${nbRD6}</span></div>
     </div>
@@ -1317,8 +1319,41 @@ function processXLSX(file,mode){
     }catch(err){ge(sid).textContent='❌ '+err.message;}
   };reader.readAsArrayBuffer(file);
 }
-function checkPasswordBeforeImport(){const pwd=prompt("Code d'accès (SOCOTEC) :");return pwd==="SOCOTEC";}
-function checkPasswordBeforeMigration(){const pwd=prompt("Code admin (ALIBABA) :");return pwd==="ALIBABA";}
+function checkPasswordBeforeImport() {
+  const motDePasse = "SOCOTEC";
+  let tentative = prompt(
+    "Veuillez saisir le code d'accès pour lancer l'importation.\n\n" +
+    "ATTENTION : Pour une simple mise à jour des données existantes, " +
+    "cliquez sur ANNULER puis sur le bouton 'Actualiser'.",
+    ""
+  );
+  if (tentative === null || tentative === "") {
+    return false;
+  }
+  if (tentative === motDePasse) {
+    return true;
+  } else {
+    alert("Mot de passe incorrect.");
+    return false;
+  }
+}
+function checkPasswordBeforeMigration() {
+  const motDePasse = "ALIBABA";
+  let tentative = prompt(
+    "Veuillez saisir le code d'accès pour lancer la migration.\n\n" +
+    "Nota : cette opération est reservée aux administrateurs.",
+    ""
+  );
+  if (tentative === null || tentative === "") {
+    return false;
+  }
+  if (tentative === motDePasse) {
+    return true;
+  } else {
+    alert("Mot de passe incorrect.");
+    return false;
+  }
+}  
 function openImportModal(){ge('importModal').classList.add('open');}
 function closeImportModal(){ge('importModal').classList.remove('open');}
 function openActualiserModal(){ge('actualiserModal').classList.add('open');}
