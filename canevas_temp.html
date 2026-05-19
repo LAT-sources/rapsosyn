@@ -5,7 +5,7 @@
 <!-- RAPSO_DATA -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RapsoSynthèse - Impression PDF intégrée</title>
+<title>RapsoSynthèse</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -1322,127 +1322,6 @@ async function exportWithExcelJS() {
   } catch (err) { alert('Erreur : ' + err.message); }
 }
 
-// ================== FONCTION IMPRESSION PDF EXACT ==================
-function customPrint() {
-    const rowsAll = getRows(); // toutes les lignes actuelles
-    if(!rowsAll.length) { alert("Aucune donnée à imprimer."); return; }
-    
-    // Trier par numéro (croissant, numérique)
-    const sorted = [...rowsAll].sort((a,b) => {
-        let an = parseInt(a.num) || 0, bn = parseInt(b.num) || 0;
-        if(an === bn) return (a.num || '').localeCompare(b.num || '');
-        return an - bn;
-    });
-    
-    const affaire = document.getElementById('affaireDisplay').innerText.trim() || 'AFFAIRE NON RENSEIGNÉE';
-    const dossier = document.getElementById('dossierInput').value.trim() || '---';
-    const today = new Date().toLocaleDateString('fr-FR');
-    
-    // Statistiques détaillées selon modèle PDF
-    let stats = {
-        favorable: 0, suspendus: 0, defavorables: 0, pourMemoire: 0, horsMission: 0, sansObjet: 0,
-        suivis: 0, partiels: 0, nonSuivis: 0, sansReponses: 0, enCoursTraitement:0, avisSD:0,
-        avisLevesTotal:0, avisRestants:0, avisIntegresRD6:0, total: sorted.length
-    };
-    let dates = [];
-    sorted.forEach(r => {
-        let av = (r.avis || '').toUpperCase().trim();
-        if(av === 'F') stats.favorable++; else if(av === 'S') stats.suspendus++; else if(av === 'D') stats.defavorables++;
-        else if(av === 'PM') stats.pourMemoire++; else if(av === 'HM') stats.horsMission++; else if(av === 'SO') stats.sansObjet++;
-        if(r.suivi === 'Oui') { stats.suivis++; stats.avisLevesTotal++; }
-        else if(r.suivi === 'Par') stats.partiels++;
-        else if(r.suivi === 'Non') stats.nonSuivis++;
-        if(r.repK === '' || !r.repK) stats.sansReponses++;
-        if(r.rd6 === true) stats.avisIntegresRD6++;
-        if(r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date)) dates.push(new Date(r.date));
-    });
-    stats.enCoursTraitement = sorted.length - (stats.suivis+stats.partiels+stats.nonSuivis);
-    stats.avisSD = stats.suspendus + stats.defavorables;
-    stats.avisRestants = sorted.length - stats.avisLevesTotal;
-    let premiereInter = dates.length ? new Date(Math.min(...dates)).toLocaleDateString('fr-FR') : '—';
-    let derniereInter = dates.length ? new Date(Math.max(...dates)).toLocaleDateString('fr-FR') : '—';
-    
-    // Construction HTML imprimable
-    let printHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Récapitulatif des avis - ${affaire}</title><style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 11pt; line-height: 1.4; margin: 1.2cm; background: white; color: #1e293b; }
-      @page { size: landscape; margin: 1cm; }
-      .report-header { margin-bottom: 16px; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; }
-      .title-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 18pt; margin-bottom: 8px; }
-      .affaire { font-size: 12pt; font-weight: 600; margin-bottom: 4px; }
-      .dossier { font-size: 10pt; color: #475569; margin-bottom: 10px; }
-      .stats-grid { display: flex; flex-wrap: wrap; gap: 6px 16px; background: #f8fafc; padding: 12px; margin: 12px 0; border: 1px solid #e2e8f0; font-size: 9pt; }
-      .stats-col { flex: 1; min-width: 200px; }
-      .stats-col div { margin: 3px 0; }
-      .stat-label { font-weight: 700; display: inline-block; width: 220px; }
-      .legend { font-size: 8pt; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 6px; color: #334155; }
-      table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 7.8pt; }
-      th, td { border: 1px solid #cbd5e1; padding: 6px 5px; vertical-align: top; text-align: left; }
-      th { background: #1e293b; color: white; font-weight: 600; font-size: 8pt; white-space: nowrap; }
-      tr:nth-child(even) td { background: #f9fafb; }
-      .badge-print { display: inline-block; padding: 0px 4px; border-radius: 12px; font-size: 7pt; font-weight: 600; }
-      .badge-oui-print { background: #dcfce7; color: #15803d; }
-      .badge-par-print { background: #fef3c7; color: #92400e; }
-      .badge-non-print { background: #fee2e2; color: #b91c1c; }
-      .rd6-badge { background: #ede9fe; color: #6b21a5; padding: 0 3px; font-size: 6pt; margin-left: 3px; }
-      .footer { margin-top: 18px; font-size: 7pt; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 6px; }
-    </style></head><body>
-    <div class="report-header">
-      <div class="title-row"><span>Récapitulatif des avis</span><span>${today}</span></div>
-      <div class="affaire">Affaire : ${escapeHtml(affaire)}</div>
-      <div class="dossier">Dossier : ${escapeHtml(dossier)}</div>
-      <div><span style="font-size:9pt;">Première intervention : ${premiereInter} &nbsp;|&nbsp; Dernière intervention : ${derniereInter}</span></div>
-    </div>
-    <div class="stats-grid">
-      <div class="stats-col"><div><span class="stat-label">Nbr Avis Favorable :</span> ${stats.favorable}</div><div><span class="stat-label">Nbr Avis Suspendus :</span> ${stats.suspendus}</div><div><span class="stat-label">Nbr Avis Défavorables :</span> ${stats.defavorables}</div><div><span class="stat-label">Pour mémoire :</span> ${stats.pourMemoire}</div><div><span class="stat-label">Hors mission :</span> ${stats.horsMission}</div><div><span class="stat-label">Sans objet :</span> ${stats.sansObjet}</div></div>
-      <div class="stats-col"><div><span class="stat-label">Nbr d'avis suivis :</span> ${stats.suivis}</div><div><span class="stat-label">Nbr d'avis partiellement suivis :</span> ${stats.partiels}</div><div><span class="stat-label">Nbr d'avis non suivis :</span> ${stats.nonSuivis}</div><div><span class="stat-label">Nbr d'avis en cours de traitement :</span> ${stats.enCoursTraitement}</div><div><span class="stat-label">Nbr d'avis sans réponses :</span> ${stats.sansReponses}</div><div><span class="stat-label">Nbr d'avis S/D :</span> ${stats.avisSD}</div></div>
-      <div class="stats-col"><div><span class="stat-label">Nbr total d'avis levés :</span> ${stats.avisLevesTotal}</div><div><span class="stat-label">⚠ Nbr avis restants :</span> ${stats.avisRestants}</div><div><span class="stat-label">❌ Nbr d’Avis/Comm intégrés au RD6 :</span> ${stats.avisIntegresRD6}</div><div><span class="stat-label">Nbr total d’avis :</span> ${stats.total}</div></div>
-    </div>
-    <table>
-      <thead><tr>
-        <th>N°avis</th><th>Id/Réf</th><th>Date</th><th>Intervenant</th><th>Dispositions examinées</th><th>Description conception</th><th>Avis</th><th>Observations</th><th>Documents concernées</th><th>Suivi</th><th>Réponses ENT / MOE</th><th>Obs. SOCOTEC</th><th>Lots concernés</th>
-      </tr></thead>
-      <tbody>`;
-    sorted.forEach(r => {
-        let suiviBadge = '';
-        if(r.suivi === 'Oui') suiviBadge = '<span class="badge-print badge-oui-print">✓ Levé</span>';
-        else if(r.suivi === 'Par') suiviBadge = '<span class="badge-print badge-par-print">~ Partiel</span>';
-        else if(r.suivi === 'Non') suiviBadge = '<span class="badge-print badge-non-print">✗ Maintenu</span>';
-        else suiviBadge = '—';
-        let rd6Mark = r.rd6 ? '<span class="rd6-badge">RD6</span>' : '';
-        let avisRaw = r.avis || '';
-        let interClean = (r.inter || '').split('@')[0];
-        printHtml += `<tr>
-          <td>${escapeHtml(r.num)}${rd6Mark}</td>
-          <td>${escapeHtml(r.ref)}</td>
-          <td style="white-space:nowrap">${fmtDate(r.date)}</td>
-          <td>${escapeHtml(interClean)}</td>
-          <td>${escapeHtml(r.disp)}</td>
-          <td>${escapeHtml(r.desc)}</td>
-          <td>${escapeHtml(avisRaw)}</td>
-          <td>${escapeHtml(r.obs)}</td>
-          <td>${escapeHtml(r.docs)}</td>
-          <td>${suiviBadge}</td>
-          <td>${escapeHtml(r.repK)}</td>
-          <td>${escapeHtml(r.repL)}</td>
-          <td>${escapeHtml(r.lots)}</td>
-        </tr>`;
-    });
-    printHtml += `</tbody></table>
-    <div class="legend">F: Favorables / S: Suspendus / D: Défavorables / SO: Sans Objet / HM: Hors Mission / PM: Pour mémoire &nbsp;&nbsp;✅ Levé / ⚠ Partiellement suivi / ❌ Maintenu</div>
-    <div class="footer">SOCOTEC Sarl LUXEMBOURG - Document généré le ${today}</div>
-    </body></html>`;
-    
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(printHtml);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-}
-function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>]/g, function(m) { if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m; }); }
-function fmtDate(d){ if(!d) return ''; if(/^\d{4}-\d{2}-\d{2}$/.test(d)){ const [y,m,day]=d.split('-'); return day+'/'+m+'/'+y; } return d; }
-// ================== FIN CUSTOM PRINT ==================
-  
 // --- Import / Actualiser XLSX (inchangé) ---
 function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
 function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
