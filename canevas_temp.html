@@ -366,7 +366,8 @@
      ============================================================ */
 @media print {
   @page { size: A3 landscape; margin: 8mm 6mm 12mm 6mm; }
-  .syn-header, .toolbar, .overlay, .edit-panel, .modal-overlay, .empty-state, #colModal { display: none !important; }
+  .syn-header, .toolbar, .overlay, .edit-panel,
+  .modal-overlay, .empty-state, #colModal { display: none !important; }
   .print-header { display: block !important; margin-bottom: 3mm; padding-bottom: 2mm; border-bottom: 1.5px solid #1a56db; }
   .print-header-top { display: flex !important; justify-content: space-between; align-items: flex-start; margin-bottom: 2mm; }
   .print-title { font-size: 10pt; font-weight: 700; color: #1e293b; }
@@ -385,7 +386,10 @@
   .print-footer { display: block !important; position: fixed; bottom: 3mm; left: 6mm; right: 6mm; font-size: 5.5pt; color: #94a3b8; display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 1mm; }
   body { background: white !important; height: auto !important; overflow: visible !important; font-size: 7pt !important; font-family: 'Inter', Arial, sans-serif !important; color: #000 !important; display: block !important; }
   .table-container { flex: unset !important; overflow: visible !important; padding: 0 !important; }
-  table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; font-size: 6.5pt !important; border: 1px solid #334155 !important; }
+  table { width: 100% !important; table-layout: auto !important; border-collapse: collapse !important; font-size: 6.5pt !important; page-break-inside: auto; border: 1px solid #334155 !important; }
+  thead { display: table-header-group; }
+  tfoot { display: table-footer-group; }
+  tr { page-break-inside: avoid; }
   th, td { border: 1px solid #cbd5e1 !important; padding: 3px 4px !important; vertical-align: top !important; word-break: break-word !important; }
   th { background: #1e293b !important; color: white !important; font-size: 6pt !important; font-weight: 700 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .badge { font-size: 6pt !important; padding: 1px 3px !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
