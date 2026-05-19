@@ -512,7 +512,7 @@
     </div>
   </div>
 </div>
-
+</div>
 <!-- TABLEAU PRINCIPAL -->
 <div class="table-container">
   <table id="mainTable">
@@ -934,7 +934,6 @@ function resetColumns() {
     `).join('');
   }
 }
-});
 function fmtDate(d){if(!d)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}return d;}
 function renderTable(){
   const tbody=ge('tableBody'),empty=ge('emptyState');
