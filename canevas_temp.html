@@ -398,7 +398,11 @@
       min-width: 140px;
     }
     .print-stat-block .pstat-label { font-weight: 700; margin-bottom: 1mm; }
-    .print-stat-block .pstat-row { display: flex; justify-content: space-between; }
+    .print-stat-block .pstat-row { display: flex; justify-content: space-between; margin-bottom: 0.5mm; }
+    .print-stat-block .pstat-val { font-weight: 700; }
+    .print-stat-block .pstat-val.green { color: #15803d; }
+    .print-stat-block .pstat-val.gold  { color: #92400e; }
+    .print-stat-block .pstat-val.red   { color: #b91c1c; }
     .print-legend {
       margin-top: 2mm;
       font-size: 6pt;
@@ -824,9 +828,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-
 const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
-
 // ============================================================
 //  RAPSOSYNTHÈSE - VERSION FINALE AVEC STATISTIQUES IMPRESSION CORRIGÉES
 // ============================================================
@@ -996,7 +998,7 @@ function renderTable(){
   if(!filteredRows.length){tbody.innerHTML='';empty.style.display='flex';return;}
   empty.style.display='none';
   tbody.innerHTML=filteredRows.map((r,i)=>{
-    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✓ Oui</span>':r.suivi==='Par'?'<span class="badge badge-par">~ Par</span>':r.suivi==='Non'?'<span class="badge badge-non">✗ Non</span>':'<span class="badge badge-empty">—</span>';
+    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✓ Levé</span>':r.suivi==='Par'?'<span class="badge badge-par">~ Par.</span>':r.suivi==='Non'?'<span class="badge badge-non">✗ Non</span>':'<span class="badge badge-empty">—</span>';
     const rd6=r.rd6?'<span class="rd6-tag">RD6</span>':'';
     const interClean=cleanIntervenant(r.inter);
     let cells='';
@@ -1085,6 +1087,8 @@ function saveInfoModal(){
 
 // =============================================================
 //  IMPRESSION — MISE À JOUR DE L'EN-TÊTE AVEC STATISTIQUES DEMANDÉES
+//  + Première intervention, Intervention la plus récente, Dernière intervention (aujourd'hui si aucune date du jour)
+//  + Couleurs spécifiques
 // =============================================================
 function printReport() {
   const rows = getRows();
@@ -1098,10 +1102,18 @@ function printReport() {
   ge('printFooterDate').textContent = dateStr;
   ge('printFooterLeft').textContent = 'SOCOTEC — ' + affaire;
 
-  // Calcul des statistiques selon les formules demandées
+  // Calcul des dates
+  let datesValides = rows.map(r => r.date).filter(d => d && /^\d{4}-\d{2}-\d{2}$/.test(d)).map(d => new Date(d));
+  let premiere = datesValides.length ? new Date(Math.min(...datesValides)) : null;
+  let plusRecente = datesValides.length ? new Date(Math.max(...datesValides)) : null;
+  let aujourdhui = new Date();
+  aujourdhui.setHours(0,0,0,0);
+  let hasToday = datesValides.some(d => d.toDateString() === aujourdhui.toDateString());
+  let derniere = hasToday ? null : aujourdhui; // Si aucune date n'est aujourd'hui, on affiche aujourd'hui comme "Dernière intervention"
+
+  // Statistiques
   let F=0, S=0, D=0, SO=0, HM=0, PM=0;
   let suivis=0, partiels=0, nonSuivis=0;
-  let datesValides = [];
   let nbPA=0, nbRD6=0;
 
   for (const r of rows) {
@@ -1117,42 +1129,39 @@ function printReport() {
     else if (r.suivi === 'Par') partiels++;
     else if (r.suivi === 'Non') nonSuivis++;
 
-    if (r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date)) {
-      datesValides.push(new Date(r.date));
-    }
     if ((r.num || '').toUpperCase().startsWith('PA')) nbPA++;
     if ((r.num || '').includes('/RD6')) nbRD6++;
   }
 
-  const premiere = datesValides.length ? new Date(Math.min(...datesValides)) : null;
-  const derniere = datesValides.length ? new Date(Math.max(...datesValides)) : null;
   const nbSD = S + D;
   const nbEnCours = suivis + partiels + nonSuivis;
   const nbAvisLeves = suivis;
   const nbAvisRestants = nbSD - suivis;
-  const nbSansRep = nbSD - suivis - nonSuivis + partiels; // selon la formule Excel
+  const nbSansRep = nbSD - suivis - nonSuivis + partiels;
 
-  // Construction des blocs HTML pour l'en-tête d'impression
+  // Construction du HTML avec couleurs
   const statsHtml = `
     <div class="print-stat-block">
       <div class="pstat-label">Première intervention</div>
       <div>${premiere ? premiere.toLocaleDateString('fr-FR') : '…'}</div>
       <div class="pstat-label" style="margin-top:1mm;">Intervention la plus récente</div>
-      <div>${derniere ? derniere.toLocaleDateString('fr-FR') : '…'}</div>
+      <div>${plusRecente ? plusRecente.toLocaleDateString('fr-FR') : '…'}</div>
+      <div class="pstat-label" style="margin-top:1mm;">Dernière intervention</div>
+      <div>${derniere ? derniere.toLocaleDateString('fr-FR') : '—'}</div>
     </div>
     <div class="print-stat-block">
-      <div class="pstat-label">Nbr d'avis suivis</div><div>${suivis}</div>
-      <div class="pstat-label">Nbr d'avis partiellement suivis</div><div>${partiels}</div>
-      <div class="pstat-label">Nbr d'avis non suivis</div><div>${nonSuivis}</div>
+      <div class="pstat-label">Nbr d'avis suivis</div><div class="pstat-val green">${suivis}</div>
+      <div class="pstat-label">Nbr d'avis partiellement suivis</div><div class="pstat-val gold">${partiels}</div>
+      <div class="pstat-label">Nbr d'avis non suivis</div><div class="pstat-val red">${nonSuivis}</div>
       <div class="pstat-label">Nbr d'avis en cours de traitement</div><div>${nbEnCours}</div>
       <div class="pstat-label">Nbr d'avis sans réponses</div><div>${nbSansRep}</div>
     </div>
     <div class="print-stat-block">
-      <div class="pstat-label">Nbr d'avis S/D</div><div>${nbSD}</div>
+      <div class="pstat-label">Nbr d'avis S/D</div><div class="pstat-val red">${nbSD}</div>
       <div class="pstat-label">Nbr de point d'attention/action</div><div>${nbPA}</div>
-      <div class="pstat-label">Nbr total d'avis levés</div><div>${nbAvisLeves}</div>
-      <div class="pstat-label">⚠ Nbr avis restants</div><div>${nbAvisRestants}</div>
-      <div class="pstat-label">❌ Nbr d’Avis/Comm intégrés au RD6</div><div>${nbRD6}</div>
+      <div class="pstat-label">Nbr total d'avis levés</div><div class="pstat-val green">${nbAvisLeves}</div>
+      <div class="pstat-label">⚠ Nbr avis restants</div><div class="pstat-val gold">${nbAvisRestants}</div>
+      <div class="pstat-label">❌ Nbr d’Avis/Comm intégrés au RD6</div><div class="pstat-val red">${nbRD6}</div>
     </div>
   `;
   ge('printStatsGrid').innerHTML = statsHtml;
