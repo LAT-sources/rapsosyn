@@ -21,12 +21,10 @@
     background: var(--g100); color: var(--g800); font-family: var(--font);
     font-size: 13px; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
   }
-  /* Header */
   .syn-header {
     background: white; border-bottom: 1px solid var(--g200); padding: 6px 16px;
     display: flex; align-items: center; gap: 12px; flex-shrink: 0;
   }
-  /* Toolbar */
   .toolbar {
     background: white; border-bottom: 1px solid var(--g200); padding: 5px 16px;
     display: flex; align-items: center; gap: 6px; flex-wrap: wrap; flex-shrink: 0;
@@ -111,7 +109,6 @@
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 60px 20px; color: var(--g400); gap: 8px;
   }
-  /* Panel latéral */
   .overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 800;
   }
@@ -153,7 +150,6 @@
     background: var(--g50); border: 1px solid var(--g200); padding: 8px; min-height: 100px;
     white-space: pre-wrap; font-size: 0.76rem; border-radius: 4px;
   }
-  /* Modals */
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 900;
     align-items: center; justify-content: center;
@@ -179,7 +175,6 @@
     display: flex; align-items: center; gap: 10px; padding: 6px 0; cursor: pointer; font-size: 0.85rem;
   }
   .col-picker-item input { accent-color: var(--blue); margin: 0; }
-  /* Vision rapide */
   .rapide-modal {
     width: 960px; max-width: 97vw; height: 85vh; display: flex; flex-direction: column;
   }
@@ -223,7 +218,7 @@
     .print-title { font-size: 10pt; font-weight: 700; }
     .print-subtitle { font-size: 7.5pt; color: #475569; }
     .print-date-print { font-size: 7pt; text-align: right; }
-    .print-stats-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2mm; margin-top: 2mm; }
+    .print-stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2mm; margin-top: 2mm; }
     .print-stat-block { background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5mm 2mm; font-size: 6.5pt; }
     .print-legend { margin-top: 1.5mm; font-size: 6pt; border-top: 1px solid #e2e8f0; padding-top: 1mm; }
     .print-footer { display: block; position: fixed; bottom: 3mm; left: 6mm; right: 6mm; font-size: 5.5pt; color: #94a3b8; display: flex; justify-content: space-between; border-top: 1px solid #e2e8f0; padding-top: 1mm; }
@@ -241,7 +236,7 @@
 </head>
 <body>
 
-<!-- EN-TÊTE D'IMPRESSION -->
+<!-- EN-TÊTE D'IMPRESSION (sera rempli dynamiquement) -->
 <div class="print-header" id="printHeader">
   <div class="print-header-top">
     <div>
@@ -250,14 +245,10 @@
     </div>
     <div class="print-date-print" id="printDateNow"></div>
   </div>
-  <div class="print-stats-grid" id="printStatsGrid">
-    <div class="print-stat-block"><div class="pstat-label">Avis par type</div><div class="pstat-row"><span>Favorables (F)</span><span id="pF">0</span></div><div class="pstat-row"><span>Suspendus (S)</span><span id="pS">0</span></div><div class="pstat-row"><span>Défavorables (D)</span><span id="pD">0</span></div></div>
-    <div class="print-stat-block"><div class="pstat-label">Autres avis</div><div class="pstat-row"><span>Pour mémoire (PM)</span><span id="pPM">0</span></div><div class="pstat-row"><span>Hors mission (HM)</span><span id="pHM">0</span></div><div class="pstat-row"><span>Sans objet (SO)</span><span id="pSO">0</span></div></div>
-    <div class="print-stat-block"><div class="pstat-label">Suivi des avis</div><div class="pstat-row"><span>✅ Levés</span><span id="pOui">0</span></div><div class="pstat-row"><span>⚠ Partiels</span><span id="pPar">0</span></div><div class="pstat-row"><span>❌ Maintenus</span><span id="pNon">0</span></div></div>
-    <div class="print-stat-block"><div class="pstat-label">Réponses</div><div class="pstat-row"><span>En cours</span><span id="pEnCours">0</span></div><div class="pstat-row"><span>Sans réponse</span><span id="pSansRep">0</span></div><div class="pstat-row"><span>Total avis levés</span><span id="pTotalLeves">0</span></div></div>
-    <div class="print-stat-block"><div class="pstat-label">Interventions</div><div class="pstat-row"><span>Première</span><span id="pFirstDate">—</span></div><div class="pstat-row"><span>Dernière</span><span id="pLastDate">—</span></div><div class="pstat-row"><span>Total avis</span><span id="pTotal">0</span></div></div>
+  <div class="print-stats-grid" id="printStatsGrid"></div>
+  <div class="print-legend">
+    F: Favorables / S: Suspendus / D: Défavorables / SO: Sans Objet / HM: Hors Mission / PM: Pour mémoire &nbsp;|&nbsp; ✅ Levés / ⚠ Partiels / ❌ Maintenus
   </div>
-  <div class="print-legend">F: Favorables / S: Suspendus / D: Défavorables / SO: Sans Objet / HM: Hors Mission / PM: Pour mémoire &nbsp;|&nbsp; ✅ Levés / ⚠ Partiels / ❌ Maintenus</div>
 </div>
 <div class="print-footer" id="printFooter"><span id="printFooterLeft">SOCOTEC</span><span>Imprimé le <span id="printFooterDate"></span></span></div>
 
@@ -603,7 +594,7 @@ function closeStatsModal(){ ge('statsModal').classList.remove('open'); }
 function toggleActionsMenu(){ ge('actionsMenu').classList.toggle('show'); }
 function closeActionsMenu(){ ge('actionsMenu').classList.remove('show'); }
 
-// --- Impression ---
+// --- Impression avec statistiques Excel ---
 function printReport() {
   const rows = getRows();
   const affaire = ge('affaireDisplay').innerText || '';
@@ -613,24 +604,57 @@ function printReport() {
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR') + ' ' + now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   ge('printDateNow').innerHTML = 'Imprimé le ' + dateStr;
-  let F=0,S=0,D=0,SO=0,HM=0,PM=0,oui=0,par=0,non=0,avecRep=0,sansRep=0,firstDate=null,lastDate=null;
-  for(const r of rows){
-    const av=(r.avis||'').toUpperCase().trim();
-    if(av==='F')F++;else if(av==='S')S++;else if(av==='D')D++;else if(av==='SO')SO++;else if(av==='HM')HM++;else if(av==='PM')PM++;
-    if(r.suivi==='Oui')oui++;else if(r.suivi==='Par')par++;else if(r.suivi==='Non')non++;
-    if(r.repK||r.repL) avecRep++; else sansRep++;
-    if(r.date && /^\d{4}-\d{2}-\d{2}$/.test(r.date)){ const d=new Date(r.date); if(!firstDate||d<firstDate) firstDate=d; if(!lastDate||d>lastDate) lastDate=d; }
-  }
-  ge('pF').innerText=F; ge('pS').innerText=S; ge('pD').innerText=D;
-  ge('pPM').innerText=PM; ge('pHM').innerText=HM; ge('pSO').innerText=SO;
-  ge('pOui').innerText=oui; ge('pPar').innerText=par; ge('pNon').innerText=non;
-  ge('pEnCours').innerText=avecRep; ge('pSansRep').innerText=sansRep;
-  ge('pTotalLeves').innerText=oui;
-  ge('pFirstDate').innerText=firstDate?firstDate.toLocaleDateString('fr-FR'):'—';
-  ge('pLastDate').innerText=lastDate?lastDate.toLocaleDateString('fr-FR'):'—';
-  ge('pTotal').innerText=rows.length;
-  ge('printFooterLeft').innerHTML='SOCOTEC — ' + affaire;
-  ge('printFooterDate').innerHTML=dateStr;
+  ge('printFooterDate').innerHTML = dateStr;
+  ge('printFooterLeft').innerHTML = 'SOCOTEC — ' + affaire;
+
+  // Calculs selon la formule Excel
+  const datesValides = rows.map(r => r.date).filter(d => d && /^\d{4}-\d{2}-\d{2}$/.test(d)).map(d => new Date(d));
+  const premiere = datesValides.length ? new Date(Math.min(...datesValides)) : null;
+  const derniere = datesValides.length ? new Date(Math.max(...datesValides)) : null;
+  const nbSuivis = rows.filter(r => r.suivi === 'Oui').length;
+  const nbPartiels = rows.filter(r => r.suivi === 'Par').length;
+  const nbNonSuivis = rows.filter(r => r.suivi === 'Non').length;
+  const nbEnCours = rows.filter(r => r.suivi === 'Oui' || r.suivi === 'Par' || r.suivi === 'Non').length; // selon formule : NB.SI(J4:J501;"OUI")+NB.SI(J4:J501;"NON")+NB.SI(J4:J501;"PAR")
+  // Avis S/D : nombre d'avis avec avis = 'S' ou 'D'
+  const nbSD = rows.filter(r => (r.avis||'').toUpperCase() === 'S' || (r.avis||'').toUpperCase() === 'D').length;
+  // Points d'attention/action : numéros commençant par "PA"
+  const nbPA = rows.filter(r => (r.num||'').toUpperCase().startsWith('PA')).length;
+  const nbAvisLeves = nbSuivis;
+  const nbAvisRestants = nbSD - nbSuivis;
+  const nbRD6 = rows.filter(r => (r.num||'').includes('/RD6')).length;
+  // Avis sans réponses : (nombre de S + D) - (suivis + non suivis) + partiels ? La formule donnée est obscure, mais on va prendre : nbSD - nbSuivis - nbNonSuivis + nbPartiels ? non. 
+  // Relecture de la formule Excel : =NB.SI(G4:G501;"S")+NB.SI(G4:G501;"D")-NB.SI(J4:J501;"OUI")-NB.SI(J4:J501;"NON")+NB.SI(J4:J501;"PAR")
+  // Soit nbSD - nbSuivis - nbNonSuivis + nbPartiels
+  const nbSansRep = nbSD - nbSuivis - nbNonSuivis + nbPartiels;
+
+  // Construction du grid HTML
+  const statsHtml = `
+    <div class="print-stat-block">
+      <div class="pstat-label">Première intervention</div>
+      <div>${premiere ? premiere.toLocaleDateString('fr-FR') : '…'}</div>
+      <div class="pstat-label">Dernière intervention</div>
+      <div>${derniere ? derniere.toLocaleDateString('fr-FR') : '…'}</div>
+    </div>
+    <div class="print-stat-block">
+      <div class="pstat-label">Avis suivis :</div><div>${nbSuivis}</div>
+      <div class="pstat-label">Partiellement suivis :</div><div>${nbPartiels}</div>
+      <div class="pstat-label">Non suivis :</div><div>${nbNonSuivis}</div>
+    </div>
+    <div class="print-stat-block">
+      <div class="pstat-label">En cours de traitement :</div><div>${nbEnCours}</div>
+      <div class="pstat-label">Avis sans réponses :</div><div>${nbSansRep}</div>
+      <div class="pstat-label">Avis S/D :</div><div>${nbSD}</div>
+    </div>
+    <div class="print-stat-block">
+      <div class="pstat-label">Points d’attention/action :</div><div>${nbPA}</div>
+      <div class="pstat-label">Total avis levés :</div><div>${nbAvisLeves}</div>
+      <div class="pstat-label">⚠ Avis restants :</div><div>${nbAvisRestants}</div>
+    </div>
+    <div class="print-stat-block">
+      <div class="pstat-label">❌ Avis/Comm intégrés RD6 :</div><div>${nbRD6}</div>
+    </div>
+  `;
+  ge('printStatsGrid').innerHTML = statsHtml;
 
   // Largeurs proportionnelles pour les colonnes visibles
   const visibleCols = COL_DEF.filter(c => c.visible);
