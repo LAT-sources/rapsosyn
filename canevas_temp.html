@@ -5,7 +5,7 @@
 <!-- RAPSO_DATA -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RapsoSynthèse</title>
+<title>RapsoSynthèse - Lots complets (corrigé)</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -683,7 +683,7 @@
 const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
 
 // ============================================================
-//  RAPSOSYNTHÈSE - CORRECTION LOTS (chaîne complète)
+//  RAPSOSYNTHÈSE - VERSION CORRIGÉE (lots complets + data-*)
 // ============================================================
 
 // --- Thème ---
@@ -698,12 +698,12 @@ let selectedLots = new Set();
 // --- Helper cleanIntervenant ---
 function cleanIntervenant(inter){if(!inter)return '';const at=inter.indexOf('@');return at>0?inter.substring(0,at).trim():inter;}
 
-// ---------- NOUVELLE FONCTION : lot = chaîne complète (pas de découpage) ----------
+// ---------- FONCTION POUR LOTS (CHAÎNE COMPLÈTE) ----------
 function getLotsArray(r) {
     const val = r.lots ? r.lots.trim() : '';
     return val ? [val] : [];
 }
-// --------------------------------------------------------------------------------
+// ---------------------------------------------------------
 
 // --- Persistance & sync ---
 function persistLocal(){try{localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));}catch(e){}}
@@ -758,26 +758,27 @@ window.addEventListener('message', function(e) {
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
 
-// --- Construction multi-select (avec getLotsArray) ---
+// --- Construction multi-select (avec data-lot et data-inter) ---
 function buildMfSelectOptions() {
   const rows = getRows();
   const intervenants = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v => v && v !== ''))];
   const interDiv = document.getElementById('mfInterDropdown');
   if (interDiv) {
-    interDiv.innerHTML = intervenants.map(inter => `
-      <label><input type="checkbox" value="${escapeHtmlAttr(inter)}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', '${escapeHtmlAttr(inter)}', this.checked)"> ${escapeHtml(inter)}</label>
-    `).join('');
+    interDiv.innerHTML = intervenants.map(inter => {
+      const safe = escapeHtmlAttr(inter);
+      return `<label><input type="checkbox" value="${safe}" data-inter="${inter.replace(/"/g, '&quot;')}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(inter)}</label>`;
+    }).join('');
   }
   document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
 
-  // Utilisation de getLotsArray (aucun découpage)
   const allLots = rows.flatMap(r => getLotsArray(r));
   const lots = [...new Set(allLots)];
   const lotDiv = document.getElementById('mfLotDropdown');
   if (lotDiv) {
-    lotDiv.innerHTML = lots.map(lot => `
-      <label><input type="checkbox" value="${escapeHtmlAttr(lot)}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', '${escapeHtmlAttr(lot)}', this.checked)"> ${escapeHtml(lot)}</label>
-    `).join('');
+    lotDiv.innerHTML = lots.map(lot => {
+      const safe = escapeHtmlAttr(lot);
+      return `<label><input type="checkbox" value="${safe}" data-lot="${lot.replace(/"/g, '&quot;')}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(lot)}</label>`;
+    }).join('');
   }
   document.getElementById('mfLotCount').innerText = `(${selectedLots.size})`;
 }
@@ -1020,7 +1021,7 @@ function saveInfoModal() {
   closeInfoModal();
 }
 
-// ======================= VERSION RAPIDE (corrigée avec getLotsArray) =======================
+// ======================= VERSION RAPIDE (corrigée avec data-*) =======================
 let rapCurrent = null, rapFiltered = [];
 let rapSelectedLots = new Set(), rapSelectedInters = new Set();
 
@@ -1031,9 +1032,19 @@ function buildRapMfOptions() {
   const allLots = rows.flatMap(r => getLotsArray(r));
   const lots = [...new Set(allLots)];
   const interDrop = document.getElementById('rapMfInterDrop');
-  if (interDrop) interDrop.innerHTML = inters.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
+  if (interDrop) {
+    interDrop.innerHTML = inters.map(v => {
+      const safe = escapeHtmlAttr(v);
+      return `<label><input type="checkbox" value="${safe}" data-inter="${v.replace(/"/g, '&quot;')}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(v)}</label>`;
+    }).join('') || '<div style="padding:8px;">Aucun</div>';
+  }
   const lotDrop = document.getElementById('rapMfLotsDrop');
-  if (lotDrop) lotDrop.innerHTML = lots.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
+  if (lotDrop) {
+    lotDrop.innerHTML = lots.map(v => {
+      const safe = escapeHtmlAttr(v);
+      return `<label><input type="checkbox" value="${safe}" data-lot="${v.replace(/"/g, '&quot;')}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(v)}</label>`;
+    }).join('') || '<div style="padding:8px;">Aucun</div>';
+  }
 }
 function toggleRapMulti(type, val, checked) {
   if (type === 'inter') checked ? rapSelectedInters.add(val) : rapSelectedInters.delete(val);
@@ -1350,7 +1361,6 @@ function processXLSX(file, mode){
       for (let i = 1; i < Math.min(raw.length, 500); i++) {
         const row = raw[i]; if (!row || row.every(c => c==='')) continue;
         const nv = String(row[1]||'').trim(); const obs = String(row[7]||''); let suivi = hasRappel(obs) ? 'Oui' : '';
-        // LECTURE DE LA COLONNE M (index 12) POUR LE LOT
         const lotsValue = (row[12] !== undefined && row[12] !== null) ? String(row[12]).trim() : '';
         src.push(makeRow({
           num: nv,
