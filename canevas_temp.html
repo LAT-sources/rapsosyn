@@ -398,7 +398,6 @@
 <div class="toolbar">
   <button class="tb-btn active" id="tabV2" onclick="switchTab('v2')"style="display:none;">RapsoV2</button>
   <button class="tb-btn" id="tabV1" onclick="switchTab('v1')"style="display:none;">RapsoV1</button>
-  <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
   <div class="quick-search"><span class="qs-label">N°</span><input id="qs_num" placeholder="avis" oninput="applyFilters()"></div>
   <div class="quick-search"><span class="qs-label">Date</span><input id="qs_date" placeholder="jj/mm/aaaa" oninput="applyFilters()"></div>
   <div class="quick-search"><span class="qs-label">Disp.</span><input id="qs_disp" placeholder="dispositions" oninput="applyFilters()"></div>
@@ -428,14 +427,12 @@
 
   <button class="tb-btn" onclick="resetFilters()">✕</button>
   <div style="flex:1;"></div>
-
+  <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
   <!-- Bouton INFO (affaire/dossier) -->
-  <button class="tb-btn" onclick="openInfoModal()">ⓘ</button>
-
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
-
+  <button class="tb-btn" onclick="openInfoModal()">ⓘ</button>
   <!-- Menu déroulant "Actions" avec le panneau des colonnes intégré -->
   <div class="actions-dropdown">
     <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()"> ☰ MENU ▾</button>
