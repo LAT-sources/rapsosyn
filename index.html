@@ -1266,7 +1266,15 @@ function saveFromSynthese() {
 
 /* SYNC LIVE */
 let _notifTimer = null, _pendingData = null, _liveListener = null, _isSelfWrite = false, _lastLocalHash = '';
-function hashData(d) { if (!d) return ''; return JSON.stringify({ v2: (d.v2||[]).length, v1: (d.v1||[]).length, sV2: (d.v2||[]).map(r=>r.suivi).join(''), sV1: (d.v1||[]).map(r=>r.suivi).join('') }); }
+function hashData(d) {
+  if (!d) return '';
+  const rowSig = r => [r.id||'', r.suivi||'', r.rd6?'1':'0', r.repK||'', r.repL||'', r.lots||'', r.num||''].join('|');
+  return JSON.stringify({
+    v2: (d.v2||[]).length, v1: (d.v1||[]).length,
+    sV2: (d.v2||[]).map(rowSig).join('§'),
+    sV1: (d.v1||[]).map(rowSig).join('§')
+  });
+}
 function showNotif(txt, type = 'ok', duration = 3500) {
   const el = document.getElementById('synNotif');
   const ico = document.getElementById('synNotifIcon');
