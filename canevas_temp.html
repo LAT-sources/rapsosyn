@@ -855,10 +855,14 @@ function getLotsArray(r) {
 // ---------------------------------------------------------
 
 // --- Persistance & sync ---
-function persistLocal(){try{localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));}catch(e){}}
+function persistLocal(){
+  try{
+    localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));
+  }catch(e){}
+  pushToParent();
+}
 function pushToParent(){if(!window.parent||window.parent===window)return;const canId=window.CANEVAS_ID;if(canId===undefined)return;try{const raw=localStorage.getItem('rapsotracker');if(raw){const parsed=JSON.parse(raw);if(parsed?.data)window.parent.postMessage({type:'rapso_save',canId,data:parsed.data},'*');}}catch(e){}}
-setInterval(pushToParent,4000);const _origSet=localStorage.setItem.bind(localStorage);
-localStorage.setItem=function(k,v){_origSet(k,v);if(k==='rapsotracker'){clearTimeout(window._rsST);window._rsST=setTimeout(pushToParent,250);}};
+setInterval(pushToParent,4000);
 window.addEventListener('beforeunload',pushToParent);
 window.addEventListener('message', function(e) {
   if (e.data?.type === 'rapso_request_save') pushToParent();
