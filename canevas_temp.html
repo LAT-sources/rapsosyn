@@ -234,7 +234,7 @@
   .rd6-toggle.active { border-color: var(--purple); background: var(--purple-l); }
   .panel-ftr {
     padding: 10px 16px; border-top: 1px solid var(--g200); display: flex;
-    gap: 8px; background: var(--g50); align-items: center;
+    gap: 8px; background: var(--g50);
   }
   .save-feedback {
     font-size: 0.73rem; font-weight: 600; color: #16a34a; opacity: 0;
@@ -619,21 +619,19 @@ th[data-col="repL"], td[data-col="repL"] {
 <!-- TABLEAU PRINCIPAL -->
 <div class="table-container">
   <table id="mainTable">
-    <thead id="mainThead"><tr id="headerRow"></tr></thead>
+    <thead id="mainThead"><tr id="headerRow"><tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
   <div class="empty-state" id="emptyState" style="display:none"><div style="font-size:1.5rem;color:var(--g300);">—</div><div>Aucun avis trouvé</div></div>
 </div>
 
-<!-- PANEL LATERAL (boutons nav déplacés en bas à droite) -->
+<!-- PANEL LATERAL -->
 <div class="overlay" id="overlay" onclick="closePanel()"></div>
 <div class="edit-panel" id="editPanel">
   <div class="ep-rh" id="epRh"></div>
   <div class="panel-hdr">
     <span class="title" id="panelTitle">Avis n°: —</span>
     <span style="font-family:var(--mono);font-size:0.7rem;" id="panelNum">—</span>
-    <button class="tb-btn" onclick="openInfoModal()" title="Infos">ⓘ</button>
-    <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
     <button class="tb-btn" onclick="navRow(-1)">Pré ↑</button>
     <button class="tb-btn" onclick="navRow(1)">↓ Sui</button>
     <button class="tb-btn" onclick="closePanel()">×</button>
@@ -660,25 +658,14 @@ th[data-col="repL"], td[data-col="repL"] {
       </div>
     </div>
   </div>
-<div class="panel-ftr">
-
-  <div style="display: flex; gap: 6px;">
+  <div class="panel-ftr">
     <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
-    <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">
-      Supprimer
-    </button>
+    <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Supprimer</button>
     <button class="tb-btn" onclick="closePanel()">Annuler</button>
-  </div>
-  <div style="flex:1;"></div>
-  <div style="display: flex; align-items:center; gap: 6px;">
-    <span class="save-feedback" id="saveFeedback">
-      ✓ Enregistré !
-    </span>
-    <button class="tb-btn" onclick="navRow(-1)">Pré ↑</button>
-    <button class="tb-btn" onclick="navRow(1)">↓ Sui</button>
+    <span class="save-feedback" id="saveFeedback">✓ Enregistré !</span>
   </div>
 </div>
-  
+
 <!-- MODAL INFO -->
 <div class="modal-overlay" id="infoModal">
   <div class="modal" style="width:400px;">
@@ -844,7 +831,6 @@ th[data-col="repL"], td[data-col="repL"] {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-// (le script reste exactement le même, aucune modification js nécessaire hormis le layout)
 const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
 // ============================================================
 //  RAPSOSYNTHÈSE - VERSION FINALE AVEC STATISTIQUES IMPRESSION CORRIGÉES
@@ -1029,7 +1015,7 @@ function renderTable(){
       else cells+=`<td data-col="${c.key}">${escapeHtml(r[c.key])}</td>`;
     });
     cells+=`<td class="col-actions"><button class="tb-btn" onclick="openEditPanel(${i})" style="padding:2px 8px;">Edit</button></td>`;
-    return `<tr ondblclick="openEditPanel(${i})" id="row-${i}">${cells}</tr>`;
+    return `<tr ondblclick="openEditPanel(${i})" id="row-${i}">${cells}<tr>`;
   }).join('');
 }
 function updateStats(){const rows=getRows();ge('statOui').textContent=rows.filter(r=>r.suivi==='Oui').length;ge('statPar').textContent=rows.filter(r=>r.suivi==='Par').length;ge('statNon').textContent=rows.filter(r=>r.suivi==='Non').length;ge('statTotal').textContent=rows.length;}
