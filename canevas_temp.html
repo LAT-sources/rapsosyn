@@ -595,7 +595,6 @@ th[data-col="repL"], td[data-col="repL"] {
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
-  <button class="tb-btn" onclick="openHistorique()" title="Historique des modifications">🕘</button>
   <button class="tb-btn" onclick="openInfoModal()" title="Infos">ⓘ</button>
   <div class="actions-dropdown">
     <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()" style="display:none;"> ☰ MENU ▾</button>
@@ -767,55 +766,6 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-
-<!-- HISTORIQUE MODAL -->
-<div class="modal-overlay" id="histModal">
-  <div class="modal hist-modal">
-    <div class="modal-hdr">
-      <span style="font-weight:600;font-size:0.88rem;">📋 Historique des modifications</span>
-      <button class="tb-btn" onclick="closeHistorique()">×</button>
-    </div>
-    <div class="hist-toolbar">
-      <input id="hq_avis" placeholder="N° avis..." oninput="renderHistorique()">
-      <input id="hq_user" placeholder="Utilisateur..." oninput="renderHistorique()">
-      <select id="hq_type" onchange="renderHistorique()">
-        <option value="">Toutes les actions</option>
-        <option value="edit">Modification</option>
-        <option value="suivi_oui">Levé</option>
-        <option value="suivi_par">Partiel</option>
-        <option value="suivi_non">Maintenu</option>
-        <option value="rd6">RD6</option>
-        <option value="pa">PA ajouté</option>
-        <option value="add">Avis ajouté</option>
-        <option value="delete">Suppression</option>
-        <option value="import">Import</option>
-      </select>
-      <button class="tb-btn" onclick="clearHistorique()" title="Effacer l'historique">🗑 Effacer</button>
-      <span class="hist-count" id="histCount">0 entrées</span>
-    </div>
-    <div class="hist-table-wrap">
-      <table class="hist-table">
-        <thead>
-          <tr>
-            <th style="width:90px">Date</th>
-            <th style="width:50px">Heure</th>
-            <th style="width:70px">Utilisateur</th>
-            <th style="width:70px">N° Avis</th>
-            <th style="width:90px">Action</th>
-            <th>Détail</th>
-          </tr>
-        </thead>
-        <tbody id="histBody"></tbody>
-      </table>
-      <div class="hist-empty" id="histEmpty" style="display:none;">Aucune modification enregistrée</div>
-    </div>
-    <div class="modal-ftr">
-      <button class="tb-btn" onclick="exportHistorique()">⤓ Exporter CSV</button>
-      <button class="tb-btn" onclick="closeHistorique()">Fermer</button>
-    </div>
-  </div>
-</div>
-
 <!-- STATS MODAL -->
 <div class="modal-overlay" id="statsModal">
   <div class="modal" style="width:520px;"><div class="modal-hdr">Statistiques<button class="tb-btn" onclick="closeStatsModal()">×</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div>
@@ -891,8 +841,7 @@ function toggleTheme(){document.body.classList.toggle('dark');localStorage.setIt
 (()=>{if((localStorage.getItem('rapso_theme')||'light')==='dark')document.body.classList.add('dark');})();
 
 // --- Données globales ---
-let currentTab='v2', data={v2:[], v1:[], historique:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='';
-let RAPSO_USER_NAME = (window.RAPSO_USER) ? ((window.RAPSO_USER.prenom||'') + ' ' + (window.RAPSO_USER.nom||'')).trim() || window.RAPSO_USER.initiales || '?' : '?';
+let currentTab='v2', data={v2:[], v1:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='';
 let selectedIntervenants = new Set();
 let selectedLots = new Set();
 
@@ -917,7 +866,7 @@ function pushToParent(){
   const canId=window.CANEVAS_ID;
   if(canId===undefined||canId===null)return;
   try{
-    window.parent.postMessage({type:'rapso_save',canId,data:{v2:data.v2,v1:data.v1,historique:data.historique||[]}},'*');
+    window.parent.postMessage({type:'rapso_save',canId,data:{v2:data.v2,v1:data.v1}},'*');
   }catch(e){}
 }
 setInterval(pushToParent,4000);
@@ -929,7 +878,6 @@ window.addEventListener('message', function(e) {
       const inj = e.data.data || { v2: [], v1: [] };
       data.v2 = Array.isArray(inj.v2) ? inj.v2.map(makeRow) : [];
       data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
-      if(Array.isArray(inj.historique)) data.historique = inj.historique;
       if (e.data.affaire) {
         ge('affaireDisplay').innerText = e.data.affaire;
         const rapTitle = document.getElementById('rapideAffaireTitle');
@@ -959,101 +907,12 @@ window.addEventListener('message', function(e) {
   }
 });
 
-(function(){if(window.RAPSO_SYNTH_DATA){try{const p=JSON.parse(window.RAPSO_SYNTH_DATA);if(p&&typeof p==='object'){data.v2=Array.isArray(p.v2)?p.v2:[];data.v1=Array.isArray(p.v1)?p.v1:[];if(Array.isArray(p.historique))data.historique=p.historique;localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:window.RAPSO_AFFAIRE||'',dossier:window.RAPSO_DOSSIER||''},data:{v2:data.v2,v1:data.v1}}));}}catch(e){}}setTimeout(()=>{
+(function(){if(window.RAPSO_SYNTH_DATA){try{const p=JSON.parse(window.RAPSO_SYNTH_DATA);if(p&&typeof p==='object'){data.v2=Array.isArray(p.v2)?p.v2:[];data.v1=Array.isArray(p.v1)?p.v1:[];localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:window.RAPSO_AFFAIRE||'',dossier:window.RAPSO_DOSSIER||''},data:{v2:data.v2,v1:data.v1}}));}}catch(e){}}setTimeout(()=>{
   const af=ge('affaireDisplay'),dos=ge('dossierInput');
   if(af && window.RAPSO_AFFAIRE) af.innerText = window.RAPSO_AFFAIRE;
   if(dos && window.RAPSO_DOSSIER) dos.value = window.RAPSO_DOSSIER;
   applyFilters();
 },0);})();
-
-
-// ======================= HISTORIQUE DES MODIFICATIONS =======================
-function logAction(type, numAvis, detail) {
-  if(!data.historique) data.historique = [];
-  const now = new Date();
-  const date = now.toLocaleDateString('fr-FR');
-  const heure = now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  const user = RAPSO_USER_NAME || '?';
-  data.historique.unshift({ ts: now.getTime(), date, heure, user, type, num: numAvis||'—', detail: detail||'' });
-  // Garder max 500 entrées
-  if(data.historique.length > 500) data.historique = data.historique.slice(0,500);
-}
-function typeLabel(type) {
-  const map = {
-    edit: ['Modification','ht-edit'],
-    suivi_oui: ['Levé ✓','ht-suivi'],
-    suivi_par: ['Partiel ~','ht-par'],
-    suivi_non: ['Maintenu ✗','ht-non'],
-    suivi_vide: ['Suivi effacé','ht-edit'],
-    rd6_on:  ['RD6 activé','ht-rd6'],
-    rd6_off: ['RD6 retiré','ht-rd6'],
-    pa:     ['PA ajouté','ht-pa'],
-    add:    ['Avis ajouté','ht-add'],
-    delete: ['Supprimé','ht-del'],
-    import: ['Import','ht-import'],
-    actualiser: ['Actualisation','ht-import'],
-  };
-  return map[type] || [type,'ht-edit'];
-}
-function openHistorique() {
-  renderHistorique();
-  ge('histModal').classList.add('open');
-}
-function closeHistorique() { ge('histModal').classList.remove('open'); }
-function clearHistorique() {
-  if(!confirm('Effacer tout l\'historique ?')) return;
-  data.historique = [];
-  persistLocal();
-  renderHistorique();
-}
-function renderHistorique() {
-  const hist = data.historique || [];
-  const qAvis = (ge('hq_avis')?.value||'').toLowerCase();
-  const qUser = (ge('hq_user')?.value||'').toLowerCase();
-  const qType = ge('hq_type')?.value||'';
-  let rows = hist.filter(h => {
-    if(qAvis && !String(h.num||'').toLowerCase().includes(qAvis)) return false;
-    if(qUser && !String(h.user||'').toLowerCase().includes(qUser)) return false;
-    if(qType && h.type !== qType) return false;
-    return true;
-  });
-  ge('histCount').textContent = rows.length + ' entrée' + (rows.length>1?'s':'');
-  const tbody = ge('histBody');
-  const empty = ge('histEmpty');
-  if(!rows.length) {
-    tbody.innerHTML = '';
-    empty.style.display = '';
-    return;
-  }
-  empty.style.display = 'none';
-  tbody.innerHTML = rows.map(h => {
-    const [label, cls] = typeLabel(h.type);
-    const detailSafe = escapeHtml(h.detail||'');
-    return `<tr>
-      <td style="font-family:var(--mono);font-size:.7rem;white-space:nowrap">${escapeHtml(h.date)}</td>
-      <td style="font-family:var(--mono);font-size:.7rem;color:var(--g500)">${escapeHtml(h.heure)}</td>
-      <td style="font-weight:600;color:var(--blue)">${escapeHtml(h.user)}</td>
-      <td style="font-family:var(--mono);font-weight:600">${escapeHtml(h.num)}</td>
-      <td><span class="hist-tag ${cls}">${label}</span></td>
-      <td title="${detailSafe}" style="color:var(--g600)">${detailSafe}</td>
-    </tr>`;
-  }).join('');
-}
-function exportHistorique() {
-  const hist = data.historique || [];
-  const lines = ['Date;Heure;Utilisateur;N° Avis;Action;Détail',
-    ...hist.map(h => {
-      const [label] = typeLabel(h.type);
-      return [h.date, h.heure, h.user, h.num, label, (h.detail||'').replace(/;/g,',')].join(';');
-    })
-  ];
-  const blob = new Blob(['﻿'+lines.join('\n')], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'historique_rapso.csv';
-  a.click();
-}
-// ============================================================================
 
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
@@ -1195,27 +1054,13 @@ function toggleRD6(){const cb=ge('e_rd6');cb.checked=!cb.checked;ge('rd6Toggle')
 function saveRow(){
   if(editingIdx===null)return;
   const r=filteredRows[editingIdx];const gi=getRows().findIndex(x=>x.id===r.id);if(gi===-1)return;
-  const prev={repK:r.repK,repL:r.repL,lots:r.lots,suivi:r.suivi,rd6:r.rd6};
   data[currentTab][gi]={...r,repK:ge('e_repK').value,repL:ge('e_repL').value,lots:ge('e_lots').value,suivi:currentSuivi,rd6:ge('e_rd6').checked};
   if(data[currentTab][gi].rd6&&!data[currentTab][gi].num.includes('/RD6'))data[currentTab][gi].num+='/RD6';
   else if(!data[currentTab][gi].rd6)data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
-  // Log des champs modifiés
-  const numAvis = data[currentTab][gi].num;
-  const changes = [];
-  if(prev.suivi !== currentSuivi) {
-    const st = currentSuivi==='Oui'?'suivi_oui':currentSuivi==='Par'?'suivi_par':currentSuivi==='Non'?'suivi_non':'suivi_vide';
-    const stLabel = currentSuivi==='Oui'?'Levé':currentSuivi==='Par'?'Partiel':currentSuivi==='Non'?'Maintenu':'(effacé)';
-    logAction(st, numAvis, 'Statut : ' + (prev.suivi||'—') + ' → ' + stLabel);
-  }
-  if(prev.rd6 !== ge('e_rd6').checked) logAction(ge('e_rd6').checked?'rd6_on':'rd6_off', numAvis, ge('e_rd6').checked?'RD6 activé':'RD6 retiré');
-  if(prev.repK !== ge('e_repK').value) changes.push('Réponse MOE');
-  if(prev.repL !== ge('e_repL').value) changes.push('Obs. SOCOTEC');
-  if(prev.lots !== ge('e_lots').value) changes.push('Lots : ' + ge('e_lots').value);
-  if(changes.length) logAction('edit', numAvis, changes.join(' | '));
   applyFilters();ge('saveFeedback').classList.add('show');setTimeout(()=>ge('saveFeedback').classList.remove('show'),1800);
   persistLocal();pushToParent();
 }
-function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx];if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;const gi=getRows().findIndex(x=>x.id===r.id);if(gi>=0){logAction('delete',r.num,'Avis supprimé');data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}}
+function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx];if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;const gi=getRows().findIndex(x=>x.id===r.id);if(gi>=0){data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}}
 
 // --- Redimensionnement panel ---
 (function(){
@@ -1236,8 +1081,6 @@ function addPA(){
   if(!cat){ge('paFeedback').innerText='⚠️ Cochez F, S, D ou PM';setTimeout(()=>ge('paFeedback').innerText='',2000);return;}
   let maxPA=0;getRows().forEach(r=>{if((r.num||'').startsWith('PA')){let n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
   data[currentTab].push(makeRow({num:'PA'+(maxPA+1),date:ge('pa_date').value||new Date().toISOString().slice(0,10),disp:ge('pa_disp').value,avis:cat,obs:ge('pa_obs').value,repK:ge('pa_repK').value,repL:ge('pa_repL').value,lots:ge('pa_lots').value}));
-  const paNum='PA'+(maxPA+1);
-  logAction('pa', paNum, 'PA ajouté — Avis : '+cat+(ge('pa_disp').value?' | Disp : '+ge('pa_disp').value.substring(0,50):''));
   closePAModal();applyFilters();persistLocal();pushToParent();
 }
 
@@ -1439,42 +1282,16 @@ function rapApply(){
 }
 function updateRapButtonsState(){const oui=ge('rapBtnOui'),par=ge('rapBtnPar'),non=ge('rapBtnNon'),rd6=ge('rapBtnRd6');if(rapCurrent){oui.classList.toggle('active',rapCurrent.suivi==='Oui');par.classList.toggle('active',rapCurrent.suivi==='Par');non.classList.toggle('active',rapCurrent.suivi==='Non');rd6.classList.toggle('active',rapCurrent.rd6===true);}else{oui.classList.remove('active');par.classList.remove('active');non.classList.remove('active');rd6.classList.remove('active');}}
 function rapSelect(i,scroll=true){rapCurrent=rapFiltered[i];document.querySelectorAll('.rapide-item').forEach((el,idx)=>el.classList.toggle('selected',idx===i));if(scroll)document.querySelectorAll('.rapide-item')[i]?.scrollIntoView({block:'nearest'});const r=rapCurrent;ge('rapideObsText').innerHTML=escapeHtml(r.obs)||'—';const editArea=ge('rapideEditArea');editArea.style.display='flex';ge('rq_repK').value=r.repK||'';ge('rq_repL').value=r.repL||'';ge('rq_lots').value=r.lots||'';ge('rapSaveBtn').disabled=false;updateRapButtonsState();}
-function rapToggleSuivi(v){
-  if(!rapCurrent)return;
-  const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);
-  if(gi===-1)return;
-  const prevSuivi=data[currentTab][gi].suivi;
-  data[currentTab][gi].suivi=(data[currentTab][gi].suivi===v)?'':v;
-  rapCurrent={...data[currentTab][gi]};
-  const newSuivi=data[currentTab][gi].suivi;
-  const st=newSuivi==='Oui'?'suivi_oui':newSuivi==='Par'?'suivi_par':newSuivi==='Non'?'suivi_non':'suivi_vide';
-  const stLabel=newSuivi==='Oui'?'Levé':newSuivi==='Par'?'Partiel':newSuivi==='Non'?'Maintenu':'(effacé)';
-  logAction(st, rapCurrent.num, 'Statut : '+(prevSuivi||'—')+' → '+stLabel+' [Vision rapide]');
-  persistLocal();rapApply();
-}
-function rapToggleRD6(){
-  if(!rapCurrent)return;
-  const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);
-  if(gi===-1)return;
-  data[currentTab][gi].rd6=!data[currentTab][gi].rd6;
-  rapCurrent={...data[currentTab][gi]};
-  logAction(data[currentTab][gi].rd6?'rd6_on':'rd6_off', rapCurrent.num, (data[currentTab][gi].rd6?'RD6 activé':'RD6 retiré')+' [Vision rapide]');
-  persistLocal();rapApply();
-}
+function rapToggleSuivi(v){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].suivi=(data[currentTab][gi].suivi===v)?'':v;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();}
+function rapToggleRD6(){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].rd6=!data[currentTab][gi].rd6;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();}
 function rapSaveTexts(){
   if(!rapCurrent)return;
   const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);
   if(gi===-1)return;
-  const prevRapK=data[currentTab][gi].repK, prevRapL=data[currentTab][gi].repL, prevRapLots=data[currentTab][gi].lots;
   data[currentTab][gi].repK=ge('rq_repK').value;
   data[currentTab][gi].repL=ge('rq_repL').value;
   data[currentTab][gi].lots=ge('rq_lots').value;
   rapCurrent={...data[currentTab][gi]};
-  const rapChanges=[];
-  if(prevRapK!==data[currentTab][gi].repK) rapChanges.push('Réponse MOE');
-  if(prevRapL!==data[currentTab][gi].repL) rapChanges.push('Obs. SOCOTEC');
-  if(prevRapLots!==data[currentTab][gi].lots) rapChanges.push('Lots : '+data[currentTab][gi].lots);
-  if(rapChanges.length) logAction('edit', rapCurrent.num, rapChanges.join(' | ')+' [Vision rapide]');
   persistLocal();
   rapApply();
   const btn=ge('rapSaveBtn');
@@ -1489,7 +1306,7 @@ function rapSaveTexts(){
 // --- Ajout manuel ---
 function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>ge(id).value='');ge('addModal').classList.add('open');}
 function closeAddModal(){ge('addModal').classList.remove('open');}
-function addRow(){if(!ge('a_num').value.trim()){alert('Numéro d\'avis requis');return;}const newNum=ge('a_num').value;data[currentTab].push(makeRow({num:newNum,ref:ge('a_ref').value,date:ge('a_date').value,inter:ge('a_inter').value,disp:ge('a_disp').value,avis:ge('a_avis').value,desc:ge('a_desc').value,obs:ge('a_obs').value,docs:ge('a_docs').value,lots:ge('a_lots').value}));logAction('add',newNum,'Avis ajouté manuellement — Avis : '+ge('a_avis').value);closeAddModal();applyFilters();persistLocal();pushToParent();}
+function addRow(){if(!ge('a_num').value.trim()){alert('Numéro d\'avis requis');return;}data[currentTab].push(makeRow({num:ge('a_num').value,ref:ge('a_ref').value,date:ge('a_date').value,inter:ge('a_inter').value,disp:ge('a_disp').value,avis:ge('a_avis').value,desc:ge('a_desc').value,obs:ge('a_obs').value,docs:ge('a_docs').value,lots:ge('a_lots').value}));closeAddModal();applyFilters();persistLocal();pushToParent();}
 
 // --- Statistiques (modal) ---
 function openStatsModal(){
@@ -1546,9 +1363,7 @@ function processXLSX(file,mode){
         ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num),undefined,{numeric:true}));data[target]=ex;currentTab=target;ge(sid).textContent=`✅ ${up} mis à jour, ${add} ajoutés`;
       }else{if(!confirm(`${src.length} lignes → ${target} ?`)){ge(sid).textContent='Annulé';return;}data[target]=src;currentTab=target;ge(sid).textContent=`✅ ${src.length} avis importés`;}
       ge('tabV2').classList.toggle('active',target==='v2');ge('tabV1').classList.toggle('active',target==='v1');
-      selectedIntervenants.clear();selectedLots.clear();
-      logAction(mode==='actualiser'?'actualiser':'import','—', (mode==='actualiser'?'Actualisation':'Import')+' Excel : '+src.length+' avis');
-      applyFilters();persistLocal();pushToParent();
+      selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();
     }catch(err){ge(sid).textContent='❌ '+err.message;}
   };reader.readAsArrayBuffer(file);
 }
@@ -1599,7 +1414,7 @@ function closeMigrationModal(){document.getElementById('migrationModal').classLi
 function handleMigrationFileImport(input){
   const file=input.files[0];if(!file)return;const statusEl=document.getElementById('migrationStatus');statusEl.textContent='Lecture...';
   const reader=new FileReader();
-  reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent='Aucune donnée';return;}if(!confirm(`${src.length} avis → ${currentTab} ?`)){statusEl.textContent='Annulé';return;}data[currentTab]=src;logAction('import','—','Migration Excel : '+src.length+' avis');selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} avis importés`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);
+  reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent='Aucune donnée';return;}if(!confirm(`${src.length} avis → ${currentTab} ?`)){statusEl.textContent='Annulé';return;}data[currentTab]=src;selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} avis importés`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);
 }
 const migrationDropzone=document.getElementById('migrationDropzone');
 if(migrationDropzone){migrationDropzone.addEventListener('dragover',e=>{e.preventDefault();migrationDropzone.style.borderColor='var(--blue)';});migrationDropzone.addEventListener('dragleave',()=>migrationDropzone.style.borderColor='');migrationDropzone.addEventListener('drop',e=>{e.preventDefault();migrationDropzone.style.borderColor='';const file=e.dataTransfer.files[0];if(file)handleMigrationFileImport({files:[file]});});}
