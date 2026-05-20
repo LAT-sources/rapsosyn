@@ -480,7 +480,7 @@
     th:nth-child(5), td:nth-child(5) { width: 42mm !important; min-width: 42mm; } /* Dispositions (150px) */
     th:nth-child(6), td:nth-child(6) { width: 36mm !important; min-width: 36mm; } /* Description (130px) */
     th:nth-child(7), td:nth-child(7) { width: 10mm !important; min-width: 10mm; text-align: center; } /* Avis (37px) */
-    th:nth-child(8), td:nth-child(8) { width: 62mm !important; min-width: 62mm; } /* Observations (220px) */
+    th:nth-child(8), td:nth-child(8) { width: 62mm !important; min-width: 62mm !important; text-align: left !important; } /* Observations (220px) */
     th:nth-child(9), td:nth-child(9) { width: 28mm !important; min-width: 28mm; } /* Documents (100px) */
     th:nth-child(10), td:nth-child(10) { width: 17mm !important; min-width: 17mm; text-align: center; } /* Suivi (61px) */
     th:nth-child(11), td:nth-child(11) { width: 50mm !important; min-width: 50mm !important; text-align: left !important; } /* Rép. ENT / MOE (180px) */
@@ -513,6 +513,7 @@
     }
     /* Forcer toutes les colonnes visibles à l'impression */
 th[data-col="desc"], td[data-col="desc"],
+th[data-col="obs"], td[data-col="obs"],
 th[data-col="docs"], td[data-col="docs"],
 th[data-col="repK"], td[data-col="repK"],
 th[data-col="repL"], td[data-col="repL"] {
