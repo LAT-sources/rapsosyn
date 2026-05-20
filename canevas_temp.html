@@ -41,45 +41,85 @@
     overflow: hidden;
   }
 
-  /* ========== BARRE SUPÉRIEURE (icônes) ========== */
-  .top-bar {
+  /* ---------- PANEL PLEIN ÉCRAN (exactement le volet latéral) ---------- */
+  .edit-panel {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 16px;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
     background: white;
+    box-shadow: none;
+    transform: none !important;
+  }
+
+  .panel-hdr {
+    padding: 10px 16px;
     border-bottom: 1px solid var(--g200);
+    background: var(--g50);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
     flex-shrink: 0;
   }
-  .top-bar .btn-icon {
+  .panel-hdr .title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .panel-hdr .btn-icon {
     background: transparent;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: 30px;
     color: var(--g600);
-    transition: background 0.1s;
   }
-  .top-bar .btn-icon:active {
-    background: var(--g100);
+  .panel-hdr .btn-icon:active {
+    background: var(--g200);
   }
-
-  /* ========== CONTENU PRINCIPAL (exactement le volet latéral) ========== */
+  .tb-btn {
+    padding: 4px 10px;
+    border: 1px solid var(--g300);
+    background: white;
+    border-radius: 6px;
+    font-family: var(--font);
+    font-size: 0.73rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .tb-btn.green {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: white;
+  }
   .panel-body {
     flex: 1;
     overflow-y: auto;
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+  }
+  .panel-ftr {
+    padding: 10px 16px;
+    border-top: 1px solid var(--g200);
+    display: flex;
+    gap: 8px;
+    background: var(--g50);
+    flex-shrink: 0;
   }
 
+  /* Sections du formulaire (inchangées) */
   .form-section {
     background: white;
     border: 1px solid var(--g200);
@@ -133,8 +173,6 @@
   .form-row input:focus, .form-row textarea:focus {
     border-color: var(--blue);
   }
-
-  /* Suivi */
   .suivi-opts {
     display: flex;
     gap: 8px;
@@ -156,8 +194,6 @@
   .suivi-opt.sel-oui { background: var(--green-l); border-color: var(--green); color: #15803d; }
   .suivi-opt.sel-par { background: var(--gold-l); border-color: var(--gold); color: #92400e; }
   .suivi-opt.sel-non { background: var(--red-l); border-color: var(--red); color: #b91c1c; }
-  .suivi-opt.sel-vide { border-color: var(--g300); background: var(--g100); }
-
   .rd6-toggle {
     display: inline-flex;
     align-items: center;
@@ -173,33 +209,7 @@
     background: var(--purple-l);
   }
 
-  /* ========== BARRE INFÉRIEURE (5 boutons) ========== */
-  .bottom-bar {
-    display: flex;
-    gap: 8px;
-    padding: 12px 16px;
-    background: white;
-    border-top: 1px solid var(--g200);
-    flex-shrink: 0;
-  }
-  .bottom-bar .btn {
-    flex: 1;
-    padding: 10px 4px;
-    border-radius: 40px;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-align: center;
-    background: var(--g100);
-    border: none;
-    cursor: pointer;
-    transition: 0.1s;
-    white-space: nowrap;
-  }
-  .bottom-bar .btn-primary { background: var(--blue); color: white; }
-  .bottom-bar .btn-danger { background: white; border: 1px solid var(--red); color: var(--red); }
-  .bottom-bar .btn:active { filter: brightness(0.95); }
-
-  /* Modales (filtres, PA) - identiques à l'original */
+  /* Modales (filtres, PA) */
   .modal-overlay {
     display: none;
     position: fixed;
@@ -246,32 +256,32 @@
     margin: 8px 0;
     font-size: 0.85rem;
   }
-  .btn-secondary { background: var(--g200); color: var(--g700); }
   .empty-state { text-align: center; padding: 40px; color: var(--g400); }
 </style>
 </head>
 <body>
 
-<!-- Barre supérieure : icônes (fermer, filtre, +PA) -->
-<div class="top-bar">
-  <button class="btn-icon" id="filterBtn" title="Filtres">🔍</button>
-  <button class="btn-icon" id="paBtn" title="Ajouter PA">+PA</button>
-  <button class="btn-icon" id="closeBtn" title="Fermer">✕</button>
-</div>
-
-<!-- Contenu principal : exactement le volet latéral -->
-<div class="panel-body" id="panelBody">
-  <!-- Le contenu sera injecté dynamiquement -->
-  <div class="empty-state">Chargement des avis...</div>
-</div>
-
-<!-- Barre inférieure : cinq boutons -->
-<div class="bottom-bar">
-  <button class="btn" id="prevBtn">◀ Précédent</button>
-  <button class="btn" id="nextBtn">Suivant ▶</button>
-  <button class="btn" id="cancelBtn">Annuler</button>
-  <button class="btn btn-primary" id="saveBtn">Enregistrer</button>
-  <button class="btn btn-danger" id="deleteBtn">Supprimer</button>
+<!-- PANEL ÉDITION (plein écran) -->
+<div class="edit-panel" id="editPanel">
+  <div class="panel-hdr">
+    <span class="title" id="panelTitle">Avis n°: —</span>
+    <span style="font-family:var(--mono);font-size:0.7rem;" id="panelNum">—</span>
+    <button class="tb-btn" id="prevBtn">Préc ↑</button>
+    <button class="tb-btn" id="nextBtn">↓ Sui</button>
+    <!-- Nouveaux boutons icônes (fermer, filtre, +PA) -->
+    <button class="btn-icon" id="filterIcon" title="Filtres">🔍</button>
+    <button class="btn-icon" id="paIcon" title="Ajouter PA">+PA</button>
+    <button class="btn-icon" id="closeIcon" title="Fermer">✕</button>
+  </div>
+  <div class="panel-body" id="panelBody">
+    <!-- Contenu dynamique -->
+  </div>
+  <div class="panel-ftr">
+    <button class="tb-btn green" id="saveBtn">Enregistrer</button>
+    <button class="tb-btn" id="deleteBtn" style="color:var(--red);border-color:var(--red);">Supprimer</button>
+    <button class="tb-btn" id="cancelBtn">Annuler</button>
+    <span class="save-feedback" id="saveFeedback">✓ Enregistré !</span>
+  </div>
 </div>
 
 <!-- MODALE FILTRES -->
@@ -280,8 +290,8 @@
     <div class="modal-header">Filtres <button class="btn-icon" onclick="closeFilterModal()" style="background:none;border:none;font-size:1.2rem;">✕</button></div>
     <div class="modal-body" id="filterModalBody"></div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="resetFilters()">Réinitialiser</button>
-      <button class="btn btn-primary" onclick="applyFiltersFromModal()">Appliquer</button>
+      <button class="tb-btn" onclick="resetFilters()">Réinitialiser</button>
+      <button class="tb-btn green" onclick="applyFiltersFromModal()">Appliquer</button>
     </div>
   </div>
 </div>
@@ -300,8 +310,8 @@
       <div class="filter-group"><label>Lots</label><input id="pa_lots" style="width:100%;"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closePAModal()">Annuler</button>
-      <button class="btn btn-primary" onclick="addPA()">Ajouter</button>
+      <button class="tb-btn" onclick="closePAModal()">Annuler</button>
+      <button class="tb-btn green" onclick="addPA()">Ajouter</button>
     </div>
   </div>
 </div>
@@ -310,11 +320,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
-  // ==================== CŒUR MÉTIER (exactement l'original du volet latéral) ====================
+  // ==================== CŒUR MÉTIER (exactement le même que le volet latéral original) ====================
   let currentTab = 'v2';
   let data = { v2: [], v1: [] };
   let filteredRows = [];
-  let currentIndex = 0;
+  let editingIdx = null;
   let autoSaveTimer = null;
   let currentSuivi = '';
   let selectedIntervenants = new Set();
@@ -387,17 +397,23 @@
       return true;
     });
     filteredRows = rows;
-    if(currentIndex >= filteredRows.length) currentIndex = Math.max(0, filteredRows.length-1);
+    if(editingIdx !== null && editingIdx >= filteredRows.length) editingIdx = Math.max(0, filteredRows.length-1);
+    if(editingIdx === null && filteredRows.length > 0) editingIdx = 0;
     renderCurrentAvis();
+    updateNavCounter();
   }
 
   function renderCurrentAvis() {
     if(filteredRows.length === 0) {
       ge('panelBody').innerHTML = '<div class="empty-state">Aucun avis correspondant</div>';
+      ge('panelTitle').innerHTML = 'Aucun avis';
+      ge('panelNum').innerText = '';
       return;
     }
-    const r = filteredRows[currentIndex];
+    const r = filteredRows[editingIdx];
     currentSuivi = r.suivi || '';
+    ge('panelTitle').innerHTML = `Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - Avis : ${r.avis||'-'}`;
+    ge('panelNum').innerText = r.num||'(sans n°)';
     const html = `
       <div class="form-section">
         <div class="section-title">Dispositions examinées</div>
@@ -435,7 +451,7 @@
 
   function setSuivi(v) {
     currentSuivi = v;
-    const r = filteredRows[currentIndex];
+    const r = filteredRows[editingIdx];
     const gi = getRows().findIndex(x => x.id === r.id);
     if(gi !== -1) data[currentTab][gi].suivi = v;
     scheduleAutoSave();
@@ -453,7 +469,7 @@
   function scheduleAutoSave() {
     if(autoSaveTimer) clearTimeout(autoSaveTimer);
     autoSaveTimer = setTimeout(() => {
-      const r = filteredRows[currentIndex];
+      const r = filteredRows[editingIdx];
       if(!r) return;
       const gi = getRows().findIndex(x => x.id === r.id);
       if(gi === -1) return;
@@ -465,20 +481,37 @@
       if(data[currentTab][gi].rd6 && !data[currentTab][gi].num.includes('/RD6')) data[currentTab][gi].num += '/RD6';
       else if(!data[currentTab][gi].rd6) data[currentTab][gi].num = data[currentTab][gi].num.replace('/RD6','');
       persistLocal(); pushToParent();
+      const fb = ge('saveFeedback');
+      if(fb) { fb.classList.add('show'); setTimeout(() => fb.classList.remove('show'), 1500); }
       autoSaveTimer = null;
     }, 500);
   }
 
-  function saveCurrent() { scheduleAutoSave(); alert("Sauvegarde effectuée"); }
-  function deleteCurrent() {
-    const r = filteredRows[currentIndex];
+  function saveRow() { scheduleAutoSave(); }
+  function deleteRow() {
+    if(editingIdx === null) return;
+    const r = filteredRows[editingIdx];
     if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`)) return;
     const gi = getRows().findIndex(x => x.id === r.id);
     if(gi >= 0) { data[currentTab].splice(gi,1); applyFilters(); persistLocal(); pushToParent(); }
   }
-  function prevAvis() { if(currentIndex > 0) { currentIndex--; renderCurrentAvis(); } }
-  function nextAvis() { if(currentIndex < filteredRows.length-1) { currentIndex++; renderCurrentAvis(); } }
-  function closeCanevas() { if(window.parent) window.parent.postMessage({ type: 'close_synthese' }, '*'); else window.location.href = 'about:blank'; }
+  function navRow(delta) {
+    if(editingIdx !== null) {
+      let n = editingIdx + delta;
+      if(n >= 0 && n < filteredRows.length) {
+        editingIdx = n;
+        renderCurrentAvis();
+        updateNavCounter();
+      }
+    }
+  }
+  function updateNavCounter() {
+    // pas nécessaire pour l'affichage, mais on peut laisser
+  }
+  function closePanel() {
+    if(window.parent) window.parent.postMessage({ type: 'close_synthese' }, '*');
+    else window.location.href = 'about:blank';
+  }
 
   // Filtres modale
   function buildFilterModal() {
@@ -529,7 +562,7 @@
     closePAModal(); applyFilters(); persistLocal(); pushToParent();
   }
 
-  // Fonctions pour les actions héritées (gardées vides mais présentes pour compatibilité)
+  // Fonctions pour les actions héritées (non utilisées en mobile mais gardées)
   function openImportModal() { alert("Import Excel"); }
   function openActualiserModal() { alert("Actualiser"); }
   function openMigrationModal() { alert("Migration"); }
@@ -550,14 +583,14 @@
       try { const p = JSON.parse(stored); if(p.data) data = p.data; } catch(e) {}
     }
     applyFilters();
-    ge('prevBtn').onclick = prevAvis;
-    ge('nextBtn').onclick = nextAvis;
-    ge('cancelBtn').onclick = closeCanevas;
-    ge('saveBtn').onclick = saveCurrent;
-    ge('deleteBtn').onclick = deleteCurrent;
-    ge('filterBtn').onclick = openFilterModal;
-    ge('paBtn').onclick = openPAModal;
-    ge('closeBtn').onclick = closeCanevas;
+    ge('prevBtn').onclick = () => navRow(-1);
+    ge('nextBtn').onclick = () => navRow(1);
+    ge('cancelBtn').onclick = closePanel;
+    ge('saveBtn').onclick = saveRow;
+    ge('deleteBtn').onclick = deleteRow;
+    ge('filterIcon').onclick = openFilterModal;
+    ge('paIcon').onclick = openPAModal;
+    ge('closeIcon').onclick = closePanel;
   });
 </script>
 </body>
