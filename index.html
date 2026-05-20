@@ -1409,10 +1409,10 @@ window.addEventListener('message', function(e) {
     if (canId === undefined || canId === null || !incomingData) return;
     const c = canevas.find(x => String(x.id) === String(canId));
     if (c) {
-      const prevStr = JSON.stringify(c.synthData), newStr = JSON.stringify(incomingData);
-      if (prevStr !== newStr) {
+      const newHash = hashData(incomingData);
+      if (newHash !== _lastLocalHash) {
         c.synthData = incomingData;
-        _lastLocalHash = hashData(incomingData);
+        _lastLocalHash = newHash;
         setSynStatus('saving', 'Sauvegarde…');
         updateSynCounters(incomingData);
         _isSelfWrite = true;
