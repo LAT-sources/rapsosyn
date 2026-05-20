@@ -861,7 +861,14 @@ function persistLocal(){
   }catch(e){}
   pushToParent();
 }
-function pushToParent(){if(!window.parent||window.parent===window)return;const canId=window.CANEVAS_ID;if(canId===undefined)return;try{const raw=localStorage.getItem('rapsotracker');if(raw){const parsed=JSON.parse(raw);if(parsed?.data)window.parent.postMessage({type:'rapso_save',canId,data:parsed.data},'*');}}catch(e){}}
+function pushToParent(){
+  if(!window.parent||window.parent===window)return;
+  const canId=window.CANEVAS_ID;
+  if(canId===undefined||canId===null)return;
+  try{
+    window.parent.postMessage({type:'rapso_save',canId,data:{v2:data.v2,v1:data.v1}},'*');
+  }catch(e){}
+}
 setInterval(pushToParent,4000);
 window.addEventListener('beforeunload',pushToParent);
 window.addEventListener('message', function(e) {
