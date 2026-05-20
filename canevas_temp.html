@@ -1284,7 +1284,24 @@ function updateRapButtonsState(){const oui=ge('rapBtnOui'),par=ge('rapBtnPar'),n
 function rapSelect(i,scroll=true){rapCurrent=rapFiltered[i];document.querySelectorAll('.rapide-item').forEach((el,idx)=>el.classList.toggle('selected',idx===i));if(scroll)document.querySelectorAll('.rapide-item')[i]?.scrollIntoView({block:'nearest'});const r=rapCurrent;ge('rapideObsText').innerHTML=escapeHtml(r.obs)||'—';const editArea=ge('rapideEditArea');editArea.style.display='flex';ge('rq_repK').value=r.repK||'';ge('rq_repL').value=r.repL||'';ge('rq_lots').value=r.lots||'';ge('rapSaveBtn').disabled=false;updateRapButtonsState();}
 function rapToggleSuivi(v){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].suivi=(data[currentTab][gi].suivi===v)?'':v;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();}
 function rapToggleRD6(){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].rd6=!data[currentTab][gi].rd6;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();}
-function rapSaveTexts(){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].repK=ge('rq_repK').value;data[currentTab][gi].repL=ge('rq_repL').value;data[currentTab][gi].lots=ge('rq_lots').value;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();const btn=ge('rapSaveBtn');btn.textContent='✓';setTimeout(()=>{btn.textContent='💾 Valider';btn.disabled=true;},2000);}
+function rapSaveTexts(){
+  if(!rapCurrent)return;
+  const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);
+  if(gi===-1)return;
+  data[currentTab][gi].repK=ge('rq_repK').value;
+  data[currentTab][gi].repL=ge('rq_repL').value;
+  data[currentTab][gi].lots=ge('rq_lots').value;
+  rapCurrent={...data[currentTab][gi]};
+  persistLocal();
+  rapApply();
+  const btn=ge('rapSaveBtn');
+  btn.textContent='✅ Sauvegardé';
+  btn.disabled=true;
+  setTimeout(()=>{
+    btn.textContent='Valider';
+    if(rapCurrent) btn.disabled=false;
+  },2000);
+}
 
 // --- Ajout manuel ---
 function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>ge(id).value='');ge('addModal').classList.add('open');}
