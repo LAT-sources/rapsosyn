@@ -1001,7 +1001,7 @@ function openHistorique() {
 }
 function closeHistorique() { ge('histModal').classList.remove('open'); }
 function clearHistorique() {
-  if(!confirm('Effacer tout l'historique ?')) return;
+  if(!confirm('Effacer tout l\'historique ?')) return;
   data.historique = [];
   persistLocal();
   renderHistorique();
