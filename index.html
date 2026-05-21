@@ -1357,7 +1357,7 @@ async function applyPendingUpdate() {
     _lastLocalHash = hashData(newData);
     try {
       document.getElementById('synFrame').contentWindow.postMessage(
-        { type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '' },
+        { type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '', user: currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : null },
         '*'
       );
       updateSynCounters(newData);
