@@ -5,7 +5,7 @@
 <!-- RAPSO_DATA -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RapsoSynthèse</title>
+<title>RapsoSynthèse - Lots complets (corrigé)</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
@@ -272,6 +272,18 @@
   }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
+  .col-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.col-picker-item input {
+  accent-color: var(--blue);
+  margin: 0;
+}
   /* VERSION RAPIDE */
   .rapide-modal {
     width: 960px; max-width: 97vw; height: 85vh; max-height: 750px;
@@ -454,7 +466,7 @@
     </div>
   </div>
 </div>
-
+</div>
 <!-- TABLEAU PRINCIPAL -->
 <div class="table-container">
   <table id="mainTable">
@@ -471,8 +483,8 @@
   <div class="panel-hdr">
     <span class="title" id="panelTitle">Avis n°: —</span>
     <span style="font-family:var(--mono);font-size:0.7rem;" id="panelNum">—</span>
-    <button class="tb-btn" onclick="navRow(-1)">↑</button>
-    <button class="tb-btn" onclick="navRow(1)">↓</button>
+    <button class="tb-btn" onclick="navRow(-1)">Pré ↑</button>
+    <button class="tb-btn" onclick="navRow(1)">↓ Sui</button>
     <button class="tb-btn" onclick="closePanel()">×</button>
   </div>
   <div class="panel-body">
@@ -671,7 +683,7 @@
 const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
 
 // ============================================================
-//  RAPSOSYNTHÈSE
+//  RAPSOSYNTHÈSE - VERSION CORRIGÉE (lots complets + data-*)
 // ============================================================
 
 // --- Thème ---
@@ -685,6 +697,13 @@ let selectedLots = new Set();
 
 // --- Helper cleanIntervenant ---
 function cleanIntervenant(inter){if(!inter)return '';const at=inter.indexOf('@');return at>0?inter.substring(0,at).trim():inter;}
+
+// ---------- FONCTION POUR LOTS (CHAÎNE COMPLÈTE) ----------
+function getLotsArray(r) {
+    const val = r.lots ? r.lots.trim() : '';
+    return val ? [val] : [];
+}
+// ---------------------------------------------------------
 
 // --- Persistance & sync ---
 function persistLocal(){try{localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));}catch(e){}}
@@ -712,6 +731,20 @@ window.addEventListener('message', function(e) {
       if (window.parent) window.parent.postMessage({ type: 'rapso_inject_ack', data: { v2: data.v2, v1: data.v1 } }, '*');
     } catch (err) { console.warn(err); }
   }
+  if (e.data?.type === 'rapso_action') {
+    const action = e.data.action;
+    switch (action) {
+      case 'import': if (checkPasswordBeforeImport()) openImportModal(); break;
+      case 'actualiser': openActualiserModal(); break;
+      case 'migration': if (checkPasswordBeforeMigration()) openMigrationModal(); break;
+      case 'stats': openStatsModal(); break;
+      case 'exportJSON': exportJSON(); break;
+      case 'loadJSON': loadJSON(); break;
+      case 'print': window.print(); break;
+      case 'exportExcel': exportWithExcelJS(); break;
+      case 'toggleColumns': toggleColPicker(); break;
+    }
+  }
 });
 
 // --- Injection parent ---
@@ -725,28 +758,27 @@ window.addEventListener('message', function(e) {
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
 
-// --- Construction multi-select principaux ---
+// --- Construction multi-select (avec data-lot et data-inter) ---
 function buildMfSelectOptions() {
   const rows = getRows();
   const intervenants = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v => v && v !== ''))];
   const interDiv = document.getElementById('mfInterDropdown');
   if (interDiv) {
-    interDiv.innerHTML = intervenants.map(inter => `
-      <label><input type="checkbox" value="${escapeHtmlAttr(inter)}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', '${escapeHtmlAttr(inter)}', this.checked)"> ${escapeHtml(inter)}</label>
-    `).join('');
+    interDiv.innerHTML = intervenants.map(inter => {
+      const safe = escapeHtmlAttr(inter);
+      return `<label><input type="checkbox" value="${safe}" data-inter="${inter.replace(/"/g, '&quot;')}" ${selectedIntervenants.has(inter) ? 'checked' : ''} onchange="toggleMultiFilter('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(inter)}</label>`;
+    }).join('');
   }
   document.getElementById('mfInterCount').innerText = `(${selectedIntervenants.size})`;
 
-  const allLots = rows.flatMap(r => {
-    if (!r.lots) return [];
-    return String(r.lots).split(/[,; ]+/).map(l => l.trim()).filter(l => l !== '');
-  });
+  const allLots = rows.flatMap(r => getLotsArray(r));
   const lots = [...new Set(allLots)];
   const lotDiv = document.getElementById('mfLotDropdown');
   if (lotDiv) {
-    lotDiv.innerHTML = lots.map(lot => `
-      <label><input type="checkbox" value="${escapeHtmlAttr(lot)}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', '${escapeHtmlAttr(lot)}', this.checked)"> ${escapeHtml(lot)}</label>
-    `).join('');
+    lotDiv.innerHTML = lots.map(lot => {
+      const safe = escapeHtmlAttr(lot);
+      return `<label><input type="checkbox" value="${safe}" data-lot="${lot.replace(/"/g, '&quot;')}" ${selectedLots.has(lot) ? 'checked' : ''} onchange="toggleMultiFilter('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(lot)}</label>`;
+    }).join('');
   }
   document.getElementById('mfLotCount').innerText = `(${selectedLots.size})`;
 }
@@ -756,7 +788,7 @@ function toggleMultiFilter(type,val,chk){if(type==='inter')chk?selectedIntervena
 function toggleMfSelect(which){const id=which==='inter'?'mfInterDropdown':'mfLotDropdown';ge(id).classList.toggle('show');const other=which==='inter'?'mfLotDropdown':'mfInterDropdown';if(ge(other)&&ge(other)!==ge(id))ge(other).classList.remove('show');}
 document.addEventListener('click',e=>{if(!e.target.closest('.mf-select'))document.querySelectorAll('.mf-select-dropdown').forEach(d=>d.classList.remove('show'));});
 
-// --- Filtres principaux ---
+// --- Filtres principaux (avec getLotsArray) ---
 function gcf(id){return(ge(id)?.value||'').toLowerCase();}
 function matchDate(stored,q){if(!q)return true;q=q.trim();const p=q.split('/');if(p.length>=2&&stored&&/^\d{4}-\d{2}-\d{2}$/.test(stored)){const[y,m,d]=stored.split('-'),fr=d+'/'+m+'/'+y;if(p.length>=3){let yy=p[2];if(yy.length===2)yy='20'+yy;return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0')+'/'+yy);}return fr.startsWith(p[0].padStart(2,'0')+'/'+p[1].padStart(2,'0'));}return String(stored||'').toLowerCase().includes(q);}
 function applyFilters(){
@@ -775,7 +807,11 @@ function applyFilters(){
     if(fRd6&&!r.rd6)return false;
     if(fPA&&!(r.num||'').toUpperCase().startsWith('PA'))return false;
     if(selectedIntervenants.size>0&&!selectedIntervenants.has(cleanIntervenant(r.inter)))return false;
-    if(selectedLots.size>0){const lr=(r.lots||'').split(/[,; ]+/).map(l=>l.trim()).filter(l=>l);if(!lr.some(l=>selectedLots.has(l)))return false;}
+    // Filtre lots : comparaison exacte sur la chaîne complète
+    if(selectedLots.size>0){
+      const lotsArr = getLotsArray(r);
+      if(!lotsArr.some(l=>selectedLots.has(l))) return false;
+    }
     return true;
   });
   if(sortKey)rows.sort((a,b)=>{const av=String(a[sortKey]||''),bv=String(b[sortKey]||'');return av<bv?-sortDir:av>bv?sortDir:0;});
@@ -807,20 +843,38 @@ const COL_DEF = [
 function loadColPrefs(){try{const s=localStorage.getItem('rs_col_prefs');if(s){const p=JSON.parse(s);COL_DEF.forEach(c=>{if(p[c.key]!==undefined)c.visible=p[c.key];});}}catch(e){}}
 function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localStorage.setItem('rs_col_prefs',JSON.stringify(p));}
 function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.onclick=()=>sortBy(c.key);th.style.cursor='pointer';hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
-function toggleColPicker(){
-  ge('colPickerPanel').classList.toggle('open');
-  if(ge('actionsMenu').classList.contains('show')) ge('actionsMenu').classList.remove('show');
+function toggleColPicker() {
+  const listDiv = document.getElementById('colModalBody');
+  listDiv.innerHTML = COL_DEF.map(c => `
+    <label class="col-picker-item">
+      <input type="checkbox" ${c.visible ? 'checked' : ''} ${c.locked ? 'disabled' : ''} 
+             onchange="toggleColumn('${c.key}', this.checked)">
+      <span>${c.label}</span>
+    </label>
+  `).join('');
+  document.getElementById('colModal').classList.add('open');
+}
+function closeColModal() {
+  document.getElementById('colModal').classList.remove('open');
 }
 function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
-function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();buildColPickerList();ge('colPickerPanel').classList.remove('open');}
-document.addEventListener('click',e=>{
-  if(!e.target.closest('.actions-dropdown')) {
-    ge('colPickerPanel').classList.remove('open');
-    ge('actionsMenu').classList.remove('show');
+function resetColumns() {
+  COL_DEF.forEach(c => { if (!c.locked) c.visible = true; });
+  saveColPrefs();
+  rebuildTableHeader();
+  renderTable();
+  const modalBody = document.getElementById('colModalBody');
+  if (modalBody) {
+    modalBody.innerHTML = COL_DEF.map(c => `
+      <label class="col-picker-item">
+        <input type="checkbox" ${c.visible ? 'checked' : ''} ${c.locked ? 'disabled' : ''} 
+               onchange="toggleColumn('${c.key}', this.checked)">
+        <span>${c.label}</span>
+      </label>
+    `).join('');
   }
-});
-
+}
 function fmtDate(d){if(!d)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}return d;}
 function renderTable(){
   const tbody=ge('tableBody'),empty=ge('emptyState');
@@ -967,7 +1021,7 @@ function saveInfoModal() {
   closeInfoModal();
 }
 
-// ======================= VERSION RAPIDE (inchangée) =======================
+// ======================= VERSION RAPIDE (corrigée avec data-*) =======================
 let rapCurrent = null, rapFiltered = [];
 let rapSelectedLots = new Set(), rapSelectedInters = new Set();
 
@@ -975,12 +1029,22 @@ function toggleRapideFullscreen() { document.getElementById('rapideModal').class
 function buildRapMfOptions() {
   const rows = getRows();
   const inters = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v=>v))];
-  const allLots = rows.flatMap(r => (r.lots||'').split(/[,; ]+/).map(l=>l.trim()).filter(l=>l));
+  const allLots = rows.flatMap(r => getLotsArray(r));
   const lots = [...new Set(allLots)];
   const interDrop = document.getElementById('rapMfInterDrop');
-  if (interDrop) interDrop.innerHTML = inters.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
+  if (interDrop) {
+    interDrop.innerHTML = inters.map(v => {
+      const safe = escapeHtmlAttr(v);
+      return `<label><input type="checkbox" value="${safe}" data-inter="${v.replace(/"/g, '&quot;')}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(v)}</label>`;
+    }).join('') || '<div style="padding:8px;">Aucun</div>';
+  }
   const lotDrop = document.getElementById('rapMfLotsDrop');
-  if (lotDrop) lotDrop.innerHTML = lots.map(v => `<label><input type="checkbox" value="${escapeHtmlAttr(v)}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot','${escapeHtmlAttr(v)}',this.checked)"> ${escapeHtml(v)}</label>`).join('') || '<div style="padding:8px;">Aucun</div>';
+  if (lotDrop) {
+    lotDrop.innerHTML = lots.map(v => {
+      const safe = escapeHtmlAttr(v);
+      return `<label><input type="checkbox" value="${safe}" data-lot="${v.replace(/"/g, '&quot;')}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(v)}</label>`;
+    }).join('') || '<div style="padding:8px;">Aucun</div>';
+  }
 }
 function toggleRapMulti(type, val, checked) {
   if (type === 'inter') checked ? rapSelectedInters.add(val) : rapSelectedInters.delete(val);
@@ -1031,8 +1095,8 @@ function rapApply() {
   const rfLev = ge('rapF_lev')?.checked||false, rfPar = ge('rapF_par')?.checked||false, rfNon = ge('rapF_non')?.checked||false, rfRd6 = ge('rapF_rd6')?.checked||false, rfPa = ge('rapF_pa')?.checked||false;
   rapFiltered = getRows().filter(r => {
     if (lotsFilter.length > 0) {
-      const rowLots = (r.lots||'').split(/[,; ]+/).map(l=>l.trim()).filter(l=>l);
-      if (!rowLots.some(l => lotsFilter.includes(l))) return false;
+      const lotsArr = getLotsArray(r);
+      if (!lotsArr.some(l => lotsFilter.includes(l))) return false;
     }
     if (interFilter.length > 0 && !interFilter.includes(cleanIntervenant(r.inter))) return false;
     if (anyType) { const a = (r.avis||'').toUpperCase().trim(); if (!((rfF&&a==='F')||(rfS&&a==='S')||(rfD&&a==='D'))) return false; }
@@ -1217,7 +1281,7 @@ function openStatsModal() {
 }
 function closeStatsModal(){ge('statsModal').classList.remove('open');}
 
-// --- Export / Actualiser XLSX (inchangé) ---
+// --- Export / Actualiser XLSX ---
 async function exportWithExcelJS() {
   if (typeof ExcelJS === 'undefined') { alert('La bibliothèque ExcelJS n\'est pas chargée…'); return; }
   try {
@@ -1255,7 +1319,7 @@ async function exportWithExcelJS() {
   } catch (err) { alert('Erreur : ' + err.message); }
 }
 
-// --- Import / Actualiser XLSX (inchangé) ---
+// --- Import / Actualiser XLSX (avec lecture colonne M) ---
 function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
 function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
 function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
@@ -1297,7 +1361,22 @@ function processXLSX(file, mode){
       for (let i = 1; i < Math.min(raw.length, 500); i++) {
         const row = raw[i]; if (!row || row.every(c => c==='')) continue;
         const nv = String(row[1]||'').trim(); const obs = String(row[7]||''); let suivi = hasRappel(obs) ? 'Oui' : '';
-        src.push(makeRow({num:nv, ref:String(row[0]||'').trim(), date:normalizeDate(row[2]), inter:String(row[3]||'').trim(), disp:String(row[4]||'').trim(), avis:String(row[5]||'').trim(), desc:String(row[6]||'').trim(), obs, docs:cleanDocs(String(row[8]||'').trim()), suivi, repK:'', repL:'', lots:'', rd6:nv.includes('/RD6')}));
+        const lotsValue = (row[12] !== undefined && row[12] !== null) ? String(row[12]).trim() : '';
+        src.push(makeRow({
+          num: nv,
+          ref: String(row[0]||'').trim(),
+          date: normalizeDate(row[2]),
+          inter: String(row[3]||'').trim(),
+          disp: String(row[4]||'').trim(),
+          avis: String(row[5]||'').trim(),
+          desc: String(row[6]||'').trim(),
+          obs: obs,
+          docs: cleanDocs(String(row[8]||'').trim()),
+          suivi: suivi,
+          repK: '', repL: '',
+          lots: lotsValue,
+          rd6: nv.includes('/RD6')
+        }));
       }
       let target = sheetName==='RapsoV1' ? 'v1' : 'v2';
       if (mode === 'actualiser') {
@@ -1367,7 +1446,7 @@ function handleFileImport(i){if(i.files[0])processXLSX(i.files[0],'import');}
 function handleActualiserFileImport(i){if(i.files[0])processXLSX(i.files[0],'actualiser');}
 ['importDropzone','actualiserDropzone'].forEach(id=>{const dz=ge(id);if(dz){dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--blue)';});dz.addEventListener('dragleave',()=>dz.style.borderColor='');dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f)processXLSX(f,id==='actualiserDropzone'?'actualiser':'import');});}});
 
-// --- Migration (nouvelle fonction, lit A4 à M) ---
+// --- Migration (lit également la colonne M) ---
 function openMigrationModal() {
   document.getElementById('migrationModal').classList.add('open');
 }
@@ -1389,13 +1468,11 @@ function handleMigrationFileImport(input) {
       const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
 
       const src = [];
-      // Lire à partir de la ligne 4 (index 3)
       for (let i = 3; i < Math.min(raw.length, 500); i++) {
         const row = raw[i];
         if (!row || row.every(c => c === '')) continue;
-        // Colonnes A (0) à M (12) : Ref, N°, Date, Inter, Disp, Desc, Avis, Obs, Docs, Suivi, RepK, RepL, Lots
-        const ref = String(row[0] || '').trim();
-        const num = String(row[1] || '').trim();
+        const num = String(row[0] || '').trim();
+        const ref = String(row[1] || '').trim();
         const date = normalizeDate(row[2]);
         const inter = String(row[3] || '').trim();
         const disp = String(row[4] || '').trim();
@@ -1439,7 +1516,6 @@ function handleMigrationFileImport(input) {
   };
   reader.readAsArrayBuffer(file);
 }
-// Glisser-déposer pour la migration
 const migrationDropzone = document.getElementById('migrationDropzone');
 if (migrationDropzone) {
   migrationDropzone.addEventListener('dragover', e => { e.preventDefault(); migrationDropzone.style.borderColor = 'var(--blue)'; });
@@ -1449,7 +1525,7 @@ if (migrationDropzone) {
     migrationDropzone.style.borderColor = '';
     const file = e.dataTransfer.files[0];
     if (file) {
-      document.getElementById('migrationFileInput').files = e.dataTransfer.files; // pour cohérence
+      document.getElementById('migrationFileInput').files = e.dataTransfer.files;
       handleMigrationFileImport({ files: [file] });
     }
   });
@@ -1463,5 +1539,21 @@ function ge(id){return document.getElementById(id);}
 
 loadColPrefs(); buildColPickerList(); rebuildTableHeader(); loadLocal(); applyFilters();
 </script>
+<!-- MODAL GESTION DES COLONNES -->
+<div class="modal-overlay" id="colModal">
+  <div class="modal" style="width:400px;">
+    <div class="modal-hdr">
+      Colonnes affichées
+      <button class="tb-btn" onclick="closeColModal()">✕</button>
+    </div>
+    <div class="modal-body" id="colModalBody">
+      <!-- la liste sera injectée ici -->
+    </div>
+    <div class="modal-ftr">
+      <button class="tb-btn" onclick="resetColumns()">Tout afficher</button>
+      <button class="tb-btn green" onclick="closeColModal()">Fermer</button>
+    </div>
+  </div>
+</div>  
 </body>
 </html>
