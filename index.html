@@ -322,10 +322,10 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <div class="ll-brand">RAPSO<span>SYN</span></div>
     </div>
     <div class="ll-tag" style="position:relative;z-index:1">
-      <h2>Plateforme de suivi<br>des avis</h2>
+      <h2>Plateforme de suivi<br>des avis SOCOTEC</h2>
       <p>Gestion collaborative des canevas, intervenants et rapports de synthèse.</p>
     </div>
-    <div class="ll-version" style="position:relative;z-index:1">v2.0 — AML Luxembourg</div>
+    <div class="ll-version" style="position:relative;z-index:1">v2.0 — SOCOTEC Luxembourg</div>
   </div>
   <div class="login-right">
     <div class="login-card">
@@ -534,7 +534,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <div class="actions-menu" id="actionsMenu">
         <button onclick="postAction('actualiser'); closeActionsMenu();">⟳ Mettre à jour</button>
         <button onclick="postAction('import'); closeActionsMenu();">↺ Rénitialiser le canevas</button>
-        <button onclick="postAction('migration'); closeActionsMenu();">⇄ Migration</button>
+        <button onclick="postAction('migration'); closeActionsMenu();" style="display:none;">⇄ Migration</button>
         <button onclick="postAction('exportJSON'); closeActionsMenu();" style="display:none;">⤓ Enregistrer en local</button>
         <button onclick="postAction('loadJSON'); closeActionsMenu();" style="display:none;">⤒ Ouvrir un dossier local</button>
         <button onclick="postAction('stats'); closeActionsMenu();">◔ Statistiques</button>
@@ -1232,7 +1232,6 @@ async function openSynthese(id) {
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
-    window.RAPSO_USER       = ${JSON.stringify(currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : { prenom: '?', nom: '', initiales: '?', role: '' })};
   <\/script>`;
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
   templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', '<!-- data injected via RAPSO_SYNTH_DATA -->');
@@ -1267,16 +1266,7 @@ function saveFromSynthese() {
 
 /* SYNC LIVE */
 let _notifTimer = null, _pendingData = null, _liveListener = null, _isSelfWrite = false, _lastLocalHash = '';
-function hashData(d) {
-  if (!d) return '';
-  const rowSig = r => [r.id||'', r.suivi||'', r.rd6?'1':'0', r.repK||'', r.repL||'', r.lots||'', r.num||''].join('|');
-  return JSON.stringify({
-    v2: (d.v2||[]).length, v1: (d.v1||[]).length,
-    sV2: (d.v2||[]).map(rowSig).join('§'),
-    sV1: (d.v1||[]).map(rowSig).join('§'),
-    hl: (d.historique||[]).length
-  });
-}
+function hashData(d) { if (!d) return ''; return JSON.stringify({ v2: (d.v2||[]).length, v1: (d.v1||[]).length, sV2: (d.v2||[]).map(r=>r.suivi).join(''), sV1: (d.v1||[]).map(r=>r.suivi).join('') }); }
 function showNotif(txt, type = 'ok', duration = 3500) {
   const el = document.getElementById('synNotif');
   const ico = document.getElementById('synNotifIcon');
@@ -1357,7 +1347,7 @@ async function applyPendingUpdate() {
     _lastLocalHash = hashData(newData);
     try {
       document.getElementById('synFrame').contentWindow.postMessage(
-        { type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '', user: currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : null },
+        { type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '' },
         '*'
       );
       updateSynCounters(newData);
@@ -1411,11 +1401,10 @@ window.addEventListener('message', function(e) {
     if (canId === undefined || canId === null || !incomingData) return;
     const c = canevas.find(x => String(x.id) === String(canId));
     if (c) {
-      const newHash = hashData(incomingData);
-      if (newHash !== _lastLocalHash) {
+      const prevStr = JSON.stringify(c.synthData), newStr = JSON.stringify(incomingData);
+      if (prevStr !== newStr) {
         c.synthData = incomingData;
-        if(Array.isArray(incomingData.historique)) c.historique = incomingData.historique;
-        _lastLocalHash = newHash;
+        _lastLocalHash = hashData(incomingData);
         setSynStatus('saving', 'Sauvegarde…');
         updateSynCounters(incomingData);
         _isSelfWrite = true;
