@@ -1232,6 +1232,7 @@ async function openSynthese(id) {
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
+    window.RAPSO_USER       = ${JSON.stringify(currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : { prenom: '?', nom: '', initiales: '?', role: '' })};
   <\/script>`;
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
   templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', '<!-- data injected via RAPSO_SYNTH_DATA -->');
@@ -1272,7 +1273,8 @@ function hashData(d) {
   return JSON.stringify({
     v2: (d.v2||[]).length, v1: (d.v1||[]).length,
     sV2: (d.v2||[]).map(rowSig).join('§'),
-    sV1: (d.v1||[]).map(rowSig).join('§')
+    sV1: (d.v1||[]).map(rowSig).join('§'),
+    hl: (d.historique||[]).length
   });
 }
 function showNotif(txt, type = 'ok', duration = 3500) {
@@ -1412,6 +1414,7 @@ window.addEventListener('message', function(e) {
       const newHash = hashData(incomingData);
       if (newHash !== _lastLocalHash) {
         c.synthData = incomingData;
+        if(Array.isArray(incomingData.historique)) c.historique = incomingData.historique;
         _lastLocalHash = newHash;
         setSynStatus('saving', 'Sauvegarde…');
         updateSynCounters(incomingData);
