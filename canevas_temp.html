@@ -521,131 +521,6 @@ th[data-col="repL"], td[data-col="repL"] {
   text-align: left !important;
 }
   }
-
-  /* ══════════════ HISTORIQUE DES MODIFICATIONS ══════════════ */
-  .hist-modal {
-    width: 960px; max-width: 97vw;
-    display: flex; flex-direction: column; max-height: 88vh; overflow: hidden;
-  }
-  .hist-hdr {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    padding: 14px 18px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;
-  }
-  .hist-hdr-icon {
-    width: 36px; height: 36px; background: rgba(255,255,255,.1);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem; flex-shrink: 0;
-  }
-  .hist-hdr-text { flex: 1; }
-  .hist-hdr-title { font-size: 0.9rem; font-weight: 700; color: white; }
-  .hist-hdr-sub { font-size: 0.67rem; color: rgba(255,255,255,.4); margin-top: 2px; }
-  .hist-hdr-close {
-    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
-    color: rgba(255,255,255,.8); font-size: 1rem; cursor: pointer;
-    padding: 4px 9px; transition: background .15s;
-  }
-  .hist-hdr-close:hover { background: rgba(255,255,255,.22); }
-
-  .hist-filters {
-    display: flex; align-items: center; gap: 8px; padding: 10px 16px;
-    background: var(--g50); border-bottom: 2px solid var(--g200); flex-wrap: wrap; flex-shrink: 0;
-  }
-  .hist-filter-lbl {
-    font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .07em; color: var(--g500); white-space: nowrap;
-  }
-  .hist-filters input {
-    border: 1px solid var(--g300); padding: 5px 9px; font-family: var(--font);
-    font-size: 0.74rem; outline: none; background: white; color: var(--g800);
-    width: 130px; transition: border-color .15s;
-  }
-  .hist-filters input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(26,86,219,.1); }
-  .hist-filters select {
-    border: 1px solid var(--g300); padding: 5px 9px; font-family: var(--font);
-    font-size: 0.74rem; outline: none; background: white; color: var(--g800);
-    transition: border-color .15s; cursor: pointer;
-  }
-  .hist-filters select:focus { border-color: var(--blue); }
-  .hist-count-pill {
-    font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
-    background: var(--blue-l); color: var(--blue);
-    padding: 3px 10px; border: 1px solid #bfdbfe; margin-left: auto;
-  }
-
-  .hist-scroll { flex: 1; overflow-y: auto; min-height: 0; }
-  .hist-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; }
-
-  .hist-table thead { position: sticky; top: 0; z-index: 5; }
-  .hist-table th {
-    background: #1e293b; color: rgba(255,255,255,.75); padding: 9px 13px;
-    text-align: left; font-size: 0.63rem; font-weight: 700;
-    letter-spacing: .07em; text-transform: uppercase; white-space: nowrap;
-    border-right: 1px solid #334155;
-  }
-  .hist-table th:last-child { border-right: none; }
-
-  .hist-table tbody tr { transition: background .08s; }
-  .hist-table tbody tr:nth-child(even) td { background: #f8fafc; }
-  .hist-table tbody tr:hover td { background: var(--blue-ll) !important; }
-  .hist-table td {
-    padding: 9px 13px; border-bottom: 1px solid var(--g200);
-    vertical-align: top; border-right: 1px solid var(--g100);
-  }
-  .hist-table td:last-child { border-right: none; }
-
-  .hist-date  { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; color: var(--g700); white-space: nowrap; }
-  .hist-time  { font-family: var(--mono); font-size: 0.65rem; color: var(--g400); margin-top: 2px; }
-  .hist-user-wrap { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-  .hist-av {
-    width: 24px; height: 24px; border-radius: 50%; background: var(--blue);
-    color: white; font-size: 0.52rem; font-weight: 800; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .hist-uname { font-weight: 600; font-size: 0.73rem; color: var(--g700); }
-  .hist-num-cell { font-family: var(--mono); font-weight: 700; font-size: 0.76rem; color: var(--g900); white-space: nowrap; }
-
-  .hist-tag {
-    display: inline-flex; align-items: center; gap: 3px;
-    padding: 2px 8px; font-size: 0.66rem; font-weight: 700;
-    border: 1px solid transparent; white-space: nowrap;
-  }
-  .ht-edit   { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
-  .ht-suivi  { background: #f0fdf4; color: #15803d; border-color: #86efac; }
-  .ht-par    { background: #fffbeb; color: #92400e; border-color: #fde68a; }
-  .ht-non    { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
-  .ht-rd6    { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
-  .ht-pa     { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
-  .ht-add    { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
-  .ht-del    { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
-  .ht-import { background: #fdf4ff; color: #7e22ce; border-color: #e9d5ff; }
-
-  .hist-detail-wrap { font-size: 0.73rem; color: var(--g600); line-height: 1.5; max-width: 340px; }
-  .hist-chip {
-    display: inline-block; background: var(--g100); border: 1px solid var(--g200);
-    padding: 1px 7px; font-size: 0.66rem; color: var(--g600);
-    font-family: var(--mono); margin: 1px 2px 1px 0;
-  }
-  .hist-arrow { color: var(--g400); font-size: 0.7rem; margin: 0 2px; }
-
-  .hist-empty {
-    padding: 70px 20px; text-align: center; color: var(--g400);
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-  }
-  .hist-empty-ico { font-size: 2.2rem; opacity: .35; }
-  .hist-empty-msg { font-size: 0.84rem; }
-  .hist-empty-sub { font-size: 0.72rem; color: var(--g300); }
-
-  .hist-ftr {
-    border-top: 1px solid var(--g200); background: var(--g50);
-    display: flex; align-items: center; gap: 8px; padding: 10px 16px; flex-shrink: 0;
-  }
-  .hist-del-btn {
-    padding: 5px 12px; border: 1px solid #fca5a5; background: #fef2f2;
-    color: #b91c1c; font-family: var(--font); font-size: 0.73rem;
-    font-weight: 600; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 5px;
-  }
-  .hist-del-btn:hover { background: #fee2e2; border-color: #ef4444; }
-  /* ══════════════════════════════════════════════════════════ */
 </style>
 </head>
 <body>
@@ -720,8 +595,7 @@ th[data-col="repL"], td[data-col="repL"] {
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
-  <button class="tb-btn" onclick="openHistorique()" title="Historique des modifications">🕘</button>
-  <button class="tb-btn" onclick="openInfoModal()" title="Infos">🛈</button>
+  <button class="tb-btn" onclick="openInfoModal()" title="Infos">ⓘ</button>
   <div class="actions-dropdown">
     <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()" style="display:none;"> ☰ MENU ▾</button>
     <div class="actions-menu" id="actionsMenu">
@@ -892,73 +766,6 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-
-<!-- HISTORIQUE MODAL -->
-<div class="modal-overlay" id="histModal">
-  <div class="modal hist-modal">
-    <!-- Header -->
-    <div class="hist-hdr">
-      <div class="hist-hdr-icon">🕘</div>
-      <div class="hist-hdr-text">
-        <div class="hist-hdr-title">Historique des modifications</div>
-        <div class="hist-hdr-sub" id="histHdrSub">Journal des actions enregistrées</div>
-      </div>
-      <button class="hist-hdr-close" onclick="closeHistorique()">×</button>
-    </div>
-    <!-- Filtres -->
-    <div class="hist-filters">
-      <span class="hist-filter-lbl">N° Avis</span>
-      <input id="hq_avis" placeholder="ex: 12, PA3..." oninput="renderHistorique()">
-      <span class="hist-filter-lbl">Utilisateur</span>
-      <input id="hq_user" placeholder="Prénom Nom..." oninput="renderHistorique()">
-      <span class="hist-filter-lbl">Action</span>
-      <select id="hq_type" onchange="renderHistorique()">
-        <option value="">Toutes</option>
-        <option value="edit">✏️ Modification texte</option>
-        <option value="suivi_oui">✅ Levé</option>
-        <option value="suivi_par">⚠️ Partiel</option>
-        <option value="suivi_non">❌ Maintenu</option>
-        <option value="suivi_vide">— Suivi effacé</option>
-        <option value="rd6_on">🟣 RD6 activé</option>
-        <option value="rd6_off">🟣 RD6 retiré</option>
-        <option value="pa">🟡 PA ajouté</option>
-        <option value="add">🟢 Avis ajouté</option>
-        <option value="delete">🔴 Suppression</option>
-        <option value="import">📥 Import</option>
-        <option value="actualiser">🔄 Actualisation</option>
-      </select>
-      <span class="hist-count-pill" id="histCount">0 entrée</span>
-    </div>
-    <!-- Tableau -->
-    <div class="hist-scroll">
-      <div id="histEmpty" class="hist-empty" style="display:none;">
-        <div class="hist-empty-ico">📭</div>
-        <div class="hist-empty-msg">Aucune modification enregistrée</div>
-        <div class="hist-empty-sub">Les actions apparaîtront ici au fur et à mesure</div>
-      </div>
-      <table class="hist-table" id="histTable">
-        <thead>
-          <tr>
-            <th style="width:100px">Date / Heure</th>
-            <th style="width:130px">Utilisateur</th>
-            <th style="width:80px">N° Avis</th>
-            <th style="width:120px">Action</th>
-            <th>Détail</th>
-          </tr>
-        </thead>
-        <tbody id="histBody"></tbody>
-      </table>
-    </div>
-    <!-- Footer -->
-    <div class="hist-ftr">
-      <button class="hist-del-btn" onclick="clearHistorique()" id="histDelBtn">🗑 Effacer l'historique</button>
-      <div style="flex:1;"></div>
-      <button class="tb-btn" onclick="exportHistorique()">⤓ Exporter CSV</button>
-      <button class="tb-btn accent" onclick="closeHistorique()">Fermer</button>
-    </div>
-  </div>
-</div>
-
 <!-- STATS MODAL -->
 <div class="modal-overlay" id="statsModal">
   <div class="modal" style="width:520px;"><div class="modal-hdr">Statistiques<button class="tb-btn" onclick="closeStatsModal()">×</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div>
@@ -1034,18 +841,7 @@ function toggleTheme(){document.body.classList.toggle('dark');localStorage.setIt
 (()=>{if((localStorage.getItem('rapso_theme')||'light')==='dark')document.body.classList.add('dark');})();
 
 // --- Données globales ---
-let currentTab='v2', data={v2:[], v1:[], historique:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='';
-let _rapsoUser = window.RAPSO_USER || null;
-function getRapsoUserName() {
-  const u = _rapsoUser || window.RAPSO_USER;
-  if(!u) return '?';
-  const full = ((u.prenom||'') + ' ' + (u.nom||'')).trim();
-  return full || u.initiales || '?';
-}
-function getRapsoUserRole() {
-  const u = _rapsoUser || window.RAPSO_USER;
-  return u ? (u.role || '') : '';
-}
+let currentTab='v2', data={v2:[], v1:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='';
 let selectedIntervenants = new Set();
 let selectedLots = new Set();
 
@@ -1059,32 +855,18 @@ function getLotsArray(r) {
 // ---------------------------------------------------------
 
 // --- Persistance & sync ---
-function persistLocal(){
-  try{
-    localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));
-  }catch(e){}
-  pushToParent();
-}
-function pushToParent(){
-  if(!window.parent||window.parent===window)return;
-  const canId=window.CANEVAS_ID;
-  if(canId===undefined||canId===null)return;
-  try{
-    window.parent.postMessage({type:'rapso_save',canId,data:{v2:data.v2,v1:data.v1,historique:data.historique||[]}},'*');
-  }catch(e){}
-}
-setInterval(pushToParent,4000);
+function persistLocal(){try{localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value},data}));}catch(e){}}
+function pushToParent(){if(!window.parent||window.parent===window)return;const canId=window.CANEVAS_ID;if(canId===undefined)return;try{const raw=localStorage.getItem('rapsotracker');if(raw){const parsed=JSON.parse(raw);if(parsed?.data)window.parent.postMessage({type:'rapso_save',canId,data:parsed.data},'*');}}catch(e){}}
+setInterval(pushToParent,4000);const _origSet=localStorage.setItem.bind(localStorage);
+localStorage.setItem=function(k,v){_origSet(k,v);if(k==='rapsotracker'){clearTimeout(window._rsST);window._rsST=setTimeout(pushToParent,250);}};
 window.addEventListener('beforeunload',pushToParent);
 window.addEventListener('message', function(e) {
   if (e.data?.type === 'rapso_request_save') pushToParent();
   if (e.data?.type === 'rapso_inject') {
-    // Mettre à jour le user si envoyé avec l'injection
-    if (e.data.user) { _rapsoUser = e.data.user; }
     try {
       const inj = e.data.data || { v2: [], v1: [] };
       data.v2 = Array.isArray(inj.v2) ? inj.v2.map(makeRow) : [];
       data.v1 = Array.isArray(inj.v1) ? inj.v1.map(makeRow) : [];
-      if(Array.isArray(inj.historique)) data.historique = inj.historique;
       if (e.data.affaire) {
         ge('affaireDisplay').innerText = e.data.affaire;
         const rapTitle = document.getElementById('rapideAffaireTitle');
@@ -1114,160 +896,12 @@ window.addEventListener('message', function(e) {
   }
 });
 
-(function(){if(window.RAPSO_SYNTH_DATA){try{const p=JSON.parse(window.RAPSO_SYNTH_DATA);if(p&&typeof p==='object'){data.v2=Array.isArray(p.v2)?p.v2:[];data.v1=Array.isArray(p.v1)?p.v1:[];if(Array.isArray(p.historique))data.historique=p.historique;localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:window.RAPSO_AFFAIRE||'',dossier:window.RAPSO_DOSSIER||''},data:{v2:data.v2,v1:data.v1}}));}}catch(e){}}setTimeout(()=>{
+(function(){if(window.RAPSO_SYNTH_DATA){try{const p=JSON.parse(window.RAPSO_SYNTH_DATA);if(p&&typeof p==='object'){data.v2=Array.isArray(p.v2)?p.v2:[];data.v1=Array.isArray(p.v1)?p.v1:[];localStorage.setItem('rapsotracker',JSON.stringify({meta:{affaire:window.RAPSO_AFFAIRE||'',dossier:window.RAPSO_DOSSIER||''},data:{v2:data.v2,v1:data.v1}}));}}catch(e){}}setTimeout(()=>{
   const af=ge('affaireDisplay'),dos=ge('dossierInput');
   if(af && window.RAPSO_AFFAIRE) af.innerText = window.RAPSO_AFFAIRE;
   if(dos && window.RAPSO_DOSSIER) dos.value = window.RAPSO_DOSSIER;
   applyFilters();
 },0);})();
-
-
-// ======================= HISTORIQUE DES MODIFICATIONS =======================
-const HIST_CLEAR_PWD = 'RAPSOADMIN';
-
-function logAction(type, numAvis, detail) {
-  if(!data.historique) data.historique = [];
-  const now = new Date();
-  const date = now.toLocaleDateString('fr-FR');
-  const heure = now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  const user = getRapsoUserName();
-  // Initiales : premières lettres de chaque mot
-  const initiales = user.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2) || '?';
-  data.historique.unshift({ ts: now.getTime(), date, heure, user, initiales, type, num: numAvis||'—', detail: detail||'' });
-  if(data.historique.length > 500) data.historique = data.historique.slice(0, 500);
-}
-
-function typeConfig(type) {
-  const map = {
-    edit:        { label: 'Modification',   icon: '✏️',  cls: 'ht-edit'   },
-    suivi_oui:   { label: 'Levé',           icon: '✅',  cls: 'ht-suivi'  },
-    suivi_par:   { label: 'Partiel',        icon: '⚠️',  cls: 'ht-par'    },
-    suivi_non:   { label: 'Maintenu',       icon: '❌',  cls: 'ht-non'    },
-    suivi_vide:  { label: 'Suivi effacé',   icon: '—',   cls: 'ht-edit'   },
-    rd6_on:      { label: 'RD6 activé',     icon: '🟣',  cls: 'ht-rd6'    },
-    rd6_off:     { label: 'RD6 retiré',     icon: '🟣',  cls: 'ht-rd6'    },
-    pa:          { label: 'PA ajouté',      icon: '🟡',  cls: 'ht-pa'     },
-    add:         { label: 'Avis ajouté',    icon: '🟢',  cls: 'ht-add'    },
-    delete:      { label: 'Supprimé',       icon: '🔴',  cls: 'ht-del'    },
-    import:      { label: 'Import',         icon: '📥',  cls: 'ht-import' },
-    actualiser:  { label: 'Actualisation',  icon: '🔄',  cls: 'ht-import' },
-  };
-  return map[type] || { label: type, icon: '•', cls: 'ht-edit' };
-}
-
-function avatarColor(initiales) {
-  const colors = ['#1a56db','#0d9488','#7c3aed','#f97316','#ef4444','#22c55e','#f59e0b','#64748b'];
-  let h = 0; for(let i=0;i<initiales.length;i++) h = (h*31 + initiales.charCodeAt(i)) % colors.length;
-  return colors[h];
-}
-
-function formatDetail(detail) {
-  if(!detail) return '<span style="color:var(--g300)">—</span>';
-  // Séparer les parties par |
-  const parts = detail.split(' | ');
-  return parts.map(p => {
-    // Détecter flèche (→)
-    if(p.includes(' → ')) {
-      const [before, after] = p.split(' → ');
-      return `${escapeHtml(before)} <span class="hist-arrow">→</span> <strong>${escapeHtml(after)}</strong>`;
-    }
-    // Détecter tag label : valeur
-    if(p.includes(' : ')) {
-      const colon = p.indexOf(' : ');
-      const label = p.slice(0, colon);
-      const val = p.slice(colon+3);
-      return `<span class="hist-chip">${escapeHtml(label)}</span> ${escapeHtml(val)}`;
-    }
-    return escapeHtml(p);
-  }).join('<br>');
-}
-
-function openHistorique() {
-  renderHistorique();
-  ge('histModal').classList.add('open');
-}
-function closeHistorique() { ge('histModal').classList.remove('open'); }
-
-function clearHistorique() {
-  // Vérification par mot de passe (admin ou RAPSOADMIN)
-  const isAdmin = getRapsoUserRole() === 'admin';
-  if(!isAdmin) {
-    const pwd = prompt('Action réservée aux administrateurs.\nMot de passe requis :');
-    if(pwd === null) return;
-    if(pwd !== HIST_CLEAR_PWD) { alert('Mot de passe incorrect.'); return; }
-  }
-  if(!confirm('Effacer tout l\'historique de ce canevas ? Cette action est irréversible.')) return;
-  data.historique = [];
-  persistLocal();
-  renderHistorique();
-}
-
-function renderHistorique() {
-  const hist = data.historique || [];
-  const qAvis = (ge('hq_avis')?.value||'').toLowerCase().trim();
-  const qUser = (ge('hq_user')?.value||'').toLowerCase().trim();
-  const qType = ge('hq_type')?.value||'';
-  let rows = hist.filter(h => {
-    if(qAvis && !String(h.num||'').toLowerCase().includes(qAvis)) return false;
-    if(qUser && !String(h.user||'').toLowerCase().includes(qUser)) return false;
-    if(qType && h.type !== qType) return false;
-    return true;
-  });
-  const n = rows.length;
-  ge('histCount').textContent = n + ' entrée' + (n > 1 ? 's' : '');
-  ge('histHdrSub').textContent = `${(data.historique||[]).length} action(s) au total · filtré : ${n}`;
-
-  const tbody = ge('histBody');
-  const table = ge('histTable');
-  const empty = ge('histEmpty');
-
-  if(!rows.length) {
-    table.style.display = 'none';
-    empty.style.display = 'flex';
-    return;
-  }
-  table.style.display = '';
-  empty.style.display = 'none';
-
-  tbody.innerHTML = rows.map(h => {
-    const cfg = typeConfig(h.type);
-    const ini = h.initiales || (h.user||'?').split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
-    const avColor = avatarColor(ini);
-    const detailHtml = formatDetail(h.detail||'');
-    return `<tr>
-      <td>
-        <div class="hist-date">${escapeHtml(h.date)}</div>
-        <div class="hist-time">${escapeHtml(h.heure)}</div>
-      </td>
-      <td>
-        <div class="hist-user-wrap">
-          <div class="hist-av" style="background:${avColor}">${escapeHtml(ini)}</div>
-          <span class="hist-uname">${escapeHtml(h.user||'?')}</span>
-        </div>
-      </td>
-      <td class="hist-num-cell">${escapeHtml(h.num)}</td>
-      <td><span class="hist-tag ${cfg.cls}">${cfg.icon} ${cfg.label}</span></td>
-      <td><div class="hist-detail-wrap">${detailHtml}</div></td>
-    </tr>`;
-  }).join('');
-}
-
-function exportHistorique() {
-  const hist = data.historique || [];
-  const lines = [
-    'Date;Heure;Utilisateur;N° Avis;Action;Détail',
-    ...hist.map(h => {
-      const cfg = typeConfig(h.type);
-      return [h.date, h.heure, h.user, h.num, cfg.label, (h.detail||'').replace(/;/g,',')].join(';');
-    })
-  ];
-  const blob = new Blob(['﻿'+lines.join('\n')], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'historique_rapso_'+(ge('affaireDisplay').innerText||'export').replace(/[^a-zA-Z0-9]/g,'_')+'.csv';
-  a.click();
-}
-// ============================================================================
 
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
@@ -1409,27 +1043,13 @@ function toggleRD6(){const cb=ge('e_rd6');cb.checked=!cb.checked;ge('rd6Toggle')
 function saveRow(){
   if(editingIdx===null)return;
   const r=filteredRows[editingIdx];const gi=getRows().findIndex(x=>x.id===r.id);if(gi===-1)return;
-  const prev={repK:r.repK,repL:r.repL,lots:r.lots,suivi:r.suivi,rd6:r.rd6};
   data[currentTab][gi]={...r,repK:ge('e_repK').value,repL:ge('e_repL').value,lots:ge('e_lots').value,suivi:currentSuivi,rd6:ge('e_rd6').checked};
   if(data[currentTab][gi].rd6&&!data[currentTab][gi].num.includes('/RD6'))data[currentTab][gi].num+='/RD6';
   else if(!data[currentTab][gi].rd6)data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
-  // Log des champs modifiés
-  const numAvis = data[currentTab][gi].num;
-  const changes = [];
-  if(prev.suivi !== currentSuivi) {
-    const st = currentSuivi==='Oui'?'suivi_oui':currentSuivi==='Par'?'suivi_par':currentSuivi==='Non'?'suivi_non':'suivi_vide';
-    const stLabel = currentSuivi==='Oui'?'Levé':currentSuivi==='Par'?'Partiel':currentSuivi==='Non'?'Maintenu':'(effacé)';
-    logAction(st, numAvis, 'Statut : ' + (prev.suivi||'—') + ' → ' + stLabel);
-  }
-  if(prev.rd6 !== ge('e_rd6').checked) logAction(ge('e_rd6').checked?'rd6_on':'rd6_off', numAvis, ge('e_rd6').checked?'RD6 activé':'RD6 retiré');
-  if(prev.repK !== ge('e_repK').value) changes.push('Réponse MOE');
-  if(prev.repL !== ge('e_repL').value) changes.push('Obs. SOCOTEC');
-  if(prev.lots !== ge('e_lots').value) changes.push('Lots : ' + ge('e_lots').value);
-  if(changes.length) logAction('edit', numAvis, changes.join(' | '));
   applyFilters();ge('saveFeedback').classList.add('show');setTimeout(()=>ge('saveFeedback').classList.remove('show'),1800);
   persistLocal();pushToParent();
 }
-function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx];if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;const gi=getRows().findIndex(x=>x.id===r.id);if(gi>=0){logAction('delete',r.num,'Avis supprimé');data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}}
+function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx];if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;const gi=getRows().findIndex(x=>x.id===r.id);if(gi>=0){data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}}
 
 // --- Redimensionnement panel ---
 (function(){
@@ -1450,8 +1070,6 @@ function addPA(){
   if(!cat){ge('paFeedback').innerText='⚠️ Cochez F, S, D ou PM';setTimeout(()=>ge('paFeedback').innerText='',2000);return;}
   let maxPA=0;getRows().forEach(r=>{if((r.num||'').startsWith('PA')){let n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
   data[currentTab].push(makeRow({num:'PA'+(maxPA+1),date:ge('pa_date').value||new Date().toISOString().slice(0,10),disp:ge('pa_disp').value,avis:cat,obs:ge('pa_obs').value,repK:ge('pa_repK').value,repL:ge('pa_repL').value,lots:ge('pa_lots').value}));
-  const paNum='PA'+(maxPA+1);
-  logAction('pa', paNum, 'PA ajouté — Avis : '+cat+(ge('pa_disp').value?' | Disp : '+ge('pa_disp').value.substring(0,50):''));
   closePAModal();applyFilters();persistLocal();pushToParent();
 }
 
@@ -1653,57 +1271,14 @@ function rapApply(){
 }
 function updateRapButtonsState(){const oui=ge('rapBtnOui'),par=ge('rapBtnPar'),non=ge('rapBtnNon'),rd6=ge('rapBtnRd6');if(rapCurrent){oui.classList.toggle('active',rapCurrent.suivi==='Oui');par.classList.toggle('active',rapCurrent.suivi==='Par');non.classList.toggle('active',rapCurrent.suivi==='Non');rd6.classList.toggle('active',rapCurrent.rd6===true);}else{oui.classList.remove('active');par.classList.remove('active');non.classList.remove('active');rd6.classList.remove('active');}}
 function rapSelect(i,scroll=true){rapCurrent=rapFiltered[i];document.querySelectorAll('.rapide-item').forEach((el,idx)=>el.classList.toggle('selected',idx===i));if(scroll)document.querySelectorAll('.rapide-item')[i]?.scrollIntoView({block:'nearest'});const r=rapCurrent;ge('rapideObsText').innerHTML=escapeHtml(r.obs)||'—';const editArea=ge('rapideEditArea');editArea.style.display='flex';ge('rq_repK').value=r.repK||'';ge('rq_repL').value=r.repL||'';ge('rq_lots').value=r.lots||'';ge('rapSaveBtn').disabled=false;updateRapButtonsState();}
-function rapToggleSuivi(v){
-  if(!rapCurrent)return;
-  const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);
-  if(gi===-1)return;
-  const prevSuivi=data[currentTab][gi].suivi;
-  data[currentTab][gi].suivi=(data[currentTab][gi].suivi===v)?'':v;
-  rapCurrent={...data[currentTab][gi]};
-  const newSuivi=data[currentTab][gi].suivi;
-  const st=newSuivi==='Oui'?'suivi_oui':newSuivi==='Par'?'suivi_par':newSuivi==='Non'?'suivi_non':'suivi_vide';
-  const stLabel=newSuivi==='Oui'?'Levé':newSuivi==='Par'?'Partiel':newSuivi==='Non'?'Maintenu':'(effacé)';
-  logAction(st, rapCurrent.num, 'Statut : '+(prevSuivi||'—')+' → '+stLabel+' [Vision rapide]');
-  persistLocal();rapApply();
-}
-function rapToggleRD6(){
-  if(!rapCurrent)return;
-  const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);
-  if(gi===-1)return;
-  data[currentTab][gi].rd6=!data[currentTab][gi].rd6;
-  rapCurrent={...data[currentTab][gi]};
-  logAction(data[currentTab][gi].rd6?'rd6_on':'rd6_off', rapCurrent.num, (data[currentTab][gi].rd6?'RD6 activé':'RD6 retiré')+' [Vision rapide]');
-  persistLocal();rapApply();
-}
-function rapSaveTexts(){
-  if(!rapCurrent)return;
-  const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);
-  if(gi===-1)return;
-  const prevRapK=data[currentTab][gi].repK, prevRapL=data[currentTab][gi].repL, prevRapLots=data[currentTab][gi].lots;
-  data[currentTab][gi].repK=ge('rq_repK').value;
-  data[currentTab][gi].repL=ge('rq_repL').value;
-  data[currentTab][gi].lots=ge('rq_lots').value;
-  rapCurrent={...data[currentTab][gi]};
-  const rapChanges=[];
-  if(prevRapK!==data[currentTab][gi].repK) rapChanges.push('Réponse MOE');
-  if(prevRapL!==data[currentTab][gi].repL) rapChanges.push('Obs. SOCOTEC');
-  if(prevRapLots!==data[currentTab][gi].lots) rapChanges.push('Lots : '+data[currentTab][gi].lots);
-  if(rapChanges.length) logAction('edit', rapCurrent.num, rapChanges.join(' | ')+' [Vision rapide]');
-  persistLocal();
-  rapApply();
-  const btn=ge('rapSaveBtn');
-  btn.textContent='✅ Sauvegardé';
-  btn.disabled=true;
-  setTimeout(()=>{
-    btn.textContent='Valider';
-    if(rapCurrent) btn.disabled=false;
-  },2000);
-}
+function rapToggleSuivi(v){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].suivi=(data[currentTab][gi].suivi===v)?'':v;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();}
+function rapToggleRD6(){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].rd6=!data[currentTab][gi].rd6;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();}
+function rapSaveTexts(){if(!rapCurrent)return;const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);if(gi===-1)return;data[currentTab][gi].repK=ge('rq_repK').value;data[currentTab][gi].repL=ge('rq_repL').value;data[currentTab][gi].lots=ge('rq_lots').value;rapCurrent={...data[currentTab][gi]};persistLocal();pushToParent();rapApply();const btn=ge('rapSaveBtn');btn.textContent='✓';setTimeout(()=>{btn.textContent='💾 Valider';btn.disabled=true;},2000);}
 
 // --- Ajout manuel ---
 function openAddModal(){['a_num','a_ref','a_date','a_inter','a_disp','a_avis','a_desc','a_obs','a_docs','a_lots'].forEach(id=>ge(id).value='');ge('addModal').classList.add('open');}
 function closeAddModal(){ge('addModal').classList.remove('open');}
-function addRow(){if(!ge('a_num').value.trim()){alert('Numéro d\'avis requis');return;}const newNum=ge('a_num').value;data[currentTab].push(makeRow({num:newNum,ref:ge('a_ref').value,date:ge('a_date').value,inter:ge('a_inter').value,disp:ge('a_disp').value,avis:ge('a_avis').value,desc:ge('a_desc').value,obs:ge('a_obs').value,docs:ge('a_docs').value,lots:ge('a_lots').value}));logAction('add',newNum,'Avis ajouté manuellement — Avis : '+ge('a_avis').value);closeAddModal();applyFilters();persistLocal();pushToParent();}
+function addRow(){if(!ge('a_num').value.trim()){alert('Numéro d\'avis requis');return;}data[currentTab].push(makeRow({num:ge('a_num').value,ref:ge('a_ref').value,date:ge('a_date').value,inter:ge('a_inter').value,disp:ge('a_disp').value,avis:ge('a_avis').value,desc:ge('a_desc').value,obs:ge('a_obs').value,docs:ge('a_docs').value,lots:ge('a_lots').value}));closeAddModal();applyFilters();persistLocal();pushToParent();}
 
 // --- Statistiques (modal) ---
 function openStatsModal(){
@@ -1760,9 +1335,7 @@ function processXLSX(file,mode){
         ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num),undefined,{numeric:true}));data[target]=ex;currentTab=target;ge(sid).textContent=`✅ ${up} mis à jour, ${add} ajoutés`;
       }else{if(!confirm(`${src.length} lignes → ${target} ?`)){ge(sid).textContent='Annulé';return;}data[target]=src;currentTab=target;ge(sid).textContent=`✅ ${src.length} avis importés`;}
       ge('tabV2').classList.toggle('active',target==='v2');ge('tabV1').classList.toggle('active',target==='v1');
-      selectedIntervenants.clear();selectedLots.clear();
-      logAction(mode==='actualiser'?'actualiser':'import','—', (mode==='actualiser'?'Actualisation':'Import')+' Excel : '+src.length+' avis');
-      applyFilters();persistLocal();pushToParent();
+      selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();
     }catch(err){ge(sid).textContent='❌ '+err.message;}
   };reader.readAsArrayBuffer(file);
 }
@@ -1813,7 +1386,7 @@ function closeMigrationModal(){document.getElementById('migrationModal').classLi
 function handleMigrationFileImport(input){
   const file=input.files[0];if(!file)return;const statusEl=document.getElementById('migrationStatus');statusEl.textContent='Lecture...';
   const reader=new FileReader();
-  reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent='Aucune donnée';return;}if(!confirm(`${src.length} avis → ${currentTab} ?`)){statusEl.textContent='Annulé';return;}data[currentTab]=src;logAction('import','—','Migration Excel : '+src.length+' avis');selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} avis importés`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);
+  reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent='Aucune donnée';return;}if(!confirm(`${src.length} avis → ${currentTab} ?`)){statusEl.textContent='Annulé';return;}data[currentTab]=src;selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} avis importés`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);
 }
 const migrationDropzone=document.getElementById('migrationDropzone');
 if(migrationDropzone){migrationDropzone.addEventListener('dragover',e=>{e.preventDefault();migrationDropzone.style.borderColor='var(--blue)';});migrationDropzone.addEventListener('dragleave',()=>migrationDropzone.style.borderColor='');migrationDropzone.addEventListener('drop',e=>{e.preventDefault();migrationDropzone.style.borderColor='';const file=e.dataTransfer.files[0];if(file)handleMigrationFileImport({files:[file]});});}
