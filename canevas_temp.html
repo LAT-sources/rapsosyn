@@ -1754,9 +1754,36 @@ function processXLSX(file,mode){
         src.push(makeRow({num:nv,ref:String(row[0]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),avis:String(row[5]||'').trim(),desc:String(row[6]||'').trim(),obs,docs:cleanDocs(String(row[8]||'').trim()),suivi,repK:'',repL:'',lots:lotsValue,rd6:nv.includes('/RD6')}));
       }
       let target=sheetName==='RapsoV1'?'v1':'v2';
-      if(mode==='actualiser'){
+           if(mode==='actualiser'){
         let ex=data[target];let up=0,add=0;
-        for(const s of src){const k=extractKey(s.num);if(!k)continue;const idx=ex.findIndex(t=>extractKey(t.num)===k);if(idx>=0){ex[idx]={...ex[idx],...s,id:ex[idx].id};if(hasRappel(ex[idx].obs))ex[idx].suivi='Oui';else ex[idx].suivi='';up++;}else{ex.push(s);add++;}}
+        for(const s of src){
+          const k=extractKey(s.num);if(!k)continue;
+          const idx=ex.findIndex(t=>extractKey(t.num)===k);
+          if(idx>=0){
+            const prev=ex[idx];
+            // Colonnes Excel mises à jour : num, ref, date, inter, disp, avis, desc, obs, docs
+            // Colonnes préservées : repK, repL, lots, rd6 (manuel), suivi (sauf si rappel détecté)
+            ex[idx]={
+              ...prev,
+              num:  s.num,
+              ref:  s.ref,
+              date: s.date,
+              inter:s.inter,
+              disp: s.disp,
+              avis: s.avis,
+              desc: s.desc,
+              obs:  s.obs,
+              docs: s.docs,
+              suivi: hasRappel(s.obs) ? 'Oui' : prev.suivi,
+              rd6:   prev.rd6 || s.num.includes('/RD6'),
+              repK:  prev.repK,
+              repL:  prev.repL,
+              lots:  prev.lots,
+              id:    prev.id,
+            };
+            up++;
+          }else{ex.push(s);add++;}
+        }
         ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num),undefined,{numeric:true}));data[target]=ex;currentTab=target;ge(sid).textContent=`✅ ${up} mis à jour, ${add} ajoutés`;
       }else{if(!confirm(`${src.length} lignes → ${target} ?`)){ge(sid).textContent='Annulé';return;}data[target]=src;currentTab=target;ge(sid).textContent=`✅ ${src.length} avis importés`;}
       ge('tabV2').classList.toggle('active',target==='v2');ge('tabV1').classList.toggle('active',target==='v1');
