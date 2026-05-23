@@ -1763,9 +1763,13 @@ function processXLSX(file,mode){
             const prev=ex[idx];
             // Colonnes Excel mises à jour : num, ref, date, inter, disp, avis, desc, obs, docs
             // Colonnes préservées : repK, repL, lots, rd6 (manuel), suivi (sauf si rappel détecté)
+            const newRd6 = prev.rd6 || s.num.includes('/RD6');
+            // Reconstruire le num : base Excel (sans /RD6) + réappliquer /RD6 si actif
+            const baseNum = s.num.replace('/RD6','').trim();
+            const newNum  = newRd6 ? (baseNum.includes('/RD6') ? baseNum : baseNum+'/RD6') : baseNum;
             ex[idx]={
               ...prev,
-              num:  s.num,
+              num:  newNum,
               ref:  s.ref,
               date: s.date,
               inter:s.inter,
@@ -1775,7 +1779,7 @@ function processXLSX(file,mode){
               obs:  s.obs,
               docs: s.docs,
               suivi: hasRappel(s.obs) ? 'Oui' : prev.suivi,
-              rd6:   prev.rd6 || s.num.includes('/RD6'),
+              rd6:   newRd6,
               repK:  prev.repK,
               repL:  prev.repL,
               lots:  prev.lots,
