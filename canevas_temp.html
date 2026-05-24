@@ -475,20 +475,19 @@
       color: #1e293b !important;
     }
     /* Largeurs colonnes A3 paysage basées sur COL_DEF (somme px = 1426) */
-    th:nth-child(1), td:nth-child(1) { width: 14mm !important; min-width: 14mm; } /* N° (49px) */
-    th:nth-child(2), td:nth-child(2) { width: 14mm !important; min-width: 14mm; } /* Réf (49px) */
-    th:nth-child(3), td:nth-child(3) { width: 28mm !important; min-width: 28mm; } /* Date (100px) */
-    th:nth-child(4), td:nth-child(4) { width: 25mm !important; min-width: 25mm; } /* Intervenant (90px) */
-    th:nth-child(5), td:nth-child(5) { width: 42mm !important; min-width: 42mm; } /* Dispositions (150px) */
-    th:nth-child(6), td:nth-child(6) { width: 36mm !important; min-width: 36mm; } /* Description (130px) */
-    th:nth-child(7), td:nth-child(7) { width: 10mm !important; min-width: 10mm; text-align: center; } /* Avis (37px) */
-    th:nth-child(8), td:nth-child(8) { width: 62mm !important; min-width: 62mm !important; text-align: left !important; } /* Observations (220px) */
-    th:nth-child(9), td:nth-child(9) { width: 28mm !important; min-width: 28mm; } /* Documents (100px) */
-    th:nth-child(10), td:nth-child(10) { width: 17mm !important; min-width: 17mm; text-align: center; } /* Suivi (61px) */
-    th:nth-child(11), td:nth-child(11) { width: 50mm !important; min-width: 50mm !important; text-align: left !important; } /* Rép. ENT / MOE (180px) */
-    th:nth-child(12), td:nth-child(12) { width: 50mm !important; min-width: 50mm; } /* Obs.SOCOTEC (180px) */
-    th:nth-child(13), td:nth-child(13) { width: 22mm !important; min-width: 22mm; } /* Lots (80px) */
-    /* La colonne Actions (bouton Edit) est masquée */
+    th:nth-child(1), td:nth-child(1) { width: 14mm !important; min-width: 14mm; }
+    th:nth-child(2), td:nth-child(2) { width: 14mm !important; min-width: 14mm; }
+    th:nth-child(3), td:nth-child(3) { width: 28mm !important; min-width: 28mm; }
+    th:nth-child(4), td:nth-child(4) { width: 25mm !important; min-width: 25mm; }
+    th:nth-child(5), td:nth-child(5) { width: 42mm !important; min-width: 42mm; }
+    th:nth-child(6), td:nth-child(6) { width: 36mm !important; min-width: 36mm; }
+    th:nth-child(7), td:nth-child(7) { width: 10mm !important; min-width: 10mm; text-align: center; }
+    th:nth-child(8), td:nth-child(8) { width: 62mm !important; min-width: 62mm !important; text-align: left !important; }
+    th:nth-child(9), td:nth-child(9) { width: 28mm !important; min-width: 28mm; }
+    th:nth-child(10), td:nth-child(10) { width: 17mm !important; min-width: 17mm; text-align: center; }
+    th:nth-child(11), td:nth-child(11) { width: 50mm !important; min-width: 50mm !important; text-align: left !important; }
+    th:nth-child(12), td:nth-child(12) { width: 50mm !important; min-width: 50mm; }
+    th:nth-child(13), td:nth-child(13) { width: 22mm !important; min-width: 22mm; }
     th:last-child, td:last-child { display: none !important; }
     .badge {
       font-size: 6pt !important;
@@ -513,7 +512,6 @@
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
-    /* Forcer toutes les colonnes visibles à l'impression */
 th[data-col="desc"], td[data-col="desc"],
 th[data-col="obs"], td[data-col="obs"],
 th[data-col="docs"], td[data-col="docs"],
@@ -649,33 +647,42 @@ th[data-col="repL"], td[data-col="repL"] {
   .hist-del-btn:hover { background: #fee2e2; border-color: #ef4444; }
   /* ══════════════════════════════════════════════════════════ */
 
+  /* Boutons panel header mobile */
+  .panel-hdr-mobile-actions { display: none; gap: 4px; align-items: center; }
+
   /* ═══════════════════════ MOBILE ≤ 640px ═══════════════════════ */
   @media (max-width: 640px) {
 
     /* ── Toolbar ── */
     .toolbar {
       padding: 6px 8px;
-      gap: 6px;
+      gap: 4px;
       flex-wrap: nowrap;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
-    /* Cacher les filtres texte dans la toolbar — déplacés dans modal */
-    .quick-search,
-    .qs-checks,
+    
+    /* Garder les filtres Intervenants et Lots visibles en mobile */
+    .mf-select { display: inline-block !important; }
+    .mf-select-button { font-size: 0.65rem !important; padding: 3px 16px 3px 6px !important; }
+    
+    /* Cacher les filtres texte */
+    .quick-search { display: none !important; }
+    .qs-checks { display: none !important; }
+    
+    /* Cacher les checkboxes de suivi */
     label[style*="display:flex"] { display: none !important; }
-    /* Cacher les filtres suivi de la toolbar */
-    .mf-select { display: none !important; }
 
-    /* Garder boutons essentiels : ✕ reset, + Ajouter, +PA, Filtres, ☰ */
-    .toolbar > button:not(#actionsBtn):not([onclick*="openAddModal"]):not([onclick*="openPAModal"]):not(#tbFiltersBtn):not([onclick*="resetFilters"]) {
+    /* Garder boutons essentiels */
+    .toolbar > button:not(#actionsBtn):not([onclick*="openAddModal"]):not(#tbFiltersBtn):not([onclick*="resetFilters"]) {
       display: none !important;
     }
-    /* Label "MENU" caché, garder ☰ seul */
+    
+    /* Cacher le bouton +PA dans la toolbar (déplacé dans le panel) */
+    button[onclick*="openPAModal"] { display: none !important; }
+    
     .tb-menu-label { display: none; }
     #actionsBtn { display: flex !important; padding: 5px 8px; }
-
-    /* Bouton filtres mobile visible uniquement en mobile */
     .tb-mobile-only { display: flex !important; }
 
     /* ── Panel latéral → plein écran ── */
@@ -698,10 +705,9 @@ th[data-col="repL"], td[data-col="repL"] {
       transform: translateX(0) !important;
     }
     
-    /* Cacher le handle de redimensionnement */
     .ep-rh { display: none !important; }
     
-    /* ── Overlay visible en mobile ── */
+    /* ── Overlay ── */
     .overlay {
       display: none !important;
       position: fixed !important;
@@ -710,38 +716,38 @@ th[data-col="repL"], td[data-col="repL"] {
       z-index: 800 !important;
     }
     
-    .overlay.open {
-      display: block !important;
-    }
+    .overlay.open { display: block !important; }
     
-    /* ── Panel header : adapter pour mobile ── */
+    /* ── Panel header mobile ── */
     .panel-hdr {
-      padding: 10px 12px !important;
-      gap: 8px !important;
-      flex-wrap: wrap !important;
+      padding: 8px 10px !important;
+      gap: 6px !important;
+      flex-wrap: nowrap !important;
     }
     
     .panel-hdr .title {
-      font-size: 0.8rem !important;
-      flex: 1 1 100% !important;
+      font-size: 0.75rem !important;
+      flex: 1 1 auto !important;
       min-width: 0 !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
       white-space: nowrap !important;
     }
     
-    .panel-nav-desktop { 
-      display: none !important; 
+    .panel-hdr-mobile-actions {
+      display: flex !important;
     }
     
-    /* ── Panel body : scroll optimisé ── */
+    .panel-nav-desktop { display: none !important; }
+    
+    /* ── Panel body ── */
     .panel-body {
       padding: 12px !important;
       gap: 10px !important;
       -webkit-overflow-scrolling: touch !important;
     }
     
-    /* ── Panel footer : navigation mobile ── */
+    /* ── Panel footer ── */
     .panel-nav-mobile { 
       display: flex !important; 
       gap: 6px !important;
@@ -763,14 +769,10 @@ th[data-col="repL"], td[data-col="repL"] {
       padding: 6px 8px !important;
     }
     
-    .panel-ftr .tb-btn.green { 
-      flex: 2 !important;
-    }
+    .panel-ftr .tb-btn.green { flex: 2 !important; }
     
-    /* ── Form sections adaptées ── */
-    .form-section {
-      padding: 8px !important;
-    }
+    /* ── Form sections ── */
+    .form-section { padding: 8px !important; }
     
     .obs-readonly {
       max-height: 200px !important;
@@ -778,7 +780,7 @@ th[data-col="repL"], td[data-col="repL"] {
       -webkit-overflow-scrolling: touch !important;
     }
     
-    /* ── Suivi options adaptées ── */
+    /* ── Suivi options ── */
     .suivi-opts {
       display: grid !important;
       grid-template-columns: 1fr 1fr !important;
@@ -790,9 +792,12 @@ th[data-col="repL"], td[data-col="repL"] {
       font-size: 0.7rem !important;
     }
 
-    /* ── Tableau principal ── */
     .tbl-wrap { font-size: 0.72rem; }
 
+    /* Assurer que le bouton × reste visible */
+    .panel-hdr button:last-child { 
+      flex-shrink: 0 !important; 
+    }
   }
 
   /* Desktop : cacher éléments mobile-only */
@@ -800,6 +805,7 @@ th[data-col="repL"], td[data-col="repL"] {
     .tb-mobile-only { display: none !important; }
     .panel-nav-mobile { display: none !important; }
     .panel-nav-desktop { display: inline-flex !important; }
+    .panel-hdr-mobile-actions { display: none !important; }
   }
 
   /* ── CSS modal filtres mobile ── */
@@ -855,7 +861,7 @@ th[data-col="repL"], td[data-col="repL"] {
   <span>Imprimé le <span id="printFooterDate"></span></span>
 </div>
 
-<!-- HEADER (affaire/dossier masqués) -->
+<!-- HEADER -->
 <div class="syn-header">
   <div class="header-info" id="headerInfoContainer">
     <div class="info-row"><span class="label">AFFAIRE :</span><span class="value" id="affaireDisplay">—</span></div>
@@ -946,6 +952,11 @@ th[data-col="repL"], td[data-col="repL"] {
     <span style="font-family:var(--mono);font-size:0.7rem;" id="panelNum">—</span>
     <button class="tb-btn panel-nav-desktop" onclick="navRow(-1)">Pré ↑</button>
     <button class="tb-btn panel-nav-desktop" onclick="navRow(1)">↓ Sui</button>
+    <!-- Actions mobiles dans le header -->
+    <div class="panel-hdr-mobile-actions">
+      <button class="tb-btn" onclick="openMobileFilters()" title="Filtres" style="font-size:0.65rem;padding:3px 6px;">⚙</button>
+      <button class="tb-btn accent" onclick="openPAModal()" title="+ PA" style="font-size:0.65rem;padding:3px 6px;">+PA</button>
+    </div>
     <button class="tb-btn" onclick="closePanel()">×</button>
   </div>
   <div class="panel-body">
@@ -982,7 +993,7 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-<!-- MODAL INFO -->
+<!-- MODALS (identiques à la version précédente, non modifiés) -->
 <div class="modal-overlay" id="infoModal">
   <div class="modal" style="width:400px;">
     <div class="modal-hdr">Informations du dossier<button class="tb-btn" onclick="closeInfoModal()">×</button></div>
@@ -997,7 +1008,6 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-<!-- MODAL PA -->
 <div class="modal-overlay" id="paModal">
   <div class="modal"><div class="modal-hdr">Ajouter PA <button class="tb-btn" onclick="closePAModal()">×</button></div>
     <div class="modal-body">
@@ -1013,7 +1023,6 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-<!-- VERSION RAPIDE -->
 <div class="modal-overlay" id="rapideOverlay">
   <div class="modal rapide-modal" id="rapideModal">
     <div class="modal-hdr">
@@ -1082,11 +1091,8 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-
-<!-- HISTORIQUE MODAL -->
 <div class="modal-overlay" id="histModal">
   <div class="modal hist-modal">
-    <!-- Header -->
     <div class="hist-hdr">
       <div class="hist-hdr-icon">📋</div>
       <div class="hist-hdr-text">
@@ -1095,7 +1101,6 @@ th[data-col="repL"], td[data-col="repL"] {
       </div>
       <button class="hist-hdr-close" onclick="closeHistorique()">×</button>
     </div>
-    <!-- Filtres -->
     <div class="hist-filters">
       <span class="hist-filter-lbl">N° Avis</span>
       <input id="hq_avis" placeholder="ex: 12, PA3..." oninput="renderHistorique()">
@@ -1119,7 +1124,6 @@ th[data-col="repL"], td[data-col="repL"] {
       </select>
       <span class="hist-count-pill" id="histCount">0 entrée</span>
     </div>
-    <!-- Tableau -->
     <div class="hist-scroll">
       <div id="histEmpty" class="hist-empty" style="display:none;">
         <div class="hist-empty-ico">📭</div>
@@ -1139,7 +1143,6 @@ th[data-col="repL"], td[data-col="repL"] {
         <tbody id="histBody"></tbody>
       </table>
     </div>
-    <!-- Footer -->
     <div class="hist-ftr">
       <button class="hist-del-btn" onclick="clearHistorique()" id="histDelBtn">🗑 Effacer l'historique</button>
       <div style="flex:1;"></div>
@@ -1149,8 +1152,6 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-
-<!-- FILTRES MOBILE MODAL -->
 <div class="modal-overlay" id="mobileFiltersModal">
   <div class="modal" style="width:95vw;max-width:420px;max-height:88vh;display:flex;flex-direction:column;">
     <div class="modal-hdr" style="background:var(--g800);color:white;">
@@ -1158,8 +1159,6 @@ th[data-col="repL"], td[data-col="repL"] {
       <button class="tb-btn" onclick="closeMobileFilters()" style="color:white;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);">×</button>
     </div>
     <div style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:14px;">
-
-      <!-- Recherche texte -->
       <div class="mf-section">
         <div class="mf-section-title">Recherche</div>
         <div style="display:flex;flex-direction:column;gap:8px;">
@@ -1170,8 +1169,6 @@ th[data-col="repL"], td[data-col="repL"] {
           <div class="mf-field"><span class="mf-lbl">Documents</span><input class="mf-inp" id="mf_docs" placeholder="mot clé..." oninput="syncMobileFilter('docs')"></div>
         </div>
       </div>
-
-      <!-- Statut suivi -->
       <div class="mf-section">
         <div class="mf-section-title">Statut de suivi</div>
         <div class="mf-checks">
@@ -1182,8 +1179,6 @@ th[data-col="repL"], td[data-col="repL"] {
           <label class="mf-check-lbl"><input type="checkbox" id="mf_pa" onchange="syncMobileFilterCheck('fPA','mf_pa')"><span class="mf-check-tag pa">🟡 PA</span></label>
         </div>
       </div>
-
-      <!-- Dispositions (F/S/D/PM/SO) -->
       <div class="mf-section">
         <div class="mf-section-title">Type de disposition</div>
         <div class="mf-checks">
@@ -1194,7 +1189,6 @@ th[data-col="repL"], td[data-col="repL"] {
           <label class="mf-check-lbl"><input type="checkbox" id="mf_SO" onchange="syncMobileFilterCheck('qs_SO','mf_SO')"><span class="mf-check-tag disp">SO</span></label>
         </div>
       </div>
-
     </div>
     <div class="modal-ftr" style="gap:8px;">
       <button class="tb-btn" onclick="resetMobileFilters()" style="color:var(--red);border-color:var(--red);">✕ Réinitialiser</button>
@@ -1205,12 +1199,10 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-<!-- STATS MODAL -->
 <div class="modal-overlay" id="statsModal">
   <div class="modal" style="width:520px;"><div class="modal-hdr">Statistiques<button class="tb-btn" onclick="closeStatsModal()">×</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div>
 </div>
 
-<!-- ADD MODAL -->
 <div class="modal-overlay" id="addModal">
   <div class="modal"><div class="modal-hdr">Nouvel avis<button class="tb-btn" onclick="closeAddModal()">×</button></div>
     <div class="modal-body">
@@ -1226,7 +1218,6 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-<!-- IMPORT MODAL -->
 <div class="modal-overlay" id="importModal">
   <div class="modal" style="width:450px;"><div class="modal-hdr">Importer un fichier Excel<button class="tb-btn" onclick="closeImportModal()">×</button></div>
     <div class="modal-body"><div class="dropzone" id="importDropzone" onclick="document.getElementById('fileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)"><div id="importStatus"></div></div>
@@ -1234,7 +1225,6 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-<!-- ACTUALISER MODAL -->
 <div class="modal-overlay" id="actualiserModal">
   <div class="modal" style="width:450px;"><div class="modal-hdr">Actualiser les données<button class="tb-btn" onclick="closeActualiserModal()">×</button></div>
     <div class="modal-body"><div class="dropzone" id="actualiserDropzone" onclick="document.getElementById('actualiserFileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)"><div id="actualiserStatus"></div></div>
@@ -1242,7 +1232,6 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-<!-- MODAL MIGRATION -->
 <div class="modal-overlay" id="migrationModal">
   <div class="modal" style="width:450px;">
     <div class="modal-hdr">Migration<button class="tb-btn" onclick="closeMigrationModal()">×</button></div>
@@ -1255,7 +1244,6 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-<!-- MODAL GESTION DES COLONNES -->
 <div class="modal-overlay" id="colModal">
   <div class="modal" style="width:400px;">
     <div class="modal-hdr">Colonnes affichées<button class="tb-btn" onclick="closeColModal()">✕</button></div>
@@ -1273,6 +1261,9 @@ th[data-col="repL"], td[data-col="repL"] {
 const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
 // ============================================================
 //  RAPSOSYNTHÈSE - VERSION FINALE AVEC PANEL MOBILE CORRIGÉ
+//  - Filtres Intervenants/Lots visibles dans toolbar mobile
+//  - Boutons Filtre et +PA dans le header du panel mobile
+//  - Panel latéral qui s'affiche directement
 // ============================================================
 
 // --- Thème ---
@@ -1297,12 +1288,10 @@ let selectedLots = new Set();
 
 function cleanIntervenant(inter){if(!inter)return'';const at=inter.indexOf('@');return at>0?inter.substring(0,at).trim():inter;}
 
-// ---------- FONCTION POUR LOTS (CHAÎNE COMPLÈTE) ----------
 function getLotsArray(r) {
     const val = r.lots ? r.lots.trim() : '';
     return val ? [val] : [];
 }
-// ---------------------------------------------------------
 
 // --- Persistance & sync ---
 function persistLocal(){
@@ -1365,8 +1354,6 @@ window.addEventListener('message', function(e) {
   if(dos && window.RAPSO_DOSSIER) dos.value = window.RAPSO_DOSSIER;
   applyFilters();
 },0);})();
-
-
 
 // ══════════════════ FILTRES MOBILE ══════════════════
 function openMobileFilters() {
@@ -1563,7 +1550,6 @@ function exportHistorique() {
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
 
-// --- Construction multi-select ---
 function buildMfSelectOptions() {
   const rows = getRows();
   const intervenants = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v => v && v !== ''))];
@@ -1709,14 +1695,12 @@ function closePanel(){
   document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
 }
 
-// Gestion du clic sur l'overlay pour fermer
 document.getElementById('overlay').addEventListener('click', function(e) {
   if (e.target === this) {
     closePanel();
   }
 });
 
-// Gestion du swipe pour fermer sur mobile
 let touchStartX = 0;
 document.getElementById('editPanel').addEventListener('touchstart', function(e) {
   touchStartX = e.touches[0].clientX;
@@ -1730,7 +1714,6 @@ document.getElementById('editPanel').addEventListener('touchmove', function(e) {
   }
 }, { passive: true });
 
-// Ajustement responsive
 window.addEventListener('resize', function() {
   const isMobile = window.innerWidth <= 640;
   const panel = ge('editPanel');
