@@ -662,9 +662,8 @@ th[data-col="repL"], td[data-col="repL"] {
       -webkit-overflow-scrolling: touch;
     }
     
-    /* Garder les filtres Intervenants et Lots visibles en mobile */
-    .mf-select { display: inline-block !important; }
-    .mf-select-button { font-size: 0.65rem !important; padding: 3px 16px 3px 6px !important; }
+    /* Cacher les filtres Intervenants et Lots de la toolbar */
+    .mf-select { display: none !important; }
     
     /* Cacher les filtres texte */
     .quick-search { display: none !important; }
@@ -673,7 +672,7 @@ th[data-col="repL"], td[data-col="repL"] {
     /* Cacher les checkboxes de suivi */
     label[style*="display:flex"] { display: none !important; }
 
-    /* Garder boutons essentiels */
+    /* Garder boutons essentiels : ✕ reset, + Ajouter, Filtres, ☰ */
     .toolbar > button:not(#actionsBtn):not([onclick*="openAddModal"]):not(#tbFiltersBtn):not([onclick*="resetFilters"]) {
       display: none !important;
     }
@@ -794,7 +793,6 @@ th[data-col="repL"], td[data-col="repL"] {
 
     .tbl-wrap { font-size: 0.72rem; }
 
-    /* Assurer que le bouton × reste visible */
     .panel-hdr button:last-child { 
       flex-shrink: 0 !important; 
     }
@@ -1260,10 +1258,7 @@ th[data-col="repL"], td[data-col="repL"] {
 <script>
 const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
 // ============================================================
-//  RAPSOSYNTHÈSE - VERSION FINALE AVEC PANEL MOBILE CORRIGÉ
-//  - Filtres Intervenants/Lots visibles dans toolbar mobile
-//  - Boutons Filtre et +PA dans le header du panel mobile
-//  - Panel latéral qui s'affiche directement
+//  RAPSOSYNTHÈSE - CORRECTION FILTRES MOBILE + BOUTON +PA DANS PANEL
 // ============================================================
 
 // --- Thème ---
