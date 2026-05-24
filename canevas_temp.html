@@ -646,6 +646,109 @@ th[data-col="repL"], td[data-col="repL"] {
   }
   .hist-del-btn:hover { background: #fee2e2; border-color: #ef4444; }
   /* ══════════════════════════════════════════════════════════ */
+
+  /* ═══════════════════════ MOBILE ≤ 640px ═══════════════════════ */
+  @media (max-width: 640px) {
+
+    /* ── Toolbar ── */
+    .toolbar {
+      padding: 6px 8px;
+      gap: 6px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    /* Cacher les filtres texte dans la toolbar — déplacés dans modal */
+    .quick-search,
+    .qs-checks,
+    label[style*="display:flex"] { display: none !important; }
+    /* Cacher les filtres suivi de la toolbar */
+    .mf-select { display: none !important; }
+
+    /* Garder boutons essentiels : ✕ reset, + Ajouter, +PA, Filtres, ☰ */
+    .toolbar > button:not(#actionsBtn):not([onclick*="openAddModal"]):not([onclick*="openPAModal"]):not(#tbFiltersBtn):not([onclick*="resetFilters"]) {
+      display: none !important;
+    }
+    /* Label "MENU" caché, garder ☰ seul */
+    .tb-menu-label { display: none; }
+    #actionsBtn { display: flex !important; padding: 5px 8px; }
+
+    /* Bouton filtres mobile visible uniquement en mobile */
+    .tb-mobile-only { display: flex !important; }
+
+    /* ── Panel latéral → plein écran ── */
+    .edit-panel {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100vw !important;
+      left: 0 !important;
+      border-radius: 0 !important;
+    }
+    /* Cacher le handle de redimensionnement */
+    .ep-rh { display: none !important; }
+
+    /* ── Panel header : cacher Pré/Suivant ── */
+    .panel-nav-desktop { display: none !important; }
+
+    /* ── Panel footer : afficher Pré/Suivant mobile ── */
+    .panel-nav-mobile { display: flex !important; gap: 4px; }
+    .panel-ftr {
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 12px;
+    }
+    .panel-ftr .tb-btn {
+      flex: 1;
+      min-width: 70px;
+      justify-content: center;
+      text-align: center;
+    }
+    .panel-ftr .tb-btn.green { flex: 2; }
+
+    /* ── Overlay ── */
+    .overlay { display: block !important; }
+
+    /* ── Tableau principal ── */
+    .tbl-wrap { font-size: 0.72rem; }
+
+  }
+
+  /* Desktop : cacher éléments mobile-only */
+  @media (min-width: 641px) {
+    .tb-mobile-only { display: none !important; }
+    .panel-nav-mobile { display: none !important; }
+    .panel-nav-desktop { display: inline-flex !important; }
+  }
+
+  /* ── CSS modal filtres mobile ── */
+  .mf-section { display: flex; flex-direction: column; gap: 8px; }
+  .mf-section-title {
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .07em; color: var(--g500);
+    padding-bottom: 4px; border-bottom: 1px solid var(--g200);
+  }
+  .mf-field { display: flex; align-items: center; gap: 8px; }
+  .mf-lbl { font-size: 0.72rem; color: var(--g600); width: 90px; flex-shrink: 0; }
+  .mf-inp {
+    flex: 1; border: 1px solid var(--g300); padding: 6px 9px;
+    font-family: var(--font); font-size: 0.76rem; outline: none;
+    background: white; color: var(--g800);
+  }
+  .mf-inp:focus { border-color: var(--blue); }
+  .mf-checks { display: flex; flex-wrap: wrap; gap: 8px; }
+  .mf-check-lbl { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .mf-check-lbl input { accent-color: var(--blue); width: 16px; height: 16px; }
+  .mf-check-tag {
+    padding: 3px 10px; font-size: 0.72rem; font-weight: 600;
+    border: 1px solid transparent;
+  }
+  .mf-check-tag.lev { background:#f0fdf4; color:#15803d; border-color:#86efac; }
+  .mf-check-tag.par { background:#fffbeb; color:#92400e; border-color:#fde68a; }
+  .mf-check-tag.non { background:#fef2f2; color:#b91c1c; border-color:#fca5a5; }
+  .mf-check-tag.rd6 { background:#f5f3ff; color:#6d28d9; border-color:#ddd6fe; }
+  .mf-check-tag.pa  { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
+  .mf-check-tag.disp{ background:var(--g100); color:var(--g700); border-color:var(--g300); }
+  /* ═══════════════════════════════════════════════════════════════ */
 </style>
 </head>
 <body>
@@ -717,13 +820,14 @@ th[data-col="repL"], td[data-col="repL"] {
   <button class="tb-btn" onclick="resetFilters()" title="Réinitialiser les filtres">✕</button>
   <div style="flex:1;"></div>
   <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
+  <button class="tb-btn tb-mobile-only" id="tbFiltersBtn" onclick="openMobileFilters()" title="Filtres">⚙ Filtres</button>
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
   <button class="tb-btn" onclick="openHistorique()" title="Historique des modifications">📋 Historique</button>
   <button class="tb-btn" onclick="openInfoModal()" title="Infos">ⓘ</button>
   <div class="actions-dropdown">
-    <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()" style="display:none;"> ☰ MENU ▾</button>
+    <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()"><span class="tb-menu-label"> ☰ MENU</span> <span class="tb-menu-arrow">▾</span></button>
     <div class="actions-menu" id="actionsMenu">
       <button onclick="openActualiserModal(); closeActionsMenu();">⟳ Mettre à jour</button>
       <button onclick="if(checkPasswordBeforeImport()) openImportModal(); closeActionsMenu();">↺ Rénitialiser le canevas</button>
@@ -758,8 +862,8 @@ th[data-col="repL"], td[data-col="repL"] {
   <div class="panel-hdr">
     <span class="title" id="panelTitle">Avis n°: —</span>
     <span style="font-family:var(--mono);font-size:0.7rem;" id="panelNum">—</span>
-    <button class="tb-btn" onclick="navRow(-1)">Pré ↑</button>
-    <button class="tb-btn" onclick="navRow(1)">↓ Sui</button>
+    <button class="tb-btn panel-nav-desktop" onclick="navRow(-1)">Pré ↑</button>
+    <button class="tb-btn panel-nav-desktop" onclick="navRow(1)">↓ Sui</button>
     <button class="tb-btn" onclick="closePanel()">×</button>
   </div>
   <div class="panel-body">
@@ -786,7 +890,11 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
   <div class="panel-ftr">
     <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
-    <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Supprimer</button>
+    <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Sup</button>
+    <div class="panel-nav-mobile">
+      <button class="tb-btn" onclick="navRow(-1)" title="Précédent">↑ Préc</button>
+      <button class="tb-btn" onclick="navRow(1)" title="Suivant">Suiv ↓</button>
+    </div>
     <button class="tb-btn" onclick="closePanel()">Annuler</button>
     <span class="save-feedback" id="saveFeedback">✓ Enregistré !</span>
   </div>
@@ -959,6 +1067,62 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
+
+<!-- FILTRES MOBILE MODAL -->
+<div class="modal-overlay" id="mobileFiltersModal">
+  <div class="modal" style="width:95vw;max-width:420px;max-height:88vh;display:flex;flex-direction:column;">
+    <div class="modal-hdr" style="background:var(--g800);color:white;">
+      <span style="font-weight:700;font-size:0.9rem;">⚙ Filtres</span>
+      <button class="tb-btn" onclick="closeMobileFilters()" style="color:white;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);">×</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:14px;">
+
+      <!-- Recherche texte -->
+      <div class="mf-section">
+        <div class="mf-section-title">Recherche</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="mf-field"><span class="mf-lbl">N° Avis</span><input class="mf-inp" id="mf_num" placeholder="ex: 12, PA3..." oninput="syncMobileFilter('num')"></div>
+          <div class="mf-field"><span class="mf-lbl">Date</span><input class="mf-inp" id="mf_date" placeholder="jj/mm/aaaa" oninput="syncMobileFilter('date')"></div>
+          <div class="mf-field"><span class="mf-lbl">Dispositions</span><input class="mf-inp" id="mf_disp" placeholder="mot clé..." oninput="syncMobileFilter('disp')"></div>
+          <div class="mf-field"><span class="mf-lbl">Observations</span><input class="mf-inp" id="mf_obs" placeholder="mot clé..." oninput="syncMobileFilter('obs')"></div>
+          <div class="mf-field"><span class="mf-lbl">Documents</span><input class="mf-inp" id="mf_docs" placeholder="mot clé..." oninput="syncMobileFilter('docs')"></div>
+        </div>
+      </div>
+
+      <!-- Statut suivi -->
+      <div class="mf-section">
+        <div class="mf-section-title">Statut de suivi</div>
+        <div class="mf-checks">
+          <label class="mf-check-lbl"><input type="checkbox" id="mf_oui" onchange="syncMobileFilterCheck('fOui','mf_oui')"><span class="mf-check-tag lev">✅ Levé</span></label>
+          <label class="mf-check-lbl"><input type="checkbox" id="mf_par" onchange="syncMobileFilterCheck('fPar','mf_par')"><span class="mf-check-tag par">⚠ Partiel</span></label>
+          <label class="mf-check-lbl"><input type="checkbox" id="mf_non" onchange="syncMobileFilterCheck('fNon','mf_non')"><span class="mf-check-tag non">❌ Maintenu</span></label>
+          <label class="mf-check-lbl"><input type="checkbox" id="mf_rd6" onchange="syncMobileFilterCheck('fRd6','mf_rd6')"><span class="mf-check-tag rd6">🟣 RD6</span></label>
+          <label class="mf-check-lbl"><input type="checkbox" id="mf_pa" onchange="syncMobileFilterCheck('fPA','mf_pa')"><span class="mf-check-tag pa">🟡 PA</span></label>
+        </div>
+      </div>
+
+      <!-- Dispositions (F/S/D/PM/SO) -->
+      <div class="mf-section">
+        <div class="mf-section-title">Type de disposition</div>
+        <div class="mf-checks">
+          <label class="mf-check-lbl"><input type="checkbox" id="mf_F" onchange="syncMobileFilterCheck('qs_F','mf_F')"><span class="mf-check-tag disp">F</span></label>
+          <label class="mf-check-lbl"><input type="checkbox" id="mf_S" onchange="syncMobileFilterCheck('qs_S','mf_S')"><span class="mf-check-tag disp">S</span></label>
+          <label class="mf-check-lbl"><input type="checkbox" id="mf_D" onchange="syncMobileFilterCheck('qs_D','mf_D')"><span class="mf-check-tag disp">D</span></label>
+          <label class="mf-check-lbl"><input type="checkbox" id="mf_PM" onchange="syncMobileFilterCheck('qs_PM','mf_PM')"><span class="mf-check-tag disp">PM</span></label>
+          <label class="mf-check-lbl"><input type="checkbox" id="mf_SO" onchange="syncMobileFilterCheck('qs_SO','mf_SO')"><span class="mf-check-tag disp">SO</span></label>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-ftr" style="gap:8px;">
+      <button class="tb-btn" onclick="resetMobileFilters()" style="color:var(--red);border-color:var(--red);">✕ Réinitialiser</button>
+      <div style="flex:1"></div>
+      <span id="mfActiveCount" style="font-size:0.75rem;color:var(--g500);align-self:center;"></span>
+      <button class="tb-btn accent" onclick="closeMobileFilters()">Appliquer</button>
+    </div>
+  </div>
+</div>
+
 <!-- STATS MODAL -->
 <div class="modal-overlay" id="statsModal">
   <div class="modal" style="width:520px;"><div class="modal-hdr">Statistiques<button class="tb-btn" onclick="closeStatsModal()">×</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div>
@@ -1122,6 +1286,58 @@ window.addEventListener('message', function(e) {
 },0);})();
 
 
+
+// ══════════════════ FILTRES MOBILE ══════════════════
+function openMobileFilters() {
+  // Synchroniser les champs du modal avec les filtres actifs
+  ge('mf_num').value  = ge('qs_num')?.value  || '';
+  ge('mf_date').value = ge('qs_date')?.value || '';
+  ge('mf_disp').value = ge('qs_disp')?.value || '';
+  ge('mf_obs').value  = ge('qs_obs')?.value  || '';
+  ge('mf_docs').value = ge('qs_docs')?.value || '';
+  ge('mf_oui').checked = ge('fOui')?.checked || false;
+  ge('mf_par').checked = ge('fPar')?.checked || false;
+  ge('mf_non').checked = ge('fNon')?.checked || false;
+  ge('mf_rd6').checked = ge('fRd6')?.checked || false;
+  ge('mf_pa').checked  = ge('fPA')?.checked  || false;
+  ge('mf_F').checked   = ge('qs_F')?.checked  || false;
+  ge('mf_S').checked   = ge('qs_S')?.checked  || false;
+  ge('mf_D').checked   = ge('qs_D')?.checked  || false;
+  ge('mf_PM').checked  = ge('qs_PM')?.checked || false;
+  ge('mf_SO').checked  = ge('qs_SO')?.checked || false;
+  updateMfCount();
+  ge('mobileFiltersModal').classList.add('open');
+}
+function closeMobileFilters() {
+  ge('mobileFiltersModal').classList.remove('open');
+}
+function syncMobileFilter(field) {
+  const map = { num:'qs_num', date:'qs_date', disp:'qs_disp', obs:'qs_obs', docs:'qs_docs' };
+  const tb = ge(map[field]);
+  if(tb) { tb.value = ge('mf_'+field).value; applyFilters(); }
+  updateMfCount();
+}
+function syncMobileFilterCheck(tbId, mfId) {
+  const tb = ge(tbId);
+  if(tb) { tb.checked = ge(mfId).checked; applyFilters(); }
+  updateMfCount();
+}
+function resetMobileFilters() {
+  ['mf_num','mf_date','mf_disp','mf_obs','mf_docs'].forEach(id => { ge(id).value = ''; });
+  ['mf_oui','mf_par','mf_non','mf_rd6','mf_pa','mf_F','mf_S','mf_D','mf_PM','mf_SO']
+    .forEach(id => { ge(id).checked = false; });
+  resetFilters();
+  updateMfCount();
+}
+function updateMfCount() {
+  let n = 0;
+  ['mf_num','mf_date','mf_disp','mf_obs','mf_docs'].forEach(id => { if(ge(id)?.value) n++; });
+  ['mf_oui','mf_par','mf_non','mf_rd6','mf_pa','mf_F','mf_S','mf_D','mf_PM','mf_SO']
+    .forEach(id => { if(ge(id)?.checked) n++; });
+  const el = ge('mfActiveCount');
+  if(el) el.textContent = n > 0 ? `${n} filtre${n>1?'s':''} actif${n>1?'s':''}` : '';
+}
+// ═════════════════════════════════════════════════════
 // ======================= HISTORIQUE DES MODIFICATIONS =======================
 const HIST_CLEAR_PWD = 'RAPSOADMIN';
 
