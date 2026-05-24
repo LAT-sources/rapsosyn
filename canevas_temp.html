@@ -249,7 +249,7 @@
   /* MODALS */
   .modal-overlay {
     display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
-    z-index: 900; align-items: center; justify-content: center;
+    z-index: 10000; align-items: center; justify-content: center;
   }
   .modal-overlay.open { display: flex; }
   .modal {
@@ -686,7 +686,7 @@ th[data-col="repL"], td[data-col="repL"] {
     /* Bouton filtres mobile */
     .tb-mobile-only { display: inline-flex !important; }
 
-    /* ── Panel latéral → plein écran ── */
+    /* ── Panel latéral → plein écran immédiat ── */
     .edit-panel {
       position: fixed !important;
       top: 0 !important;
@@ -697,17 +697,18 @@ th[data-col="repL"], td[data-col="repL"] {
       min-width: 0 !important;
       max-width: 100vw !important;
       height: 100dvh !important;
-      z-index: 9999 !important;
-      transform: translateY(100%) !important;
-      transition: transform 0.25s ease !important;
+      z-index: 1000 !important;
+      transform: none !important;
+      transition: none !important;
+      display: none !important;
     }
     .edit-panel.open {
-      transform: translateY(0) !important;
+      display: flex !important;
     }
     /* Cacher le handle redimensionnement */
     .ep-rh { display: none !important; }
-    /* Overlay plein écran sous le panel */
-    .overlay { z-index: 9998 !important; }
+    /* Overlay sous le panel */
+    .overlay { z-index: 999 !important; }
 
     /* ── Panel header mobile ── */
     .panel-nav-desktop { display: none !important; }
@@ -805,6 +806,43 @@ th[data-col="repL"], td[data-col="repL"] {
   .panel-hdr-mobile { display: none; }
   @media (max-width: 640px) {
     .panel-hdr-mobile { display: inline-flex !important; }
+  }
+
+  /* Dropdown intervenants/lots affiché inline dans le modal filtres mobile */
+  .mf-select-inline {
+    position: static !important;
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-height: 130px;
+    overflow-y: auto;
+    padding: 4px 0;
+    background: none;
+    box-shadow: none;
+    border: none;
+    min-width: 0;
+  }
+  .mf-select-inline label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border: 1px solid var(--g300);
+    background: white;
+    cursor: pointer;
+    font-size: 0.73rem;
+    color: var(--g700);
+    transition: all .12s;
+    user-select: none;
+  }
+  .mf-select-inline label:has(input:checked) {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+    font-weight: 600;
+  }
+  .mf-select-inline input[type="checkbox"] {
+    display: none;
   }
 </style>
 </head>
@@ -1175,16 +1213,16 @@ th[data-col="repL"], td[data-col="repL"] {
         </div>
       </div>
 
-      <!-- Intervenants -->
+      <!-- Intervenants : réutilise le vrai dropdown desktop -->
       <div class="mf-section">
-        <div class="mf-section-title">👷 Intervenants</div>
-        <div class="mf-tag-list" id="mfInterList"></div>
+        <div class="mf-section-title">👷 Intervenants <span id="mfInterCountM" style="font-weight:400;color:var(--blue);"></span></div>
+        <div class="mf-select-dropdown mf-select-inline" id="mfInterDropdownM"></div>
       </div>
 
-      <!-- Lots -->
+      <!-- Lots : réutilise le vrai dropdown desktop -->
       <div class="mf-section">
-        <div class="mf-section-title">📦 Lots</div>
-        <div class="mf-tag-list" id="mfLotList"></div>
+        <div class="mf-section-title">📦 Lots <span id="mfLotCountM" style="font-weight:400;color:var(--blue);"></span></div>
+        <div class="mf-select-dropdown mf-select-inline" id="mfLotDropdownM"></div>
       </div>
 
     </div>
@@ -1359,31 +1397,74 @@ window.addEventListener('message', function(e) {
 
 
 // ══════════════════ FILTRES MOBILE ══════════════════
-function buildMfInterList() {
-  const allInter = [...new Set(getRows().map(r=>r.inter||'').filter(Boolean))].sort();
-  const list = ge('mfInterList'); if(!list) return;
-  list.innerHTML = allInter.length ? allInter.map(v => {
-    const active = selectedIntervenants.has(v);
-    return `<span class="mf-tag${active?' active':''}" onclick="mfToggleInter('${escapeHtml(v)}')">${escapeHtml(v)}</span>`;
-  }).join('') : '<span style="color:var(--g400);font-size:0.72rem;">Aucun intervenant</span>';
+function buildMfModalDropdowns() {
+  // Clone le contenu des dropdowns desktop dans les versions inline du modal
+  const srcInter = ge('mfInterDropdown');
+  const dstInter = ge('mfInterDropdownM');
+  if(srcInter && dstInter) {
+    // Reconstruire depuis buildMfSelectOptions (déjà appelé dans applyFilters)
+    dstInter.innerHTML = srcInter.innerHTML;
+    // Rebrancher les événements (les clones perdent les handlers inline)
+    dstInter.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.onchange = function() {
+        // Synchroniser avec le dropdown desktop
+        const orig = srcInter.querySelector(`input[data-inter="${CSS.escape(this.getAttribute('data-inter'))}"]`);
+        if(orig) { orig.checked = this.checked; orig.onchange && orig.onchange.call(orig); }
+        else { toggleMultiFilter('inter', this.getAttribute('data-inter'), this.checked); }
+        dstInter.innerHTML = srcInter.innerHTML;
+        rebindMfModal();
+        updateMfCount();
+      };
+    });
+    const n = selectedIntervenants.size;
+    const cnt = ge('mfInterCountM');
+    if(cnt) cnt.textContent = n > 0 ? `(${n} sélectionné${n>1?'s':''})` : '';
+  }
+  const srcLot = ge('mfLotDropdown');
+  const dstLot = ge('mfLotDropdownM');
+  if(srcLot && dstLot) {
+    dstLot.innerHTML = srcLot.innerHTML;
+    dstLot.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.onchange = function() {
+        const orig = srcLot.querySelector(`input[value="${CSS.escape(this.value)}"]`);
+        if(orig) { orig.checked = this.checked; orig.onchange && orig.onchange.call(orig); }
+        else { toggleMultiFilter('lot', this.value, this.checked); }
+        dstLot.innerHTML = srcLot.innerHTML;
+        rebindMfModal();
+        updateMfCount();
+      };
+    });
+    const n = selectedLots.size;
+    const cnt = ge('mfLotCountM');
+    if(cnt) cnt.textContent = n > 0 ? `(${n} sélectionné${n>1?'s':''})` : '';
+  }
 }
-function buildMfLotList() {
-  const allLots = [...new Set(getRows().flatMap(r=>(r.lots||r.lot||'').split(/[,;\/]/).map(x=>x.trim())).filter(Boolean))].sort();
-  const list = ge('mfLotList'); if(!list) return;
-  list.innerHTML = allLots.length ? allLots.map(v => {
-    const active = selectedLots.has(v);
-    return `<span class="mf-tag${active?' active':''}" onclick="mfToggleLot('${escapeHtml(v)}')">${escapeHtml(v)}</span>`;
-  }).join('') : '<span style="color:var(--g400);font-size:0.72rem;">Aucun lot</span>';
-}
-function mfToggleInter(v) {
-  if(selectedIntervenants.has(v)) selectedIntervenants.delete(v);
-  else selectedIntervenants.add(v);
-  applyFilters(); buildMfInterList(); updateMfCount();
-}
-function mfToggleLot(v) {
-  if(selectedLots.has(v)) selectedLots.delete(v);
-  else selectedLots.add(v);
-  applyFilters(); buildMfLotList(); updateMfCount();
+function rebindMfModal() {
+  // Relie les handlers après reconstruction du HTML
+  const srcInter = ge('mfInterDropdown');
+  const dstInter = ge('mfInterDropdownM');
+  if(srcInter && dstInter) {
+    dstInter.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.onchange = function() {
+        const orig = srcInter.querySelector(`input[data-inter="${this.getAttribute('data-inter')}"]`);
+        if(orig) { orig.checked = this.checked; orig.onchange && orig.onchange.call(orig); }
+        else toggleMultiFilter('inter', this.getAttribute('data-inter'), this.checked);
+        buildMfModalDropdowns(); updateMfCount();
+      };
+    });
+  }
+  const srcLot = ge('mfLotDropdown');
+  const dstLot = ge('mfLotDropdownM');
+  if(srcLot && dstLot) {
+    dstLot.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.onchange = function() {
+        const orig = srcLot.querySelector(`input[value="${this.value}"]`);
+        if(orig) { orig.checked = this.checked; orig.onchange && orig.onchange.call(orig); }
+        else toggleMultiFilter('lot', this.value, this.checked);
+        buildMfModalDropdowns(); updateMfCount();
+      };
+    });
+  }
 }
 function openMobileFilters() {
   ge('mf_num').value   = ge('qs_num')?.value  || '';
@@ -1401,8 +1482,8 @@ function openMobileFilters() {
   ge('mf_D').checked   = ge('qs_D')?.checked  || false;
   ge('mf_PM').checked  = ge('qs_PM')?.checked || false;
   ge('mf_SO').checked  = ge('qs_SO')?.checked || false;
-  buildMfInterList();
-  buildMfLotList();
+  buildMfSelectOptions();   // assure que les dropdowns desktop sont à jour
+  buildMfModalDropdowns();  // clone dans le modal mobile
   updateMfCount();
   ge('mobileFiltersModal').classList.add('open');
 }
@@ -1439,6 +1520,11 @@ function updateMfCount() {
     el.textContent = n > 0 ? `${n}` : '';
     el.style.display = n > 0 ? 'inline' : 'none';
   }
+  // Mettre à jour les compteurs dans les titres
+  const ci = ge('mfInterCountM');
+  if(ci) ci.textContent = selectedIntervenants.size > 0 ? `(${selectedIntervenants.size})` : '';
+  const cl = ge('mfLotCountM');
+  if(cl) cl.textContent = selectedLots.size > 0 ? `(${selectedLots.size})` : '';
 }
 // ═════════════════════════════════════════════════════
 // ======================= HISTORIQUE DES MODIFICATIONS =======================
