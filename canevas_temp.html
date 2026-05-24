@@ -53,6 +53,7 @@
     padding: 4px 10px; border: 1px solid var(--g300);
     background: white; color: var(--g700); font-family: var(--font); font-size: 0.73rem;
     font-weight: 500; cursor: pointer; transition: background 0.1s, color 0.1s; white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center;
   }
   .tb-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-ll); }
   .tb-btn.active { background: var(--blue); border-color: var(--blue); color: white; }
@@ -474,7 +475,6 @@
       text-overflow: unset !important;
       color: #1e293b !important;
     }
-    /* Largeurs colonnes A3 paysage basées sur COL_DEF (somme px = 1426) */
     th:nth-child(1), td:nth-child(1) { width: 14mm !important; min-width: 14mm; }
     th:nth-child(2), td:nth-child(2) { width: 14mm !important; min-width: 14mm; }
     th:nth-child(3), td:nth-child(3) { width: 28mm !important; min-width: 28mm; }
@@ -645,10 +645,10 @@ th[data-col="repL"], td[data-col="repL"] {
     font-weight: 600; cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 5px;
   }
   .hist-del-btn:hover { background: #fee2e2; border-color: #ef4444; }
-  /* ══════════════════════════════════════════════════════════ */
 
   /* Boutons panel header mobile */
   .panel-hdr-mobile-actions { display: none; gap: 4px; align-items: center; }
+  .panel-hdr-mobile-actions .tb-btn { font-size: 0.65rem; padding: 3px 6px; }
 
   /* ═══════════════════════ MOBILE ≤ 640px ═══════════════════════ */
   @media (max-width: 640px) {
@@ -662,8 +662,9 @@ th[data-col="repL"], td[data-col="repL"] {
       -webkit-overflow-scrolling: touch;
     }
     
-    /* Cacher les filtres Intervenants et Lots de la toolbar */
-    .mf-select { display: none !important; }
+    /* Garder les filtres Intervenants et Lots visibles en mobile */
+    .mf-select { display: inline-block !important; }
+    .mf-select-button { font-size: 0.65rem !important; padding: 3px 16px 3px 6px !important; }
     
     /* Cacher les filtres texte */
     .quick-search { display: none !important; }
@@ -672,7 +673,7 @@ th[data-col="repL"], td[data-col="repL"] {
     /* Cacher les checkboxes de suivi */
     label[style*="display:flex"] { display: none !important; }
 
-    /* Garder boutons essentiels : ✕ reset, + Ajouter, Filtres, ☰ */
+    /* Garder boutons essentiels */
     .toolbar > button:not(#actionsBtn):not([onclick*="openAddModal"]):not(#tbFiltersBtn):not([onclick*="resetFilters"]) {
       display: none !important;
     }
@@ -681,8 +682,8 @@ th[data-col="repL"], td[data-col="repL"] {
     button[onclick*="openPAModal"] { display: none !important; }
     
     .tb-menu-label { display: none; }
-    #actionsBtn { display: flex !important; padding: 5px 8px; }
-    .tb-mobile-only { display: flex !important; }
+    #actionsBtn { display: inline-flex !important; padding: 5px 8px; }
+    .tb-mobile-only { display: inline-flex !important; }
 
     /* ── Panel latéral → plein écran ── */
     .edit-panel {
@@ -733,6 +734,7 @@ th[data-col="repL"], td[data-col="repL"] {
       white-space: nowrap !important;
     }
     
+    /* Afficher les boutons mobiles dans le header */
     .panel-hdr-mobile-actions {
       display: flex !important;
     }
@@ -834,12 +836,11 @@ th[data-col="repL"], td[data-col="repL"] {
   .mf-check-tag.rd6 { background:#f5f3ff; color:#6d28d9; border-color:#ddd6fe; }
   .mf-check-tag.pa  { background:#fff7ed; color:#9a3412; border-color:#fed7aa; }
   .mf-check-tag.disp{ background:var(--g100); color:var(--g700); border-color:var(--g300); }
-  /* ═══════════════════════════════════════════════════════════════ */
 </style>
 </head>
 <body>
 
-<!-- EN-TÊTE D'IMPRESSION (visible uniquement à l'impression) -->
+<!-- EN-TÊTE D'IMPRESSION -->
 <div class="print-header" id="printHeader">
   <div class="print-header-top">
     <div>
@@ -895,11 +896,11 @@ th[data-col="repL"], td[data-col="repL"] {
   <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fNon" onchange="applyFilters()">Maintenu</label>
   <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fRd6" onchange="applyFilters()">RD6</label>
   <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPA" onchange="applyFilters()">PA</label>
-  <div class="mf-select">
+  <div class="mf-select" id="mfInterContainer">
     <div class="mf-select-button" onclick="toggleMfSelect('inter')">Intervenants <span id="mfInterCount">(0)</span></div>
     <div class="mf-select-dropdown" id="mfInterDropdown"></div>
   </div>
-  <div class="mf-select">
+  <div class="mf-select" id="mfLotContainer">
     <div class="mf-select-button" onclick="toggleMfSelect('lot')">Lots <span id="mfLotCount">(0)</span></div>
     <div class="mf-select-dropdown" id="mfLotDropdown"></div>
   </div>
@@ -908,7 +909,7 @@ th[data-col="repL"], td[data-col="repL"] {
   <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
   <button class="tb-btn tb-mobile-only" id="tbFiltersBtn" onclick="openMobileFilters()" title="Filtres">⚙ Filtres</button>
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
-  <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
+  <button class="tb-btn accent" id="btnPA" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
   <button class="tb-btn" onclick="openHistorique()" title="Historique des modifications">📋 Historique</button>
   <button class="tb-btn" onclick="openInfoModal()" title="Infos">ⓘ</button>
@@ -952,8 +953,8 @@ th[data-col="repL"], td[data-col="repL"] {
     <button class="tb-btn panel-nav-desktop" onclick="navRow(1)">↓ Sui</button>
     <!-- Actions mobiles dans le header -->
     <div class="panel-hdr-mobile-actions">
-      <button class="tb-btn" onclick="openMobileFilters()" title="Filtres" style="font-size:0.65rem;padding:3px 6px;">⚙</button>
-      <button class="tb-btn accent" onclick="openPAModal()" title="+ PA" style="font-size:0.65rem;padding:3px 6px;">+PA</button>
+      <button class="tb-btn" onclick="openMobileFilters()" title="Filtres">⚙</button>
+      <button class="tb-btn accent" onclick="openPAModal()" title="+ PA">+PA</button>
     </div>
     <button class="tb-btn" onclick="closePanel()">×</button>
   </div>
@@ -991,7 +992,8 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 </div>
 
-<!-- MODALS (identiques à la version précédente, non modifiés) -->
+<!-- MODALS (identiques à la version précédente) -->
+<!-- [Tous les modals restent inchangés] -->
 <div class="modal-overlay" id="infoModal">
   <div class="modal" style="width:400px;">
     <div class="modal-hdr">Informations du dossier<button class="tb-btn" onclick="closeInfoModal()">×</button></div>
@@ -1257,9 +1259,6 @@ th[data-col="repL"], td[data-col="repL"] {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/temp.xlsx';
-// ============================================================
-//  RAPSOSYNTHÈSE - CORRECTION FILTRES MOBILE + BOUTON +PA DANS PANEL
-// ============================================================
 
 // --- Thème ---
 function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem('rapso_theme',document.body.classList.contains('dark')?'dark':'light');}
@@ -1399,7 +1398,7 @@ function updateMfCount() {
   const el = ge('mfActiveCount');
   if(el) el.textContent = n > 0 ? `${n} filtre${n>1?'s':''} actif${n>1?'s':''}` : '';
 }
-// ═════════════════════════════════════════════════════
+
 // ======================= HISTORIQUE DES MODIFICATIONS =======================
 const HIST_CLEAR_PWD = 'RAPSOADMIN';
 
@@ -1540,7 +1539,6 @@ function exportHistorique() {
   a.download = 'historique_rapso_'+(ge('affaireDisplay').innerText||'export').replace(/[^a-zA-Z0-9]/g,'_')+'.csv';
   a.click();
 }
-// ============================================================================
 
 function makeRow(o={}){return{id:o.id||crypto.randomUUID(),num:o.num||'',ref:o.ref||'',date:o.date||'',inter:o.inter||'',disp:o.disp||'',avis:o.avis||'',desc:o.desc||'',obs:o.obs||'',docs:o.docs||'',suivi:o.suivi||'',repK:o.repK||'',repL:o.repL||'',lots:o.lots||'',rd6:o.rd6||false};}
 function getRows(){return data[currentTab];}
@@ -2039,107 +2037,16 @@ function openStatsModal(){
 }
 function closeStatsModal(){ge('statsModal').classList.remove('open');}
 
-// --- Export / Import Excel ---
-async function exportWithExcelJS(){
-  if(typeof ExcelJS==='undefined'){alert('ExcelJS non chargé');return;}
-  try{
-    const response=await fetch(TEMPLATE_URL);if(!response.ok)throw new Error(`HTTP ${response.status}`);
-    const buffer=await response.arrayBuffer();const workbook=new ExcelJS.Workbook();await workbook.xlsx.load(buffer);
-    let worksheet=workbook.getWorksheet('RapsoV2');if(!worksheet){worksheet=workbook.worksheets[0];if(!worksheet)throw new Error('Aucune feuille trouvée.');}
-    const rows=getRows();const affaire=ge('affaireDisplay').innerText.trim()||'Sans nom';const dossier=ge('dossierInput').value.trim()||'';
-    worksheet.getCell('B1').value=`Affaire : ${affaire}`;worksheet.getCell('B2').value=`Dossier : ${dossier}`;
-    const lastRow=worksheet.rowCount;for(let r=4;r<=lastRow;r++){const row=worksheet.getRow(r);for(let c=1;c<=13;c++){const cell=row.getCell(c);if(typeof cell.value!=='object'||!cell.value||!cell.value.formula){cell.value=null;}}}
-    rows.forEach((r,i)=>{const excelRowNum=4+i;const row=worksheet.getRow(excelRowNum);row.getCell(1).value=r.num;row.getCell(2).value=r.ref;row.getCell(3).value=fmtDate(r.date);row.getCell(4).value=cleanIntervenant(r.inter);row.getCell(5).value=r.disp;row.getCell(6).value=r.desc;row.getCell(7).value=r.avis;row.getCell(8).value=r.obs;row.getCell(9).value=r.docs;row.getCell(10).value=r.suivi;row.getCell(11).value=r.repK;row.getCell(12).value=r.repL;row.getCell(13).value=r.lots;});
-    const bufferOut=await workbook.xlsx.writeBuffer();const blob=new Blob([bufferOut],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`Rapso_${affaire.replace(/[\\/:*?"<>|]/g,'_')}.xlsx`;a.click();URL.revokeObjectURL(url);alert('Excel exporté');
-  }catch(err){alert('Erreur: '+err.message);}
-}
+// --- Export / Import Excel (fonctions inchangées) ---
+async function exportWithExcelJS(){if(typeof ExcelJS==='undefined'){alert('ExcelJS non chargé');return;}try{const response=await fetch(TEMPLATE_URL);if(!response.ok)throw new Error(`HTTP ${response.status}`);const buffer=await response.arrayBuffer();const workbook=new ExcelJS.Workbook();await workbook.xlsx.load(buffer);let worksheet=workbook.getWorksheet('RapsoV2');if(!worksheet){worksheet=workbook.worksheets[0];if(!worksheet)throw new Error('Aucune feuille trouvée.');}const rows=getRows();const affaire=ge('affaireDisplay').innerText.trim()||'Sans nom';const dossier=ge('dossierInput').value.trim()||'';worksheet.getCell('B1').value=`Affaire : ${affaire}`;worksheet.getCell('B2').value=`Dossier : ${dossier}`;const lastRow=worksheet.rowCount;for(let r=4;r<=lastRow;r++){const row=worksheet.getRow(r);for(let c=1;c<=13;c++){const cell=row.getCell(c);if(typeof cell.value!=='object'||!cell.value||!cell.value.formula){cell.value=null;}}}rows.forEach((r,i)=>{const excelRowNum=4+i;const row=worksheet.getRow(excelRowNum);row.getCell(1).value=r.num;row.getCell(2).value=r.ref;row.getCell(3).value=fmtDate(r.date);row.getCell(4).value=cleanIntervenant(r.inter);row.getCell(5).value=r.disp;row.getCell(6).value=r.desc;row.getCell(7).value=r.avis;row.getCell(8).value=r.obs;row.getCell(9).value=r.docs;row.getCell(10).value=r.suivi;row.getCell(11).value=r.repK;row.getCell(12).value=r.repL;row.getCell(13).value=r.lots;});const bufferOut=await workbook.xlsx.writeBuffer();const blob=new Blob([bufferOut],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`Rapso_${affaire.replace(/[\\/:*?"<>|]/g,'_')}.xlsx`;a.click();URL.revokeObjectURL(url);alert('Excel exporté');}catch(err){alert('Erreur: '+err.message);}}
 function normalizeDate(d){if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
 function cleanDocs(v){if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
 function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substring(0,p).trim():v.trim();}
 function hasRappel(obs){if(!obs)return false;let s=String(obs);return s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l'observation précédente:")||s.includes("Rappel de l'observation précédente :");}
 function updateParentAffaire(affaire){if(window.parent&&window.parent!==window)window.parent.postMessage({type:'rapso_update_affaire',canId:window.CANEVAS_ID,affaire},'*');}
-function processXLSX(file,mode){
-  const sid=mode==='actualiser'?'actualiserStatus':'importStatus';ge(sid).textContent='Lecture...';
-  if(mode==='actualiser'){const nomFichier=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');if(!confirm(`Mettre à jour « ${nomFichier} » ?`)){ge(sid).textContent='Annulé';return;}}
-  const reader=new FileReader();
-  reader.onload=e=>{
-    try{
-      const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
-      let sheetName=wb.SheetNames.find(n=>n==='Synthèse')||wb.SheetNames.find(n=>n==='RapsoV2')||wb.SheetNames.find(n=>n==='RapsoV1')||wb.SheetNames[0];
-      const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-      const baseName=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');ge('affaireDisplay').innerText=baseName;updateParentAffaire(baseName);
-      const src=[];
-      for(let i=1;i<Math.min(raw.length,500);i++){
-        const row=raw[i];if(!row||row.every(c=>c===''))continue;
-        const nv=String(row[1]||'').trim();const obs=String(row[7]||'');let suivi=hasRappel(obs)?'Oui':'';
-        const lotsValue=(row[12]!==undefined&&row[12]!==null)?String(row[12]).trim():'';
-        src.push(makeRow({num:nv,ref:String(row[0]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),avis:String(row[5]||'').trim(),desc:String(row[6]||'').trim(),obs,docs:cleanDocs(String(row[8]||'').trim()),suivi,repK:'',repL:'',lots:lotsValue,rd6:nv.includes('/RD6')}));
-      }
-      let target=sheetName==='RapsoV1'?'v1':'v2';
-      if(mode==='actualiser'){
-        let ex=data[target];let up=0,add=0;
-        for(const s of src){
-          const k=extractKey(s.num);if(!k)continue;
-          const idx=ex.findIndex(t=>extractKey(t.num)===k);
-          if(idx>=0){
-            const prev=ex[idx];
-            const newRd6 = prev.rd6 || s.num.includes('/RD6');
-            const baseNum = s.num.replace('/RD6','').trim();
-            const newNum  = newRd6 ? (baseNum.includes('/RD6') ? baseNum : baseNum+'/RD6') : baseNum;
-            ex[idx]={
-              ...prev,
-              num:  newNum,
-              ref:  s.ref,
-              date: s.date,
-              inter:s.inter,
-              disp: s.disp,
-              avis: s.avis,
-              desc: s.desc,
-              obs:  s.obs,
-              docs: s.docs,
-              suivi: hasRappel(s.obs) ? 'Oui' : prev.suivi,
-              rd6:   newRd6,
-              repK:  prev.repK,
-              repL:  prev.repL,
-              lots:  prev.lots,
-              id:    prev.id,
-            };
-            up++;
-          }else{ex.push(s);add++;}
-        }
-        ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num),undefined,{numeric:true}));data[target]=ex;currentTab=target;ge(sid).textContent=`✅ ${up} mis à jour, ${add} ajoutés`;
-      }else{if(!confirm(`${src.length} lignes → ${target} ?`)){ge(sid).textContent='Annulé';return;}data[target]=src;currentTab=target;ge(sid).textContent=`✅ ${src.length} avis importés`;}
-      ge('tabV2').classList.toggle('active',target==='v2');ge('tabV1').classList.toggle('active',target==='v1');
-      selectedIntervenants.clear();selectedLots.clear();
-      logAction(mode==='actualiser'?'actualiser':'import','—', (mode==='actualiser'?'Actualisation':'Import')+' Excel : '+src.length+' avis');
-      applyFilters();persistLocal();pushToParent();
-    }catch(err){ge(sid).textContent='❌ '+err.message;}
-  };reader.readAsArrayBuffer(file);
-}
-function checkPasswordBeforeImport() {
-  const motDePasse = "SOCOTEC";
-  let tentative = prompt(
-    "Veuillez saisir le code d'accès pour lancer l'importation.\n\n" +
-    "ATTENTION : Pour une simple mise à jour des données existantes, " +
-    "cliquez sur ANNULER puis sur le bouton 'Actualiser'.",
-    ""
-  );
-  if (tentative === null || tentative === "") return false;
-  if (tentative === motDePasse) return true;
-  else { alert("Mot de passe incorrect."); return false; }
-}
-function checkPasswordBeforeMigration() {
-  const motDePasse = "ALIBABA";
-  let tentative = prompt(
-    "Veuillez saisir le code d'accès pour lancer la migration.\n\n" +
-    "Nota : cette opération est reservée aux administrateurs.",
-    ""
-  );
-  if (tentative === null || tentative === "") return false;
-  if (tentative === motDePasse) return true;
-  else { alert("Mot de passe incorrect."); return false; }
-}  
+function processXLSX(file,mode){const sid=mode==='actualiser'?'actualiserStatus':'importStatus';ge(sid).textContent='Lecture...';if(mode==='actualiser'){const nomFichier=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');if(!confirm(`Mettre à jour « ${nomFichier} » ?`)){ge(sid).textContent='Annulé';return;}}const reader=new FileReader();reader.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});let sheetName=wb.SheetNames.find(n=>n==='Synthèse')||wb.SheetNames.find(n=>n==='RapsoV2')||wb.SheetNames.find(n=>n==='RapsoV1')||wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const baseName=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');ge('affaireDisplay').innerText=baseName;updateParentAffaire(baseName);const src=[];for(let i=1;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;const nv=String(row[1]||'').trim();const obs=String(row[7]||'');let suivi=hasRappel(obs)?'Oui':'';const lotsValue=(row[12]!==undefined&&row[12]!==null)?String(row[12]).trim():'';src.push(makeRow({num:nv,ref:String(row[0]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),avis:String(row[5]||'').trim(),desc:String(row[6]||'').trim(),obs,docs:cleanDocs(String(row[8]||'').trim()),suivi,repK:'',repL:'',lots:lotsValue,rd6:nv.includes('/RD6')}));}let target=sheetName==='RapsoV1'?'v1':'v2';if(mode==='actualiser'){let ex=data[target];let up=0,add=0;for(const s of src){const k=extractKey(s.num);if(!k)continue;const idx=ex.findIndex(t=>extractKey(t.num)===k);if(idx>=0){const prev=ex[idx];const newRd6=prev.rd6||s.num.includes('/RD6');const baseNum=s.num.replace('/RD6','').trim();const newNum=newRd6?(baseNum.includes('/RD6')?baseNum:baseNum+'/RD6'):baseNum;ex[idx]={...prev,num:newNum,ref:s.ref,date:s.date,inter:s.inter,disp:s.disp,avis:s.avis,desc:s.desc,obs:s.obs,docs:s.docs,suivi:hasRappel(s.obs)?'Oui':prev.suivi,rd6:newRd6,repK:prev.repK,repL:prev.repL,lots:prev.lots,id:prev.id};up++;}else{ex.push(s);add++;}}ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num),undefined,{numeric:true}));data[target]=ex;currentTab=target;ge(sid).textContent=`✅ ${up} mis à jour, ${add} ajoutés`;}else{if(!confirm(`${src.length} lignes → ${target} ?`)){ge(sid).textContent='Annulé';return;}data[target]=src;currentTab=target;ge(sid).textContent=`✅ ${src.length} avis importés`;}ge('tabV2').classList.toggle('active',target==='v2');ge('tabV1').classList.toggle('active',target==='v1');selectedIntervenants.clear();selectedLots.clear();logAction(mode==='actualiser'?'actualiser':'import','—',(mode==='actualiser'?'Actualisation':'Import')+' Excel : '+src.length+' avis');applyFilters();persistLocal();pushToParent();}catch(err){ge(sid).textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);}
+function checkPasswordBeforeImport(){const motDePasse="SOCOTEC";let tentative=prompt("Veuillez saisir le code d'accès pour lancer l'importation.\n\nATTENTION : Pour une simple mise à jour des données existantes, cliquez sur ANNULER puis sur le bouton 'Actualiser'.","");if(tentative===null||tentative==="")return false;if(tentative===motDePasse)return true;else{alert("Mot de passe incorrect.");return false;}}
+function checkPasswordBeforeMigration(){const motDePasse="ALIBABA";let tentative=prompt("Veuillez saisir le code d'accès pour lancer la migration.\n\nNota : cette opération est reservée aux administrateurs.","");if(tentative===null||tentative==="")return false;if(tentative===motDePasse)return true;else{alert("Mot de passe incorrect.");return false;}}
 function openImportModal(){ge('importModal').classList.add('open');}
 function closeImportModal(){ge('importModal').classList.remove('open');}
 function openActualiserModal(){ge('actualiserModal').classList.add('open');}
@@ -2149,14 +2056,8 @@ function handleActualiserFileImport(i){if(i.files[0])processXLSX(i.files[0],'act
 ['importDropzone','actualiserDropzone'].forEach(id=>{const dz=ge(id);if(dz){dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='var(--blue)';});dz.addEventListener('dragleave',()=>dz.style.borderColor='');dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f)processXLSX(f,id==='actualiserDropzone'?'actualiser':'import');});}});
 function openMigrationModal(){document.getElementById('migrationModal').classList.add('open');}
 function closeMigrationModal(){document.getElementById('migrationModal').classList.remove('open');}
-function handleMigrationFileImport(input){
-  const file=input.files[0];if(!file)return;const statusEl=document.getElementById('migrationStatus');statusEl.textContent='Lecture...';
-  const reader=new FileReader();
-  reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent='Aucune donnée';return;}if(!confirm(`${src.length} avis → ${currentTab} ?`)){statusEl.textContent='Annulé';return;}data[currentTab]=src;logAction('import','—','Migration Excel : '+src.length+' avis');selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} avis importés`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);
-}
-const migrationDropzone=document.getElementById('migrationDropzone');
-if(migrationDropzone){migrationDropzone.addEventListener('dragover',e=>{e.preventDefault();migrationDropzone.style.borderColor='var(--blue)';});migrationDropzone.addEventListener('dragleave',()=>migrationDropzone.style.borderColor='');migrationDropzone.addEventListener('drop',e=>{e.preventDefault();migrationDropzone.style.borderColor='';const file=e.dataTransfer.files[0];if(file)handleMigrationFileImport({files:[file]});});}
-
+function handleMigrationFileImport(input){const file=input.files[0];if(!file)return;const statusEl=document.getElementById('migrationStatus');statusEl.textContent='Lecture...';const reader=new FileReader();reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent='Aucune donnée';return;}if(!confirm(`${src.length} avis → ${currentTab} ?`)){statusEl.textContent='Annulé';return;}data[currentTab]=src;logAction('import','—','Migration Excel : '+src.length+' avis');selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} avis importés`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);}
+const migrationDropzone=document.getElementById('migrationDropzone');if(migrationDropzone){migrationDropzone.addEventListener('dragover',e=>{e.preventDefault();migrationDropzone.style.borderColor='var(--blue)';});migrationDropzone.addEventListener('dragleave',()=>migrationDropzone.style.borderColor='');migrationDropzone.addEventListener('drop',e=>{e.preventDefault();migrationDropzone.style.borderColor='';const file=e.dataTransfer.files[0];if(file)handleMigrationFileImport({files:[file]});});}
 function exportJSON(){const meta={affaire:ge('affaireDisplay').innerText,dossier:ge('dossierInput').value};const blob=new Blob([JSON.stringify({meta,data},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='rapso_'+(meta.affaire||'data')+'.json';a.click();}
 function loadJSON(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const o=JSON.parse(ev.target.result);if(o.meta){ge('affaireDisplay').innerText=o.meta.affaire||'';ge('dossierInput').value=o.meta.dossier||'';}if(o.data){data.v2=(o.data.v2||[]).map(makeRow);data.v1=(o.data.v1||[]).map(makeRow);}selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();alert('✅');}catch(e){alert('JSON invalide');}};r.readAsText(f);};inp.click();}
 function loadLocal(){if(window.RAPSO_SYNTH_DATA)return;try{const r=localStorage.getItem('rapsotracker');if(!r)return;const o=JSON.parse(r);if(o.meta){ge('affaireDisplay').innerText=o.meta.affaire||'';ge('dossierInput').value=o.meta.dossier||'';}if(o.data){data.v2=(o.data.v2||[]).map(makeRow);data.v1=(o.data.v1||[]).map(makeRow);}applyFilters();}catch(e){}}
