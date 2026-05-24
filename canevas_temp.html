@@ -808,41 +808,36 @@ th[data-col="repL"], td[data-col="repL"] {
     .panel-hdr-mobile { display: inline-flex !important; }
   }
 
-  /* Dropdown intervenants/lots affiché inline dans le modal filtres mobile */
+  /* Dropdown intervenants/lots affiché inline dans le modal filtres mobile
+     → même rendu que .mf-select-dropdown mais toujours visible */
   .mf-select-inline {
     position: static !important;
-    display: flex !important;
-    flex-wrap: wrap;
-    gap: 4px;
-    max-height: 130px;
+    display: block !important;
+    background: white;
+    border: 1px solid var(--g200);
+    max-height: 160px;
     overflow-y: auto;
     padding: 4px 0;
-    background: none;
     box-shadow: none;
-    border: none;
     min-width: 0;
+    width: 100%;
   }
   .mf-select-inline label {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 10px;
-    border: 1px solid var(--g300);
-    background: white;
-    cursor: pointer;
+    gap: 8px;
+    padding: 6px 10px;
     font-size: 0.73rem;
+    cursor: pointer;
+    font-weight: 400;
     color: var(--g700);
-    transition: all .12s;
-    user-select: none;
   }
-  .mf-select-inline label:has(input:checked) {
-    background: var(--blue);
-    border-color: var(--blue);
-    color: white;
-    font-weight: 600;
-  }
+  .mf-select-inline label:hover { background: var(--g100); }
   .mf-select-inline input[type="checkbox"] {
-    display: none;
+    accent-color: var(--blue);
+    width: 14px; height: 14px;
+    flex-shrink: 0;
+    display: inline-block !important;
   }
 </style>
 </head>
