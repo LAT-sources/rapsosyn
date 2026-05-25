@@ -705,13 +705,6 @@ th[data-col="repL"], td[data-col="repL"] {
     .edit-panel.open {
       display: flex !important;
     }
-      /* Panel latéral : rendre les textareas extensibles */
-  .edit-panel textarea {
-    min-height: 50px;          /* hauteur de départ confortable */
-    height: auto;
-    overflow-y: hidden;         /* cache la scrollbar interne, la hauteur s'ajuste */
-    resize: vertical;           /* permet à l’utilisateur d’agrandir manuellement si besoin */
-  }
     /* Cacher le handle redimensionnement */
     .ep-rh { display: none !important; }
     /* Overlay sous le panel */
@@ -946,10 +939,10 @@ th[data-col="repL"], td[data-col="repL"] {
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
-  <button class="tb-btn" onclick="openHistorique()" title="Historique des modifications">🕘</button>
-  <button class="tb-btn" onclick="openInfoModal()" title="Infos">🛈</button>
+  <button class="tb-btn" onclick="openHistorique()" title="Historique des modifications">📋 Historique</button>
+  <button class="tb-btn" onclick="openInfoModal()" title="Infos">ⓘ</button>
   <div class="actions-dropdown">
-    <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()" style="display:none;"><span class="tb-menu-label"> ☰ MENU</span> <span class="tb-menu-arrow">▾</span></button>
+    <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()"><span class="tb-menu-label"> ☰ MENU</span> <span class="tb-menu-arrow">▾</span></button>
     <div class="actions-menu" id="actionsMenu">
       <button onclick="openActualiserModal(); closeActionsMenu();">⟳ Mettre à jour</button>
       <button onclick="if(checkPasswordBeforeImport()) openImportModal(); closeActionsMenu();">↺ Rénitialiser le canevas</button>
@@ -1012,16 +1005,18 @@ th[data-col="repL"], td[data-col="repL"] {
       </div>
     </div>
   </div>
-<div class="panel-ftr">
-  <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
-  <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Sup</button>
-  <button class="tb-btn" onclick="closePanel()">Annuler</button>
-  <div class="panel-nav-mobile">
-    <button class="tb-btn" onclick="navRow(-1)" title="Précédent">↑ Préc</button>
-    <button class="tb-btn" onclick="navRow(1)" title="Suivant">Suiv ↓</button>
+  <div class="panel-ftr">
+    <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
+    <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Sup</button>
+    <div class="panel-nav-mobile">
+      <button class="tb-btn" onclick="navRow(-1)" title="Précédent">↑ Préc</button>
+      <button class="tb-btn" onclick="navRow(1)" title="Suivant">Suiv ↓</button>
+    </div>
+    <button class="tb-btn" onclick="closePanel()">Annuler</button>
+    <span class="save-feedback" id="saveFeedback">✓ Enregistré !</span>
   </div>
-  <span class="save-feedback" id="saveFeedback">✓ Enregistré !</span>
 </div>
+
 <!-- MODAL INFO -->
 <div class="modal-overlay" id="infoModal">
   <div class="modal" style="width:400px;">
@@ -1821,8 +1816,6 @@ function openEditPanel(fi){
   ge('overlay').classList.add('open');ge('editPanel').classList.add('open');
   document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
   const el=ge('row-'+fi);if(el)el.classList.add('row-highlight');
-// --- AJOUTER CES LIGNES ---
-  setupPanelAutoResize();   // attache les resize et ajuste immédiatement
 }
 function closePanel(){ge('overlay').classList.remove('open');ge('editPanel').classList.remove('open');editingIdx=null;}
 function navRow(d){if(editingIdx!==null){let n=editingIdx+d;if(n>=0&&n<filteredRows.length)openEditPanel(n);}}
@@ -2075,26 +2068,6 @@ function rapApply(){
   updateRapButtonsState();
 }
 function updateRapButtonsState(){const oui=ge('rapBtnOui'),par=ge('rapBtnPar'),non=ge('rapBtnNon'),rd6=ge('rapBtnRd6');if(rapCurrent){oui.classList.toggle('active',rapCurrent.suivi==='Oui');par.classList.toggle('active',rapCurrent.suivi==='Par');non.classList.toggle('active',rapCurrent.suivi==='Non');rd6.classList.toggle('active',rapCurrent.rd6===true);}else{oui.classList.remove('active');par.classList.remove('active');non.classList.remove('active');rd6.classList.remove('active');}}
-// Auto‑resize des textareas du panel latéral
-function autoResizeTextarea(ta) {
-  if (!ta) return;
-  ta.style.height = 'auto';
-  ta.style.height = ta.scrollHeight + 'px';
-}
-
-// Appliquer l’auto‑resize sur les deux champs et attacher les écouteurs
-function setupPanelAutoResize() {
-  const repK = document.getElementById('e_repK');
-  const repL = document.getElementById('e_repL');
-  if (repK) {
-    repK.addEventListener('input', () => autoResizeTextarea(repK));
-    autoResizeTextarea(repK);
-  }
-  if (repL) {
-    repL.addEventListener('input', () => autoResizeTextarea(repL));
-    autoResizeTextarea(repL);
-  }
-}
 function rapSelect(i,scroll=true){rapCurrent=rapFiltered[i];document.querySelectorAll('.rapide-item').forEach((el,idx)=>el.classList.toggle('selected',idx===i));if(scroll)document.querySelectorAll('.rapide-item')[i]?.scrollIntoView({block:'nearest'});const r=rapCurrent;ge('rapideObsText').innerHTML=escapeHtml(r.obs)||'—';const editArea=ge('rapideEditArea');editArea.style.display='flex';ge('rq_repK').value=r.repK||'';ge('rq_repL').value=r.repL||'';ge('rq_lots').value=r.lots||'';ge('rapSaveBtn').disabled=false;updateRapButtonsState();}
 function rapToggleSuivi(v){
   if(!rapCurrent)return;
