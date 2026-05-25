@@ -29,39 +29,177 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .screen{position:fixed;inset:0;display:flex;flex-direction:column;}
 .screen.hidden{display:none!important;}
 #scLogin{flex-direction:row;background:#f8fafc;}
-.login-left{width:360px;flex-shrink:0;background:linear-gradient(150deg,#1a56db 0%,#0d9488 100%);position:relative;overflow:hidden;display:flex;flex-direction:column;padding:48px 36px;}
-.ll-deco1{position:absolute;bottom:-80px;right:-80px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.07);}
-.ll-deco2{position:absolute;top:80px;right:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.05);}
-.ll-deco3{position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-opacity='.04'%3E%3Cpath d='M0 20h40M20 0v40'/%3E%3C/g%3E%3C/svg%3E");}
-.ll-logo{display:flex;align-items:center;gap:12px;margin-bottom:auto;position:relative;z-index:1;}
-.ll-logo-icon{width:46px;height:46px;background:white;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.2);}
-.ll-brand{font-size:1.3rem;font-weight:800;color:white;letter-spacing:-.03em;}
-.ll-brand span{opacity:.6;font-weight:400;}
-.ll-tag{position:relative;z-index:1;margin-top:auto;}
-.ll-tag h2{font-size:1.5rem;font-weight:700;color:white;line-height:1.3;margin-bottom:8px;}
-.ll-tag p{font-size:0.83rem;color:rgba(255,255,255,.55);line-height:1.6;}
-.ll-version{position:relative;z-index:1;margin-top:24px;font-size:0.7rem;color:rgba(255,255,255,.3);font-family:var(--mono);}
-.login-right{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;overflow-y:auto;}
-.login-card{width:100%;max-width:400px;animation:fadeUp .4s ease both;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.lc-title{font-size:1.8rem;font-weight:800;color:var(--g900);letter-spacing:-.03em;margin-bottom:4px;}
-.lc-sub{font-size:0.85rem;color:var(--g500);margin-bottom:28px;line-height:1.5;}
-.lf-group{margin-bottom:16px;}
-.lf-label{display:block;font-size:0.78rem;font-weight:600;color:var(--g600);margin-bottom:6px;}
-.lf-input-wrap{position:relative;}
-.lf-input{width:100%;padding:10px 14px;border:1.5px solid var(--g200);border-radius:8px;font-family:var(--font);font-size:0.88rem;color:var(--g800);background:white;outline:none;transition:border-color .15s,box-shadow .15s;}
-.lf-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.1);}
-.lf-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--g400);background:none;border:none;line-height:0;padding:2px;}
-.lf-forgot{font-size:0.78rem;color:var(--blue);margin-top:5px;display:inline-block;cursor:pointer;}
-.lf-forgot:hover{text-decoration:underline;}
-.lf-check{display:flex;align-items:center;gap:7px;font-size:0.84rem;color:var(--g600);margin:16px 0;cursor:pointer;}
-.lf-check input{accent-color:var(--blue);}
-.btn-login{width:100%;padding:12px;border:none;border-radius:8px;background:var(--blue);color:white;font-family:var(--font);font-size:0.93rem;font-weight:700;cursor:pointer;transition:background .15s,transform .1s;margin-bottom:10px;}
-.btn-login:hover{background:var(--blue-d);}
-.btn-login:active{transform:scale(.98);}
-.btn-email{width:100%;padding:11px;border:1.5px solid var(--g200);border-radius:8px;background:white;color:var(--g700);font-family:var(--font);font-size:0.86rem;font-weight:600;cursor:pointer;transition:border-color .15s;}
-.btn-email:hover{border-color:var(--blue);color:var(--blue);}
-.login-err{background:#fee2e2;border:1px solid #fca5a5;border-radius:7px;padding:8px 12px;font-size:0.8rem;color:#dc2626;margin-bottom:12px;display:none;}
+
+/* ══════════ LOGIN CARD DECK ══════════ */
+#scLogin { background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0d9488 100%); overflow: hidden; }
+
+/* Particules de fond */
+.login-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.login-bg span {
+  position: absolute; border-radius: 50%; opacity: .06;
+  animation: float linear infinite;
+}
+@keyframes float {
+  0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+  10%  { opacity: .08; }
+  90%  { opacity: .08; }
+  100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
+/* Conteneur principal */
+.login-wrap {
+  position: relative; z-index: 1;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; gap: 60px;
+}
+
+/* ── Deck de cartes ── */
+.card-deck {
+  position: relative; width: 220px; height: 300px;
+  flex-shrink: 0;
+  perspective: 900px;
+}
+.play-card {
+  position: absolute; width: 140px; height: 196px;
+  border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  backface-visibility: hidden;
+  transform-origin: center bottom;
+  transition: transform .5s cubic-bezier(.34,1.56,.64,1);
+  cursor: default; overflow: hidden;
+}
+/* Dos de carte */
+.play-card .card-back {
+  position: absolute; inset: 0; border-radius: 12px;
+  background: linear-gradient(135deg, #1a56db, #0d9488);
+  display: flex; align-items: center; justify-content: center;
+}
+.card-back-pattern {
+  position: absolute; inset: 6px; border-radius: 8px;
+  border: 1.5px solid rgba(255,255,255,.15);
+  background: repeating-linear-gradient(
+    45deg,
+    transparent, transparent 4px,
+    rgba(255,255,255,.04) 4px, rgba(255,255,255,.04) 8px
+  );
+}
+.card-back-logo {
+  position: relative; z-index: 1;
+  font-size: 1.4rem; font-weight: 800; color: white;
+  letter-spacing: -.03em; text-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+/* Empilage des cartes */
+.play-card:nth-child(1){ transform: rotate(-18deg) translate(-55px, 12px); z-index:1; }
+.play-card:nth-child(2){ transform: rotate(-9deg)  translate(-20px, 5px);  z-index:2; }
+.play-card:nth-child(3){ transform: rotate(0deg)   translate(0px,   0px);  z-index:3; }
+.play-card:nth-child(4){ transform: rotate(9deg)   translate(20px,  5px);  z-index:4; }
+.play-card:nth-child(5){ transform: rotate(18deg)  translate(55px, 12px);  z-index:5; }
+/* Animation d'entrée */
+.play-card { animation: dealCard .6s cubic-bezier(.34,1.56,.64,1) both; }
+.play-card:nth-child(1){ animation-delay: .1s; }
+.play-card:nth-child(2){ animation-delay: .2s; }
+.play-card:nth-child(3){ animation-delay: .3s; }
+.play-card:nth-child(4){ animation-delay: .4s; }
+.play-card:nth-child(5){ animation-delay: .5s; }
+@keyframes dealCard {
+  from { opacity:0; transform: rotate(0deg) translate(0,120px) scale(.7); }
+}
+/* Hover : les cartes s'écartent */
+.card-deck:hover .play-card:nth-child(1){ transform: rotate(-24deg) translate(-75px, 18px); }
+.card-deck:hover .play-card:nth-child(2){ transform: rotate(-12deg) translate(-32px, 8px);  }
+.card-deck:hover .play-card:nth-child(3){ transform: rotate(0deg)   translate(0px,   0px);  }
+.card-deck:hover .play-card:nth-child(4){ transform: rotate(12deg)  translate(32px,  8px);  }
+.card-deck:hover .play-card:nth-child(5){ transform: rotate(24deg)  translate(75px, 18px);  }
+
+/* Texte sous le deck */
+.deck-label {
+  position: absolute; bottom: -32px; left: 50%; transform: translateX(-50%);
+  white-space: nowrap; font-size: .72rem; font-weight: 600;
+  color: rgba(255,255,255,.35); letter-spacing: .08em; text-transform: uppercase;
+}
+
+/* ── Formulaire login ── */
+.login-panel {
+  width: 100%; max-width: 380px;
+  animation: fadeUp .5s .3s ease both;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } }
+
+.lp-logo {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+}
+.lp-logo-icon {
+  width: 42px; height: 42px; background: var(--blue); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 14px rgba(26,86,219,.4);
+}
+.lp-brand { font-size: 1.3rem; font-weight: 800; color: white; letter-spacing: -.03em; }
+.lp-brand span { color: rgba(255,255,255,.4); font-weight: 400; }
+
+.lp-title { font-size: 1.6rem; font-weight: 800; color: white; margin-bottom: 4px; letter-spacing: -.03em; }
+.lp-sub   { font-size: .83rem; color: rgba(255,255,255,.45); margin-bottom: 26px; line-height: 1.5; }
+
+.lf-group { margin-bottom: 14px; }
+.lf-label {
+  display: block; font-size: .75rem; font-weight: 600;
+  color: rgba(255,255,255,.5); margin-bottom: 6px; letter-spacing: .04em;
+}
+.lf-input-wrap { position: relative; }
+.lf-input {
+  width: 100%; padding: 11px 14px;
+  background: rgba(255,255,255,.07); border: 1.5px solid rgba(255,255,255,.12);
+  border-radius: 8px; font-family: var(--font); font-size: .88rem;
+  color: white; outline: none; transition: border-color .15s, background .15s;
+}
+.lf-input::placeholder { color: rgba(255,255,255,.25); }
+.lf-input:focus { border-color: rgba(26,86,219,.7); background: rgba(255,255,255,.1); box-shadow: 0 0 0 3px rgba(26,86,219,.2); }
+.lf-eye {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  cursor: pointer; color: rgba(255,255,255,.35); background: none; border: none; line-height:0; padding:2px;
+}
+.lf-eye:hover { color: rgba(255,255,255,.7); }
+.lf-forgot { font-size: .76rem; color: rgba(255,255,255,.35); margin-top: 5px; display: inline-block; cursor: pointer; }
+.lf-forgot:hover { color: rgba(255,255,255,.65); }
+.lf-check { display: flex; align-items: center; gap: 7px; font-size: .82rem; color: rgba(255,255,255,.4); margin: 14px 0; cursor: pointer; }
+.lf-check input { accent-color: var(--blue); }
+
+.btn-login {
+  width: 100%; padding: 12px; border: none; border-radius: 8px;
+  background: var(--blue); color: white; font-family: var(--font);
+  font-size: .93rem; font-weight: 700; cursor: pointer;
+  transition: background .15s, transform .1s, box-shadow .15s;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 16px rgba(26,86,219,.4);
+}
+.btn-login:hover  { background: var(--blue-d); box-shadow: 0 6px 24px rgba(26,86,219,.5); }
+.btn-login:active { transform: scale(.98); }
+.btn-email {
+  width: 100%; padding: 11px;
+  border: 1.5px solid rgba(255,255,255,.12); border-radius: 8px;
+  background: rgba(255,255,255,.05); color: rgba(255,255,255,.5);
+  font-family: var(--font); font-size: .86rem; font-weight: 600; cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-email:hover { border-color: rgba(255,255,255,.3); color: rgba(255,255,255,.8); }
+
+.login-err {
+  background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.35);
+  border-radius: 7px; padding: 8px 12px; font-size: .8rem; color: #fca5a5;
+  margin-bottom: 12px; display: none;
+}
+.lp-version {
+  margin-top: 22px; font-size: .68rem; color: rgba(255,255,255,.2);
+  font-family: var(--mono); letter-spacing: .04em;
+}
+
+/* Mobile login */
+@media (max-width: 640px) {
+  .login-wrap { flex-direction: column; gap: 32px; padding: 30px 20px 24px; justify-content: flex-start; padding-top: 48px; }
+  .card-deck  { width: 180px; height: 220px; transform: scale(.85); }
+  .play-card  { width: 110px; height: 154px; }
+  .login-panel { max-width: 100%; }
+}
+/* ═════════════════════════════════════ */
 #scApp{flex-direction:row;}
 .sidebar{width:220px;flex-shrink:0;background:var(--g900);display:flex;flex-direction:column;transition:width .2s;overflow:hidden;}
 .sidebar.slim{width:60px;}
@@ -299,74 +437,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 .actions-menu button + button {
   border-top: 1px solid rgba(255,255,255,.06);
 }
-
-  /* ═══════════════════════ MOBILE TOPBAR SYNTHÈSE ═══════════════════════ */
-  @media (max-width: 640px) {
-
-    /* Topbar : compacte */
-    .syn-topbar { gap: 6px; padding: 0 10px; height: 46px; }
-
-    /* Titre projet caché */
-    .syn-title { display: none !important; }
-
-    /* Chip rôle caché */
-    #synRoleChip { display: none !important; }
-
-    /* Compteurs cachés (visibles dans bouton info) */
-    .syn-counters { display: none !important; }
-
-    /* Bouton Enregistrer (diskette) caché */
-    .syn-topbar > button[onclick*="saveFromSynthese"] { display: none !important; }
-
-    /* Synchroniser : icône seule, sans texte */
-    .syn-refresh .syn-refresh-label { display: none; }
-    #synRefreshBtn { padding: 6px 8px; min-width: 0; }
-
-    /* Voyant live : point seul, texte caché */
-    .syn-live-dot .syn-live-label { display: none; }
-    #synLiveTxt { display: none !important; }
-    .syn-live-dot { gap: 0; padding: 4px 6px; min-width: 0; }
-
-    /* Bouton retour compact */
-    .syn-back .syn-back-label { display: none; }
-    .syn-back { padding: 6px 10px; }
-
-    /* Menu ☰ : texte caché */
-    .syn-menu-label { display: none; }
-
-    /* Volet (actions-dropdown dans topbar) : fond sombre correct */
-    .syn-topbar .actions-menu {
-      position: fixed;
-      top: 46px;
-      left: 0;
-      right: 0;
-      width: 100%;
-      border-radius: 0;
-      box-shadow: 0 8px 32px rgba(0,0,0,.4);
-      z-index: 9999;
-      background: var(--g900);
-      border: none;
-      border-top: 1px solid rgba(255,255,255,.08);
-    }
-    .syn-topbar .actions-menu button {
-      color: rgba(255,255,255,.85);
-      padding: 14px 20px;
-      font-size: 0.85rem;
-      border-bottom: 1px solid rgba(255,255,255,.05);
-    }
-    .syn-topbar .actions-menu button:hover {
-      background: rgba(255,255,255,.07);
-      color: white;
-    }
-
-    /* Bouton info projet mobile */
-    #synInfoBtn { display: flex !important; }
-  }
-
-  @media (min-width: 641px) {
-    #synInfoBtn { display: none !important; }
-  }
-  /* ════════════════════════════════════════════════════════════ */
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -377,37 +447,62 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <!-- ═════════════════════ LOGIN ═════════════════════ -->
 <div id="scLogin" class="screen">
-  <div class="login-left">
-    <div class="ll-deco1"></div><div class="ll-deco2"></div><div class="ll-deco3"></div>
-    <div class="ll-logo" style="position:relative;z-index:1">
-      <div class="ll-logo-icon">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="12" fill="#1a56db"/>
-          <path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-          <circle cx="14" cy="14" r="3" fill="white"/>
-        </svg>
-      </div>
-      <div class="ll-brand">RAPSO<span>SYN</span></div>
-    </div>
-    <div class="ll-tag" style="position:relative;z-index:1">
-      <h2>Plateforme de suivi<br>des avis SOCOTEC</h2>
-      <p>Gestion collaborative des canevas, intervenants et rapports de synthèse.</p>
-    </div>
-    <div class="ll-version" style="position:relative;z-index:1">v2.0 — SOCOTEC Luxembourg</div>
+  <!-- Fond animé -->
+  <div class="login-bg">
+    <span style="width:300px;height:300px;background:#1a56db;left:10%;animation-duration:18s;animation-delay:0s;"></span>
+    <span style="width:200px;height:200px;background:#0d9488;left:60%;animation-duration:22s;animation-delay:4s;"></span>
+    <span style="width:150px;height:150px;background:#7c3aed;left:80%;animation-duration:15s;animation-delay:8s;"></span>
+    <span style="width:100px;height:100px;background:#1a56db;left:30%;animation-duration:20s;animation-delay:2s;"></span>
+    <span style="width:250px;height:250px;background:#0d9488;left:45%;animation-duration:25s;animation-delay:6s;"></span>
   </div>
-  <div class="login-right">
-    <div class="login-card">
-      <div class="lc-title">Bienvenue !</div>
-      <div class="lc-sub">Connectez-vous avec vos identifiants pour accéder à vos projets.</div>
+
+  <div class="login-wrap">
+    <!-- Jeu de cartes -->
+    <div class="card-deck" aria-hidden="true">
+      <div class="play-card">
+        <div class="card-back"><div class="card-back-pattern"></div><div class="card-back-logo">R</div></div>
+      </div>
+      <div class="play-card">
+        <div class="card-back"><div class="card-back-pattern"></div><div class="card-back-logo">A</div></div>
+      </div>
+      <div class="play-card">
+        <div class="card-back"><div class="card-back-pattern"></div><div class="card-back-logo">PS</div></div>
+      </div>
+      <div class="play-card">
+        <div class="card-back"><div class="card-back-pattern"></div><div class="card-back-logo">O</div></div>
+      </div>
+      <div class="play-card">
+        <div class="card-back"><div class="card-back-pattern"></div><div class="card-back-logo">SY</div></div>
+      </div>
+      <div class="deck-label">RAPSOSYN v2.0</div>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="login-panel">
+      <div class="lp-logo">
+        <div class="lp-logo-icon">
+          <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="12" fill="rgba(255,255,255,.2)"/>
+            <path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+            <circle cx="14" cy="14" r="3" fill="white"/>
+          </svg>
+        </div>
+        <div class="lp-brand">RAPSO<span>SYN</span></div>
+      </div>
+
+      <div class="lp-title">Bienvenue !</div>
+      <div class="lp-sub">Connectez-vous pour accéder à vos projets SOCOTEC.</div>
+
       <div class="login-err" id="loginErr">Identifiants incorrects.</div>
+
       <div class="lf-group">
-        <label class="lf-label">Email</label>
-        <input class="lf-input" id="lEmail" type="email" placeholder="votre@email.com">
+        <label class="lf-label">EMAIL</label>
+        <input class="lf-input" id="lEmail" type="email" placeholder="votre@email.com" onkeydown="if(event.key==='Enter')document.getElementById('lPwd').focus()">
       </div>
       <div class="lf-group">
-        <label class="lf-label">Mot de passe</label>
+        <label class="lf-label">MOT DE PASSE</label>
         <div class="lf-input-wrap">
-          <input class="lf-input" id="lPwd" type="password" placeholder="••••••••">
+          <input class="lf-input" id="lPwd" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
           <button class="lf-eye" onclick="togglePwd('lPwd',this)">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
@@ -417,6 +512,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <label class="lf-check"><input type="checkbox" checked> Se souvenir de moi</label>
       <button class="btn-login" onclick="doLogin()">Se connecter</button>
       <button class="btn-email">Courriel uniquement</button>
+      <div class="lp-version">SOCOTEC Luxembourg · v2.0</div>
     </div>
   </div>
 </div>
@@ -566,7 +662,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   <div class="syn-topbar">
     <button class="syn-back" onclick="closeSynthese()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      <span class="syn-back-label">Retour</span>
+      Retour
     </button>
     <div class="syn-title" id="synTitle">—</div>
     <span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;flex-shrink:0;"></span>
@@ -582,18 +678,14 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </div>
     <div class="syn-live-dot" id="synLiveDot" title="Connexion Firebase temps réel">
       <span class="ld"></span>
-      <span class="syn-live-label" id="synLiveTxt">Connexion…</span>
+      <span id="synLiveTxt">Connexion…</span>
     </div>
-    <!-- Bouton info projet — mobile uniquement -->
-    <button id="synInfoBtn" class="syn-refresh" onclick="showSynInfoPopup()" title="Infos projet" style="display:none;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    </button>
     <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <polyline points="1 4 1 10 7 10"/>
         <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
       </svg>
-      <span class="syn-refresh-label">Synchroniser</span>
+      Synchroniser
       <span class="notif-badge" id="refreshBadge">!</span>
     </button>
     <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde" style="margin-left:2px;">
@@ -602,7 +694,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
     <!-- Bouton Actions -->
     <div class="actions-dropdown">
-      <button class="syn-refresh" onclick="toggleActionsMenu(event)">☰ <span class="syn-menu-label">MENU ▾</span></button>
+      <button class="syn-refresh" onclick="toggleActionsMenu(event)">☰ MENU ▾</button>
       <div class="actions-menu" id="actionsMenu">
         <button onclick="postAction('actualiser'); closeActionsMenu();">⟳ Mettre à jour</button>
         <button onclick="postAction('import'); closeActionsMenu();">↺ Rénitialiser le canevas</button>
@@ -1411,23 +1503,6 @@ async function openSynthese(id) {
   hide('scApp'); show('scSynthese');
   setTimeout(() => startLiveListener(id), 1200);
 }
-
-function showSynInfoPopup() {
-  // Afficher un petit popup avec infos du projet + compteurs
-  const c = canevas.find(x => x.id === currentCanId);
-  if (!c) return;
-  const oui = document.getElementById('sc_oui')?.textContent || '0';
-  const par = document.getElementById('sc_par')?.textContent || '0';
-  const non = document.getElementById('sc_non')?.textContent || '0';
-  const tot = document.getElementById('sc_tot')?.textContent || '0';
-  const msg = `${c.nomimp || c.nom || '—'}
-${c.client || ''} · ${c.ville || ''}
-Dossier : ${c.chrono || '—'}
-
-${oui}  ${par}  ${non}  ${tot}`;
-  alert(msg);
-}
-
 function closeSynthese() {
   stopLiveListener();
   const frame = document.getElementById('synFrame');
