@@ -705,14 +705,6 @@ th[data-col="repL"], td[data-col="repL"] {
     .edit-panel.open {
       display: flex !important;
     }
-      /* Panel latéral : rendre les textareas extensibles */
-  .edit-panel textarea {
-    min-height: 50px;          /* hauteur de départ confortable */
-    height: auto;
-    overflow-y: hidden;         /* cache la scrollbar interne, la hauteur s'ajuste */
-    resize: vertical;           /* permet à l’utilisateur d’agrandir manuellement si besoin */
-  }
-}
     /* Cacher le handle redimensionnement */
     .ep-rh { display: none !important; }
     /* Overlay sous le panel */
@@ -1824,8 +1816,6 @@ function openEditPanel(fi){
   ge('overlay').classList.add('open');ge('editPanel').classList.add('open');
   document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
   const el=ge('row-'+fi);if(el)el.classList.add('row-highlight');
-// --- AJOUTER CES LIGNES ---
-  setupPanelAutoResize();   // attache les resize et ajuste immédiatement
 }
 function closePanel(){ge('overlay').classList.remove('open');ge('editPanel').classList.remove('open');editingIdx=null;}
 function navRow(d){if(editingIdx!==null){let n=editingIdx+d;if(n>=0&&n<filteredRows.length)openEditPanel(n);}}
@@ -2078,26 +2068,6 @@ function rapApply(){
   updateRapButtonsState();
 }
 function updateRapButtonsState(){const oui=ge('rapBtnOui'),par=ge('rapBtnPar'),non=ge('rapBtnNon'),rd6=ge('rapBtnRd6');if(rapCurrent){oui.classList.toggle('active',rapCurrent.suivi==='Oui');par.classList.toggle('active',rapCurrent.suivi==='Par');non.classList.toggle('active',rapCurrent.suivi==='Non');rd6.classList.toggle('active',rapCurrent.rd6===true);}else{oui.classList.remove('active');par.classList.remove('active');non.classList.remove('active');rd6.classList.remove('active');}}
-// Auto‑resize des textareas du panel latéral
-function autoResizeTextarea(ta) {
-  if (!ta) return;
-  ta.style.height = 'auto';
-  ta.style.height = ta.scrollHeight + 'px';
-}
-
-// Appliquer l’auto‑resize sur les deux champs et attacher les écouteurs
-function setupPanelAutoResize() {
-  const repK = document.getElementById('e_repK');
-  const repL = document.getElementById('e_repL');
-  if (repK) {
-    repK.addEventListener('input', () => autoResizeTextarea(repK));
-    autoResizeTextarea(repK);
-  }
-  if (repL) {
-    repL.addEventListener('input', () => autoResizeTextarea(repL));
-    autoResizeTextarea(repL);
-  }
-}
 function rapSelect(i,scroll=true){rapCurrent=rapFiltered[i];document.querySelectorAll('.rapide-item').forEach((el,idx)=>el.classList.toggle('selected',idx===i));if(scroll)document.querySelectorAll('.rapide-item')[i]?.scrollIntoView({block:'nearest'});const r=rapCurrent;ge('rapideObsText').innerHTML=escapeHtml(r.obs)||'—';const editArea=ge('rapideEditArea');editArea.style.display='flex';ge('rq_repK').value=r.repK||'';ge('rq_repL').value=r.repL||'';ge('rq_lots').value=r.lots||'';ge('rapSaveBtn').disabled=false;updateRapButtonsState();}
 function rapToggleSuivi(v){
   if(!rapCurrent)return;
