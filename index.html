@@ -253,7 +253,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--g300);border-radius:3px;}
-
 /* ══════════════════════════════════════════════════════
    RESPONSIVE MOBILE
    ══════════════════════════════════════════════════════ */
@@ -272,7 +271,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   .login-right { padding: 24px 20px 32px; flex: 1; }
   .login-card { max-width: 100%; }
   .lc-title { font-size: 1.4rem; }
-
   /* APP LAYOUT — sidebar becomes bottom nav */
   #scApp { flex-direction: column; }
   .sidebar {
@@ -324,17 +322,14 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   }
   .u-av { width: 26px; height: 26px; font-size: 0.65rem; }
   .u-info { display: none; }
-
   /* APP MAIN */
   .app-main { order: 1; flex: 1; overflow: hidden; }
-
   /* TOPBAR */
   .topbar { padding: 0 12px; height: 48px; gap: 8px; }
   .tb-title { font-size: 0.88rem; }
   .tb-actions { gap: 4px; }
   .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
   .btn-sm svg { width: 12px; height: 12px; }
-
   /* FILTERBAR — horizontal scroll */
   .filterbar {
     padding: 6px 10px;
@@ -351,7 +346,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   }
   .fb-input { min-width: 90px; width: auto !important; }
   .fb-select { min-width: 110px; }
-
   /* TABLE → card list */
   .table-wrap { padding: 10px 10px; }
   table.main-table thead { display: none; }
@@ -400,13 +394,11 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   }
   /* hide empty separators */
   table.main-table tr td:empty { display: none; }
-
   /* Users grid */
   .users-grid { padding: 10px; gap: 8px; }
   .user-card { padding: 12px; gap: 10px; flex-wrap: wrap; }
   .uc-actions { width: 100%; gap: 6px; flex-wrap: wrap; }
   .uc-actions .btn { flex: 1; justify-content: center; font-size: 0.75rem; min-width: 80px; }
-
   /* SYNTHESE TOPBAR */
   #scSynthese { overflow: hidden; }
   .syn-topbar {
@@ -452,7 +444,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     padding: 13px 20px;
     font-size: 0.88rem;
   }
-
   /* MODALS */
   .modal {
     width: 100% !important;
@@ -474,15 +465,12 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   .m-hdr { padding: 14px 16px 12px; }
   .m-foot { padding: 10px 16px; gap: 8px; }
   .m-foot .btn { flex: 1; justify-content: center; padding: 10px; }
-
   /* ARCHIVE INFO BAR */
   .archive-info { margin: 8px 10px 0; font-size: 0.78rem; padding: 8px 12px; }
-
   /* PENDING BAR */
   .syn-pending-bar { flex-wrap: wrap; padding: 8px 12px; gap: 8px; }
   .syn-pending-bar .pb-meta { width: 100%; }
   .syn-pending-bar .pb-user { font-size: 0.68rem; }
-
   /* TOAST */
   .toast-container { bottom: 70px; right: 10px; left: 10px; }
   .toast { min-width: unset; width: 100%; }
@@ -533,6 +521,74 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 .actions-menu button + button {
   border-top: 1px solid rgba(255,255,255,.06);
 }
+
+  /* ═══════════════════════ MOBILE TOPBAR SYNTHÈSE ═══════════════════════ */
+  @media (max-width: 640px) {
+
+    /* Topbar : compacte */
+    .syn-topbar { gap: 6px; padding: 0 10px; height: 46px; }
+
+    /* Titre projet caché */
+    .syn-title { display: none !important; }
+
+    /* Chip rôle caché */
+    #synRoleChip { display: none !important; }
+
+    /* Compteurs cachés (visibles dans bouton info) */
+    .syn-counters { display: none !important; }
+
+    /* Bouton Enregistrer (diskette) caché */
+    .syn-topbar > button[onclick*="saveFromSynthese"] { display: none !important; }
+
+    /* Synchroniser : icône seule, sans texte */
+    .syn-refresh .syn-refresh-label { display: none; }
+    #synRefreshBtn { padding: 6px 8px; min-width: 0; }
+
+    /* Voyant live : point seul, texte caché */
+    .syn-live-dot .syn-live-label { display: none; }
+    #synLiveTxt { display: none !important; }
+    .syn-live-dot { gap: 0; padding: 4px 6px; min-width: 0; }
+
+    /* Bouton retour compact */
+    .syn-back .syn-back-label { display: none; }
+    .syn-back { padding: 6px 10px; }
+
+    /* Menu ☰ : texte caché */
+    .syn-menu-label { display: none; }
+
+    /* Volet (actions-dropdown dans topbar) : fond sombre correct */
+    .syn-topbar .actions-menu {
+      position: fixed;
+      top: 46px;
+      left: 0;
+      right: 0;
+      width: 100%;
+      border-radius: 0;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      z-index: 9999;
+      background: var(--g900);
+      border: none;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .syn-topbar .actions-menu button {
+      color: rgba(255,255,255,.85);
+      padding: 14px 20px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+    .syn-topbar .actions-menu button:hover {
+      background: rgba(255,255,255,.07);
+      color: white;
+    }
+
+    /* Bouton info projet mobile */
+    #synInfoBtn { display: flex !important; }
+  }
+
+  @media (min-width: 641px) {
+    #synInfoBtn { display: none !important; }
+  }
+  /* ════════════════════════════════════════════════════════════ */
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -732,7 +788,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   <div class="syn-topbar">
     <button class="syn-back" onclick="closeSynthese()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      Retour
+      <span class="syn-back-label">Retour</span>
     </button>
     <div class="syn-title" id="synTitle">—</div>
     <span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;flex-shrink:0;"></span>
@@ -748,14 +804,18 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </div>
     <div class="syn-live-dot" id="synLiveDot" title="Connexion Firebase temps réel">
       <span class="ld"></span>
-      <span id="synLiveTxt">Connexion…</span>
+      <span class="syn-live-label" id="synLiveTxt">Connexion…</span>
     </div>
+    <!-- Bouton info projet — mobile uniquement -->
+    <button id="synInfoBtn" class="syn-refresh" onclick="showSynInfoPopup()" title="Infos projet" style="display:none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </button>
     <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <polyline points="1 4 1 10 7 10"/>
         <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
       </svg>
-      Synchroniser
+      <span class="syn-refresh-label">Synchroniser</span>
       <span class="notif-badge" id="refreshBadge">!</span>
     </button>
     <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde" style="margin-left:2px;">
@@ -764,7 +824,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
     <!-- Bouton Actions -->
     <div class="actions-dropdown">
-      <button class="syn-refresh" onclick="toggleActionsMenu(event)">☰ MENU ▾</button>
+      <button class="syn-refresh" onclick="toggleActionsMenu(event)">☰ <span class="syn-menu-label">MENU ▾</span></button>
       <div class="actions-menu" id="actionsMenu">
         <button onclick="postAction('actualiser'); closeActionsMenu();">⟳ Mettre à jour</button>
         <button onclick="postAction('import'); closeActionsMenu();">↺ Rénitialiser le canevas</button>
@@ -853,6 +913,31 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <div class="m-foot">
       <button class="btn btn-ghost" onclick="closeModal('mdArchive')">Annuler</button>
       <button class="btn btn-danger" id="archiveOk">Archiver</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bd" id="mdDeleteCan">
+  <div class="modal sm">
+    <div class="m-hdr">
+      <div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></div>
+      <div class="m-title">Supprimer définitivement ?</div>
+      <button class="m-close" onclick="closeModal('mdDeleteCan')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="m-body">
+      <p class="confirm-text" id="deleteCanText">Ce canevas sera supprimé définitivement.</p>
+      <div style="background:#fef2f2;border:1px solid #fecaca;padding:10px 14px;margin-top:12px;font-size:0.78rem;color:#991b1b;line-height:1.5;">
+        ⚠️ <strong>Action irréversible.</strong> Toutes les données (avis, réponses, historique) seront perdues définitivement. Cette action ne peut pas être annulée.
+      </div>
+      <div style="margin-top:14px;">
+        <label style="font-size:0.75rem;font-weight:600;color:var(--g600);display:block;margin-bottom:5px;">Confirmez en tapant le nom du canevas :</label>
+        <input id="deleteCanConfirmInput" type="text" placeholder="Nom du canevas..." style="width:100%;border:1px solid var(--g300);padding:7px 10px;font-family:var(--font);font-size:0.8rem;outline:none;">
+        <div id="deleteCanError" style="color:#b91c1c;font-size:0.72rem;margin-top:4px;display:none;">Le nom ne correspond pas.</div>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mdDeleteCan')">Annuler</button>
+      <button class="btn btn-danger" id="deleteCanOk" disabled>🗑 Supprimer définitivement</button>
     </div>
   </div>
 </div>
@@ -989,13 +1074,13 @@ function showPage(page, btn) {
   if (page === 'archive') renderArchive();
   if (page === 'users') renderUsers();
 }
-function toast(msg, type = 'g') {
+function toast(msg, type = 'g', duration = 2800) {
   const el = document.createElement('div');
   el.className = 'toast ' + type;
   const icon = type === 'g' ? '✓' : type === 'r' ? '✕' : 'ℹ';
   el.innerHTML = `<span style="font-weight:700">${icon}</span> ${msg}`;
   document.getElementById('toastContainer').appendChild(el);
-  setTimeout(() => { el.style.animation = 'tOut .25s forwards'; setTimeout(() => el.remove(), 250); }, 2800);
+  setTimeout(() => { el.style.animation = 'tOut .25s forwards'; setTimeout(() => el.remove(), 250); }, duration);
 }
 
 /* STOCKAGE */
@@ -1246,6 +1331,7 @@ function renderCanevas() {
         <button class="btn btn-primary btn-xs" onclick="openSynthese(${c.id})">📂 Ouvrir</button>
         ${canEdit ? `<button class="btn-icon blue" onclick="openModalCanevas('edit',${c.id},event)" title="Modifier"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>` : ''}
         ${(currentUser.role === 'admin' || c.pilote === currentUser.initiales) ? `<button class="btn-icon danger" onclick="confirmArchive(${c.id},event)" title="Archiver"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>` : ''}
+        ${currentUser.role === 'admin' ? `<button class="btn-icon danger" onclick="confirmDeleteCan(${c.id},event)" title="Supprimer définitivement de Firebase" style="opacity:.7"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}
       </td>
     </tr>`;
   }).join('');
@@ -1424,6 +1510,7 @@ function renderArchive() {
       <td>
         <button class="btn btn-ghost btn-xs" onclick="openSynthese(${c.id})">📂 Consulter</button>
         ${(currentUser.role==='admin' || c.pilote===currentUser.initiales)?`<button class="btn btn-success btn-xs" onclick="confirmDesarchive(${c.id},event)">↩ Restaurer</button>`:''}
+        ${currentUser.role==='admin'?`<button class="btn btn-danger btn-xs" onclick="confirmDeleteCan(${c.id},event)" title="Supprimer définitivement de Firebase">🗑 Supprimer</button>`:''}
       </td>
     </tr>`).join('');
 }
@@ -1437,6 +1524,70 @@ function confirmDesarchive(id, e) {
   };
   document.getElementById('mdDesarchive').classList.add('open');
 }
+function confirmDeleteCan(id, e) {
+  if (e) e.stopPropagation();
+  if (!currentUser || currentUser.role !== 'admin') { toast('Action réservée aux administrateurs','r'); return; }
+  const c = canevas.find(x => x.id === id);
+  if (!c) return;
+  const nomCanevas = c.nom || '';
+  const isArchived = !!c.archived;
+
+  // Remplir le modal
+  document.getElementById('deleteCanText').innerHTML =
+    `Le canevas <strong>« ${esc(nomCanevas.slice(0,70))} »</strong> sera supprimé <strong style="color:#b91c1c">définitivement</strong> de Firebase.<br>
+     <span style="font-size:0.76rem;color:var(--g500);margin-top:4px;display:block">
+       ${esc(c.chrono||'—')} · ${esc(c.client||'—')} · ${esc(c.ville||'—')}
+       ${isArchived ? ' · <em>Archivé</em>' : ''}
+     </span>`;
+
+  const input = document.getElementById('deleteCanConfirmInput');
+  const errEl  = document.getElementById('deleteCanError');
+  const okBtn  = document.getElementById('deleteCanOk');
+
+  // Réinitialiser
+  input.value = '';
+  input.placeholder = `Tapez : ${nomCanevas}`;
+  errEl.style.display = 'none';
+  errEl.textContent = 'Le nom ne correspond pas.';
+  okBtn.disabled = true;
+
+  // Validation en temps réel
+  input.oninput = () => {
+    const match = input.value.trim() === nomCanevas.trim();
+    okBtn.disabled = !match;
+    errEl.style.display = (!match && input.value.length > 0) ? '' : 'none';
+  };
+
+  okBtn.onclick = async () => {
+    if (input.value.trim() !== nomCanevas.trim()) return;
+    closeModal('mdDeleteCan');
+    try {
+      // 1. Supprimer du tableau local
+      const idx = canevas.findIndex(x => x.id === id);
+      if (idx >= 0) canevas.splice(idx, 1);
+      // 2. Fermer la synthèse si c'était le canevas ouvert
+      if (currentCanId === id) {
+        currentCanId = null;
+        show('scApp'); hide('scSynthese');
+      }
+      // 3. Sauvegarder dans Firebase (écrase la liste sans ce canevas)
+      await saveToCloud();
+      // 4. Rafraîchir les deux vues
+      renderCanevas();
+      renderArchive();
+      toast(`🗑 Canevas « ${nomCanevas.slice(0,40)} » supprimé définitivement`, 'r', 5000);
+    } catch(err) {
+      // En cas d'erreur cloud : remettre le canevas localement
+      toast('Erreur Firebase — suppression annulée', 'r');
+      console.error('Delete canevas error:', err);
+    }
+  };
+
+  document.getElementById('mdDeleteCan').classList.add('open');
+  // Focus auto sur le champ
+  setTimeout(() => input.focus(), 100);
+}
+
 function exportArchive() {
   const rows = canevas.filter(c => c.archived);
   const lines = ['Nom;Référence;Client;Ville;Pilote;Archivé le', ...rows.map(c => [c.nom,c.chrono,c.client,c.ville,c.pilote,c.archivedDate||''].join(';'))];
@@ -1466,6 +1617,7 @@ async function openSynthese(id) {
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
+    window.RAPSO_USER       = ${JSON.stringify(currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : { prenom: '?', nom: '', initiales: '?', role: '' })};
   <\/script>`;
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
   templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', '<!-- data injected via RAPSO_SYNTH_DATA -->');
@@ -1481,6 +1633,23 @@ async function openSynthese(id) {
   hide('scApp'); show('scSynthese');
   setTimeout(() => startLiveListener(id), 1200);
 }
+
+function showSynInfoPopup() {
+  // Afficher un petit popup avec infos du projet + compteurs
+  const c = canevas.find(x => x.id === currentCanId);
+  if (!c) return;
+  const oui = document.getElementById('sc_oui')?.textContent || '0';
+  const par = document.getElementById('sc_par')?.textContent || '0';
+  const non = document.getElementById('sc_non')?.textContent || '0';
+  const tot = document.getElementById('sc_tot')?.textContent || '0';
+  const msg = `${c.nomimp || c.nom || '—'}
+${c.client || ''} · ${c.ville || ''}
+Dossier : ${c.chrono || '—'}
+
+${oui}  ${par}  ${non}  ${tot}`;
+  alert(msg);
+}
+
 function closeSynthese() {
   stopLiveListener();
   const frame = document.getElementById('synFrame');
@@ -1500,7 +1669,16 @@ function saveFromSynthese() {
 
 /* SYNC LIVE */
 let _notifTimer = null, _pendingData = null, _liveListener = null, _isSelfWrite = false, _lastLocalHash = '';
-function hashData(d) { if (!d) return ''; return JSON.stringify({ v2: (d.v2||[]).length, v1: (d.v1||[]).length, sV2: (d.v2||[]).map(r=>r.suivi).join(''), sV1: (d.v1||[]).map(r=>r.suivi).join('') }); }
+function hashData(d) {
+  if (!d) return '';
+  const rowSig = r => [r.id||'', r.suivi||'', r.rd6?'1':'0', r.repK||'', r.repL||'', r.lots||'', r.num||''].join('|');
+  return JSON.stringify({
+    v2: (d.v2||[]).length, v1: (d.v1||[]).length,
+    sV2: (d.v2||[]).map(rowSig).join('§'),
+    sV1: (d.v1||[]).map(rowSig).join('§'),
+    hl: (d.historique||[]).length
+  });
+}
 function showNotif(txt, type = 'ok', duration = 3500) {
   const el = document.getElementById('synNotif');
   const ico = document.getElementById('synNotifIcon');
@@ -1581,7 +1759,7 @@ async function applyPendingUpdate() {
     _lastLocalHash = hashData(newData);
     try {
       document.getElementById('synFrame').contentWindow.postMessage(
-        { type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '' },
+        { type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '', user: currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : null },
         '*'
       );
       updateSynCounters(newData);
@@ -1635,10 +1813,11 @@ window.addEventListener('message', function(e) {
     if (canId === undefined || canId === null || !incomingData) return;
     const c = canevas.find(x => String(x.id) === String(canId));
     if (c) {
-      const prevStr = JSON.stringify(c.synthData), newStr = JSON.stringify(incomingData);
-      if (prevStr !== newStr) {
+      const newHash = hashData(incomingData);
+      if (newHash !== _lastLocalHash) {
         c.synthData = incomingData;
-        _lastLocalHash = hashData(incomingData);
+        if(Array.isArray(incomingData.historique)) c.historique = incomingData.historique;
+        _lastLocalHash = newHash;
         setSynStatus('saving', 'Sauvegarde…');
         updateSynCounters(incomingData);
         _isSelfWrite = true;
