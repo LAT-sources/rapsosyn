@@ -368,7 +368,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   }
   /* ════════════════════════════════════════════════════════════ */
 /* ══════════════════════════════════════════════════════
-   RESPONSIVE MOBILE
+   RESPONSIVE MOBILE (sans modification de la topbar Synthèse)
    ══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   /* LOGIN */
@@ -385,13 +385,14 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   .login-right { padding: 24px 20px 32px; flex: 1; }
   .login-card { max-width: 100%; }
   .lc-title { font-size: 1.4rem; }
-  /* APP LAYOUT — sidebar becomes bottom nav */
+
+  /* APP LAYOUT — sidebar devient une barre de navigation en bas */
   #scApp { flex-direction: column; }
   .sidebar {
     width: 100% !important;
     height: auto;
     flex-direction: row;
-    order: 2; /* bottom */
+    order: 2;
     border-top: 1px solid rgba(255,255,255,.08);
     flex-shrink: 0;
     overflow: visible;
@@ -436,15 +437,18 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   }
   .u-av { width: 26px; height: 26px; font-size: 0.65rem; }
   .u-info { display: none; }
+
   /* APP MAIN */
   .app-main { order: 1; flex: 1; overflow: hidden; }
-  /* TOPBAR */
+
+  /* TOPBAR des pages (Canevas, Archives, Utilisateurs) */
   .topbar { padding: 0 12px; height: 48px; gap: 8px; }
   .tb-title { font-size: 0.88rem; }
   .tb-actions { gap: 4px; }
   .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
   .btn-sm svg { width: 12px; height: 12px; }
-  /* FILTERBAR — horizontal scroll */
+
+  /* FILTERBAR — défilement horizontal */
   .filterbar {
     padding: 6px 10px;
     flex-wrap: nowrap;
@@ -460,7 +464,8 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   }
   .fb-input { min-width: 90px; width: auto !important; }
   .fb-select { min-width: 110px; }
-  /* TABLE → card list */
+
+  /* TABLE → transformation en cartes */
   .table-wrap { padding: 10px 10px; }
   table.main-table thead { display: none; }
   table.main-table, table.main-table tbody,
@@ -480,14 +485,14 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     border: none;
     text-align: left !important;
   }
-  /* Hide star column, show inline */
+  /* Colonne étoile (favoris) placée en haut à droite */
   table.main-table td:first-child {
     position: absolute;
     top: 10px; right: 42px;
     width: auto;
     padding: 0;
   }
-  /* Actions column */
+  /* Colonne Actions */
   table.main-table td:last-child {
     margin-top: 8px;
     padding-top: 8px;
@@ -498,67 +503,21 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     text-align: left !important;
     justify-content: flex-start;
   }
-  /* Badge statut inline */
   table.main-table td .badge { margin-left: 0; }
-  /* Pilote avatar */
   table.main-table td .av {
     width: 24px; height: 24px;
     font-size: 0.65rem;
     display: inline-flex;
   }
-  /* hide empty separators */
   table.main-table tr td:empty { display: none; }
-  /* Users grid */
+
+  /* GRILLE UTILISATEURS */
   .users-grid { padding: 10px; gap: 8px; }
   .user-card { padding: 12px; gap: 10px; flex-wrap: wrap; }
   .uc-actions { width: 100%; gap: 6px; flex-wrap: wrap; }
   .uc-actions .btn { flex: 1; justify-content: center; font-size: 0.75rem; min-width: 80px; }
-  /* SYNTHESE TOPBAR */
-  #scSynthese { overflow: hidden; }
-  .syn-topbar {
-    height: auto;
-    min-height: 46px;
-    padding: 6px 8px;
-    flex-wrap: wrap;
-    gap: 5px;
-    align-content: flex-start;
-  }
-  .syn-title {
-    font-size: 0.75rem;
-    order: 0;
-    flex: 1;
-    min-width: 0;
-  }
-  .syn-back { padding: 5px 10px; font-size: 0.75rem; flex-shrink: 0; }
-  #synRoleChip { display: none; }
-  .syn-counters { display: none; }
-  .syn-status { display: none; }
-  .syn-live-dot { display: none; }
-  /* Compress syn-topbar buttons */
-  .syn-refresh {
-    padding: 4px 8px;
-    font-size: 0.72rem;
-    gap: 4px;
-  }
-  .syn-refresh svg { width: 12px; height: 12px; }
-  /* Actions menu */
-  .actions-dropdown { position: static; }
-  .actions-menu {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    top: auto;
-    border-radius: 14px 14px 0 0;
-    min-width: unset;
-    width: 100%;
-    margin-top: 0;
-    padding: 8px 0 20px;
-    z-index: 1000;
-  }
-  .actions-menu button {
-    padding: 13px 20px;
-    font-size: 0.88rem;
-  }
-  /* MODALS */
+
+  /* MODALS (popups) */
   .modal {
     width: 100% !important;
     max-width: 100% !important;
@@ -579,13 +538,11 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   .m-hdr { padding: 14px 16px 12px; }
   .m-foot { padding: 10px 16px; gap: 8px; }
   .m-foot .btn { flex: 1; justify-content: center; padding: 10px; }
-  /* ARCHIVE INFO BAR */
+
+  /* BANDEAUX ARCHIVES */
   .archive-info { margin: 8px 10px 0; font-size: 0.78rem; padding: 8px 12px; }
-  /* PENDING BAR */
-  .syn-pending-bar { flex-wrap: wrap; padding: 8px 12px; gap: 8px; }
-  .syn-pending-bar .pb-meta { width: 100%; }
-  .syn-pending-bar .pb-user { font-size: 0.68rem; }
-  /* TOAST */
+
+  /* TOAST NOTIFICATIONS */
   .toast-container { bottom: 70px; right: 10px; left: 10px; }
   .toast { min-width: unset; width: 100%; }
 }
