@@ -809,6 +809,28 @@ th[data-col="repL"], td[data-col="repL"] {
   }
 
 
+
+  /* Dropdown intervenants/lots dans le modal filtres mobile */
+  .mf-modal-dropdown {
+    display: none;
+    width: 100%;
+    background: white;
+    border: 1px solid var(--g200);
+    max-height: 180px;
+    overflow-y: auto;
+    padding: 4px 0;
+    margin-top: 2px;
+  }
+  .mf-modal-dropdown.show { display: block; }
+  .mf-modal-dropdown label {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; font-size: 0.76rem;
+    cursor: pointer; color: var(--g700);
+  }
+  .mf-modal-dropdown label:hover { background: var(--g100); }
+  .mf-modal-dropdown label input[type="checkbox"] {
+    accent-color: var(--blue); width: 14px; height: 14px; flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
@@ -1185,7 +1207,7 @@ th[data-col="repL"], td[data-col="repL"] {
           <div class="mf-select-button" onclick="toggleMfSelectModal('inter')" style="width:100%;box-sizing:border-box;">
             Intervenants <span id="mfInterCountM"></span>
           </div>
-          <div class="mf-select-dropdown" id="mfInterDropdownM" style="position:static;width:100%;margin-top:0;box-shadow:none;z-index:1;"></div>
+          <div class="mf-modal-dropdown" id="mfInterDropdownM"></div>
         </div>
       </div>
 
@@ -1196,7 +1218,7 @@ th[data-col="repL"], td[data-col="repL"] {
           <div class="mf-select-button" onclick="toggleMfSelectModal('lot')" style="width:100%;box-sizing:border-box;">
             Lots <span id="mfLotCountM"></span>
           </div>
-          <div class="mf-select-dropdown" id="mfLotDropdownM" style="position:static;width:100%;margin-top:0;box-shadow:none;z-index:1;"></div>
+          <div class="mf-modal-dropdown" id="mfLotDropdownM"></div>
         </div>
       </div>
 
@@ -1373,38 +1395,42 @@ window.addEventListener('message', function(e) {
 
 // ══════════════════ FILTRES MOBILE ══════════════════
 function buildMfModalDropdowns() {
-  // Peuple les dropdowns du modal mobile en s'appuyant sur buildMfSelectOptions
-  // qui a déjà construit mfInterDropdown / mfLotDropdown
   _fillMfModalDropdown('inter');
   _fillMfModalDropdown('lot');
 }
 function _fillMfModalDropdown(which) {
-  const srcId = which === 'inter' ? 'mfInterDropdown' : 'mfLotDropdown';
-  const dstId = which === 'inter' ? 'mfInterDropdownM' : 'mfLotDropdownM';
-  const cntId = which === 'inter' ? 'mfInterCountM'   : 'mfLotCountM';
-  const src = ge(srcId), dst = ge(dstId);
-  if (!src || !dst) return;
-  // Copier le HTML (états checked inclus)
-  dst.innerHTML = src.innerHTML;
-  // Rebrancher les onChange pour synchroniser avec le vrai dropdown
+  const dst   = ge(which === 'inter' ? 'mfInterDropdownM' : 'mfLotDropdownM');
+  const cntEl = ge(which === 'inter' ? 'mfInterCountM'    : 'mfLotCountM');
+  if (!dst) return;
+  const rows = getRows();
+  let values = [];
+  if (which === 'inter') {
+    values = [...new Set(rows.map(r => cleanIntervenant(r.inter)).filter(v => v))].sort();
+  } else {
+    values = [...new Set(rows.flatMap(r => getLotsArray(r)).filter(v => v))].sort();
+  }
+  const selected = which === 'inter' ? selectedIntervenants : selectedLots;
+  dst.innerHTML = values.length
+    ? values.map(v => {
+        const safe = escapeHtml(v);
+        const chk  = selected.has(v) ? 'checked' : '';
+        return `<label><input type="checkbox" ${chk} data-val="${safe}"> ${safe}</label>`;
+      }).join('')
+    : `<div style="padding:8px 10px;color:var(--g400);font-size:0.73rem;">Aucun</div>`;
+  // Brancher les événements
   dst.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     cb.onchange = function() {
-      const attr = which === 'inter' ? 'data-inter' : 'value';
-      const val  = which === 'inter' ? this.getAttribute('data-inter') : this.value;
-      toggleMultiFilter(which, val, this.checked);
-      // Resynchroniser les deux dropdowns
+      toggleMultiFilter(which, this.getAttribute('data-val'), this.checked);
       _fillMfModalDropdown(which);
       updateMfCount();
     };
   });
-  // Compteur dans le bouton
-  const n = which === 'inter' ? selectedIntervenants.size : selectedLots.size;
-  const cnt = ge(cntId);
-  if (cnt) cnt.textContent = n > 0 ? `(${n})` : '';
+  const n = selected.size;
+  if (cntEl) cntEl.textContent = n > 0 ? `(${n})` : '';
 }
 function toggleMfSelectModal(which) {
-  const id = which === 'inter' ? 'mfInterDropdownM' : 'mfLotDropdownM';
-  const other = which === 'inter' ? 'mfLotDropdownM' : 'mfInterDropdownM';
+  const id    = which === 'inter' ? 'mfInterDropdownM' : 'mfLotDropdownM';
+  const other = which === 'inter' ? 'mfLotDropdownM'   : 'mfInterDropdownM';
   ge(id).classList.toggle('show');
   if (ge(other)) ge(other).classList.remove('show');
 }
