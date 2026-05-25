@@ -366,6 +366,185 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   @media (min-width: 641px) {
     #synInfoBtn { display: none !important; }
   }
+   /* ══════════════════════════════════════════════════════
+   RESPONSIVE MOBILE (sans modification de la topbar Synthèse)
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* LOGIN */
+  #scLogin { flex-direction: column; overflow-y: auto; }
+  .login-left {
+    width: 100%; min-height: 160px; padding: 24px 20px 20px;
+    flex-direction: row; align-items: center; gap: 14px;
+  }
+  .ll-deco1, .ll-deco2 { display: none; }
+  .ll-tag { display: none; }
+  .ll-version { display: none; }
+  .ll-logo { margin-bottom: 0; }
+  .ll-brand { font-size: 1.1rem; }
+  .login-right { padding: 24px 20px 32px; flex: 1; }
+  .login-card { max-width: 100%; }
+  .lc-title { font-size: 1.4rem; }
+
+  /* APP LAYOUT — sidebar devient une barre de navigation en bas */
+  #scApp { flex-direction: column; }
+  .sidebar {
+    width: 100% !important;
+    height: auto;
+    flex-direction: row;
+    order: 2;
+    border-top: 1px solid rgba(255,255,255,.08);
+    flex-shrink: 0;
+    overflow: visible;
+  }
+  .sidebar.slim { width: 100% !important; }
+  .sb-logo { display: none; }
+  .sb-toggle { display: none; }
+  .sb-nav {
+    flex-direction: row;
+    flex: 1;
+    padding: 0;
+    gap: 0;
+    overflow: visible;
+    align-items: stretch;
+  }
+  .nav-label { display: none; }
+  .nav-sep { display: none; }
+  .nav-item {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 6px 8px;
+    border-radius: 0;
+    font-size: 0.62rem;
+    flex: 1;
+    white-space: normal;
+    text-align: center;
+    min-height: 56px;
+  }
+  .nav-item svg { width: 20px; height: 20px; }
+  .nav-item span { line-height: 1.2; }
+  .sb-user {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px 8px;
+    gap: 3px;
+    border-top: none;
+    border-left: 1px solid rgba(255,255,255,.08);
+    min-width: 60px;
+  }
+  .u-av { width: 26px; height: 26px; font-size: 0.65rem; }
+  .u-info { display: none; }
+
+  /* APP MAIN */
+  .app-main { order: 1; flex: 1; overflow: hidden; }
+
+  /* TOPBAR des pages (Canevas, Archives, Utilisateurs) */
+  .topbar { padding: 0 12px; height: 48px; gap: 8px; }
+  .tb-title { font-size: 0.88rem; }
+  .tb-actions { gap: 4px; }
+  .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
+  .btn-sm svg { width: 12px; height: 12px; }
+
+  /* FILTERBAR — défilement horizontal */
+  .filterbar {
+    padding: 6px 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 5px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filterbar::-webkit-scrollbar { display: none; }
+  .fb-input, .fb-select, .fav-btn {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    padding: 5px 9px;
+  }
+  .fb-input { min-width: 90px; width: auto !important; }
+  .fb-select { min-width: 110px; }
+
+  /* TABLE → transformation en cartes */
+  .table-wrap { padding: 10px 10px; }
+  table.main-table thead { display: none; }
+  table.main-table, table.main-table tbody,
+  table.main-table tr, table.main-table td { display: block; width: 100%; }
+  table.main-table tr {
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: var(--sh);
+    padding: 10px 12px;
+    position: relative;
+    border: none;
+  }
+  table.main-table tr:hover { background: #f0f7ff; }
+  table.main-table td {
+    padding: 2px 0;
+    border: none;
+    text-align: left !important;
+  }
+  /* Colonne étoile (favoris) placée en haut à droite */
+  table.main-table td:first-child {
+    position: absolute;
+    top: 10px; right: 42px;
+    width: auto;
+    padding: 0;
+  }
+  /* Colonne Actions */
+  table.main-table td:last-child {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--g100);
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    text-align: left !important;
+    justify-content: flex-start;
+  }
+  table.main-table td .badge { margin-left: 0; }
+  table.main-table td .av {
+    width: 24px; height: 24px;
+    font-size: 0.65rem;
+    display: inline-flex;
+  }
+  table.main-table tr td:empty { display: none; }
+
+  /* GRILLE UTILISATEURS */
+  .users-grid { padding: 10px; gap: 8px; }
+  .user-card { padding: 12px; gap: 10px; flex-wrap: wrap; }
+  .uc-actions { width: 100%; gap: 6px; flex-wrap: wrap; }
+  .uc-actions .btn { flex: 1; justify-content: center; font-size: 0.75rem; min-width: 80px; }
+
+  /* MODALS (popups) */
+  .modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 95vh;
+    border-radius: 16px 16px 0 0;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    margin: 0;
+    animation: mInMobile .25s ease both;
+  }
+  @keyframes mInMobile {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+  .modal-bd { align-items: flex-end; }
+  .mf-grid { grid-template-columns: 1fr; gap: 0; }
+  .m-body { gap: 10px; padding: 14px 16px; }
+  .m-hdr { padding: 14px 16px 12px; }
+  .m-foot { padding: 10px 16px; gap: 8px; }
+  .m-foot .btn { flex: 1; justify-content: center; padding: 10px; }
+
+  /* BANDEAUX ARCHIVES */
+  .archive-info { margin: 8px 10px 0; font-size: 0.78rem; padding: 8px 12px; }
+
+  /* TOAST NOTIFICATIONS */
+  .toast-container { bottom: 70px; right: 10px; left: 10px; }
+  .toast { min-width: unset; width: 100%; }
+}
   /* ════════════════════════════════════════════════════════════ */
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
