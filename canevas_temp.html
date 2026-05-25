@@ -831,6 +831,39 @@ th[data-col="repL"], td[data-col="repL"] {
   .mf-modal-dropdown label input[type="checkbox"] {
     accent-color: var(--blue); width: 14px; height: 14px; flex-shrink: 0;
   }
+
+  /* Accordéon intervenants/lots dans le modal filtres mobile */
+  .mf-accord { width: 100%; }
+  .mf-accord-btn {
+    width: 100%; display: flex; align-items: center; gap: 6px;
+    background: white; border: 1px solid var(--g300);
+    padding: 8px 12px; font-family: var(--font); font-size: 0.76rem;
+    font-weight: 500; color: var(--g700); cursor: pointer; text-align: left;
+  }
+  .mf-accord-btn:hover { background: var(--g50); }
+  .mf-accord-count {
+    background: var(--blue); color: white; font-size: 0.65rem;
+    font-weight: 700; padding: 1px 6px; border-radius: 100px;
+    display: none;
+  }
+  .mf-accord-count:not(:empty) { display: inline; }
+  .mf-accord-arrow { margin-left: auto; font-size: 0.7rem; color: var(--g400); transition: transform .2s; }
+  .mf-accord-arrow.open { transform: rotate(180deg); }
+  .mf-modal-dropdown {
+    display: none; width: 100%;
+    background: white; border: 1px solid var(--g200); border-top: none;
+    max-height: 180px; overflow-y: auto; padding: 4px 0;
+  }
+  .mf-modal-dropdown.show { display: block; }
+  .mf-modal-dropdown label {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px; font-size: 0.76rem;
+    cursor: pointer; color: var(--g700);
+  }
+  .mf-modal-dropdown label:hover { background: var(--g100); }
+  .mf-modal-dropdown label input[type="checkbox"] {
+    accent-color: var(--blue); width: 15px; height: 15px; flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
@@ -1203,10 +1236,12 @@ th[data-col="repL"], td[data-col="repL"] {
       <!-- Intervenants -->
       <div class="mf-section">
         <div class="mf-section-title">👷 Intervenants</div>
-        <div class="mf-select" style="display:block;width:100%;">
-          <div class="mf-select-button" onclick="toggleMfSelectModal('inter')" style="width:100%;box-sizing:border-box;">
-            Intervenants <span id="mfInterCountM"></span>
-          </div>
+        <div class="mf-accord">
+          <button class="mf-accord-btn" onclick="toggleMfSelectModal('inter')">
+            <span>Intervenants</span>
+            <span id="mfInterCountM" class="mf-accord-count"></span>
+            <span class="mf-accord-arrow" id="mfInterArrow">▾</span>
+          </button>
           <div class="mf-modal-dropdown" id="mfInterDropdownM"></div>
         </div>
       </div>
@@ -1214,10 +1249,12 @@ th[data-col="repL"], td[data-col="repL"] {
       <!-- Lots -->
       <div class="mf-section">
         <div class="mf-section-title">📦 Lots</div>
-        <div class="mf-select" style="display:block;width:100%;">
-          <div class="mf-select-button" onclick="toggleMfSelectModal('lot')" style="width:100%;box-sizing:border-box;">
-            Lots <span id="mfLotCountM"></span>
-          </div>
+        <div class="mf-accord">
+          <button class="mf-accord-btn" onclick="toggleMfSelectModal('lot')">
+            <span>Lots</span>
+            <span id="mfLotCountM" class="mf-accord-count"></span>
+            <span class="mf-accord-arrow" id="mfLotArrow">▾</span>
+          </button>
           <div class="mf-modal-dropdown" id="mfLotDropdownM"></div>
         </div>
       </div>
@@ -1426,13 +1463,19 @@ function _fillMfModalDropdown(which) {
     };
   });
   const n = selected.size;
-  if (cntEl) cntEl.textContent = n > 0 ? `(${n})` : '';
+  if (cntEl) cntEl.textContent = n > 0 ? n : '';
 }
 function toggleMfSelectModal(which) {
-  const id    = which === 'inter' ? 'mfInterDropdownM' : 'mfLotDropdownM';
-  const other = which === 'inter' ? 'mfLotDropdownM'   : 'mfInterDropdownM';
-  ge(id).classList.toggle('show');
-  if (ge(other)) ge(other).classList.remove('show');
+  const id       = which === 'inter' ? 'mfInterDropdownM' : 'mfLotDropdownM';
+  const otherId  = which === 'inter' ? 'mfLotDropdownM'   : 'mfInterDropdownM';
+  const arrowId  = which === 'inter' ? 'mfInterArrow'     : 'mfLotArrow';
+  const oArrowId = which === 'inter' ? 'mfLotArrow'       : 'mfInterArrow';
+  const el = ge(id);
+  const isOpen = el.classList.toggle('show');
+  if (ge(arrowId)) ge(arrowId).classList.toggle('open', isOpen);
+  // Fermer l'autre
+  if (ge(otherId)) ge(otherId).classList.remove('show');
+  if (ge(oArrowId)) ge(oArrowId).classList.remove('open');
 }
 function openMobileFilters() {
   ge('mf_num').value   = ge('qs_num')?.value  || '';
