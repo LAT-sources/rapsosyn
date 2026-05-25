@@ -946,10 +946,10 @@ th[data-col="repL"], td[data-col="repL"] {
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
-  <button class="tb-btn" onclick="openHistorique()" title="Historique des modifications">📋 Historique</button>
-  <button class="tb-btn" onclick="openInfoModal()" title="Infos">ⓘ</button>
+  <button class="tb-btn" onclick="openHistorique()" title="Historique des modifications">🕘</button>
+  <button class="tb-btn" onclick="openInfoModal()" title="Infos">🛈</button>
   <div class="actions-dropdown">
-    <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()"><span class="tb-menu-label"> ☰ MENU</span> <span class="tb-menu-arrow">▾</span></button>
+    <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()" style="display:none;"><span class="tb-menu-label"> ☰ MENU</span> <span class="tb-menu-arrow">▾</span></button>
     <div class="actions-menu" id="actionsMenu">
       <button onclick="openActualiserModal(); closeActionsMenu();">⟳ Mettre à jour</button>
       <button onclick="if(checkPasswordBeforeImport()) openImportModal(); closeActionsMenu();">↺ Rénitialiser le canevas</button>
