@@ -520,6 +520,34 @@ th[data-col="repL"], td[data-col="repL"] {
   display: table-cell !important;
   text-align: left !important;
 }
+    /* ── Reset des styles mobiles résiduels à l'impression ── */
+    .toolbar {
+      display: none !important;
+    }
+    .syn-header { display: none !important; }
+    .edit-panel { display: none !important; }
+    .overlay    { display: none !important; }
+    .panel-nav-mobile  { display: none !important; }
+    .tb-mobile-only    { display: none !important; }
+    .panel-hdr-mobile  { display: none !important; }
+    /* Forcer body/html en mode page normale */
+    html, body {
+      width: auto !important;
+      min-width: 0 !important;
+      max-width: none !important;
+      overflow: visible !important;
+      overflow-x: visible !important;
+      -webkit-overflow-scrolling: auto !important;
+    }
+    /* Neutraliser le scroll horizontal de la toolbar mobile */
+    .toolbar {
+      overflow: visible !important;
+      flex-wrap: wrap !important;
+    }
+    /* Colonnes tableau : désactiver min-width mobile et laisser les mm s'appliquer */
+    th, td {
+      min-width: 0 !important;
+    }
   }
 
   /* ══════════════ HISTORIQUE DES MODIFICATIONS ══════════════ */
@@ -653,7 +681,7 @@ th[data-col="repL"], td[data-col="repL"] {
   .tb-mobile-only   { display: none; }
   .panel-nav-mobile { display: none; }
 
-  @media (max-width: 640px) {
+  @media screen and (max-width: 640px) {
 
     /* ── Toolbar ── */
     .toolbar {
@@ -762,7 +790,7 @@ th[data-col="repL"], td[data-col="repL"] {
   }
 
   /* Desktop */
-  @media (min-width: 641px) {
+  @media screen and (min-width: 641px) {
     .tb-mobile-only   { display: none !important; }
     .panel-nav-mobile { display: none !important; }
     .panel-nav-desktop { display: inline-flex !important; }
@@ -815,7 +843,7 @@ th[data-col="repL"], td[data-col="repL"] {
 
   /* Boutons +PA et Filtres dans le header du panel : mobile seulement */
   .panel-hdr-mobile { display: none; }
-  @media (max-width: 640px) {
+  @media screen and (max-width: 640px) {
     .panel-hdr-mobile { display: inline-flex !important; }
   }
 
