@@ -748,6 +748,20 @@ th[data-col="repL"], td[data-col="repL"] {
     /* ── Tableau principal ── */
     .tbl-wrap { font-size: 0.72rem; }
 
+    /* ── Auto-agrandissement des champs ENT/MOE et SOCOTEC en mobile ── */
+    #e_repK,
+    #e_repL,
+    #pa_repK,
+    #pa_repL,
+    #rq_repK,
+    #rq_repL {
+      resize: none !important;
+      overflow: hidden !important;
+      min-height: 72px;
+      height: auto;
+      transition: height 0.1s ease;
+    }
+
   }
 
   /* Desktop */
@@ -1816,6 +1830,8 @@ function openEditPanel(fi){
   ge('overlay').classList.add('open');ge('editPanel').classList.add('open');
   document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
   const el=ge('row-'+fi);if(el)el.classList.add('row-highlight');
+  // Auto-resize des champs ENT/MOE et SOCOTEC (mobile)
+  requestAnimationFrame(()=>{['e_repK','e_repL'].forEach(id=>autoResizeTextarea(ge(id)));});
 }
 function closePanel(){ge('overlay').classList.remove('open');ge('editPanel').classList.remove('open');editingIdx=null;}
 function navRow(d){if(editingIdx!==null){let n=editingIdx+d;if(n>=0&&n<filteredRows.length)openEditPanel(n);}}
@@ -2271,6 +2287,29 @@ function loadLocal(){if(window.RAPSO_SYNTH_DATA)return;try{const r=localStorage.
 function ge(id){return document.getElementById(id);}
 
 loadColPrefs(); buildColPickerList(); rebuildTableHeader(); loadLocal(); applyFilters();
+
+/* ── Auto-resize des textareas ENT/MOE et SOCOTEC (mobile) ── */
+function autoResizeTextarea(el) {
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+function initAutoResizeFields() {
+  const ids = ['e_repK','e_repL','pa_repK','pa_repL','rq_repK','rq_repL'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => autoResizeTextarea(el));
+    // Déclencher au focus aussi (cas copier/coller)
+    el.addEventListener('focus', () => autoResizeTextarea(el));
+  });
+}
+// Lancer après le DOM prêt
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAutoResizeFields);
+} else {
+  initAutoResizeFields();
+}
 </script>
 </body>
 </html>
