@@ -333,8 +333,8 @@
   .rapide-detail-text { font-size: 0.8rem; line-height: 1.55; color: var(--g800); white-space: pre-wrap; word-break: break-word; }
   .rapide-edit-area { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
   .rapide-edit-area label { font-size: 0.63rem; font-weight: 700; text-transform: uppercase; color: var(--g500); }
-  .rapide-edit-area textarea, .rapide-edit-area input { border: 1px solid var(--g300); padding: 7px 9px; font-family: var(--font); font-size: 0.78rem; resize: vertical; width: 100%; }
-  .rapide-edit-area textarea { min-height: 60px; }
+  .rapide-edit-area textarea, .rapide-edit-area input { border: 1px solid var(--g300); padding: 7px 9px; font-family: var(--font); font-size: 0.78rem; resize: none; width: 100%; }
+  .rapide-edit-area textarea { min-height: 60px; overflow: hidden; }
   .rapide-footer {
     padding: 7px 12px; border-top: 1px solid var(--g200); display: flex;
     gap: 6px; flex-wrap: wrap; align-items: center; background: white; flex-shrink: 0;
@@ -748,20 +748,17 @@ th[data-col="repL"], td[data-col="repL"] {
     /* ── Tableau principal ── */
     .tbl-wrap { font-size: 0.72rem; }
 
-    /* ── Auto-agrandissement des champs ENT/MOE et SOCOTEC en mobile ── */
-    #e_repK,
-    #e_repL,
-    #pa_repK,
-    #pa_repL,
-    #rq_repK,
-    #rq_repL {
-      resize: none !important;
-      overflow: hidden !important;
-      min-height: 72px;
-      height: auto;
-      transition: height 0.1s ease;
-    }
+  }
 
+  /* ── Auto-agrandissement des champs ENT/MOE et SOCOTEC (volet latéral + version rapide) ── */
+  #e_repK, #e_repL,
+  #pa_repK, #pa_repL,
+  #rq_repK, #rq_repL {
+    resize: none !important;
+    overflow: hidden !important;
+    min-height: 72px;
+    height: auto;
+    transition: height 0.1s ease;
   }
 
   /* Desktop */
@@ -2084,7 +2081,7 @@ function rapApply(){
   updateRapButtonsState();
 }
 function updateRapButtonsState(){const oui=ge('rapBtnOui'),par=ge('rapBtnPar'),non=ge('rapBtnNon'),rd6=ge('rapBtnRd6');if(rapCurrent){oui.classList.toggle('active',rapCurrent.suivi==='Oui');par.classList.toggle('active',rapCurrent.suivi==='Par');non.classList.toggle('active',rapCurrent.suivi==='Non');rd6.classList.toggle('active',rapCurrent.rd6===true);}else{oui.classList.remove('active');par.classList.remove('active');non.classList.remove('active');rd6.classList.remove('active');}}
-function rapSelect(i,scroll=true){rapCurrent=rapFiltered[i];document.querySelectorAll('.rapide-item').forEach((el,idx)=>el.classList.toggle('selected',idx===i));if(scroll)document.querySelectorAll('.rapide-item')[i]?.scrollIntoView({block:'nearest'});const r=rapCurrent;ge('rapideObsText').innerHTML=escapeHtml(r.obs)||'—';const editArea=ge('rapideEditArea');editArea.style.display='flex';ge('rq_repK').value=r.repK||'';ge('rq_repL').value=r.repL||'';ge('rq_lots').value=r.lots||'';ge('rapSaveBtn').disabled=false;updateRapButtonsState();}
+function rapSelect(i,scroll=true){rapCurrent=rapFiltered[i];document.querySelectorAll('.rapide-item').forEach((el,idx)=>el.classList.toggle('selected',idx===i));if(scroll)document.querySelectorAll('.rapide-item')[i]?.scrollIntoView({block:'nearest'});const r=rapCurrent;ge('rapideObsText').innerHTML=escapeHtml(r.obs)||'—';const editArea=ge('rapideEditArea');editArea.style.display='flex';ge('rq_repK').value=r.repK||'';ge('rq_repL').value=r.repL||'';ge('rq_lots').value=r.lots||'';ge('rapSaveBtn').disabled=false;updateRapButtonsState();requestAnimationFrame(()=>{['rq_repK','rq_repL'].forEach(id=>autoResizeTextarea(ge(id)));});}
 function rapToggleSuivi(v){
   if(!rapCurrent)return;
   const gi=data[currentTab].findIndex(x=>x.id===rapCurrent.id);
