@@ -365,7 +365,14 @@
      Orientation paysage A3, toutes colonnes, en-tête compact
      ============================================================ */
   @media print {
-    @page { size: A3 landscape; margin: 8mm 6mm 12mm 6mm; }
+    @page {
+      size: A3 landscape;
+      margin: 8mm 6mm 12mm 6mm;
+    }
+    /* Forcer orientation paysage sur tous les navigateurs mobiles */
+    @page :first { size: A3 landscape; }
+    @page :left  { size: A3 landscape; }
+    @page :right { size: A3 landscape; }
     .syn-header, .toolbar, .overlay, .edit-panel,
     .modal-overlay, .empty-state, #colModal { display: none !important; }
     .print-header {
@@ -2313,7 +2320,30 @@ function ge(id){return document.getElementById(id);}
 
 loadColPrefs(); buildColPickerList(); rebuildTableHeader(); loadLocal(); applyFilters();
 
-/* ── Auto-resize des textareas ENT/MOE et SOCOTEC (mobile) ── */
+/* ── Forcer orientation paysage à l'impression (mobile) ── */
+(function() {
+  let _wasPortrait = false;
+
+  async function forceLandscape() {
+    // API Screen Orientation (Android Chrome, Firefox mobile)
+    if (screen.orientation && screen.orientation.lock) {
+      try {
+        await screen.orientation.lock('landscape');
+        _wasPortrait = true;
+      } catch(e) { /* Safari iOS ne supporte pas lock() — géré par CSS @page */ }
+    }
+  }
+
+  async function restoreOrientation() {
+    if (_wasPortrait && screen.orientation && screen.orientation.unlock) {
+      try { screen.orientation.unlock(); } catch(e) {}
+      _wasPortrait = false;
+    }
+  }
+
+  window.addEventListener('beforeprint', forceLandscape);
+  window.addEventListener('afterprint',  restoreOrientation);
+})();
 function autoResizeTextarea(el) {
   if (!el) return;
   el.style.height = 'auto';
