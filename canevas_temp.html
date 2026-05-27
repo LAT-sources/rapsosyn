@@ -790,6 +790,9 @@ th[data-col="repL"], td[data-col="repL"] {
   .lang-btn { background:none; border:none; cursor:pointer; font-size:0.95rem; padding:2px 4px; border-radius:4px; opacity:.4; transition:opacity .15s, background .15s; line-height:1; }
   .lang-btn:hover { opacity:.8; background:var(--g200); }
   .lang-btn.active { opacity:1; background:white; box-shadow:0 1px 3px rgba(0,0,0,.12); }
+  .translate-btn { background:var(--blue-l); color:var(--blue); border:1.5px solid var(--blue); font-size:0.75rem; padding:3px 9px; border-radius:6px; white-space:nowrap; }
+  .translate-btn:hover { background:var(--blue); color:white; }
+  .translate-btn.running { opacity:.7; pointer-events:none; }
 
   /* ── Auto-agrandissement des champs ENT/MOE et SOCOTEC (volet latéral + version rapide) ── */
   #e_repK, #e_repL,
@@ -999,6 +1002,9 @@ th[data-col="repL"], td[data-col="repL"] {
     <button class="lang-btn" id="lang-en" onclick="setLang('en')" title="English">🇬🇧</button>
     <button class="lang-btn" id="lang-de" onclick="setLang('de')" title="Deutsch">🇩🇪</button>
   </div>
+  <button class="tb-btn translate-btn" id="translateBtn" onclick="translateAllData()" title="Traduire les données" style="display:none;">
+    <span id="translateBtnIcon">🌐</span> <span id="translateBtnLabel">Traduire</span>
+  </button>
   <div class="actions-dropdown">
     <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()" style="display:none;"><span class="tb-menu-label"> ☰ MENU</span> <span class="tb-menu-arrow">▾</span></button>
     <div class="actions-menu" id="actionsMenu">
@@ -2631,6 +2637,122 @@ function setLang(lang) {
   if (typeof renderTable === 'function') renderTable();
   if (typeof buildColPickerList === 'function') buildColPickerList();
   if (typeof renderHistorique === 'function' && document.getElementById('histModal')?.classList.contains('open')) renderHistorique();
+  // Afficher le bouton traduire seulement si on n'est pas en FR
+  const btn = document.getElementById('translateBtn');
+  if (btn) {
+    btn.style.display = lang === 'fr' ? 'none' : '';
+    const lbl = document.getElementById('translateBtnLabel');
+    if (lbl) lbl.textContent = lang === 'en' ? 'Translate' : 'Übersetzen';
+  }
+}
+
+/* ══════════════════════════════════════════
+   TRADUCTION DES DONNÉES via MyMemory (gratuit)
+   ══════════════════════════════════════════ */
+
+// Cache pour éviter de retraduire les mêmes textes
+const _transCache = {};
+// Données originales FR sauvegardées avant traduction
+let _origData = null;
+let _translatedLang = null;
+
+async function myMemoryTranslate(text, targetLang) {
+  if (!text || !text.trim()) return text;
+  const key = targetLang + '|' + text;
+  if (_transCache[key]) return _transCache[key];
+  const langMap = { en: 'fr|en', de: 'fr|de' };
+  const pair = langMap[targetLang] || 'fr|en';
+  try {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text.slice(0, 500))}&langpair=${pair}`;
+    const res = await fetch(url);
+    const json = await res.json();
+    const result = json?.responseData?.translatedText || text;
+    _transCache[key] = result;
+    return result;
+  } catch(e) {
+    return text;
+  }
+}
+
+// Champs à traduire par ligne
+const TRANS_FIELDS = ['disp', 'desc', 'obs', 'repK', 'repL', 'lots'];
+
+async function translateAllData() {
+  if (!_currentLang || _currentLang === 'fr') return;
+
+  const btn = document.getElementById('translateBtn');
+  const icon = document.getElementById('translateBtnIcon');
+  const lbl = document.getElementById('translateBtnLabel');
+
+  // Si déjà traduit dans cette langue, restaurer l'original
+  if (_translatedLang === _currentLang && _origData) {
+    data.v2 = JSON.parse(_origData.v2);
+    data.v1 = JSON.parse(_origData.v1);
+    _origData = null;
+    _translatedLang = null;
+    btn.style.background = '';
+    btn.style.color = '';
+    lbl.textContent = _currentLang === 'en' ? 'Translate' : 'Übersetzen';
+    icon.textContent = '🌐';
+    if (typeof renderTable === 'function') renderTable();
+    return;
+  }
+
+  // Sauvegarder les données originales
+  _origData = {
+    v2: JSON.stringify(data.v2 || []),
+    v1: JSON.stringify(data.v1 || [])
+  };
+
+  btn.classList.add('running');
+  icon.textContent = '⏳';
+  lbl.textContent = _currentLang === 'en' ? 'Translating…' : 'Übersetze…';
+
+  const allRows = [...(data.v2 || []), ...(data.v1 || [])];
+  // Collecter tous les textes uniques à traduire
+  const toTranslate = new Set();
+  allRows.forEach(r => {
+    TRANS_FIELDS.forEach(f => { if (r[f] && r[f].trim()) toTranslate.add(r[f]); });
+  });
+
+  const texts = [...toTranslate];
+  let done = 0;
+
+  // Traduire par batch de 5 (respecter le rate limit MyMemory)
+  for (let i = 0; i < texts.length; i += 5) {
+    const batch = texts.slice(i, i + 5);
+    await Promise.all(batch.map(txt => myMemoryTranslate(txt, _currentLang)));
+    done += batch.length;
+    const pct = Math.round((done / texts.length) * 100);
+    lbl.textContent = `${pct}%`;
+    // Petit délai pour respecter le rate limit
+    if (i + 5 < texts.length) await new Promise(r => setTimeout(r, 300));
+  }
+
+  // Appliquer les traductions aux données
+  const translate = async (r) => {
+    const tr = { ...r };
+    for (const f of TRANS_FIELDS) {
+      if (r[f] && r[f].trim()) {
+        tr[f] = _transCache[_currentLang + '|' + r[f]] || r[f];
+      }
+    }
+    return tr;
+  };
+
+  data.v2 = await Promise.all((data.v2 || []).map(translate));
+  data.v1 = await Promise.all((data.v1 || []).map(translate));
+
+  _translatedLang = _currentLang;
+  btn.classList.remove('running');
+  icon.textContent = '↩';
+  lbl.textContent = _currentLang === 'en' ? 'Restore FR' : 'FR zurück';
+  btn.style.background = 'var(--green-l)';
+  btn.style.color = '#15803d';
+  btn.style.borderColor = '#86efac';
+
+  if (typeof renderTable === 'function') renderTable();
+  if (typeof applyFilters === 'function') applyFilters();
 }
 
 // Appliquer au chargement
