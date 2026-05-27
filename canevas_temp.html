@@ -937,7 +937,7 @@ th[data-col="repL"], td[data-col="repL"] {
 
 <div class="print-footer" id="printFooter">
   <span id="printFooterLeft">SOCOTEC — Récapitulatif des avis</span>
-  <span>Imprimé le <span id="printFooterDate"></span></span>
+  <span data-i18n="print_date_label">Imprimé le</span> <span id="printFooterDate"></span>
 </div>
 
 <!-- HEADER (affaire/dossier masqués) -->
@@ -1025,7 +1025,7 @@ th[data-col="repL"], td[data-col="repL"] {
     <thead id="mainThead"><tr id="headerRow"><tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
-  <div class="empty-state" id="emptyState" style="display:none"><div style="font-size:1.5rem;color:var(--g300);">—</div><div>Aucun avis trouvé</div></div>
+  <div class="empty-state" id="emptyState" style="display:none"><div style="font-size:1.5rem;color:var(--g300);">—</div><div data-i18n="empty_avis">Aucun avis trouvé</div></div>
 </div>
 
 <!-- PANEL LATERAL -->
@@ -1120,14 +1120,14 @@ th[data-col="repL"], td[data-col="repL"] {
       <div class="rapide-filter-group">
         <span style="font-size:0.7rem;font-weight:600;" data-i18n="lbl_lots">Lots</span>
         <div class="mf-select" style="display:inline-block;">
-          <div class="mf-select-button" onclick="toggleRapMf('lots')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
+          <div class="mf-select-button" onclick="toggleRapMf('lots')" style="padding:2px 20px 2px 8px;font-size:0.7rem;" data-i18n="btn_select">Sélectionner</div>
           <div class="mf-select-dropdown" id="rapMfLotsDrop" style="min-width:140px;"></div>
         </div>
       </div>
       <div class="rapide-filter-group">
         <span style="font-size:0.7rem;font-weight:600;" data-i18n="lbl_intervenant">Intervenant</span>
         <div class="mf-select" style="display:inline-block;">
-          <div class="mf-select-button" onclick="toggleRapMf('inter')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
+          <div class="mf-select-button" onclick="toggleRapMf('inter')" style="padding:2px 20px 2px 8px;font-size:0.7rem;" data-i18n="btn_select">Sélectionner</div>
           <div class="mf-select-dropdown" id="rapMfInterDrop" style="min-width:140px;"></div>
         </div>
       </div>
@@ -1216,8 +1216,8 @@ th[data-col="repL"], td[data-col="repL"] {
     <div class="hist-scroll">
       <div id="histEmpty" class="hist-empty" style="display:none;">
         <div class="hist-empty-ico">📭</div>
-        <div class="hist-empty-msg">Aucune modification enregistrée</div>
-        <div class="hist-empty-sub">Les actions apparaîtront ici au fur et à mesure</div>
+        <div class="hist-empty-msg" data-i18n="hist_empty_msg">Aucune modification enregistrée</div>
+        <div class="hist-empty-sub" data-i18n="hist_empty_sub">Les actions apparaîtront ici au fur et à mesure</div>
       </div>
       <table class="hist-table" id="histTable">
         <thead>
@@ -1511,7 +1511,7 @@ function _fillMfModalDropdown(which) {
         const chk  = selected.has(v) ? 'checked' : '';
         return `<label><input type="checkbox" ${chk} data-val="${safe}"> ${safe}</label>`;
       }).join('')
-    : `<div style="padding:8px 10px;color:var(--g400);font-size:0.73rem;">Aucun</div>`;
+    : `<div style="padding:8px 10px;color:var(--g400);font-size:0.73rem;">${t("lbl_none")}</div>`;
   // Brancher les événements
   dst.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     cb.onchange = function() {
@@ -1613,20 +1613,22 @@ function logAction(type, numAvis, detail) {
 
 function typeConfig(type) {
   const map = {
-    edit:        { label: 'Modification',   icon: '✏️',  cls: 'ht-edit'   },
-    suivi_oui:   { label: 'Levé',           icon: '✅',  cls: 'ht-suivi'  },
-    suivi_par:   { label: 'Partiel',        icon: '⚠️',  cls: 'ht-par'    },
-    suivi_non:   { label: 'Maintenu',       icon: '❌',  cls: 'ht-non'    },
-    suivi_vide:  { label: 'Suivi effacé',   icon: '—',   cls: 'ht-edit'   },
-    rd6_on:      { label: 'RD6 activé',     icon: '🟣',  cls: 'ht-rd6'    },
-    rd6_off:     { label: 'RD6 retiré',     icon: '🟣',  cls: 'ht-rd6'    },
-    pa:          { label: 'PA ajouté',      icon: '🟡',  cls: 'ht-pa'     },
-    add:         { label: 'Avis ajouté',    icon: '🟢',  cls: 'ht-add'    },
-    delete:      { label: 'Supprimé',       icon: '🔴',  cls: 'ht-del'    },
-    import:      { label: 'Import',         icon: '📥',  cls: 'ht-import' },
-    actualiser:  { label: 'Actualisation',  icon: '🔄',  cls: 'ht-import' },
+    edit:        { i18n:'act_edit',       label: 'Modification',   icon: '✏️',  cls: 'ht-edit'   },
+    suivi_oui:   { i18n:'act_leve',       label: 'Levé',           icon: '✅',  cls: 'ht-suivi'  },
+    suivi_par:   { i18n:'act_partiel',    label: 'Partiel',        icon: '⚠️',  cls: 'ht-par'    },
+    suivi_non:   { i18n:'act_maintenu',   label: 'Maintenu',       icon: '❌',  cls: 'ht-non'    },
+    suivi_vide:  { i18n:'act_suivi_eff',  label: 'Suivi effacé',   icon: '—',   cls: 'ht-edit'   },
+    rd6_on:      { i18n:'act_rd6_on',     label: 'RD6 activé',     icon: '🟣',  cls: 'ht-rd6'    },
+    rd6_off:     { i18n:'act_rd6_off',    label: 'RD6 retiré',     icon: '🟣',  cls: 'ht-rd6'    },
+    pa:          { i18n:'act_pa',         label: 'PA ajouté',      icon: '🟡',  cls: 'ht-pa'     },
+    add:         { i18n:'act_add',        label: 'Avis ajouté',    icon: '🟢',  cls: 'ht-add'    },
+    delete:      { i18n:'act_delete',     label: 'Supprimé',       icon: '🔴',  cls: 'ht-del'    },
+    import:      { i18n:'act_import',     label: 'Import',         icon: '📥',  cls: 'ht-import' },
+    actualiser:  { i18n:'act_actualiser', label: 'Actualisation',  icon: '🔄',  cls: 'ht-import' },
   };
-  return map[type] || { label: type, icon: '•', cls: 'ht-edit' };
+  const info = map[type] || { label: type, icon: '•', cls: 'ht-edit' };
+  if (info.i18n && typeof t === 'function') info.label = t(info.i18n);
+  return info;
 }
 
 function avatarColor(initiales) {
@@ -1668,9 +1670,9 @@ function clearHistorique() {
   if(!isAdmin) {
     const pwd = prompt('Action réservée aux administrateurs.\nMot de passe requis :');
     if(pwd === null) return;
-    if(pwd !== HIST_CLEAR_PWD) { alert('Mot de passe incorrect.'); return; }
+    if(pwd !== HIST_CLEAR_PWD) { alert(t('err_wrong_pwd')); return; }
   }
-  if(!confirm('Effacer tout l\'historique de ce canevas ? Cette action est irréversible.')) return;
+  if(!confirm(t('confirm_clear_hist'))) return;
   data.historique = [];
   persistLocal();
   renderHistorique();
@@ -1688,8 +1690,8 @@ function renderHistorique() {
     return true;
   });
   const n = rows.length;
-  ge('histCount').textContent = n + ' entrée' + (n > 1 ? 's' : '');
-  ge('histHdrSub').textContent = `${(data.historique||[]).length} action(s) au total · filtré : ${n}`;
+  ge('histCount').textContent = n + ' ' + t('entry') + (n > 1 ? t('entry_pl_suffix') : '');
+  ge('histHdrSub').textContent = `${(data.historique||[]).length} ${t('hist_total')} · ${t('hist_filtered')} : ${n}`;
 
   const tbody = ge('histBody');
   const table = ge('histTable');
@@ -1813,28 +1815,29 @@ function resetFilters(){
 
 // --- Colonnes principales ---
 const COL_DEF = [
-  {key:'num', label:'N°', visible:true, locked:true, width:'49px'},
-  {key:'ref', label:'Réf', visible:true, width:'49px'},
-  {key:'date', label:'Date', visible:true, width:'100px'},
-  {key:'inter', label:'Intervenant', visible:true, width:'90px'},
-  {key:'disp', label:'Dispositions', visible:true, width:'150px'},
-  {key:'desc', label:'Description', visible:false, width:'130px'},
-  {key:'avis', label:'Avis', visible:true, width:'37px'},
-  {key:'obs', label:'Observations', visible:true, width:'220px'},
-  {key:'docs', label:'Documents', visible:false, width:'100px'},
-  {key:'suivi', label:'Suivi', visible:true, width:'61px'},
-  {key:'repK', label:'Rép. ENT / MOE', visible:true, width:'180px'},
-  {key:'repL', label:'Obs. SOCOTEC', visible:false, width:'180px'},
-  {key:'lots', label:'Lots', visible:true, width:'80px'}
+  {key:'num',  i18n:'col_num',  label:'N°',             visible:true,  locked:true, width:'49px'},
+  {key:'ref',  i18n:'col_ref',  label:'Réf',            visible:true,  width:'49px'},
+  {key:'date', i18n:'col_date', label:'Date',           visible:true,  width:'100px'},
+  {key:'inter',i18n:'col_inter',label:'Intervenant',    visible:true,  width:'90px'},
+  {key:'disp', i18n:'col_disp', label:'Dispositions',   visible:true,  width:'150px'},
+  {key:'desc', i18n:'col_desc', label:'Description',    visible:false, width:'130px'},
+  {key:'avis', i18n:'col_avis', label:'Avis',           visible:true,  width:'37px'},
+  {key:'obs',  i18n:'col_obs',  label:'Observations',   visible:true,  width:'220px'},
+  {key:'docs', i18n:'col_docs', label:'Documents',      visible:false, width:'100px'},
+  {key:'suivi',i18n:'col_suivi',label:'Suivi',          visible:true,  width:'61px'},
+  {key:'repK', i18n:'col_repK', label:'Rép. ENT / MOE', visible:true,  width:'180px'},
+  {key:'repL', i18n:'col_repL', label:'Obs. SOCOTEC',   visible:false, width:'180px'},
+  {key:'lots', i18n:'col_lots', label:'Lots',           visible:true,  width:'80px'}
 ];
 function loadColPrefs(){try{const s=localStorage.getItem('rs_col_prefs');if(s){const p=JSON.parse(s);COL_DEF.forEach(c=>{if(p[c.key]!==undefined)c.visible=p[c.key];});}}catch(e){}}
 function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localStorage.setItem('rs_col_prefs',JSON.stringify(p));}
-function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.setAttribute('data-col',c.key);th.onclick=()=>sortBy(c.key);hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
-function toggleColPicker(){const listDiv=document.getElementById('colModalBody');listDiv.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');document.getElementById('colModal').classList.add('open');}
+function colLabel(c){return(typeof t==='function'&&c.i18n)?t(c.i18n):c.label;}
+function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=colLabel(c);th.style.width=c.width;th.setAttribute('data-col',c.key);th.onclick=()=>sortBy(c.key);hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
+function toggleColPicker(){const listDiv=document.getElementById('colModalBody');listDiv.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${colLabel(c)}</span></label>`).join('');document.getElementById('colModal').classList.add('open');}
 function closeColModal(){document.getElementById('colModal').classList.remove('open');}
-function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
+function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${colLabel(c)}</span></label>`).join('');}
 function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
-function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();const mb=document.getElementById('colModalBody');if(mb)mb.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
+function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();const mb=document.getElementById('colModalBody');if(mb)mb.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${colLabel(c)}</span></label>`).join('');}
 function fmtDate(d){if(!d)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}return d;}
 function renderTable(){
   const tbody=ge('tableBody'),empty=ge('emptyState');
@@ -1864,7 +1867,7 @@ function switchTab(t){currentTab=t;ge('tabV2').classList.toggle('active',t==='v2
 // --- Panel édition ---
 function openEditPanel(fi){
   editingIdx=fi;const r=filteredRows[fi];
-  ge('panelTitle').innerHTML=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - Avis : ${r.avis||'-'}`;
+  ge('panelTitle').innerHTML=`${t('lbl_avis')} n°: ${r.num||'('+t('lbl_empty')+')'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - ${t('lbl_avis')} : ${r.avis||'-'}`;
   ge('panelNum').innerText=r.num||'(sans n°)';
   ge('e_lblColE').innerText=r.disp||'—';
   ge('e_obs_readonly').innerText=r.obs||'—';
@@ -1923,7 +1926,7 @@ function openPAModal(){['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>ge(id).checked
 function closePAModal(){ge('paModal').classList.remove('open');}
 function addPA(){
   const cat=ge('pa_F').checked?'F':ge('pa_S').checked?'S':ge('pa_D').checked?'D':ge('pa_PM').checked?'PM':'';
-  if(!cat){ge('paFeedback').innerText='⚠️ Cochez F, S, D ou PM';setTimeout(()=>ge('paFeedback').innerText='',2000);return;}
+  if(!cat){ge('paFeedback').innerText='⚠️ '+t('pa_cat_required');setTimeout(()=>ge('paFeedback').innerText='',2000);return;}
   let maxPA=0;getRows().forEach(r=>{if((r.num||'').startsWith('PA')){let n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
   data[currentTab].push(makeRow({num:'PA'+(maxPA+1),date:ge('pa_date').value||new Date().toISOString().slice(0,10),disp:ge('pa_disp').value,avis:cat,obs:ge('pa_obs').value,repK:ge('pa_repK').value,repL:ge('pa_repL').value,lots:ge('pa_lots').value}));
   const paNum='PA'+(maxPA+1);
@@ -1970,10 +1973,10 @@ function printReport() {
   ge('printAffaire').textContent = affaire
     ? 'Récapitulatif des avis — ' + affaire
     : 'Récapitulatif des avis';
-  ge('printDossier').textContent = dossier ? 'Dossier : ' + dossier : '';
+  ge('printDossier').textContent = dossier ? t('lbl_dossier_print') + ' ' + dossier : '';
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR');
-  ge('printDateNow').textContent = 'Imprimé le ' + dateStr;
+  ge('printDateNow').textContent = t('print_date') + ' ' + dateStr;
   ge('printFooterDate').textContent = dateStr;
   ge('printFooterLeft').textContent = 'SOCOTEC' + (affaire ? ' — ' + affaire : '');
 
@@ -2079,14 +2082,14 @@ function buildRapMfOptions(){
     interDrop.innerHTML=inters.map(v=>{
       const safe=escapeHtmlAttr(v);
       return `<label><input type="checkbox" value="${safe}" data-inter="${v.replace(/"/g,'&quot;')}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(v)}</label>`;
-    }).join('')||'<div style="padding:8px;">Aucun</div>';
+    }).join('')||`<div style="padding:8px;">${t('lbl_none')}</div>`;
   }
   const lotDrop=document.getElementById('rapMfLotsDrop');
   if(lotDrop){
     lotDrop.innerHTML=lots.map(v=>{
       const safe=escapeHtmlAttr(v);
       return `<label><input type="checkbox" value="${safe}" data-lot="${v.replace(/"/g,'&quot;')}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(v)}</label>`;
-    }).join('')||'<div style="padding:8px;">Aucun</div>';
+    }).join('')||`<div style="padding:8px;">${t('lbl_none')}</div>`;
   }
 }
 function toggleRapMulti(type,val,checked){if(type==='inter')checked?rapSelectedInters.add(val):rapSelectedInters.delete(val);else checked?rapSelectedLots.add(val):rapSelectedLots.delete(val);rapApply();}
@@ -2113,7 +2116,7 @@ function rapApply(){
   ge('rapStatsSDF').innerHTML=`<span class="s">S=${sCount}</span> / <span class="d">D=${dCount}</span> / <span class="f">F=${fCount}</span>`;
   ge('rapCnt').innerHTML=`(${rapFiltered.length})`;
   const listDiv=ge('rapideList');
-  if(!rapFiltered.length){listDiv.innerHTML='<div class="empty-state" style="padding:20px"><div>Aucun avis</div></div>';return;}
+  if(!rapFiltered.length){listDiv.innerHTML=`<div class="empty-state" style="padding:20px"><div>${t('empty_avis')}</div></div>`;return;}
   listDiv.innerHTML=rapFiltered.map((r,i)=>{
     let badge='';
     if(r.suivi==='Oui')badge='<span class="badge badge-oui" style="font-size:0.6rem;margin-right:4px;">✅</span>';
@@ -2171,7 +2174,7 @@ function rapSaveTexts(){
   btn.textContent='✅ Sauvegardé';
   btn.disabled=true;
   setTimeout(()=>{
-    btn.textContent='Valider';
+    btn.textContent=t('btn_validate');
     if(rapCurrent) btn.disabled=false;
   },2000);
 }
@@ -2194,13 +2197,13 @@ function closeStatsModal(){ge('statsModal').classList.remove('open');}
 
 // --- Export / Import Excel ---
 async function exportWithExcelJS(){
-  if(typeof ExcelJS==='undefined'){alert('ExcelJS non chargé');return;}
+  if(typeof ExcelJS==='undefined'){alert(t('err_exceljs_missing'));return;}
   try{
     const response=await fetch(TEMPLATE_URL);if(!response.ok)throw new Error(`HTTP ${response.status}`);
     const buffer=await response.arrayBuffer();const workbook=new ExcelJS.Workbook();await workbook.xlsx.load(buffer);
-    let worksheet=workbook.getWorksheet('RapsoV2');if(!worksheet){worksheet=workbook.worksheets[0];if(!worksheet)throw new Error('Aucune feuille trouvée.');}
+    let worksheet=workbook.getWorksheet('RapsoV2');if(!worksheet){worksheet=workbook.worksheets[0];if(!worksheet)throw new Error(t('err_no_sheet'));}
     const rows=getRows();const affaire=ge('affaireDisplay').innerText.trim()||'Sans nom';const dossier=ge('dossierInput').value.trim()||'';
-    worksheet.getCell('B1').value=`Affaire : ${affaire}`;worksheet.getCell('B2').value=`Dossier : ${dossier}`;
+    worksheet.getCell('B1').value=`${t('lbl_affaire_excel')} ${affaire}`;worksheet.getCell('B2').value=`${t('lbl_dossier_excel')} ${dossier}`;
     const lastRow=worksheet.rowCount;for(let r=4;r<=lastRow;r++){const row=worksheet.getRow(r);for(let c=1;c<=13;c++){const cell=row.getCell(c);if(typeof cell.value!=='object'||!cell.value||!cell.value.formula){cell.value=null;}}}
     rows.forEach((r,i)=>{const excelRowNum=4+i;const row=worksheet.getRow(excelRowNum);row.getCell(1).value=r.num;row.getCell(2).value=r.ref;row.getCell(3).value=fmtDate(r.date);row.getCell(4).value=cleanIntervenant(r.inter);row.getCell(5).value=r.disp;row.getCell(6).value=r.desc;row.getCell(7).value=r.avis;row.getCell(8).value=r.obs;row.getCell(9).value=r.docs;row.getCell(10).value=r.suivi;row.getCell(11).value=r.repK;row.getCell(12).value=r.repL;row.getCell(13).value=r.lots;});
     const bufferOut=await workbook.xlsx.writeBuffer();const blob=new Blob([bufferOut],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
@@ -2213,8 +2216,8 @@ function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substrin
 function hasRappel(obs){if(!obs)return false;let s=String(obs);return s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l'observation précédente:")||s.includes("Rappel de l'observation précédente :");}
 function updateParentAffaire(affaire){if(window.parent&&window.parent!==window)window.parent.postMessage({type:'rapso_update_affaire',canId:window.CANEVAS_ID,affaire},'*');}
 function processXLSX(file,mode){
-  const sid=mode==='actualiser'?'actualiserStatus':'importStatus';ge(sid).textContent='Lecture...';
-  if(mode==='actualiser'){const nomFichier=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');if(!confirm(`Mettre à jour « ${nomFichier} » ?`)){ge(sid).textContent='Annulé';return;}}
+  const sid=mode==='actualiser'?'actualiserStatus':'importStatus';ge(sid).textContent=t('status_reading');
+  if(mode==='actualiser'){const nomFichier=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');if(!confirm(t('confirm_update').replace('{name}',nomFichier))){ge(sid).textContent=t('status_cancelled');return;}}
   const reader=new FileReader();
   reader.onload=e=>{
     try{
@@ -2265,7 +2268,7 @@ function processXLSX(file,mode){
           }else{ex.push(s);add++;}
         }
         ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num),undefined,{numeric:true}));data[target]=ex;currentTab=target;ge(sid).textContent=`✅ ${up} mis à jour, ${add} ajoutés`;
-      }else{if(!confirm(`${src.length} lignes → ${target} ?`)){ge(sid).textContent='Annulé';return;}data[target]=src;currentTab=target;ge(sid).textContent=`✅ ${src.length} avis importés`;}
+      }else{if(!confirm(`${src.length} `+t('confirm_import_lines')+` → ${target} ?`)){ge(sid).textContent=t('status_cancelled');return;}data[target]=src;currentTab=target;ge(sid).textContent=`✅ ${src.length} `+t('status_imported');}
       ge('tabV2').classList.toggle('active',target==='v2');ge('tabV1').classList.toggle('active',target==='v1');
       selectedIntervenants.clear();selectedLots.clear();
       logAction(mode==='actualiser'?'actualiser':'import','—', (mode==='actualiser'?'Actualisation':'Import')+' Excel : '+src.length+' avis');
@@ -2320,7 +2323,7 @@ function closeMigrationModal(){document.getElementById('migrationModal').classLi
 function handleMigrationFileImport(input){
   const file=input.files[0];if(!file)return;const statusEl=document.getElementById('migrationStatus');statusEl.textContent='Lecture...';
   const reader=new FileReader();
-  reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent='Aucune donnée';return;}if(!confirm(`${src.length} avis → ${currentTab} ?`)){statusEl.textContent='Annulé';return;}data[currentTab]=src;logAction('import','—','Migration Excel : '+src.length+' avis');selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} avis importés`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);
+  reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent=t('status_no_data');return;}if(!confirm(`${src.length} ${t('avis_label')} → ${currentTab} ?`)){statusEl.textContent=t('status_cancelled');return;}data[currentTab]=src;logAction('import','—',t('log_migration')+src.length+' '+t('avis_label'));selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} ${t('status_imported')}`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);
 }
 const migrationDropzone=document.getElementById('migrationDropzone');
 if(migrationDropzone){migrationDropzone.addEventListener('dragover',e=>{e.preventDefault();migrationDropzone.style.borderColor='var(--blue)';});migrationDropzone.addEventListener('dragleave',()=>migrationDropzone.style.borderColor='');migrationDropzone.addEventListener('drop',e=>{e.preventDefault();migrationDropzone.style.borderColor='';const file=e.dataTransfer.files[0];if(file)handleMigrationFileImport({files:[file]});});}
@@ -2390,6 +2393,12 @@ const I18N = {
     lbl_intervenants:'Intervenants', lbl_lots:'Lots concernés', lbl_lots_short:'Lots',
     title_reset_filters:'Réinitialiser les filtres',
     btn_filters:'⚙ Filtres', btn_add:'+ Ajouter', btn_rapide:'⚡ Vision rapide',
+    btn_select:'Sélectionner',
+    /* Colonnes tableau */
+    col_num:'N°', col_ref:'Réf', col_date:'Date', col_inter:'Intervenant',
+    col_disp:'Dispositions', col_desc:'Description', col_avis:'Avis',
+    col_obs:'Observations', col_docs:'Documents', col_suivi:'Suivi',
+    col_repK:'Rép. ENT / MOE', col_repL:'Obs. SOCOTEC', col_lots:'Lots',
     /* Menu actions */
     menu_update:'⟳ Mettre à jour', menu_reset:'↺ Réinitialiser le canevas',
     menu_migration:'⇄ Migration', menu_save_local:'⤓ Enregistrer en local',
@@ -2406,30 +2415,47 @@ const I18N = {
     btn_save:'Enregistrer', btn_delete:'Sup', btn_prev:'↑ Préc', btn_next:'Suiv ↓',
     btn_cancel:'Annuler', btn_validate:'Valider', btn_close:'Fermer', btn_apply:'Appliquer',
     feedback_saved:'✓ Enregistré !',
+    lbl_avis:'Avis', lbl_empty:'vide', lbl_none:'Aucun',
+    /* Impression */
+    print_date:'Imprimé le', print_date_label:'Imprimé le',
+    lbl_dossier_print:'Dossier :', lbl_affaire_excel:'Affaire :', lbl_dossier_excel:'Dossier :',
     /* Modals */
     modal_info_title:'Informations du dossier', lbl_affaire:'AFFAIRE', lbl_dossier:'DOSSIER',
     ph_affaire:'Nom de l\'affaire', ph_dossier:'N° de dossier',
     modal_pa_title:'Ajouter PA', lbl_categorie:'Catégorie', lbl_disp:'Dispositions',
     btn_add_pa:'Ajouter PA', lbl_intervenant:'Intervenant',
     modal_add_title:'Nouvel avis', lbl_num_avis:'N° Avis', lbl_ref:'Id / Réf',
-    lbl_desc:'Description', lbl_avis:'Avis', btn_add_row:'+ Ajouter',
+    lbl_desc:'Description', btn_add_row:'+ Ajouter',
     modal_import_title:'Importer un fichier Excel', modal_update_title:'Actualiser les données',
     dropzone_text:'Cliquez ou déposez un fichier .xlsx/.xlsm',
     dropzone_excel:'Cliquez ou déposez un fichier Excel',
     /* Historique */
     hist_title:'Historique des modifications', hist_sub:'Journal des actions enregistrées',
+    hist_total:'action(s) au total', hist_filtered:'filtré',
     lbl_utilisateur:'Utilisateur', lbl_action:'Action', lbl_detail:'Détail',
-    th_datetime:'Date / Heure',
+    th_datetime:'Date / Heure', entry:'entrée', entry_pl_suffix:'s',
     opt_all:'Toutes', opt_edit:'✏️ Modification texte', opt_leve:'✅ Levé',
     opt_partiel:'⚠️ Partiel', opt_maintenu:'❌ Maintenu', opt_suivi_eff:'— Suivi effacé',
     opt_rd6_on:'🟣 RD6 activé', opt_rd6_off:'🟣 RD6 retiré', opt_pa:'🟡 PA ajouté',
     opt_add:'🟢 Avis ajouté', opt_delete:'🔴 Suppression', opt_import:'📥 Import',
     opt_actualiser:'🔄 Actualisation',
+    act_edit:'Modification', act_leve:'Levé', act_partiel:'Partiel',
+    act_maintenu:'Maintenu', act_suivi_eff:'Suivi effacé', act_rd6_on:'RD6 activé',
+    act_rd6_off:'RD6 retiré', act_pa:'PA ajouté', act_add:'Avis ajouté',
+    act_delete:'Supprimé', act_import:'Import', act_actualiser:'Actualisation',
     btn_clear_hist:'🗑 Effacer l\'historique', btn_export_csv:'⤓ Exporter CSV',
     ph_user:'Prénom Nom...',
+    hist_empty_msg:'Aucune modification enregistrée', hist_empty_sub:'Les actions apparaîtront ici au fur et à mesure',
     /* Filtres mobile */
     sec_search:'🔍 Recherche', sec_type_disp:'🏷 Type de disposition',
     sec_intervenants:'👷 Intervenants', sec_lots:'📦 Lots',
+    /* Messages JS */
+    empty_avis:'Aucun avis trouvé',
+    err_wrong_pwd:'Mot de passe incorrect.',
+    confirm_clear_hist:'Effacer tout l\'historique de ce canevas ? Cette action est irréversible.',
+    status_no_data:'Aucune donnée', status_cancelled:'Annulé', status_imported:'avis importés',
+    avis_label:'avis', log_migration:'Migration Excel : ',
+    err_exceljs_missing:'ExcelJS non chargé', err_no_sheet:'Aucune feuille trouvée.',
   },
 
   en: {
@@ -2439,6 +2465,11 @@ const I18N = {
     lbl_intervenants:'Stakeholders', lbl_lots:'Lots concerned', lbl_lots_short:'Lots',
     title_reset_filters:'Reset filters',
     btn_filters:'⚙ Filters', btn_add:'+ Add', btn_rapide:'⚡ Quick view',
+    btn_select:'Select',
+    col_num:'No.', col_ref:'Ref', col_date:'Date', col_inter:'Stakeholder',
+    col_disp:'Provisions', col_desc:'Description', col_avis:'Opinion',
+    col_obs:'Observations', col_docs:'Documents', col_suivi:'Status',
+    col_repK:'ENT / MOE resp.', col_repL:'SOCOTEC obs.', col_lots:'Lots',
     menu_update:'⟳ Update', menu_reset:'↺ Reset canvas',
     menu_migration:'⇄ Migration', menu_save_local:'⤓ Save locally',
     menu_open_local:'⤒ Open local file', menu_stats:'◔ Statistics',
@@ -2453,36 +2484,56 @@ const I18N = {
     btn_save:'Save', btn_delete:'Del', btn_prev:'↑ Prev', btn_next:'Next ↓',
     btn_cancel:'Cancel', btn_validate:'Confirm', btn_close:'Close', btn_apply:'Apply',
     feedback_saved:'✓ Saved!',
+    lbl_avis:'Opinion', lbl_empty:'empty', lbl_none:'None',
+    print_date:'Printed on', print_date_label:'Printed on',
+    lbl_dossier_print:'File:', lbl_affaire_excel:'Project:', lbl_dossier_excel:'File:',
     modal_info_title:'File information', lbl_affaire:'PROJECT', lbl_dossier:'FILE',
     ph_affaire:'Project name', ph_dossier:'File number',
     modal_pa_title:'Add PA', lbl_categorie:'Category', lbl_disp:'Provisions',
     btn_add_pa:'Add PA', lbl_intervenant:'Stakeholder',
     modal_add_title:'New opinion', lbl_num_avis:'Opinion No.', lbl_ref:'Id / Ref',
-    lbl_desc:'Description', lbl_avis:'Opinion', btn_add_row:'+ Add',
+    lbl_desc:'Description', btn_add_row:'+ Add',
     modal_import_title:'Import Excel file', modal_update_title:'Update data',
     dropzone_text:'Click or drop a .xlsx/.xlsm file',
     dropzone_excel:'Click or drop an Excel file',
     hist_title:'Change history', hist_sub:'Log of recorded actions',
+    hist_total:'action(s) total', hist_filtered:'filtered',
     lbl_utilisateur:'User', lbl_action:'Action', lbl_detail:'Detail',
-    th_datetime:'Date / Time',
+    th_datetime:'Date / Time', entry:'entry', entry_pl_suffix:'ies',
     opt_all:'All', opt_edit:'✏️ Text edit', opt_leve:'✅ Resolved',
     opt_partiel:'⚠️ Partial', opt_maintenu:'❌ Maintained', opt_suivi_eff:'— Status cleared',
     opt_rd6_on:'🟣 RD6 enabled', opt_rd6_off:'🟣 RD6 removed', opt_pa:'🟡 PA added',
     opt_add:'🟢 Opinion added', opt_delete:'🔴 Deleted', opt_import:'📥 Import',
     opt_actualiser:'🔄 Updated',
+    act_edit:'Edit', act_leve:'Resolved', act_partiel:'Partial',
+    act_maintenu:'Maintained', act_suivi_eff:'Status cleared', act_rd6_on:'RD6 enabled',
+    act_rd6_off:'RD6 removed', act_pa:'PA added', act_add:'Opinion added',
+    act_delete:'Deleted', act_import:'Import', act_actualiser:'Updated',
     btn_clear_hist:'🗑 Clear history', btn_export_csv:'⤓ Export CSV',
     ph_user:'First Last...',
+    hist_empty_msg:'No changes recorded', hist_empty_sub:'Actions will appear here as they occur',
     sec_search:'🔍 Search', sec_type_disp:'🏷 Disposition type',
     sec_intervenants:'👷 Stakeholders', sec_lots:'📦 Lots', sec_suivi:'📊 Follow-up status',
+    empty_avis:'No opinions found',
+    err_wrong_pwd:'Incorrect password.',
+    confirm_clear_hist:'Clear all history for this canvas? This action is irreversible.',
+    status_no_data:'No data', status_cancelled:'Cancelled', status_imported:'opinions imported',
+    avis_label:'opinions', log_migration:'Excel migration: ',
+    err_exceljs_missing:'ExcelJS not loaded', err_no_sheet:'No sheet found.',
   },
 
   de: {
-    lbl_num:'Nr.', lbl_date:'Datum', lbl_disp_short:'Auflagen', lbl_obs_short:'Beob.', lbl_docs:'Dok.',
+    lbl_num:'Nr.', lbl_date:'Datum', lbl_disp_short:'Aufl.', lbl_obs_short:'Beob.', lbl_docs:'Dok.',
     ph_num:'Stellungnahme', ph_date:'TT/MM/JJJJ', ph_disp:'Auflagen', ph_obs:'Beobachtungen', ph_docs:'Dokumente',
     suivi_oui:'Erledigt', suivi_par:'Teilweise', suivi_non:'Aufrechterhalten',
     lbl_intervenants:'Beteiligte', lbl_lots:'Betroffene Lose', lbl_lots_short:'Lose',
     title_reset_filters:'Filter zurücksetzen',
     btn_filters:'⚙ Filter', btn_add:'+ Hinzufügen', btn_rapide:'⚡ Schnellansicht',
+    btn_select:'Auswählen',
+    col_num:'Nr.', col_ref:'Ref.', col_date:'Datum', col_inter:'Beteiligter',
+    col_disp:'Auflagen', col_desc:'Beschreibung', col_avis:'Stellungnahme',
+    col_obs:'Beobachtungen', col_docs:'Dokumente', col_suivi:'Status',
+    col_repK:'ANT / MOE Antw.', col_repL:'SOCOTEC Beob.', col_lots:'Lose',
     menu_update:'⟳ Aktualisieren', menu_reset:'↺ Raster zurücksetzen',
     menu_migration:'⇄ Migration', menu_save_local:'⤓ Lokal speichern',
     menu_open_local:'⤒ Lokale Datei öffnen', menu_stats:'◔ Statistiken',
@@ -2497,27 +2548,42 @@ const I18N = {
     btn_save:'Speichern', btn_delete:'Lös.', btn_prev:'↑ Vor.', btn_next:'Näch. ↓',
     btn_cancel:'Abbrechen', btn_validate:'Bestätigen', btn_close:'Schließen', btn_apply:'Anwenden',
     feedback_saved:'✓ Gespeichert!',
+    lbl_avis:'Stellungnahme', lbl_empty:'leer', lbl_none:'Keine',
+    print_date:'Gedruckt am', print_date_label:'Gedruckt am',
+    lbl_dossier_print:'Akte:', lbl_affaire_excel:'Projekt:', lbl_dossier_excel:'Akte:',
     modal_info_title:'Dateiinformationen', lbl_affaire:'PROJEKT', lbl_dossier:'AKTE',
     ph_affaire:'Projektname', ph_dossier:'Aktennummer',
     modal_pa_title:'PA hinzufügen', lbl_categorie:'Kategorie', lbl_disp:'Auflagen',
     btn_add_pa:'PA hinzufügen', lbl_intervenant:'Beteiligter',
     modal_add_title:'Neue Stellungnahme', lbl_num_avis:'Stellungnahme Nr.', lbl_ref:'Id / Ref',
-    lbl_desc:'Beschreibung', lbl_avis:'Stellungnahme', btn_add_row:'+ Hinzufügen',
+    lbl_desc:'Beschreibung', btn_add_row:'+ Hinzufügen',
     modal_import_title:'Excel-Datei importieren', modal_update_title:'Daten aktualisieren',
     dropzone_text:'Klicken oder .xlsx/.xlsm-Datei ablegen',
     dropzone_excel:'Klicken oder Excel-Datei ablegen',
     hist_title:'Änderungshistorie', hist_sub:'Protokoll der gespeicherten Aktionen',
+    hist_total:'Aktion(en) insgesamt', hist_filtered:'gefiltert',
     lbl_utilisateur:'Benutzer', lbl_action:'Aktion', lbl_detail:'Detail',
-    th_datetime:'Datum / Uhrzeit',
+    th_datetime:'Datum / Uhrzeit', entry:'Eintrag', entry_pl_suffix:'',
     opt_all:'Alle', opt_edit:'✏️ Textänderung', opt_leve:'✅ Erledigt',
     opt_partiel:'⚠️ Teilweise', opt_maintenu:'❌ Aufrechterhalten', opt_suivi_eff:'— Status gelöscht',
     opt_rd6_on:'🟣 RD6 aktiviert', opt_rd6_off:'🟣 RD6 entfernt', opt_pa:'🟡 PA hinzugefügt',
     opt_add:'🟢 Stellungnahme hinzugefügt', opt_delete:'🔴 Gelöscht', opt_import:'📥 Import',
     opt_actualiser:'🔄 Aktualisiert',
+    act_edit:'Änderung', act_leve:'Erledigt', act_partiel:'Teilweise',
+    act_maintenu:'Aufrechterhalten', act_suivi_eff:'Status gelöscht', act_rd6_on:'RD6 aktiviert',
+    act_rd6_off:'RD6 entfernt', act_pa:'PA hinzugefügt', act_add:'Stellungnahme hinzugefügt',
+    act_delete:'Gelöscht', act_import:'Import', act_actualiser:'Aktualisiert',
     btn_clear_hist:'🗑 Verlauf löschen', btn_export_csv:'⤓ CSV exportieren',
     ph_user:'Vorname Nachname...',
+    hist_empty_msg:'Keine Änderungen aufgezeichnet', hist_empty_sub:'Aktionen erscheinen hier nach und nach',
     sec_search:'🔍 Suche', sec_type_disp:'🏷 Auflagentyp',
     sec_intervenants:'👷 Beteiligte', sec_lots:'📦 Lose', sec_suivi:'📊 Nachverfolgungsstatus',
+    empty_avis:'Keine Stellungnahmen gefunden',
+    err_wrong_pwd:'Falsches Passwort.',
+    confirm_clear_hist:'Gesamten Verlauf dieses Rasters löschen? Diese Aktion ist unumkehrbar.',
+    status_no_data:'Keine Daten', status_cancelled:'Abgebrochen', status_imported:'Stellungnahmen importiert',
+    avis_label:'Stellungnahmen', log_migration:'Excel-Migration: ',
+    err_exceljs_missing:'ExcelJS nicht geladen', err_no_sheet:'Kein Tabellenblatt gefunden.',
   }
 };
 
@@ -2566,13 +2632,28 @@ function setLang(lang) {
   _currentLang = lang;
   localStorage.setItem('rs_lang', lang);
   applyI18n();
+  // Reconstruire le tableau et le sélecteur de colonnes avec les nouveaux labels
+  if (typeof rebuildTableHeader === 'function') rebuildTableHeader();
+  if (typeof renderTable === 'function') renderTable();
+  if (typeof buildColPickerList === 'function') buildColPickerList();
 }
 
 // Appliquer au chargement
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', applyI18n);
+  document.addEventListener('DOMContentLoaded', () => {
+    applyI18n();
+    // Reconstruire le tableau avec les bons labels après init
+    setTimeout(() => {
+      if (typeof rebuildTableHeader === 'function') rebuildTableHeader();
+      if (typeof buildColPickerList === 'function') buildColPickerList();
+    }, 100);
+  });
 } else {
   applyI18n();
+  setTimeout(() => {
+    if (typeof rebuildTableHeader === 'function') rebuildTableHeader();
+    if (typeof buildColPickerList === 'function') buildColPickerList();
+  }, 100);
 }
 </script>
 </body>
