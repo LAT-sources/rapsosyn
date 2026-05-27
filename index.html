@@ -1517,7 +1517,7 @@ function confirmDeleteCan(id, e) {
 
   // Remplir le modal
   document.getElementById('deleteCanText').innerHTML =
-    `Le canevas <strong>« ${esc(nomCanevas.slice(0,70))} »</strong> sera supprimé <strong style="color:#b91c1c">définitivement</strong> de Firebase.<br>
+    `Le canevas <strong>« ${esc(nomCanevas.slice(0,70))} »</strong> sera supprimé <strong style="color:#b91c1c">définitivement</strong>.<br>
      <span style="font-size:0.76rem;color:var(--g500);margin-top:4px;display:block">
        ${esc(c.chrono||'—')} · ${esc(c.client||'—')} · ${esc(c.ville||'—')}
        ${isArchived ? ' · <em>Archivé</em>' : ''}
