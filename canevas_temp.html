@@ -785,12 +785,6 @@ th[data-col="repL"], td[data-col="repL"] {
 
   }
 
-  /* ── Sélecteur de langue ── */
-  .lang-switcher { display:flex; align-items:center; gap:2px; background:var(--g100); border-radius:6px; padding:2px; flex-shrink:0; }
-  .lang-btn { background:none; border:none; cursor:pointer; font-size:0.95rem; padding:2px 4px; border-radius:4px; opacity:.4; transition:opacity .15s, background .15s; line-height:1; }
-  .lang-btn:hover { opacity:.8; background:var(--g200); }
-  .lang-btn.active { opacity:1; background:white; box-shadow:0 1px 3px rgba(0,0,0,.12); }
-
   /* ── Auto-agrandissement des champs ENT/MOE et SOCOTEC (volet latéral + version rapide) ── */
   #e_repK, #e_repL,
   #pa_repK, #pa_repL,
@@ -937,7 +931,7 @@ th[data-col="repL"], td[data-col="repL"] {
 
 <div class="print-footer" id="printFooter">
   <span id="printFooterLeft">SOCOTEC — Récapitulatif des avis</span>
-  <span data-i18n="print_date_label">Imprimé le</span> <span id="printFooterDate"></span>
+  <span>Imprimé le <span id="printFooterDate"></span></span>
 </div>
 
 <!-- HEADER (affaire/dossier masqués) -->
@@ -959,11 +953,11 @@ th[data-col="repL"], td[data-col="repL"] {
 <div class="toolbar">
   <button class="tb-btn active" id="tabV2" onclick="switchTab('v2')" style="display:none;">RapsoV2</button>
   <button class="tb-btn" id="tabV1" onclick="switchTab('v1')" style="display:none;">RapsoV1</button>
-  <div class="quick-search"><span class="qs-label" data-i18n="lbl_num">N°</span><input id="qs_num" placeholder="avis" data-i18n-ph="ph_num" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label" data-i18n="lbl_date">Date</span><input id="qs_date" placeholder="jj/mm/aaaa" data-i18n-ph="ph_date" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label" data-i18n="lbl_disp_short">Disp.</span><input id="qs_disp" placeholder="dispositions" data-i18n-ph="ph_disp" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label" data-i18n="lbl_obs_short">Obs.</span><input id="qs_obs" placeholder="observations" data-i18n-ph="ph_obs" oninput="applyFilters()"></div>
-  <div class="quick-search"><span class="qs-label" data-i18n="lbl_docs">Docs</span><input id="qs_docs" placeholder="documents" data-i18n-ph="ph_docs" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">N°</span><input id="qs_num" placeholder="avis" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Date</span><input id="qs_date" placeholder="jj/mm/aaaa" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Disp.</span><input id="qs_disp" placeholder="dispositions" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Obs.</span><input id="qs_obs" placeholder="observations" oninput="applyFilters()"></div>
+  <div class="quick-search"><span class="qs-label">Docs</span><input id="qs_docs" placeholder="documents" oninput="applyFilters()"></div>
   <div class="qs-checks">
     <label><input type="checkbox" id="qs_F" onchange="applyFilters()">F</label>
     <label><input type="checkbox" id="qs_S" onchange="applyFilters()">S</label>
@@ -971,49 +965,43 @@ th[data-col="repL"], td[data-col="repL"] {
     <label><input type="checkbox" id="qs_PM" onchange="applyFilters()">PM</label>
     <label><input type="checkbox" id="qs_SO" onchange="applyFilters()">SO</label>
   </div>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fOui" onchange="applyFilters()"><span data-i18n="suivi_oui">Levé</span></label>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPar" onchange="applyFilters()"><span data-i18n="suivi_par">Partiel</span></label>
-  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fNon" onchange="applyFilters()"><span data-i18n="suivi_non">Maintenu</span></label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fOui" onchange="applyFilters()">Levé</label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPar" onchange="applyFilters()">Partiel</label>
+  <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fNon" onchange="applyFilters()">Maintenu</label>
   <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fRd6" onchange="applyFilters()">RD6</label>
   <label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" id="fPA" onchange="applyFilters()">PA</label>
   <div class="mf-select">
-    <div class="mf-select-button" onclick="toggleMfSelect('inter')" data-i18n="lbl_intervenants">Intervenants <span id="mfInterCount">(0)</span></div>
+    <div class="mf-select-button" onclick="toggleMfSelect('inter')">Intervenants <span id="mfInterCount">(0)</span></div>
     <div class="mf-select-dropdown" id="mfInterDropdown"></div>
   </div>
   <div class="mf-select">
-    <div class="mf-select-button" onclick="toggleMfSelect('lot')" data-i18n="lbl_lots">Lots <span id="mfLotCount">(0)</span></div>
+    <div class="mf-select-button" onclick="toggleMfSelect('lot')">Lots <span id="mfLotCount">(0)</span></div>
     <div class="mf-select-dropdown" id="mfLotDropdown"></div>
   </div>
-  <button class="tb-btn" onclick="resetFilters()" title="Réinitialiser les filtres" data-i18n-title="title_reset_filters">✕</button>
+  <button class="tb-btn" onclick="resetFilters()" title="Réinitialiser les filtres">✕</button>
   <div style="flex:1;"></div>
   <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
-  <button class="tb-btn tb-mobile-only" id="tbFiltersBtn" onclick="openMobileFilters()" data-i18n="btn_filters">⚙ Filtres</button>
-  <button class="tb-btn accent" onclick="openAddModal()" data-i18n="btn_add">+ Ajouter</button>
+  <button class="tb-btn tb-mobile-only" id="tbFiltersBtn" onclick="openMobileFilters()" title="Filtres">⚙ Filtres</button>
+  <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
-  <button class="tb-btn" onclick="openRapide()" data-i18n="btn_rapide">⚡ Vision rapide</button>
+  <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
   <button class="tb-btn" onclick="openHistorique()" title="Historique des modifications">🕘</button>
   <button class="tb-btn" onclick="openInfoModal()" title="Infos">🛈</button>
-  <!-- Sélecteur de langue -->
-  <div class="lang-switcher" id="langSwitcher">
-    <button class="lang-btn active" id="lang-fr" onclick="setLang('fr')" title="Français">🇫🇷</button>
-    <button class="lang-btn" id="lang-en" onclick="setLang('en')" title="English">🇬🇧</button>
-    <button class="lang-btn" id="lang-de" onclick="setLang('de')" title="Deutsch">🇩🇪</button>
-  </div>
   <div class="actions-dropdown">
     <button class="tb-btn" id="actionsBtn" onclick="toggleActionsMenu()" style="display:none;"><span class="tb-menu-label"> ☰ MENU</span> <span class="tb-menu-arrow">▾</span></button>
     <div class="actions-menu" id="actionsMenu">
-      <button onclick="openActualiserModal(); closeActionsMenu();" data-i18n="menu_update">⟳ Mettre à jour</button>
-      <button onclick="if(checkPasswordBeforeImport()) openImportModal(); closeActionsMenu();" data-i18n="menu_reset">↺ Rénitialiser le canevas</button>
-      <button onclick="if(checkPasswordBeforeMigration()) { openMigrationModal(); } closeActionsMenu();" data-i18n="menu_migration">⇄ Migration</button>
-      <button onclick="exportJSON(); closeActionsMenu();" data-i18n="menu_save_local">⤓ Enregistrer en local</button>
-      <button onclick="loadJSON(); closeActionsMenu();" data-i18n="menu_open_local">⤒ Ouvrir un dossier local</button>
-      <button onclick="openStatsModal(); closeActionsMenu();" data-i18n="menu_stats">◔ Statistiques</button>
-      <button onclick="printReport(); closeActionsMenu();" data-i18n="menu_print">⎙ Imprimer</button>
-      <button onclick="exportWithExcelJS(); closeActionsMenu();" data-i18n="menu_excel">⌗ Télécharger l'excel</button>
-      <button onclick="toggleColPicker(); closeActionsMenu();" data-i18n="menu_columns">☷ Gérer les colonnes</button>
+      <button onclick="openActualiserModal(); closeActionsMenu();">⟳ Mettre à jour</button>
+      <button onclick="if(checkPasswordBeforeImport()) openImportModal(); closeActionsMenu();">↺ Rénitialiser le canevas</button>
+      <button onclick="if(checkPasswordBeforeMigration()) { openMigrationModal(); } closeActionsMenu();">⇄ Migration</button>
+      <button onclick="exportJSON(); closeActionsMenu();">⤓ Enregistrer en local</button>
+      <button onclick="loadJSON(); closeActionsMenu();">⤒ Ouvrir un dossier local</button>
+      <button onclick="openStatsModal(); closeActionsMenu();">◔ Statistiques</button>
+      <button onclick="printReport(); closeActionsMenu();">⎙ Imprimer</button>
+      <button onclick="exportWithExcelJS(); closeActionsMenu();">⌗ Télécharger l'excel</button>
+      <button onclick="toggleColPicker(); closeActionsMenu();">☷ Gérer les colonnes</button>
     </div>
     <div class="col-picker-panel" id="colPickerPanel">
-      <div class="col-picker-header"><span data-i18n="col_picker_title">Colonnes affichées</span><button onclick="resetColumns()" style="background:none;border:none;color:var(--blue);cursor:pointer;" data-i18n="btn_show_all">Tout afficher</button></div>
+      <div class="col-picker-header"><span>Colonnes affichées</span><button onclick="resetColumns()" style="background:none;border:none;color:var(--blue);cursor:pointer;">Tout afficher</button></div>
       <div class="col-picker-list" id="colPickerList"></div>
     </div>
   </div>
@@ -1025,7 +1013,7 @@ th[data-col="repL"], td[data-col="repL"] {
     <thead id="mainThead"><tr id="headerRow"><tr></thead>
     <tbody id="tableBody"></tbody>
   </table>
-  <div class="empty-state" id="emptyState" style="display:none"><div style="font-size:1.5rem;color:var(--g300);">—</div><div data-i18n="empty_avis">Aucun avis trouvé</div></div>
+  <div class="empty-state" id="emptyState" style="display:none"><div style="font-size:1.5rem;color:var(--g300);">—</div><div>Aucun avis trouvé</div></div>
 </div>
 
 <!-- PANEL LATERAL -->
@@ -1042,67 +1030,67 @@ th[data-col="repL"], td[data-col="repL"] {
     <button class="tb-btn" onclick="closePanel()">×</button>
   </div>
   <div class="panel-body">
-    <div class="form-section"><div class="section-title" data-i18n="sec_disp">Dispositions examinées</div><div style="white-space:pre-wrap;" id="e_lblColE">—</div></div>
-    <div class="form-section"><div class="section-title" data-i18n="sec_obs">Observations</div><div class="obs-readonly" id="e_obs_readonly">—</div></div>
+    <div class="form-section"><div class="section-title">Dispositions examinées</div><div style="white-space:pre-wrap;" id="e_lblColE">—</div></div>
+    <div class="form-section"><div class="section-title">Observations</div><div class="obs-readonly" id="e_obs_readonly">—</div></div>
     <div class="form-section">
-      <div class="section-title" data-i18n="sec_rep">Réponses</div>
-      <div class="form-row"><label data-i18n="lbl_repK">Réponses ENT / MOE</label><textarea id="e_repK" rows="3"></textarea></div>
-      <div class="form-row"><label data-i18n="lbl_repL">Observations-commentaires SOCOTEC</label><textarea id="e_repL" rows="3"></textarea></div>
-      <div class="form-row"><label data-i18n="lbl_lots">Lots concernés</label><input type="text" id="e_lots"></div>
+      <div class="section-title">Réponses</div>
+      <div class="form-row"><label>Réponses ENT / MOE</label><textarea id="e_repK" rows="3"></textarea></div>
+      <div class="form-row"><label>Observations-commentaires SOCOTEC</label><textarea id="e_repL" rows="3"></textarea></div>
+      <div class="form-row"><label>Lots concernés</label><input type="text" id="e_lots"></div>
     </div>
     <div class="form-section">
-      <div class="section-title" data-i18n="sec_suivi">Statut de suivi</div>
+      <div class="section-title">Statut de suivi</div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
         <div class="suivi-opts" style="flex:1;">
-          <div class="suivi-opt" id="opt_oui" onclick="setSuivi('Oui')" data-i18n="suivi_oui_btn">✓ Levé</div>
-          <div class="suivi-opt" id="opt_par" onclick="setSuivi('Par')" data-i18n="suivi_par_btn">~ Partiel</div>
-          <div class="suivi-opt" id="opt_non" onclick="setSuivi('Non')" data-i18n="suivi_non_btn">✗ Maintenu</div>
+          <div class="suivi-opt" id="opt_oui" onclick="setSuivi('Oui')">✓ Levé</div>
+          <div class="suivi-opt" id="opt_par" onclick="setSuivi('Par')">~ Partiel</div>
+          <div class="suivi-opt" id="opt_non" onclick="setSuivi('Non')">✗ Maintenu</div>
           <div class="suivi-opt" onclick="setSuivi('')">—</div>
         </div>
         <label class="rd6-toggle" id="rd6Toggle" onclick="toggleRD6()"><input type="checkbox" id="e_rd6"> RD6</label>
       </div>
     </div>
   </div>
-  <div class="panel-ftr">
-    <button class="tb-btn green" onclick="saveRow()" data-i18n="btn_save">Enregistrer</button>
-    <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);" data-i18n="btn_delete">Sup</button>
-    <div class="panel-nav-mobile">
-      <button class="tb-btn" onclick="navRow(-1)" title="Précédent" data-i18n="btn_prev">↑ Préc</button>
-      <button class="tb-btn" onclick="navRow(1)" title="Suivant" data-i18n="btn_next">Suiv ↓</button>
-    </div>
-    <button class="tb-btn" onclick="closePanel()" data-i18n="btn_cancel">Annuler</button>
-    <span class="save-feedback" id="saveFeedback" data-i18n="feedback_saved">✓ Enregistré !</span>
+<div class="panel-ftr">
+  <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
+  <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Sup</button>
+  <button class="tb-btn" onclick="closePanel()">Annuler</button>
+  <div class="panel-nav-mobile">
+    <button class="tb-btn" onclick="navRow(-1)" title="Précédent">↑ Préc</button>
+    <button class="tb-btn" onclick="navRow(1)" title="Suivant">Suiv ↓</button>
   </div>
+  <span class="save-feedback" id="saveFeedback">
+    ✓ Enregistré !
+  </span>
 </div>
-
 <!-- MODAL INFO -->
 <div class="modal-overlay" id="infoModal">
   <div class="modal" style="width:400px;">
-    <div class="modal-hdr" data-i18n="modal_info_title">Informations du dossier<button class="tb-btn" onclick="closeInfoModal()">×</button></div>
+    <div class="modal-hdr">Informations du dossier<button class="tb-btn" onclick="closeInfoModal()">×</button></div>
     <div class="modal-body">
-      <div class="form-row"><label data-i18n="lbl_affaire">AFFAIRE</label><input type="text" id="infoAffaireInput" placeholder="Nom de l'affaire" data-i18n-ph="ph_affaire"></div>
-      <div class="form-row"><label data-i18n="lbl_dossier">DOSSIER</label><input type="text" id="infoDossierInput" placeholder="N° de dossier" data-i18n-ph="ph_dossier"></div>
+      <div class="form-row"><label>AFFAIRE</label><input type="text" id="infoAffaireInput" placeholder="Nom de l'affaire"></div>
+      <div class="form-row"><label>DOSSIER</label><input type="text" id="infoDossierInput" placeholder="N° de dossier"></div>
     </div>
     <div class="modal-ftr">
-      <button class="tb-btn" onclick="closeInfoModal()" data-i18n="btn_cancel">Annuler</button>
-      <button class="tb-btn green" onclick="saveInfoModal()" data-i18n="btn_save">Enregistrer</button>
+      <button class="tb-btn" onclick="closeInfoModal()">Annuler</button>
+      <button class="tb-btn green" onclick="saveInfoModal()">Enregistrer</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL PA -->
 <div class="modal-overlay" id="paModal">
-  <div class="modal"><div class="modal-hdr" data-i18n="modal_pa_title">Ajouter PA <button class="tb-btn" onclick="closePAModal()">×</button></div>
+  <div class="modal"><div class="modal-hdr">Ajouter PA <button class="tb-btn" onclick="closePAModal()">×</button></div>
     <div class="modal-body">
-      <div class="form-row"><label data-i18n="lbl_categorie">Catégorie</label><div style="display:flex;gap:8px;"><label><input type="checkbox" id="pa_F">F</label><label><input type="checkbox" id="pa_S">S</label><label><input type="checkbox" id="pa_D">D</label><label><input type="checkbox" id="pa_PM">PM</label></div></div>
-      <div class="form-row"><label data-i18n="lbl_date">Date</label><input type="date" id="pa_date"></div>
-      <div class="form-row"><label data-i18n="lbl_disp">Dispositions</label><textarea id="pa_disp"></textarea></div>
-      <div class="form-row"><label data-i18n="sec_obs">Observations</label><textarea id="pa_obs"></textarea></div>
-      <div class="form-row"><label data-i18n="lbl_repK_short">Réponses MOE</label><textarea id="pa_repK"></textarea></div>
-      <div class="form-row"><label data-i18n="lbl_repL_short">Comm. SOCOTEC</label><textarea id="pa_repL"></textarea></div>
-      <div class="form-row"><label data-i18n="lbl_lots">Lots concernés</label><input id="pa_lots"></div>
+      <div class="form-row"><label>Catégorie</label><div style="display:flex;gap:8px;"><label><input type="checkbox" id="pa_F">F</label><label><input type="checkbox" id="pa_S">S</label><label><input type="checkbox" id="pa_D">D</label><label><input type="checkbox" id="pa_PM">PM</label></div></div>
+      <div class="form-row"><label>Date</label><input type="date" id="pa_date"></div>
+      <div class="form-row"><label>Dispositions</label><textarea id="pa_disp"></textarea></div>
+      <div class="form-row"><label>Observations</label><textarea id="pa_obs"></textarea></div>
+      <div class="form-row"><label>Réponses MOE</label><textarea id="pa_repK"></textarea></div>
+      <div class="form-row"><label>Comm. SOCOTEC</label><textarea id="pa_repL"></textarea></div>
+      <div class="form-row"><label>Lots</label><input id="pa_lots"></div>
     </div>
-    <div class="modal-ftr"><button class="tb-btn" onclick="closePAModal()" data-i18n="btn_cancel">Annuler</button><button class="tb-btn green" onclick="addPA()" data-i18n="btn_add_pa">Ajouter PA</button><span id="paFeedback"></span></div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closePAModal()">Annuler</button><button class="tb-btn green" onclick="addPA()">Ajouter PA</button><span id="paFeedback"></span></div>
   </div>
 </div>
 
@@ -1118,16 +1106,16 @@ th[data-col="repL"], td[data-col="repL"] {
     </div>
     <div class="rapide-filters">
       <div class="rapide-filter-group">
-        <span style="font-size:0.7rem;font-weight:600;" data-i18n="lbl_lots">Lots</span>
+        <span style="font-size:0.7rem;font-weight:600;">Lots</span>
         <div class="mf-select" style="display:inline-block;">
-          <div class="mf-select-button" onclick="toggleRapMf('lots')" style="padding:2px 20px 2px 8px;font-size:0.7rem;" data-i18n="btn_select">Sélectionner</div>
+          <div class="mf-select-button" onclick="toggleRapMf('lots')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
           <div class="mf-select-dropdown" id="rapMfLotsDrop" style="min-width:140px;"></div>
         </div>
       </div>
       <div class="rapide-filter-group">
-        <span style="font-size:0.7rem;font-weight:600;" data-i18n="lbl_intervenant">Intervenant</span>
+        <span style="font-size:0.7rem;font-weight:600;">Intervenant</span>
         <div class="mf-select" style="display:inline-block;">
-          <div class="mf-select-button" onclick="toggleRapMf('inter')" style="padding:2px 20px 2px 8px;font-size:0.7rem;" data-i18n="btn_select">Sélectionner</div>
+          <div class="mf-select-button" onclick="toggleRapMf('inter')" style="padding:2px 20px 2px 8px;font-size:0.7rem;">Sélectionner</div>
           <div class="mf-select-dropdown" id="rapMfInterDrop" style="min-width:140px;"></div>
         </div>
       </div>
@@ -1137,9 +1125,9 @@ th[data-col="repL"], td[data-col="repL"] {
         <label><input type="checkbox" id="rapF_D" onchange="rapApply()"> D</label>
       </div>
       <div class="rapide-filter-group">
-        <label><input type="checkbox" id="rapF_lev" onchange="rapApply()"> <span data-i18n="suivi_oui_pl">Levés</span></label>
-        <label><input type="checkbox" id="rapF_par" onchange="rapApply()"> <span data-i18n="suivi_par_pl">Partiels</span></label>
-        <label><input type="checkbox" id="rapF_non" onchange="rapApply()"> <span data-i18n="suivi_non_pl">Maintenus</span></label>
+        <label><input type="checkbox" id="rapF_lev" onchange="rapApply()"> Levés</label>
+        <label><input type="checkbox" id="rapF_par" onchange="rapApply()"> Partiels</label>
+        <label><input type="checkbox" id="rapF_non" onchange="rapApply()"> Maintenus</label>
         <label><input type="checkbox" id="rapF_rd6" onchange="rapApply()"> RD6</label>
         <label><input type="checkbox" id="rapF_pa" onchange="rapApply()"> PA</label>
       </div>
@@ -1148,29 +1136,29 @@ th[data-col="repL"], td[data-col="repL"] {
     </div>
     <div class="rapide-body">
       <div class="rapide-list-col">
-        <div class="rapide-list-header" data-i18n="lbl_avis">Avis <span id="rapCnt"></span></div>
+        <div class="rapide-list-header">Avis <span id="rapCnt"></span></div>
         <div class="rapide-list" id="rapideList"></div>
       </div>
       <div class="rapide-detail-col">
         <div class="rapide-detail-scroll" id="rapideScrollContainer">
-          <div class="rapide-detail-label" data-i18n="sec_obs">Observations</div>
+          <div class="rapide-detail-label">Observations</div>
           <div class="rapide-detail-text" id="rapideObsText">—</div>
           <div class="rapide-edit-area" id="rapideEditArea" style="display:none">
-            <label data-i18n="lbl_repK">Réponses ENT / MOE</label><textarea id="rq_repK" rows="2"></textarea>
-            <label data-i18n="lbl_repL">Observations-commentaires SOCOTEC</label><textarea id="rq_repL" rows="2"></textarea>
-            <label data-i18n="lbl_lots">Lots concernés</label><input type="text" id="rq_lots">
+            <label>Réponses ENT / MOE</label><textarea id="rq_repK" rows="2"></textarea>
+            <label>Observations-commentaires SOCOTEC</label><textarea id="rq_repL" rows="2"></textarea>
+            <label>Lots concernés</label><input type="text" id="rq_lots">
           </div>
         </div>
       </div>
     </div>
     <div class="rapide-footer">
-      <button class="rap-stat-btn rsb-oui" id="rapBtnOui" onclick="rapToggleSuivi('Oui')" data-i18n="suivi_oui_btn">✓ Levé</button>
-      <button class="rap-stat-btn rsb-par" id="rapBtnPar" onclick="rapToggleSuivi('Par')" data-i18n="suivi_par_btn">~ Partiel</button>
-      <button class="rap-stat-btn rsb-non" id="rapBtnNon" onclick="rapToggleSuivi('Non')" data-i18n="suivi_non_btn">✗ Maintenu</button>
+      <button class="rap-stat-btn rsb-oui" id="rapBtnOui" onclick="rapToggleSuivi('Oui')">✓ Levé</button>
+      <button class="rap-stat-btn rsb-par" id="rapBtnPar" onclick="rapToggleSuivi('Par')">~ Partiel</button>
+      <button class="rap-stat-btn rsb-non" id="rapBtnNon" onclick="rapToggleSuivi('Non')">✗ Maintenu</button>
       <button class="rap-stat-btn rsb-rd6" id="rapBtnRd6" onclick="rapToggleRD6()">RD6</button>
       <div style="flex:1;"></div>
-      <button class="tb-btn green" id="rapSaveBtn" onclick="rapSaveTexts()" disabled data-i18n="btn_validate">Valider</button>
-      <button class="tb-btn" onclick="closeRapide()" data-i18n="btn_cancel">Annuler</button>
+      <button class="tb-btn green" id="rapSaveBtn" onclick="rapSaveTexts()" disabled>Valider</button>
+      <button class="tb-btn" onclick="closeRapide()">Annuler</button>
     </div>
   </div>
 </div>
@@ -1183,32 +1171,32 @@ th[data-col="repL"], td[data-col="repL"] {
     <div class="hist-hdr">
       <div class="hist-hdr-icon">📋</div>
       <div class="hist-hdr-text">
-        <div class="hist-hdr-title" data-i18n="hist_title">Historique des modifications</div>
-        <div class="hist-hdr-sub" id="histHdrSub" data-i18n="hist_sub">Journal des actions enregistrées</div>
+        <div class="hist-hdr-title">Historique des modifications</div>
+        <div class="hist-hdr-sub" id="histHdrSub">Journal des actions enregistrées</div>
       </div>
       <button class="hist-hdr-close" onclick="closeHistorique()">×</button>
     </div>
     <!-- Filtres -->
     <div class="hist-filters">
-      <span class="hist-filter-lbl" data-i18n="lbl_num_avis">N° Avis</span>
+      <span class="hist-filter-lbl">N° Avis</span>
       <input id="hq_avis" placeholder="ex: 12, PA3..." oninput="renderHistorique()">
-      <span class="hist-filter-lbl" data-i18n="lbl_utilisateur">Utilisateur</span>
-      <input id="hq_user" placeholder="Prénom Nom..." data-i18n-ph="ph_user" oninput="renderHistorique()">
-      <span class="hist-filter-lbl" data-i18n="lbl_action">Action</span>
+      <span class="hist-filter-lbl">Utilisateur</span>
+      <input id="hq_user" placeholder="Prénom Nom..." oninput="renderHistorique()">
+      <span class="hist-filter-lbl">Action</span>
       <select id="hq_type" onchange="renderHistorique()">
-        <option value="" data-i18n="opt_all">Toutes</option>
-        <option value="edit" data-i18n="opt_edit">✏️ Modification texte</option>
-        <option value="suivi_oui" data-i18n="opt_leve">✅ Levé</option>
-        <option value="suivi_par" data-i18n="opt_partiel">⚠️ Partiel</option>
-        <option value="suivi_non" data-i18n="opt_maintenu">❌ Maintenu</option>
-        <option value="suivi_vide" data-i18n="opt_suivi_eff">— Suivi effacé</option>
-        <option value="rd6_on" data-i18n="opt_rd6_on">🟣 RD6 activé</option>
-        <option value="rd6_off" data-i18n="opt_rd6_off">🟣 RD6 retiré</option>
-        <option value="pa" data-i18n="opt_pa">🟡 PA ajouté</option>
-        <option value="add" data-i18n="opt_add">🟢 Avis ajouté</option>
-        <option value="delete" data-i18n="opt_delete">🔴 Suppression</option>
-        <option value="import" data-i18n="opt_import">📥 Import</option>
-        <option value="actualiser" data-i18n="opt_actualiser">🔄 Actualisation</option>
+        <option value="">Toutes</option>
+        <option value="edit">✏️ Modification texte</option>
+        <option value="suivi_oui">✅ Levé</option>
+        <option value="suivi_par">⚠️ Partiel</option>
+        <option value="suivi_non">❌ Maintenu</option>
+        <option value="suivi_vide">— Suivi effacé</option>
+        <option value="rd6_on">🟣 RD6 activé</option>
+        <option value="rd6_off">🟣 RD6 retiré</option>
+        <option value="pa">🟡 PA ajouté</option>
+        <option value="add">🟢 Avis ajouté</option>
+        <option value="delete">🔴 Suppression</option>
+        <option value="import">📥 Import</option>
+        <option value="actualiser">🔄 Actualisation</option>
       </select>
       <span class="hist-count-pill" id="histCount">0 entrée</span>
     </div>
@@ -1216,17 +1204,17 @@ th[data-col="repL"], td[data-col="repL"] {
     <div class="hist-scroll">
       <div id="histEmpty" class="hist-empty" style="display:none;">
         <div class="hist-empty-ico">📭</div>
-        <div class="hist-empty-msg" data-i18n="hist_empty_msg">Aucune modification enregistrée</div>
-        <div class="hist-empty-sub" data-i18n="hist_empty_sub">Les actions apparaîtront ici au fur et à mesure</div>
+        <div class="hist-empty-msg">Aucune modification enregistrée</div>
+        <div class="hist-empty-sub">Les actions apparaîtront ici au fur et à mesure</div>
       </div>
       <table class="hist-table" id="histTable">
         <thead>
           <tr>
-            <th style="width:100px" data-i18n="th_datetime">Date / Heure</th>
-            <th style="width:130px" data-i18n="lbl_utilisateur">Utilisateur</th>
-            <th style="width:80px" data-i18n="lbl_num_avis">N° Avis</th>
-            <th style="width:120px" data-i18n="lbl_action">Action</th>
-            <th data-i18n="lbl_detail">Détail</th>
+            <th style="width:100px">Date / Heure</th>
+            <th style="width:130px">Utilisateur</th>
+            <th style="width:80px">N° Avis</th>
+            <th style="width:120px">Action</th>
+            <th>Détail</th>
           </tr>
         </thead>
         <tbody id="histBody"></tbody>
@@ -1234,10 +1222,10 @@ th[data-col="repL"], td[data-col="repL"] {
     </div>
     <!-- Footer -->
     <div class="hist-ftr">
-      <button class="hist-del-btn" onclick="clearHistorique()" id="histDelBtn" data-i18n="btn_clear_hist">🗑 Effacer l'historique</button>
+      <button class="hist-del-btn" onclick="clearHistorique()" id="histDelBtn">🗑 Effacer l'historique</button>
       <div style="flex:1;"></div>
-      <button class="tb-btn" onclick="exportHistorique()" data-i18n="btn_export_csv">⤓ Exporter CSV</button>
-      <button class="tb-btn accent" onclick="closeHistorique()" data-i18n="btn_close">Fermer</button>
+      <button class="tb-btn" onclick="exportHistorique()">⤓ Exporter CSV</button>
+      <button class="tb-btn accent" onclick="closeHistorique()">Fermer</button>
     </div>
   </div>
 </div>
@@ -1247,7 +1235,7 @@ th[data-col="repL"], td[data-col="repL"] {
 <div class="modal-overlay" id="mobileFiltersModal">
   <div class="modal" style="width:100vw;max-width:100vw;max-height:92vh;margin:auto 0 0 0;border-radius:16px 16px 0 0;display:flex;flex-direction:column;position:fixed;bottom:0;left:0;right:0;">
     <div class="modal-hdr" style="background:var(--g900);color:white;border-radius:16px 16px 0 0;padding:14px 16px;">
-      <span style="font-weight:700;font-size:0.9rem;" data-i18n="btn_filters">⚙ Filtres</span>
+      <span style="font-weight:700;font-size:0.9rem;">⚙ Filtres</span>
       <span id="mfActiveCount" style="font-size:0.7rem;background:var(--blue);color:white;padding:2px 8px;border-radius:100px;display:none;"></span>
       <div style="flex:1;"></div>
       <button class="tb-btn" onclick="resetMobileFilters()" style="color:#f87171;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);font-size:0.72rem;">✕ Reset</button>
@@ -1257,7 +1245,7 @@ th[data-col="repL"], td[data-col="repL"] {
 
       <!-- Recherche texte -->
       <div class="mf-section">
-        <div class="mf-section-title" data-i18n="sec_search">🔍 Recherche</div>
+        <div class="mf-section-title">🔍 Recherche</div>
         <div style="display:flex;flex-direction:column;gap:7px;">
           <div class="mf-field"><span class="mf-lbl">N° Avis</span><input class="mf-inp" id="mf_num" placeholder="ex: 12, PA3..." oninput="syncMobileFilter('num')"></div>
           <div class="mf-field"><span class="mf-lbl">Date</span><input class="mf-inp" id="mf_date" placeholder="jj/mm/aaaa" oninput="syncMobileFilter('date')"></div>
@@ -1269,7 +1257,7 @@ th[data-col="repL"], td[data-col="repL"] {
 
       <!-- Statut suivi -->
       <div class="mf-section">
-        <div class="mf-section-title" data-i18n="sec_suivi">📊 Statut de suivi</div>
+        <div class="mf-section-title">📊 Statut de suivi</div>
         <div class="mf-checks">
           <label class="mf-check-lbl"><input type="checkbox" id="mf_oui" onchange="syncMobileFilterCheck('fOui','mf_oui')"><span class="mf-check-tag lev">✅ Levé</span></label>
           <label class="mf-check-lbl"><input type="checkbox" id="mf_par" onchange="syncMobileFilterCheck('fPar','mf_par')"><span class="mf-check-tag par">⚠ Partiel</span></label>
@@ -1281,7 +1269,7 @@ th[data-col="repL"], td[data-col="repL"] {
 
       <!-- Dispositions (F/S/D/PM/SO) -->
       <div class="mf-section">
-        <div class="mf-section-title" data-i18n="sec_type_disp">🏷 Type de disposition</div>
+        <div class="mf-section-title">🏷 Type de disposition</div>
         <div class="mf-checks">
           <label class="mf-check-lbl"><input type="checkbox" id="mf_F" onchange="syncMobileFilterCheck('qs_F','mf_F')"><span class="mf-check-tag disp">F</span></label>
           <label class="mf-check-lbl"><input type="checkbox" id="mf_S" onchange="syncMobileFilterCheck('qs_S','mf_S')"><span class="mf-check-tag disp">S</span></label>
@@ -1293,7 +1281,7 @@ th[data-col="repL"], td[data-col="repL"] {
 
       <!-- Intervenants -->
       <div class="mf-section">
-        <div class="mf-section-title" data-i18n="sec_intervenants">👷 Intervenants</div>
+        <div class="mf-section-title">👷 Intervenants</div>
         <div class="mf-accord">
           <button class="mf-accord-btn" onclick="toggleMfSelectModal('inter')">
             <span>Intervenants</span>
@@ -1306,7 +1294,7 @@ th[data-col="repL"], td[data-col="repL"] {
 
       <!-- Lots -->
       <div class="mf-section">
-        <div class="mf-section-title" data-i18n="sec_lots">📦 Lots</div>
+        <div class="mf-section-title">📦 Lots</div>
         <div class="mf-accord">
           <button class="mf-accord-btn" onclick="toggleMfSelectModal('lot')">
             <span>Lots</span>
@@ -1319,69 +1307,69 @@ th[data-col="repL"], td[data-col="repL"] {
 
     </div>
     <div class="modal-ftr" style="gap:8px;padding:10px 14px;background:var(--g50);">
-      <button class="tb-btn accent" onclick="closeMobileFilters()" style="flex:1;justify-content:center;" data-i18n="btn_apply">Appliquer</button>
+      <button class="tb-btn accent" onclick="closeMobileFilters()" style="flex:1;justify-content:center;">Appliquer</button>
     </div>
   </div>
 </div>
 
 <!-- STATS MODAL -->
 <div class="modal-overlay" id="statsModal">
-  <div class="modal" style="width:520px;"><div class="modal-hdr" data-i18n="menu_stats">Statistiques<button class="tb-btn" onclick="closeStatsModal()">×</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()" data-i18n="btn_close">Fermer</button></div></div>
+  <div class="modal" style="width:520px;"><div class="modal-hdr">Statistiques<button class="tb-btn" onclick="closeStatsModal()">×</button></div><div class="modal-body" id="statsContent"></div><div class="modal-ftr"><button class="tb-btn" onclick="closeStatsModal()">Fermer</button></div></div>
 </div>
 
 <!-- ADD MODAL -->
 <div class="modal-overlay" id="addModal">
-  <div class="modal"><div class="modal-hdr" data-i18n="modal_add_title">Nouvel avis<button class="tb-btn" onclick="closeAddModal()">×</button></div>
+  <div class="modal"><div class="modal-hdr">Nouvel avis<button class="tb-btn" onclick="closeAddModal()">×</button></div>
     <div class="modal-body">
-      <div class="form-grid"><div class="form-row"><label data-i18n="lbl_num_avis">N° Avis</label><input type="text" id="a_num"></div><div class="form-row"><label data-i18n="lbl_ref">Id / Réf</label><input type="text" id="a_ref"></div><div class="form-row"><label data-i18n="lbl_date">Date</label><input type="date" id="a_date"></div><div class="form-row"><label data-i18n="lbl_intervenant">Intervenant</label><input type="text" id="a_inter"></div></div>
-      <div class="form-row"><label data-i18n="lbl_disp">Dispositions</label><textarea id="a_disp"></textarea></div>
-      <div class="form-row"><label data-i18n="lbl_desc">Description</label><textarea id="a_desc"></textarea></div>
-      <div class="form-row"><label data-i18n="lbl_avis">Avis</label><textarea id="a_avis"></textarea></div>
-      <div class="form-row"><label data-i18n="sec_obs">Observations</label><textarea id="a_obs"></textarea></div>
-      <div class="form-row"><label data-i18n="lbl_docs">Documents</label><textarea id="a_docs"></textarea></div>
-      <div class="form-row"><label data-i18n="lbl_lots">Lots concernés</label><input type="text" id="a_lots"></div>
+      <div class="form-grid"><div class="form-row"><label>N° Avis</label><input type="text" id="a_num"></div><div class="form-row"><label>Id / Réf</label><input type="text" id="a_ref"></div><div class="form-row"><label>Date</label><input type="date" id="a_date"></div><div class="form-row"><label>Intervenant</label><input type="text" id="a_inter"></div></div>
+      <div class="form-row"><label>Dispositions</label><textarea id="a_disp"></textarea></div>
+      <div class="form-row"><label>Description</label><textarea id="a_desc"></textarea></div>
+      <div class="form-row"><label>Avis</label><textarea id="a_avis"></textarea></div>
+      <div class="form-row"><label>Observations</label><textarea id="a_obs"></textarea></div>
+      <div class="form-row"><label>Documents</label><textarea id="a_docs"></textarea></div>
+      <div class="form-row"><label>Lots</label><input type="text" id="a_lots"></div>
     </div>
-    <div class="modal-ftr"><button class="tb-btn" onclick="closeAddModal()" data-i18n="btn_cancel">Annuler</button><button class="tb-btn green" onclick="addRow()" data-i18n="btn_add_row">+ Ajouter</button></div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeAddModal()">Annuler</button><button class="tb-btn green" onclick="addRow()">+ Ajouter</button></div>
   </div>
 </div>
 
 <!-- IMPORT MODAL -->
 <div class="modal-overlay" id="importModal">
-  <div class="modal" style="width:450px;"><div class="modal-hdr" data-i18n="modal_import_title">Importer un fichier Excel<button class="tb-btn" onclick="closeImportModal()">×</button></div>
-    <div class="modal-body"><div class="dropzone" id="importDropzone" onclick="document.getElementById('fileInput').click()" data-i18n="dropzone_text">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)"><div id="importStatus"></div></div>
-    <div class="modal-ftr"><button class="tb-btn" onclick="closeImportModal()" data-i18n="btn_close">Fermer</button></div>
+  <div class="modal" style="width:450px;"><div class="modal-hdr">Importer un fichier Excel<button class="tb-btn" onclick="closeImportModal()">×</button></div>
+    <div class="modal-body"><div class="dropzone" id="importDropzone" onclick="document.getElementById('fileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="fileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleFileImport(this)"><div id="importStatus"></div></div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeImportModal()">Fermer</button></div>
   </div>
 </div>
 
 <!-- ACTUALISER MODAL -->
 <div class="modal-overlay" id="actualiserModal">
-  <div class="modal" style="width:450px;"><div class="modal-hdr" data-i18n="modal_update_title">Actualiser les données<button class="tb-btn" onclick="closeActualiserModal()">×</button></div>
-    <div class="modal-body"><div class="dropzone" id="actualiserDropzone" onclick="document.getElementById('actualiserFileInput').click()" data-i18n="dropzone_text">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)"><div id="actualiserStatus"></div></div>
-    <div class="modal-ftr"><button class="tb-btn" onclick="closeActualiserModal()" data-i18n="btn_close">Fermer</button></div>
+  <div class="modal" style="width:450px;"><div class="modal-hdr">Actualiser les données<button class="tb-btn" onclick="closeActualiserModal()">×</button></div>
+    <div class="modal-body"><div class="dropzone" id="actualiserDropzone" onclick="document.getElementById('actualiserFileInput').click()">Cliquez ou déposez un fichier .xlsx/.xlsm</div><input type="file" id="actualiserFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleActualiserFileImport(this)"><div id="actualiserStatus"></div></div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeActualiserModal()">Fermer</button></div>
   </div>
 </div>
 
 <!-- MODAL MIGRATION -->
 <div class="modal-overlay" id="migrationModal">
   <div class="modal" style="width:450px;">
-    <div class="modal-hdr" data-i18n="menu_migration">Migration<button class="tb-btn" onclick="closeMigrationModal()">×</button></div>
+    <div class="modal-hdr">Migration<button class="tb-btn" onclick="closeMigrationModal()">×</button></div>
     <div class="modal-body">
-      <div class="dropzone" id="migrationDropzone" onclick="document.getElementById('migrationFileInput').click()" data-i18n="dropzone_excel">Cliquez ou déposez un fichier Excel</div>
+      <div class="dropzone" id="migrationDropzone" onclick="document.getElementById('migrationFileInput').click()">Cliquez ou déposez un fichier Excel</div>
       <input type="file" id="migrationFileInput" accept=".xlsx,.xlsm" style="display:none" onchange="handleMigrationFileImport(this)">
       <div id="migrationStatus" style="margin-top:8px;"></div>
     </div>
-    <div class="modal-ftr"><button class="tb-btn" onclick="closeMigrationModal()" data-i18n="btn_close">Fermer</button></div>
+    <div class="modal-ftr"><button class="tb-btn" onclick="closeMigrationModal()">Fermer</button></div>
   </div>
 </div>
 
 <!-- MODAL GESTION DES COLONNES -->
 <div class="modal-overlay" id="colModal">
   <div class="modal" style="width:400px;">
-    <div class="modal-hdr" data-i18n="col_picker_title">Colonnes affichées<button class="tb-btn" onclick="closeColModal()">✕</button></div>
+    <div class="modal-hdr">Colonnes affichées<button class="tb-btn" onclick="closeColModal()">✕</button></div>
     <div class="modal-body" id="colModalBody"></div>
     <div class="modal-ftr">
-      <button class="tb-btn" onclick="resetColumns()" data-i18n="btn_show_all">Tout afficher</button>
-      <button class="tb-btn green" onclick="closeColModal()" data-i18n="btn_close">Fermer</button>
+      <button class="tb-btn" onclick="resetColumns()">Tout afficher</button>
+      <button class="tb-btn green" onclick="closeColModal()">Fermer</button>
     </div>
   </div>
 </div>
@@ -1511,7 +1499,7 @@ function _fillMfModalDropdown(which) {
         const chk  = selected.has(v) ? 'checked' : '';
         return `<label><input type="checkbox" ${chk} data-val="${safe}"> ${safe}</label>`;
       }).join('')
-    : `<div style="padding:8px 10px;color:var(--g400);font-size:0.73rem;">${t("lbl_none")}</div>`;
+    : `<div style="padding:8px 10px;color:var(--g400);font-size:0.73rem;">Aucun</div>`;
   // Brancher les événements
   dst.querySelectorAll('input[type="checkbox"]').forEach(cb => {
     cb.onchange = function() {
@@ -1613,22 +1601,20 @@ function logAction(type, numAvis, detail) {
 
 function typeConfig(type) {
   const map = {
-    edit:        { i18n:'act_edit',       label: 'Modification',   icon: '✏️',  cls: 'ht-edit'   },
-    suivi_oui:   { i18n:'act_leve',       label: 'Levé',           icon: '✅',  cls: 'ht-suivi'  },
-    suivi_par:   { i18n:'act_partiel',    label: 'Partiel',        icon: '⚠️',  cls: 'ht-par'    },
-    suivi_non:   { i18n:'act_maintenu',   label: 'Maintenu',       icon: '❌',  cls: 'ht-non'    },
-    suivi_vide:  { i18n:'act_suivi_eff',  label: 'Suivi effacé',   icon: '—',   cls: 'ht-edit'   },
-    rd6_on:      { i18n:'act_rd6_on',     label: 'RD6 activé',     icon: '🟣',  cls: 'ht-rd6'    },
-    rd6_off:     { i18n:'act_rd6_off',    label: 'RD6 retiré',     icon: '🟣',  cls: 'ht-rd6'    },
-    pa:          { i18n:'act_pa',         label: 'PA ajouté',      icon: '🟡',  cls: 'ht-pa'     },
-    add:         { i18n:'act_add',        label: 'Avis ajouté',    icon: '🟢',  cls: 'ht-add'    },
-    delete:      { i18n:'act_delete',     label: 'Supprimé',       icon: '🔴',  cls: 'ht-del'    },
-    import:      { i18n:'act_import',     label: 'Import',         icon: '📥',  cls: 'ht-import' },
-    actualiser:  { i18n:'act_actualiser', label: 'Actualisation',  icon: '🔄',  cls: 'ht-import' },
+    edit:        { label: 'Modification',   icon: '✏️',  cls: 'ht-edit'   },
+    suivi_oui:   { label: 'Levé',           icon: '✅',  cls: 'ht-suivi'  },
+    suivi_par:   { label: 'Partiel',        icon: '⚠️',  cls: 'ht-par'    },
+    suivi_non:   { label: 'Maintenu',       icon: '❌',  cls: 'ht-non'    },
+    suivi_vide:  { label: 'Suivi effacé',   icon: '—',   cls: 'ht-edit'   },
+    rd6_on:      { label: 'RD6 activé',     icon: '🟣',  cls: 'ht-rd6'    },
+    rd6_off:     { label: 'RD6 retiré',     icon: '🟣',  cls: 'ht-rd6'    },
+    pa:          { label: 'PA ajouté',      icon: '🟡',  cls: 'ht-pa'     },
+    add:         { label: 'Avis ajouté',    icon: '🟢',  cls: 'ht-add'    },
+    delete:      { label: 'Supprimé',       icon: '🔴',  cls: 'ht-del'    },
+    import:      { label: 'Import',         icon: '📥',  cls: 'ht-import' },
+    actualiser:  { label: 'Actualisation',  icon: '🔄',  cls: 'ht-import' },
   };
-  const info = map[type] || { label: type, icon: '•', cls: 'ht-edit' };
-  if (info.i18n && typeof t === 'function') info.label = t(info.i18n);
-  return info;
+  return map[type] || { label: type, icon: '•', cls: 'ht-edit' };
 }
 
 function avatarColor(initiales) {
@@ -1668,11 +1654,11 @@ function clearHistorique() {
   // Vérification par mot de passe (admin ou RAPSOADMIN)
   const isAdmin = getRapsoUserRole() === 'admin';
   if(!isAdmin) {
-    const pwd = prompt(t('prompt_admin_pwd'));
+    const pwd = prompt('Action réservée aux administrateurs.\nMot de passe requis :');
     if(pwd === null) return;
-    if(pwd !== HIST_CLEAR_PWD) { alert(t('err_wrong_pwd')); return; }
+    if(pwd !== HIST_CLEAR_PWD) { alert('Mot de passe incorrect.'); return; }
   }
-  if(!confirm(t('confirm_clear_hist'))) return;
+  if(!confirm('Effacer tout l\'historique de ce canevas ? Cette action est irréversible.')) return;
   data.historique = [];
   persistLocal();
   renderHistorique();
@@ -1690,8 +1676,8 @@ function renderHistorique() {
     return true;
   });
   const n = rows.length;
-  ge('histCount').textContent = n + ' ' + t('entry') + (n > 1 ? t('entry_pl_suffix') : '');
-  ge('histHdrSub').textContent = `${(data.historique||[]).length} ${t('hist_total')} · ${t('hist_filtered')} : ${n}`;
+  ge('histCount').textContent = n + ' entrée' + (n > 1 ? 's' : '');
+  ge('histHdrSub').textContent = `${(data.historique||[]).length} action(s) au total · filtré : ${n}`;
 
   const tbody = ge('histBody');
   const table = ge('histTable');
@@ -1815,36 +1801,35 @@ function resetFilters(){
 
 // --- Colonnes principales ---
 const COL_DEF = [
-  {key:'num',  i18n:'col_num',  label:'N°',             visible:true,  locked:true, width:'49px'},
-  {key:'ref',  i18n:'col_ref',  label:'Réf',            visible:true,  width:'49px'},
-  {key:'date', i18n:'col_date', label:'Date',           visible:true,  width:'100px'},
-  {key:'inter',i18n:'col_inter',label:'Intervenant',    visible:true,  width:'90px'},
-  {key:'disp', i18n:'col_disp', label:'Dispositions',   visible:true,  width:'150px'},
-  {key:'desc', i18n:'col_desc', label:'Description',    visible:false, width:'130px'},
-  {key:'avis', i18n:'col_avis', label:'Avis',           visible:true,  width:'37px'},
-  {key:'obs',  i18n:'col_obs',  label:'Observations',   visible:true,  width:'220px'},
-  {key:'docs', i18n:'col_docs', label:'Documents',      visible:false, width:'100px'},
-  {key:'suivi',i18n:'col_suivi',label:'Suivi',          visible:true,  width:'61px'},
-  {key:'repK', i18n:'col_repK', label:'Rép. ENT / MOE', visible:true,  width:'180px'},
-  {key:'repL', i18n:'col_repL', label:'Obs. SOCOTEC',   visible:false, width:'180px'},
-  {key:'lots', i18n:'col_lots', label:'Lots',           visible:true,  width:'80px'}
+  {key:'num', label:'N°', visible:true, locked:true, width:'49px'},
+  {key:'ref', label:'Réf', visible:true, width:'49px'},
+  {key:'date', label:'Date', visible:true, width:'100px'},
+  {key:'inter', label:'Intervenant', visible:true, width:'90px'},
+  {key:'disp', label:'Dispositions', visible:true, width:'150px'},
+  {key:'desc', label:'Description', visible:false, width:'130px'},
+  {key:'avis', label:'Avis', visible:true, width:'37px'},
+  {key:'obs', label:'Observations', visible:true, width:'220px'},
+  {key:'docs', label:'Documents', visible:false, width:'100px'},
+  {key:'suivi', label:'Suivi', visible:true, width:'61px'},
+  {key:'repK', label:'Rép. ENT / MOE', visible:true, width:'180px'},
+  {key:'repL', label:'Obs. SOCOTEC', visible:false, width:'180px'},
+  {key:'lots', label:'Lots', visible:true, width:'80px'}
 ];
 function loadColPrefs(){try{const s=localStorage.getItem('rs_col_prefs');if(s){const p=JSON.parse(s);COL_DEF.forEach(c=>{if(p[c.key]!==undefined)c.visible=p[c.key];});}}catch(e){}}
 function saveColPrefs(){const p={};COL_DEF.forEach(c=>p[c.key]=c.visible);localStorage.setItem('rs_col_prefs',JSON.stringify(p));}
-function colLabel(c){return(typeof t==='function'&&c.i18n)?t(c.i18n):c.label;}
-function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=colLabel(c);th.style.width=c.width;th.setAttribute('data-col',c.key);th.onclick=()=>sortBy(c.key);hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
-function toggleColPicker(){const listDiv=document.getElementById('colModalBody');listDiv.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${colLabel(c)}</span></label>`).join('');document.getElementById('colModal').classList.add('open');}
+function rebuildTableHeader(){const hr=ge('headerRow');hr.innerHTML='';COL_DEF.forEach(c=>{if(c.visible){const th=document.createElement('th');th.textContent=c.label;th.style.width=c.width;th.setAttribute('data-col',c.key);th.onclick=()=>sortBy(c.key);hr.appendChild(th);}});const thAct=document.createElement('th');thAct.textContent='';thAct.style.width='44px';thAct.style.textAlign='center';hr.appendChild(thAct);}
+function toggleColPicker(){const listDiv=document.getElementById('colModalBody');listDiv.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');document.getElementById('colModal').classList.add('open');}
 function closeColModal(){document.getElementById('colModal').classList.remove('open');}
-function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${colLabel(c)}</span></label>`).join('');}
+function buildColPickerList(){const list=ge('colPickerList');list.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function toggleColumn(key,vis){const col=COL_DEF.find(c=>c.key===key);if(col&&!col.locked){col.visible=vis;saveColPrefs();rebuildTableHeader();renderTable();}}
-function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();const mb=document.getElementById('colModalBody');if(mb)mb.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${colLabel(c)}</span></label>`).join('');}
+function resetColumns(){COL_DEF.forEach(c=>{if(!c.locked)c.visible=true;});saveColPrefs();rebuildTableHeader();renderTable();const mb=document.getElementById('colModalBody');if(mb)mb.innerHTML=COL_DEF.map(c=>`<label class="col-picker-item"><input type="checkbox" ${c.visible?'checked':''} ${c.locked?'disabled':''} onchange="toggleColumn('${c.key}',this.checked)"><span>${c.label}</span></label>`).join('');}
 function fmtDate(d){if(!d)return'';if(/^\d{4}-\d{2}-\d{2}$/.test(d)){const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}return d;}
 function renderTable(){
   const tbody=ge('tableBody'),empty=ge('emptyState');
   if(!filteredRows.length){tbody.innerHTML='';empty.style.display='flex';return;}
   empty.style.display='none';
   tbody.innerHTML=filteredRows.map((r,i)=>{
-    const badge=r.suivi==='Oui'?`<span class="badge badge-oui">✓ ${t('suivi_oui')}</span>`:r.suivi==='Par'?`<span class="badge badge-par">~ ${t('suivi_par')}</span>`:r.suivi==='Non'?`<span class="badge badge-non">✗ ${t('suivi_non')}</span>`:'<span class="badge badge-empty">—</span>';
+    const badge=r.suivi==='Oui'?'<span class="badge badge-oui">✓ Oui</span>':r.suivi==='Par'?'<span class="badge badge-par">~ Par</span>':r.suivi==='Non'?'<span class="badge badge-non">✗ Non</span>':'<span class="badge badge-empty">—</span>';
     const rd6=r.rd6?'<span class="rd6-tag">RD6</span>':'';
     const interClean=cleanIntervenant(r.inter);
     let cells='';
@@ -1867,7 +1852,7 @@ function switchTab(t){currentTab=t;ge('tabV2').classList.toggle('active',t==='v2
 // --- Panel édition ---
 function openEditPanel(fi){
   editingIdx=fi;const r=filteredRows[fi];
-  ge('panelTitle').innerHTML=`${t('lbl_avis')} n°: ${r.num||'('+t('lbl_empty')+')'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - ${t('lbl_avis')} : ${r.avis||'-'}`;
+  ge('panelTitle').innerHTML=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - Avis : ${r.avis||'-'}`;
   ge('panelNum').innerText=r.num||'(sans n°)';
   ge('e_lblColE').innerText=r.disp||'—';
   ge('e_obs_readonly').innerText=r.obs||'—';
@@ -1908,7 +1893,7 @@ function saveRow(){
   applyFilters();ge('saveFeedback').classList.add('show');setTimeout(()=>ge('saveFeedback').classList.remove('show'),1800);
   persistLocal();pushToParent();
 }
-function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx];if(!confirm(t('confirm_delete_avis')+' '+r.num+' ?'))return;const gi=getRows().findIndex(x=>x.id===r.id);if(gi>=0){logAction('delete',r.num,t('log_delete_avis'));data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}}
+function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx];if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;const gi=getRows().findIndex(x=>x.id===r.id);if(gi>=0){logAction('delete',r.num,'Avis supprimé');data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}}
 
 // --- Redimensionnement panel ---
 (function(){
@@ -1926,7 +1911,7 @@ function openPAModal(){['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>ge(id).checked
 function closePAModal(){ge('paModal').classList.remove('open');}
 function addPA(){
   const cat=ge('pa_F').checked?'F':ge('pa_S').checked?'S':ge('pa_D').checked?'D':ge('pa_PM').checked?'PM':'';
-  if(!cat){ge('paFeedback').innerText='⚠️ '+t('pa_cat_required');setTimeout(()=>ge('paFeedback').innerText='',2000);return;}
+  if(!cat){ge('paFeedback').innerText='⚠️ Cochez F, S, D ou PM';setTimeout(()=>ge('paFeedback').innerText='',2000);return;}
   let maxPA=0;getRows().forEach(r=>{if((r.num||'').startsWith('PA')){let n=parseInt(r.num.replace('PA',''));if(n>maxPA)maxPA=n;}});
   data[currentTab].push(makeRow({num:'PA'+(maxPA+1),date:ge('pa_date').value||new Date().toISOString().slice(0,10),disp:ge('pa_disp').value,avis:cat,obs:ge('pa_obs').value,repK:ge('pa_repK').value,repL:ge('pa_repL').value,lots:ge('pa_lots').value}));
   const paNum='PA'+(maxPA+1);
@@ -1973,10 +1958,10 @@ function printReport() {
   ge('printAffaire').textContent = affaire
     ? 'Récapitulatif des avis — ' + affaire
     : 'Récapitulatif des avis';
-  ge('printDossier').textContent = dossier ? t('lbl_dossier_print') + ' ' + dossier : '';
+  ge('printDossier').textContent = dossier ? 'Dossier : ' + dossier : '';
   const now = new Date();
   const dateStr = now.toLocaleDateString('fr-FR');
-  ge('printDateNow').textContent = t('print_date') + ' ' + dateStr;
+  ge('printDateNow').textContent = 'Imprimé le ' + dateStr;
   ge('printFooterDate').textContent = dateStr;
   ge('printFooterLeft').textContent = 'SOCOTEC' + (affaire ? ' — ' + affaire : '');
 
@@ -2082,14 +2067,14 @@ function buildRapMfOptions(){
     interDrop.innerHTML=inters.map(v=>{
       const safe=escapeHtmlAttr(v);
       return `<label><input type="checkbox" value="${safe}" data-inter="${v.replace(/"/g,'&quot;')}" ${rapSelectedInters.has(v)?'checked':''} onchange="toggleRapMulti('inter', this.getAttribute('data-inter'), this.checked)"> ${escapeHtml(v)}</label>`;
-    }).join('')||`<div style="padding:8px;">${t('lbl_none')}</div>`;
+    }).join('')||'<div style="padding:8px;">Aucun</div>';
   }
   const lotDrop=document.getElementById('rapMfLotsDrop');
   if(lotDrop){
     lotDrop.innerHTML=lots.map(v=>{
       const safe=escapeHtmlAttr(v);
       return `<label><input type="checkbox" value="${safe}" data-lot="${v.replace(/"/g,'&quot;')}" ${rapSelectedLots.has(v)?'checked':''} onchange="toggleRapMulti('lot', this.getAttribute('data-lot'), this.checked)"> ${escapeHtml(v)}</label>`;
-    }).join('')||`<div style="padding:8px;">${t('lbl_none')}</div>`;
+    }).join('')||'<div style="padding:8px;">Aucun</div>';
   }
 }
 function toggleRapMulti(type,val,checked){if(type==='inter')checked?rapSelectedInters.add(val):rapSelectedInters.delete(val);else checked?rapSelectedLots.add(val):rapSelectedLots.delete(val);rapApply();}
@@ -2116,7 +2101,7 @@ function rapApply(){
   ge('rapStatsSDF').innerHTML=`<span class="s">S=${sCount}</span> / <span class="d">D=${dCount}</span> / <span class="f">F=${fCount}</span>`;
   ge('rapCnt').innerHTML=`(${rapFiltered.length})`;
   const listDiv=ge('rapideList');
-  if(!rapFiltered.length){listDiv.innerHTML=`<div class="empty-state" style="padding:20px"><div>${t('empty_avis')}</div></div>`;return;}
+  if(!rapFiltered.length){listDiv.innerHTML='<div class="empty-state" style="padding:20px"><div>Aucun avis</div></div>';return;}
   listDiv.innerHTML=rapFiltered.map((r,i)=>{
     let badge='';
     if(r.suivi==='Oui')badge='<span class="badge badge-oui" style="font-size:0.6rem;margin-right:4px;">✅</span>';
@@ -2174,7 +2159,7 @@ function rapSaveTexts(){
   btn.textContent='✅ Sauvegardé';
   btn.disabled=true;
   setTimeout(()=>{
-    btn.textContent=t('btn_validate');
+    btn.textContent='Valider';
     if(rapCurrent) btn.disabled=false;
   },2000);
 }
@@ -2197,13 +2182,13 @@ function closeStatsModal(){ge('statsModal').classList.remove('open');}
 
 // --- Export / Import Excel ---
 async function exportWithExcelJS(){
-  if(typeof ExcelJS==='undefined'){alert(t('err_exceljs_missing'));return;}
+  if(typeof ExcelJS==='undefined'){alert('ExcelJS non chargé');return;}
   try{
     const response=await fetch(TEMPLATE_URL);if(!response.ok)throw new Error(`HTTP ${response.status}`);
     const buffer=await response.arrayBuffer();const workbook=new ExcelJS.Workbook();await workbook.xlsx.load(buffer);
-    let worksheet=workbook.getWorksheet('RapsoV2');if(!worksheet){worksheet=workbook.worksheets[0];if(!worksheet)throw new Error(t('err_no_sheet'));}
+    let worksheet=workbook.getWorksheet('RapsoV2');if(!worksheet){worksheet=workbook.worksheets[0];if(!worksheet)throw new Error('Aucune feuille trouvée.');}
     const rows=getRows();const affaire=ge('affaireDisplay').innerText.trim()||'Sans nom';const dossier=ge('dossierInput').value.trim()||'';
-    worksheet.getCell('B1').value=`${t('lbl_affaire_excel')} ${affaire}`;worksheet.getCell('B2').value=`${t('lbl_dossier_excel')} ${dossier}`;
+    worksheet.getCell('B1').value=`Affaire : ${affaire}`;worksheet.getCell('B2').value=`Dossier : ${dossier}`;
     const lastRow=worksheet.rowCount;for(let r=4;r<=lastRow;r++){const row=worksheet.getRow(r);for(let c=1;c<=13;c++){const cell=row.getCell(c);if(typeof cell.value!=='object'||!cell.value||!cell.value.formula){cell.value=null;}}}
     rows.forEach((r,i)=>{const excelRowNum=4+i;const row=worksheet.getRow(excelRowNum);row.getCell(1).value=r.num;row.getCell(2).value=r.ref;row.getCell(3).value=fmtDate(r.date);row.getCell(4).value=cleanIntervenant(r.inter);row.getCell(5).value=r.disp;row.getCell(6).value=r.desc;row.getCell(7).value=r.avis;row.getCell(8).value=r.obs;row.getCell(9).value=r.docs;row.getCell(10).value=r.suivi;row.getCell(11).value=r.repK;row.getCell(12).value=r.repL;row.getCell(13).value=r.lots;});
     const bufferOut=await workbook.xlsx.writeBuffer();const blob=new Blob([bufferOut],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
@@ -2216,8 +2201,8 @@ function extractKey(v){if(!v)return'';let p=v.indexOf('/');return p>0?v.substrin
 function hasRappel(obs){if(!obs)return false;let s=String(obs);return s.includes("Rappel de l'observation précédente :")||s.includes("Rappel de l'observation précédente:")||s.includes("Rappel de l'observation précédente :");}
 function updateParentAffaire(affaire){if(window.parent&&window.parent!==window)window.parent.postMessage({type:'rapso_update_affaire',canId:window.CANEVAS_ID,affaire},'*');}
 function processXLSX(file,mode){
-  const sid=mode==='actualiser'?'actualiserStatus':'importStatus';ge(sid).textContent=t('status_reading');
-  if(mode==='actualiser'){const nomFichier=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');if(!confirm(t('confirm_update').replace('{name}',nomFichier))){ge(sid).textContent=t('status_cancelled');return;}}
+  const sid=mode==='actualiser'?'actualiserStatus':'importStatus';ge(sid).textContent='Lecture...';
+  if(mode==='actualiser'){const nomFichier=file.name.replace(/\.(xlsx|xlsm|xls)$/i,'');if(!confirm(`Mettre à jour « ${nomFichier} » ?`)){ge(sid).textContent='Annulé';return;}}
   const reader=new FileReader();
   reader.onload=e=>{
     try{
@@ -2268,7 +2253,7 @@ function processXLSX(file,mode){
           }else{ex.push(s);add++;}
         }
         ex.sort((a,b)=>extractKey(a.num).localeCompare(extractKey(b.num),undefined,{numeric:true}));data[target]=ex;currentTab=target;ge(sid).textContent=`✅ ${up} mis à jour, ${add} ajoutés`;
-      }else{if(!confirm(`${src.length} `+t('confirm_import_lines')+` → ${target} ?`)){ge(sid).textContent=t('status_cancelled');return;}data[target]=src;currentTab=target;ge(sid).textContent=`✅ ${src.length} `+t('status_imported');}
+      }else{if(!confirm(`${src.length} lignes → ${target} ?`)){ge(sid).textContent='Annulé';return;}data[target]=src;currentTab=target;ge(sid).textContent=`✅ ${src.length} avis importés`;}
       ge('tabV2').classList.toggle('active',target==='v2');ge('tabV1').classList.toggle('active',target==='v1');
       selectedIntervenants.clear();selectedLots.clear();
       logAction(mode==='actualiser'?'actualiser':'import','—', (mode==='actualiser'?'Actualisation':'Import')+' Excel : '+src.length+' avis');
@@ -2278,17 +2263,38 @@ function processXLSX(file,mode){
 }
 function checkPasswordBeforeImport() {
   const motDePasse = "SOCOTEC";
-  let tentative = prompt(t('prompt_import_pwd'), "");
-  if (tentative === null || tentative === "") { return false; }
-  if (tentative === motDePasse) { return true; }
-  else { alert(t('err_wrong_pwd')); return false; }
+  let tentative = prompt(
+    "Veuillez saisir le code d'accès pour lancer l'importation.\n\n" +
+    "ATTENTION : Pour une simple mise à jour des données existantes, " +
+    "cliquez sur ANNULER puis sur le bouton 'Actualiser'.",
+    ""
+  );
+  if (tentative === null || tentative === "") {
+    return false;
+  }
+  if (tentative === motDePasse) {
+    return true;
+  } else {
+    alert("Mot de passe incorrect.");
+    return false;
+  }
 }
 function checkPasswordBeforeMigration() {
   const motDePasse = "ALIBABA";
-  let tentative = prompt(t('prompt_migration_pwd'), "");
-  if (tentative === null || tentative === "") { return false; }
-  if (tentative === motDePasse) { return true; }
-  else { alert(t('err_wrong_pwd')); return false; }
+  let tentative = prompt(
+    "Veuillez saisir le code d'accès pour lancer la migration.\n\n" +
+    "Nota : cette opération est reservée aux administrateurs.",
+    ""
+  );
+  if (tentative === null || tentative === "") {
+    return false;
+  }
+  if (tentative === motDePasse) {
+    return true;
+  } else {
+    alert("Mot de passe incorrect.");
+    return false;
+  }
 }  
 function openImportModal(){ge('importModal').classList.add('open');}
 function closeImportModal(){ge('importModal').classList.remove('open');}
@@ -2302,7 +2308,7 @@ function closeMigrationModal(){document.getElementById('migrationModal').classLi
 function handleMigrationFileImport(input){
   const file=input.files[0];if(!file)return;const statusEl=document.getElementById('migrationStatus');statusEl.textContent='Lecture...';
   const reader=new FileReader();
-  reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent=t('status_no_data');return;}if(!confirm(`${src.length} ${t('avis_label')} → ${currentTab} ?`)){statusEl.textContent=t('status_cancelled');return;}data[currentTab]=src;logAction('import','—',t('log_migration')+src.length+' '+t('avis_label'));selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} ${t('status_imported')}`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);
+  reader.onload=function(e){try{const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});const sheetName=wb.SheetNames[0];const ws=wb.Sheets[sheetName];const raw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});const src=[];for(let i=3;i<Math.min(raw.length,500);i++){const row=raw[i];if(!row||row.every(c=>c===''))continue;src.push(makeRow({num:String(row[0]||'').trim(),ref:String(row[1]||'').trim(),date:normalizeDate(row[2]),inter:String(row[3]||'').trim(),disp:String(row[4]||'').trim(),desc:String(row[5]||'').trim(),avis:String(row[6]||'').trim(),obs:String(row[7]||''),docs:cleanDocs(String(row[8]||'').trim()),suivi:String(row[9]||'').trim(),repK:String(row[10]||'').trim(),repL:String(row[11]||'').trim(),lots:String(row[12]||'').trim(),rd6:String(row[0]||'').includes('/RD6')}));}if(src.length===0){statusEl.textContent='Aucune donnée';return;}if(!confirm(`${src.length} avis → ${currentTab} ?`)){statusEl.textContent='Annulé';return;}data[currentTab]=src;logAction('import','—','Migration Excel : '+src.length+' avis');selectedIntervenants.clear();selectedLots.clear();applyFilters();persistLocal();pushToParent();statusEl.textContent=`✅ ${src.length} avis importés`;closeMigrationModal();}catch(err){statusEl.textContent='❌ '+err.message;}};reader.readAsArrayBuffer(file);
 }
 const migrationDropzone=document.getElementById('migrationDropzone');
 if(migrationDropzone){migrationDropzone.addEventListener('dragover',e=>{e.preventDefault();migrationDropzone.style.borderColor='var(--blue)';});migrationDropzone.addEventListener('dragleave',()=>migrationDropzone.style.borderColor='');migrationDropzone.addEventListener('drop',e=>{e.preventDefault();migrationDropzone.style.borderColor='';const file=e.dataTransfer.files[0];if(file)handleMigrationFileImport({files:[file]});});}
@@ -2358,297 +2364,6 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initAutoResizeFields);
 } else {
   initAutoResizeFields();
-}
-</script>
-
-<!-- ═══════════════════════ SYSTÈME I18N ═══════════════════════ -->
-<script>
-const I18N = {
-  fr: {
-    /* Toolbar */
-    lbl_num:'N°', lbl_date:'Date', lbl_disp_short:'Disp.', lbl_obs_short:'Obs.', lbl_docs:'Docs',
-    ph_num:'avis', ph_date:'jj/mm/aaaa', ph_disp:'dispositions', ph_obs:'observations', ph_docs:'documents',
-    suivi_oui:'Levé', suivi_par:'Partiel', suivi_non:'Maintenu',
-    lbl_intervenants:'Intervenants', lbl_lots:'Lots concernés', lbl_lots_short:'Lots',
-    title_reset_filters:'Réinitialiser les filtres',
-    btn_filters:'⚙ Filtres', btn_add:'+ Ajouter', btn_rapide:'⚡ Vision rapide',
-    btn_select:'Sélectionner',
-    /* Colonnes tableau */
-    col_num:'N°', col_ref:'Réf', col_date:'Date', col_inter:'Intervenant',
-    col_disp:'Dispositions', col_desc:'Description', col_avis:'Avis',
-    col_obs:'Observations', col_docs:'Documents', col_suivi:'Suivi',
-    col_repK:'Rép. ENT / MOE', col_repL:'Obs. SOCOTEC', col_lots:'Lots',
-    /* Menu actions */
-    menu_update:'⟳ Mettre à jour', menu_reset:'↺ Réinitialiser le canevas',
-    menu_migration:'⇄ Migration', menu_save_local:'⤓ Enregistrer en local',
-    menu_open_local:'⤒ Ouvrir un dossier local', menu_stats:'◔ Statistiques',
-    menu_print:'⎙ Imprimer', menu_excel:'⌗ Télécharger l\'excel', menu_columns:'☷ Gérer les colonnes',
-    col_picker_title:'Colonnes affichées', btn_show_all:'Tout afficher',
-    /* Panel volet */
-    sec_disp:'Dispositions examinées', sec_obs:'Observations', sec_rep:'Réponses',
-    lbl_repK:'Réponses ENT / MOE', lbl_repL:'Observations-commentaires SOCOTEC',
-    lbl_repK_short:'Réponses MOE', lbl_repL_short:'Comm. SOCOTEC',
-    sec_suivi:'Statut de suivi',
-    suivi_oui_btn:'✓ Levé', suivi_par_btn:'~ Partiel', suivi_non_btn:'✗ Maintenu',
-    suivi_oui_pl:'Levés', suivi_par_pl:'Partiels', suivi_non_pl:'Maintenus',
-    btn_save:'Enregistrer', btn_delete:'Sup', btn_prev:'↑ Préc', btn_next:'Suiv ↓',
-    btn_cancel:'Annuler', btn_validate:'Valider', btn_close:'Fermer', btn_apply:'Appliquer',
-    feedback_saved:'✓ Enregistré !',
-    lbl_avis:'Avis', lbl_empty:'vide', lbl_none:'Aucun',
-    /* Impression */
-    print_date:'Imprimé le', print_date_label:'Imprimé le',
-    lbl_dossier_print:'Dossier :', lbl_affaire_excel:'Affaire :', lbl_dossier_excel:'Dossier :',
-    /* Modals */
-    modal_info_title:'Informations du dossier', lbl_affaire:'AFFAIRE', lbl_dossier:'DOSSIER',
-    ph_affaire:'Nom de l\'affaire', ph_dossier:'N° de dossier',
-    modal_pa_title:'Ajouter PA', lbl_categorie:'Catégorie', lbl_disp:'Dispositions',
-    btn_add_pa:'Ajouter PA', lbl_intervenant:'Intervenant',
-    modal_add_title:'Nouvel avis', lbl_num_avis:'N° Avis', lbl_ref:'Id / Réf',
-    lbl_desc:'Description', btn_add_row:'+ Ajouter',
-    modal_import_title:'Importer un fichier Excel', modal_update_title:'Actualiser les données',
-    dropzone_text:'Cliquez ou déposez un fichier .xlsx/.xlsm',
-    dropzone_excel:'Cliquez ou déposez un fichier Excel',
-    /* Historique */
-    hist_title:'Historique des modifications', hist_sub:'Journal des actions enregistrées',
-    hist_total:'action(s) au total', hist_filtered:'filtré',
-    lbl_utilisateur:'Utilisateur', lbl_action:'Action', lbl_detail:'Détail',
-    th_datetime:'Date / Heure', entry:'entrée', entry_pl_suffix:'s',
-    opt_all:'Toutes', opt_edit:'✏️ Modification texte', opt_leve:'✅ Levé',
-    opt_partiel:'⚠️ Partiel', opt_maintenu:'❌ Maintenu', opt_suivi_eff:'— Suivi effacé',
-    opt_rd6_on:'🟣 RD6 activé', opt_rd6_off:'🟣 RD6 retiré', opt_pa:'🟡 PA ajouté',
-    opt_add:'🟢 Avis ajouté', opt_delete:'🔴 Suppression', opt_import:'📥 Import',
-    opt_actualiser:'🔄 Actualisation',
-    act_edit:'Modification', act_leve:'Levé', act_partiel:'Partiel',
-    act_maintenu:'Maintenu', act_suivi_eff:'Suivi effacé', act_rd6_on:'RD6 activé',
-    act_rd6_off:'RD6 retiré', act_pa:'PA ajouté', act_add:'Avis ajouté',
-    act_delete:'Supprimé', act_import:'Import', act_actualiser:'Actualisation',
-    btn_clear_hist:'🗑 Effacer l\'historique', btn_export_csv:'⤓ Exporter CSV',
-    ph_user:'Prénom Nom...',
-    hist_empty_msg:'Aucune modification enregistrée', hist_empty_sub:'Les actions apparaîtront ici au fur et à mesure',
-    /* Filtres mobile */
-    sec_search:'🔍 Recherche', sec_type_disp:'🏷 Type de disposition',
-    sec_intervenants:'👷 Intervenants', sec_lots:'📦 Lots',
-    /* Messages JS */
-    empty_avis:'Aucun avis trouvé',
-    err_wrong_pwd:'Mot de passe incorrect.',
-    confirm_clear_hist:'Effacer tout l\'historique de ce canevas ? Cette action est irréversible.',
-    status_no_data:'Aucune donnée', status_cancelled:'Annulé', status_imported:'avis importés',
-    avis_label:'avis', log_migration:'Migration Excel : ',
-    err_exceljs_missing:'ExcelJS non chargé', err_no_sheet:'Aucune feuille trouvée.',
-    /* Prompts / confirms JS */
-    prompt_admin_pwd:'Action réservée aux administrateurs.\nMot de passe requis :',
-    prompt_import_pwd:'Veuillez saisir le code d\'accès pour lancer l\'importation.\n\nATTENTION : Pour une simple mise à jour, cliquez ANNULER puis \'Actualiser\'.',
-    prompt_migration_pwd:'Veuillez saisir le code d\'accès pour la migration.\n\nNota : réservé aux administrateurs.',
-    confirm_delete_avis:'Supprimer définitivement l\'avis',
-    log_delete_avis:'Avis supprimé',
-  },
-
-  en: {
-    lbl_num:'No.', lbl_date:'Date', lbl_disp_short:'Prov.', lbl_obs_short:'Obs.', lbl_docs:'Docs',
-    ph_num:'opinion', ph_date:'dd/mm/yyyy', ph_disp:'provisions', ph_obs:'observations', ph_docs:'documents',
-    suivi_oui:'Resolved', suivi_par:'Partial', suivi_non:'Maintained',
-    lbl_intervenants:'Stakeholders', lbl_lots:'Lots concerned', lbl_lots_short:'Lots',
-    title_reset_filters:'Reset filters',
-    btn_filters:'⚙ Filters', btn_add:'+ Add', btn_rapide:'⚡ Quick view',
-    btn_select:'Select',
-    col_num:'No.', col_ref:'Ref', col_date:'Date', col_inter:'Stakeholder',
-    col_disp:'Provisions', col_desc:'Description', col_avis:'Opinion',
-    col_obs:'Observations', col_docs:'Documents', col_suivi:'Status',
-    col_repK:'ENT / MOE resp.', col_repL:'SOCOTEC obs.', col_lots:'Lots',
-    menu_update:'⟳ Update', menu_reset:'↺ Reset canvas',
-    menu_migration:'⇄ Migration', menu_save_local:'⤓ Save locally',
-    menu_open_local:'⤒ Open local file', menu_stats:'◔ Statistics',
-    menu_print:'⎙ Print', menu_excel:'⌗ Download Excel', menu_columns:'☷ Manage columns',
-    col_picker_title:'Displayed columns', btn_show_all:'Show all',
-    sec_disp:'Examined provisions', sec_obs:'Observations', sec_rep:'Responses',
-    lbl_repK:'ENT / MOE responses', lbl_repL:'SOCOTEC comments',
-    lbl_repK_short:'MOE responses', lbl_repL_short:'SOCOTEC comments',
-    sec_suivi:'Follow-up status',
-    suivi_oui_btn:'✓ Resolved', suivi_par_btn:'~ Partial', suivi_non_btn:'✗ Maintained',
-    suivi_oui_pl:'Resolved', suivi_par_pl:'Partial', suivi_non_pl:'Maintained',
-    btn_save:'Save', btn_delete:'Del', btn_prev:'↑ Prev', btn_next:'Next ↓',
-    btn_cancel:'Cancel', btn_validate:'Confirm', btn_close:'Close', btn_apply:'Apply',
-    feedback_saved:'✓ Saved!',
-    lbl_avis:'Opinion', lbl_empty:'empty', lbl_none:'None',
-    print_date:'Printed on', print_date_label:'Printed on',
-    lbl_dossier_print:'File:', lbl_affaire_excel:'Project:', lbl_dossier_excel:'File:',
-    modal_info_title:'File information', lbl_affaire:'PROJECT', lbl_dossier:'FILE',
-    ph_affaire:'Project name', ph_dossier:'File number',
-    modal_pa_title:'Add PA', lbl_categorie:'Category', lbl_disp:'Provisions',
-    btn_add_pa:'Add PA', lbl_intervenant:'Stakeholder',
-    modal_add_title:'New opinion', lbl_num_avis:'Opinion No.', lbl_ref:'Id / Ref',
-    lbl_desc:'Description', btn_add_row:'+ Add',
-    modal_import_title:'Import Excel file', modal_update_title:'Update data',
-    dropzone_text:'Click or drop a .xlsx/.xlsm file',
-    dropzone_excel:'Click or drop an Excel file',
-    hist_title:'Change history', hist_sub:'Log of recorded actions',
-    hist_total:'action(s) total', hist_filtered:'filtered',
-    lbl_utilisateur:'User', lbl_action:'Action', lbl_detail:'Detail',
-    th_datetime:'Date / Time', entry:'entry', entry_pl_suffix:'ies',
-    opt_all:'All', opt_edit:'✏️ Text edit', opt_leve:'✅ Resolved',
-    opt_partiel:'⚠️ Partial', opt_maintenu:'❌ Maintained', opt_suivi_eff:'— Status cleared',
-    opt_rd6_on:'🟣 RD6 enabled', opt_rd6_off:'🟣 RD6 removed', opt_pa:'🟡 PA added',
-    opt_add:'🟢 Opinion added', opt_delete:'🔴 Deleted', opt_import:'📥 Import',
-    opt_actualiser:'🔄 Updated',
-    act_edit:'Edit', act_leve:'Resolved', act_partiel:'Partial',
-    act_maintenu:'Maintained', act_suivi_eff:'Status cleared', act_rd6_on:'RD6 enabled',
-    act_rd6_off:'RD6 removed', act_pa:'PA added', act_add:'Opinion added',
-    act_delete:'Deleted', act_import:'Import', act_actualiser:'Updated',
-    btn_clear_hist:'🗑 Clear history', btn_export_csv:'⤓ Export CSV',
-    ph_user:'First Last...',
-    hist_empty_msg:'No changes recorded', hist_empty_sub:'Actions will appear here as they occur',
-    sec_search:'🔍 Search', sec_type_disp:'🏷 Disposition type',
-    sec_intervenants:'👷 Stakeholders', sec_lots:'📦 Lots', sec_suivi:'📊 Follow-up status',
-    empty_avis:'No opinions found',
-    err_wrong_pwd:'Incorrect password.',
-    confirm_clear_hist:'Clear all history for this canvas? This action is irreversible.',
-    status_no_data:'No data', status_cancelled:'Cancelled', status_imported:'opinions imported',
-    avis_label:'opinions', log_migration:'Excel migration: ',
-    err_exceljs_missing:'ExcelJS not loaded', err_no_sheet:'No sheet found.',
-    prompt_admin_pwd:'Admin action. Password required:',
-    prompt_import_pwd:'Enter access code to launch import.\n\nNOTE: For a simple data update, click CANCEL then \'Update\'.',
-    prompt_migration_pwd:'Enter access code for migration.\n\nNote: reserved for administrators.',
-    confirm_delete_avis:'Permanently delete opinion',
-    log_delete_avis:'Opinion deleted',
-  },
-
-  de: {
-    lbl_num:'Nr.', lbl_date:'Datum', lbl_disp_short:'Aufl.', lbl_obs_short:'Beob.', lbl_docs:'Dok.',
-    ph_num:'Stellungnahme', ph_date:'TT/MM/JJJJ', ph_disp:'Auflagen', ph_obs:'Beobachtungen', ph_docs:'Dokumente',
-    suivi_oui:'Erledigt', suivi_par:'Teilweise', suivi_non:'Aufrechterhalten',
-    lbl_intervenants:'Beteiligte', lbl_lots:'Betroffene Lose', lbl_lots_short:'Lose',
-    title_reset_filters:'Filter zurücksetzen',
-    btn_filters:'⚙ Filter', btn_add:'+ Hinzufügen', btn_rapide:'⚡ Schnellansicht',
-    btn_select:'Auswählen',
-    col_num:'Nr.', col_ref:'Ref.', col_date:'Datum', col_inter:'Beteiligter',
-    col_disp:'Auflagen', col_desc:'Beschreibung', col_avis:'Stellungnahme',
-    col_obs:'Beobachtungen', col_docs:'Dokumente', col_suivi:'Status',
-    col_repK:'ANT / MOE Antw.', col_repL:'SOCOTEC Beob.', col_lots:'Lose',
-    menu_update:'⟳ Aktualisieren', menu_reset:'↺ Raster zurücksetzen',
-    menu_migration:'⇄ Migration', menu_save_local:'⤓ Lokal speichern',
-    menu_open_local:'⤒ Lokale Datei öffnen', menu_stats:'◔ Statistiken',
-    menu_print:'⎙ Drucken', menu_excel:'⌗ Excel herunterladen', menu_columns:'☷ Spalten verwalten',
-    col_picker_title:'Angezeigte Spalten', btn_show_all:'Alle anzeigen',
-    sec_disp:'Geprüfte Auflagen', sec_obs:'Beobachtungen', sec_rep:'Antworten',
-    lbl_repK:'ANT / MOE Antworten', lbl_repL:'SOCOTEC Kommentare',
-    lbl_repK_short:'MOE Antworten', lbl_repL_short:'SOCOTEC Kommentare',
-    sec_suivi:'Nachverfolgungsstatus',
-    suivi_oui_btn:'✓ Erledigt', suivi_par_btn:'~ Teilweise', suivi_non_btn:'✗ Aufrechterhalten',
-    suivi_oui_pl:'Erledigt', suivi_par_pl:'Teilweise', suivi_non_pl:'Aufrechterhalten',
-    btn_save:'Speichern', btn_delete:'Lös.', btn_prev:'↑ Vor.', btn_next:'Näch. ↓',
-    btn_cancel:'Abbrechen', btn_validate:'Bestätigen', btn_close:'Schließen', btn_apply:'Anwenden',
-    feedback_saved:'✓ Gespeichert!',
-    lbl_avis:'Stellungnahme', lbl_empty:'leer', lbl_none:'Keine',
-    print_date:'Gedruckt am', print_date_label:'Gedruckt am',
-    lbl_dossier_print:'Akte:', lbl_affaire_excel:'Projekt:', lbl_dossier_excel:'Akte:',
-    modal_info_title:'Dateiinformationen', lbl_affaire:'PROJEKT', lbl_dossier:'AKTE',
-    ph_affaire:'Projektname', ph_dossier:'Aktennummer',
-    modal_pa_title:'PA hinzufügen', lbl_categorie:'Kategorie', lbl_disp:'Auflagen',
-    btn_add_pa:'PA hinzufügen', lbl_intervenant:'Beteiligter',
-    modal_add_title:'Neue Stellungnahme', lbl_num_avis:'Stellungnahme Nr.', lbl_ref:'Id / Ref',
-    lbl_desc:'Beschreibung', btn_add_row:'+ Hinzufügen',
-    modal_import_title:'Excel-Datei importieren', modal_update_title:'Daten aktualisieren',
-    dropzone_text:'Klicken oder .xlsx/.xlsm-Datei ablegen',
-    dropzone_excel:'Klicken oder Excel-Datei ablegen',
-    hist_title:'Änderungshistorie', hist_sub:'Protokoll der gespeicherten Aktionen',
-    hist_total:'Aktion(en) insgesamt', hist_filtered:'gefiltert',
-    lbl_utilisateur:'Benutzer', lbl_action:'Aktion', lbl_detail:'Detail',
-    th_datetime:'Datum / Uhrzeit', entry:'Eintrag', entry_pl_suffix:'',
-    opt_all:'Alle', opt_edit:'✏️ Textänderung', opt_leve:'✅ Erledigt',
-    opt_partiel:'⚠️ Teilweise', opt_maintenu:'❌ Aufrechterhalten', opt_suivi_eff:'— Status gelöscht',
-    opt_rd6_on:'🟣 RD6 aktiviert', opt_rd6_off:'🟣 RD6 entfernt', opt_pa:'🟡 PA hinzugefügt',
-    opt_add:'🟢 Stellungnahme hinzugefügt', opt_delete:'🔴 Gelöscht', opt_import:'📥 Import',
-    opt_actualiser:'🔄 Aktualisiert',
-    act_edit:'Änderung', act_leve:'Erledigt', act_partiel:'Teilweise',
-    act_maintenu:'Aufrechterhalten', act_suivi_eff:'Status gelöscht', act_rd6_on:'RD6 aktiviert',
-    act_rd6_off:'RD6 entfernt', act_pa:'PA hinzugefügt', act_add:'Stellungnahme hinzugefügt',
-    act_delete:'Gelöscht', act_import:'Import', act_actualiser:'Aktualisiert',
-    btn_clear_hist:'🗑 Verlauf löschen', btn_export_csv:'⤓ CSV exportieren',
-    ph_user:'Vorname Nachname...',
-    hist_empty_msg:'Keine Änderungen aufgezeichnet', hist_empty_sub:'Aktionen erscheinen hier nach und nach',
-    sec_search:'🔍 Suche', sec_type_disp:'🏷 Auflagentyp',
-    sec_intervenants:'👷 Beteiligte', sec_lots:'📦 Lose', sec_suivi:'📊 Nachverfolgungsstatus',
-    empty_avis:'Keine Stellungnahmen gefunden',
-    err_wrong_pwd:'Falsches Passwort.',
-    confirm_clear_hist:'Gesamten Verlauf dieses Rasters löschen? Diese Aktion ist unumkehrbar.',
-    status_no_data:'Keine Daten', status_cancelled:'Abgebrochen', status_imported:'Stellungnahmen importiert',
-    avis_label:'Stellungnahmen', log_migration:'Excel-Migration: ',
-    err_exceljs_missing:'ExcelJS nicht geladen', err_no_sheet:'Kein Tabellenblatt gefunden.',
-    prompt_admin_pwd:'Admin-Aktion. Passwort erforderlich:',
-    prompt_import_pwd:'Zugangscode für den Import eingeben.\n\nHINWEIS: Für ein einfaches Update klicken Sie ABBRECHEN, dann \'Aktualisieren\'.',
-    prompt_migration_pwd:'Zugangscode für die Migration eingeben.\n\nHinweis: Nur für Administratoren.',
-    confirm_delete_avis:'Stellungnahme endgültig löschen',
-    log_delete_avis:'Stellungnahme gelöscht',
-  }
-};
-
-let _currentLang = localStorage.getItem('rs_lang') || 'fr';
-
-function t(key) {
-  return (I18N[_currentLang] && I18N[_currentLang][key]) || (I18N.fr && I18N.fr[key]) || key;
-}
-
-function applyI18n() {
-  // Texte simple
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    const val = t(key);
-    // Préserver les enfants HTML (ex: spans et buttons dans modal-hdr)
-    if (el.children.length > 0) {
-      // Mettre à jour uniquement le premier nœud texte
-      const tn = [...el.childNodes].find(n => n.nodeType === Node.TEXT_NODE);
-      if (tn) tn.textContent = val + ' ';
-    } else {
-      el.textContent = val;
-    }
-  });
-  // Placeholders
-  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
-    const key = el.getAttribute('data-i18n-ph');
-    el.placeholder = t(key);
-  });
-  // Title attributes
-  document.querySelectorAll('[data-i18n-title]').forEach(el => {
-    const key = el.getAttribute('data-i18n-title');
-    el.title = t(key);
-  });
-  // Options <select>
-  document.querySelectorAll('option[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    el.textContent = t(key);
-  });
-  // Boutons lang switcher
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.id === 'lang-' + _currentLang);
-  });
-}
-
-function setLang(lang) {
-  _currentLang = lang;
-  localStorage.setItem('rs_lang', lang);
-  applyI18n();
-  if (typeof rebuildTableHeader === 'function') rebuildTableHeader();
-  if (typeof renderTable === 'function') renderTable();
-  if (typeof buildColPickerList === 'function') buildColPickerList();
-  if (typeof renderHistorique === 'function' && document.getElementById('histModal')?.classList.contains('open')) renderHistorique();
-}
-
-// Appliquer au chargement
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    applyI18n();
-    // Reconstruire le tableau avec les bons labels après init
-    setTimeout(() => {
-      if (typeof rebuildTableHeader === 'function') rebuildTableHeader();
-      if (typeof buildColPickerList === 'function') buildColPickerList();
-    }, 100);
-  });
-} else {
-  applyI18n();
-  setTimeout(() => {
-    if (typeof rebuildTableHeader === 'function') rebuildTableHeader();
-    if (typeof buildColPickerList === 'function') buildColPickerList();
-  }, 100);
 }
 </script>
 </body>
