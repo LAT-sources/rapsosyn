@@ -1051,18 +1051,18 @@ th[data-col="repL"], td[data-col="repL"] {
       </div>
     </div>
   </div>
-<div class="panel-ftr">
-  <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
-  <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Sup</button>
-  <button class="tb-btn" onclick="closePanel()">Annuler</button>
-  <div class="panel-nav-mobile">
-    <button class="tb-btn" onclick="navRow(-1)" title="Précédent">↑ Préc</button>
-    <button class="tb-btn" onclick="navRow(1)" title="Suivant">Suiv ↓</button>
+  <div class="panel-ftr">
+    <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
+    <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Sup</button>
+    <div class="panel-nav-mobile">
+      <button class="tb-btn" onclick="navRow(-1)" title="Précédent">↑ Préc</button>
+      <button class="tb-btn" onclick="navRow(1)" title="Suivant">Suiv ↓</button>
+    </div>
+    <button class="tb-btn" onclick="closePanel()">Annuler</button>
+    <span class="save-feedback" id="saveFeedback">✓ Enregistré !</span>
   </div>
-  <span class="save-feedback" id="saveFeedback">
-    ✓ Enregistré !
-  </span>
 </div>
+
 <!-- MODAL INFO -->
 <div class="modal-overlay" id="infoModal">
   <div class="modal" style="width:400px;">
