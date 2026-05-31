@@ -721,6 +721,9 @@ th[data-col="repL"], td[data-col="repL"] {
     /* Bouton filtres mobile */
     .tb-mobile-only { display: inline-flex !important; }
 
+    /* Cacher le menu actions (☰) en mobile */
+    .actions-dropdown { display: none !important; }
+
     /* ── Panel latéral → plein écran immédiat ── */
     .edit-panel {
       position: fixed !important;
@@ -1861,10 +1864,21 @@ function openEditPanel(fi){
   ge('overlay').classList.add('open');ge('editPanel').classList.add('open');
   document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
   const el=ge('row-'+fi);if(el)el.classList.add('row-highlight');
+  // Mobile : remonter en haut du panel et bloquer le scroll du body
+  if(window.innerWidth <= 640){
+    window.scrollTo(0,0);
+    document.body.style.overflow = 'hidden';
+    ge('editPanel').scrollTop = 0;
+  }
   // Auto-resize des champs ENT/MOE et SOCOTEC (mobile)
   requestAnimationFrame(()=>{['e_repK','e_repL'].forEach(id=>autoResizeTextarea(ge(id)));});
 }
-function closePanel(){ge('overlay').classList.remove('open');ge('editPanel').classList.remove('open');editingIdx=null;}
+function closePanel(){
+  ge('overlay').classList.remove('open');
+  ge('editPanel').classList.remove('open');
+  document.body.style.overflow = '';
+  editingIdx=null;
+}
 function navRow(d){if(editingIdx!==null){let n=editingIdx+d;if(n>=0&&n<filteredRows.length)openEditPanel(n);}}
 function setSuivi(v){currentSuivi=v;updateSuiviUI();}
 function updateSuiviUI(){['oui','par','non','vide'].forEach(k=>{const el=ge('opt_'+k);if(el)el.classList.remove('sel-oui','sel-par','sel-non','sel-vide');});if(currentSuivi==='Oui')ge('opt_oui').classList.add('sel-oui');else if(currentSuivi==='Par')ge('opt_par').classList.add('sel-par');else if(currentSuivi==='Non')ge('opt_non').classList.add('sel-non');else ge('opt_vide')?.classList.add('sel-vide');}
