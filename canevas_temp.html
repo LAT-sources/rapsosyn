@@ -1389,7 +1389,7 @@ function toggleTheme(){document.body.classList.toggle('dark');localStorage.setIt
 (()=>{if((localStorage.getItem('rapso_theme')||'light')==='dark')document.body.classList.add('dark');})();
 
 // --- Données globales ---
-let currentTab='v2', data={v2:[], v1:[], historique:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='';
+let currentTab='v2', data={v2:[], v1:[], historique:[]}, filteredRows=[], sortKey=null, sortDir=1, editingIdx=null, currentSuivi='', _panelAutoOpened=false;
 let _rapsoUser = window.RAPSO_USER || null;
 function getRapsoUserName() {
   const u = _rapsoUser || window.RAPSO_USER;
@@ -1793,6 +1793,11 @@ function applyFilters(){
   });
   if(sortKey)rows.sort((a,b)=>{const av=String(a[sortKey]||''),bv=String(b[sortKey]||'');return av<bv?-sortDir:av>bv?sortDir:0;});
   filteredRows=rows;renderTable();updateStats();
+  // Mobile : ouvrir automatiquement le panel sur la première ligne au 1er chargement
+  if(window.innerWidth <= 640 && filteredRows.length > 0 && editingIdx === null && !_panelAutoOpened){
+    _panelAutoOpened = true;
+    openEditPanel(0);
+  }
 }
 function sortBy(k){sortKey===k?sortDir*=-1:(sortKey=k,sortDir=1);applyFilters();}
 function resetFilters(){
