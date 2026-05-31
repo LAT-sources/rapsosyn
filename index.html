@@ -147,7 +147,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 .syn-back{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:7px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);border:none;cursor:pointer;font-family:var(--font);font-size:0.8rem;font-weight:600;transition:background .15s;}
 .syn-back:hover{background:rgba(255,255,255,.14);color:white;}
 .syn-title{font-size:0.82rem;font-weight:700;color:rgba(255,255,255,.85);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.syn-frame{flex:1;border:none;width:100%;background:white;}
+.syn-frame{flex:1;border:none;width:100%;background:white;transition:none;}
 .users-grid{flex:1;overflow:auto;padding:16px 22px;display:flex;flex-direction:column;gap:12px;}
 .user-card{background:white;border-radius:10px;box-shadow:var(--sh);padding:16px;display:flex;align-items:center;gap:14px;transition:box-shadow .15s;}
 .user-card:hover{box-shadow:var(--sh-lg);}
@@ -1790,6 +1790,34 @@ function stopLiveListener() {
 /* MESSAGE HANDLER */
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
+
+  // Mobile : élever l'iframe quand le panel s'ouvre
+  if (e.data.type === 'rapso_panel_open') {
+    const frame = document.getElementById('synFrame');
+    if (frame) {
+      frame.style.position = 'fixed';
+      frame.style.inset = '0';
+      frame.style.width = '100vw';
+      frame.style.height = '100dvh';
+      frame.style.zIndex = '9000';
+      frame.style.border = 'none';
+    }
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+  if (e.data.type === 'rapso_panel_close') {
+    const frame = document.getElementById('synFrame');
+    if (frame) {
+      frame.style.position = '';
+      frame.style.inset = '';
+      frame.style.width = '';
+      frame.style.height = '';
+      frame.style.zIndex = '';
+    }
+    document.body.style.overflow = '';
+    return;
+  }
+
   if (e.data.type === 'rapso_save') {
     const canId = e.data.canId;
     const incomingData = e.data.data;
