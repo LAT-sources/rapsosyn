@@ -1864,13 +1864,13 @@ function openEditPanel(fi){
   ge('overlay').classList.add('open');ge('editPanel').classList.add('open');
   document.querySelectorAll('#tableBody tr').forEach(tr=>tr.classList.remove('row-highlight'));
   const el=ge('row-'+fi);if(el)el.classList.add('row-highlight');
-  // Mobile : remonter en haut du panel et bloquer le scroll du body
   if(window.innerWidth <= 640){
     window.scrollTo(0,0);
     document.body.style.overflow = 'hidden';
     ge('editPanel').scrollTop = 0;
+    // Notifier le parent (index.html) d'élever l'iframe
+    try { window.parent.postMessage({ type: 'rapso_panel_open' }, '*'); } catch(e){}
   }
-  // Auto-resize des champs ENT/MOE et SOCOTEC (mobile)
   requestAnimationFrame(()=>{['e_repK','e_repL'].forEach(id=>autoResizeTextarea(ge(id)));});
 }
 function closePanel(){
@@ -1878,6 +1878,8 @@ function closePanel(){
   ge('editPanel').classList.remove('open');
   document.body.style.overflow = '';
   editingIdx=null;
+  // Notifier le parent de remettre l'iframe normalement
+  try { window.parent.postMessage({ type: 'rapso_panel_close' }, '*'); } catch(e){}
 }
 function navRow(d){if(editingIdx!==null){let n=editingIdx+d;if(n>=0&&n<filteredRows.length)openEditPanel(n);}}
 function setSuivi(v){currentSuivi=v;updateSuiviUI();}
