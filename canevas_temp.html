@@ -2045,18 +2045,29 @@ function printReport() {
   ge('printStatsGrid').innerHTML = statsHtml;
 
   const visibleCols = COL_DEF.filter(c => c.visible);
-  const totalPx = visibleCols.reduce((sum,c)=>sum+parseInt(c.width),0);
-  const totalMm = 397;
+
+  // Largeurs fixes de référence en px (desktop A3 paysage) — indépendantes du viewport mobile
+  const COL_PX_REF = {
+    num:49, ref:49, date:100, inter:90, disp:150, desc:130,
+    avis:37, obs:220, docs:100, suivi:61, repK:180, repL:180, lots:80
+  };
+  const totalPx = visibleCols.reduce((sum,c)=>sum+(COL_PX_REF[c.key]||parseInt(c.width)||80),0);
+  const totalMm = 397; // largeur utile A3 paysage (420mm - 23mm marges)
   let styleRules = '';
   let idx=1;
   for(let col of visibleCols){
-    let mm = (parseInt(col.width)/totalPx)*totalMm;
+    const pxRef = COL_PX_REF[col.key] || parseInt(col.width) || 80;
+    let mm = (pxRef/totalPx)*totalMm;
     styleRules += `#mainTable th:nth-child(${idx}), #mainTable td:nth-child(${idx}) { width: ${mm.toFixed(1)}mm !important; min-width: ${mm.toFixed(1)}mm !important; }\n`;
     idx++;
   }
   styleRules += `#mainTable th:last-child, #mainTable td:last-child { display: none !important; }\n`;
+  // Neutraliser tout style mobile résiduel sur le tableau
+  styleRules += `#mainTable { width: 100% !important; table-layout: fixed !important; }\n`;
+  styleRules += `#mainTable th, #mainTable td { display: table-cell !important; box-sizing: border-box !important; overflow: hidden !important; }\n`;
   const printStyle = document.createElement('style');
   printStyle.id = 'print-col-widths';
+  printStyle.setAttribute('media', 'print');
   printStyle.textContent = styleRules;
   document.head.appendChild(printStyle);
   rebuildTableHeader(); renderTable();
