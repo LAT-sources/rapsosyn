@@ -1794,11 +1794,15 @@ window.addEventListener('message', function(e) {
   // Mobile : élever l'iframe quand le panel s'ouvre
   if (e.data.type === 'rapso_panel_open') {
     const frame = document.getElementById('synFrame');
+    const topbarH = document.querySelector('.syn-topbar')?.offsetHeight || 46;
     if (frame) {
       frame.style.position = 'fixed';
-      frame.style.inset = '0';
+      frame.style.top = topbarH + 'px';
+      frame.style.left = '0';
+      frame.style.right = '0';
+      frame.style.bottom = '0';
       frame.style.width = '100vw';
-      frame.style.height = '100dvh';
+      frame.style.height = `calc(100dvh - ${topbarH}px)`;
       frame.style.zIndex = '9000';
       frame.style.border = 'none';
     }
