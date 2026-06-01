@@ -984,7 +984,7 @@ th[data-col="repL"], td[data-col="repL"] {
   <button class="tb-btn" onclick="resetFilters()" title="Réinitialiser les filtres">✕</button>
   <div style="flex:1;"></div>
   <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
-  <button class="tb-btn tb-mobile-only" id="tbFiltersBtn" onclick="openMobileFilters()" title="Filtres">⚙ Filtres</button>
+  <button class="tb-btn tb-mobile-only" id="tbFiltersBtn" onclick="openMobileFilters()" title="Filtres"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><polygon points="1,2 19,2 12.5,10 12.5,18 7.5,15 7.5,10"/></svg> Filtres</button>
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
@@ -1028,7 +1028,7 @@ th[data-col="repL"], td[data-col="repL"] {
     <span style="font-family:var(--mono);font-size:0.7rem;" id="panelNum">—</span>
     <button class="tb-btn panel-nav-desktop" onclick="navRow(-1)">Pré ↑</button>
     <button class="tb-btn panel-nav-desktop" onclick="navRow(1)">↓ Sui</button>
-    <button class="tb-btn panel-hdr-mobile" onclick="openMobileFilters()" title="Filtres" style="font-size:0.8rem;">⚙</button>
+    <button class="tb-btn panel-hdr-mobile" onclick="openMobileFilters()" title="Filtres" style="font-size:0.8rem;"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><polygon points="1,2 19,2 12.5,10 12.5,18 7.5,15 7.5,10"/></svg></button>
     <button class="tb-btn panel-hdr-mobile accent" onclick="openPAModal()" title="+PA" style="font-size:0.75rem;">+PA</button>
     <button class="tb-btn" onclick="closePanel()">×</button>
   </div>
@@ -1237,7 +1237,7 @@ th[data-col="repL"], td[data-col="repL"] {
 <div class="modal-overlay" id="mobileFiltersModal">
   <div class="modal" style="width:100vw;max-width:100vw;max-height:92vh;margin:auto 0 0 0;border-radius:16px 16px 0 0;display:flex;flex-direction:column;position:fixed;bottom:0;left:0;right:0;">
     <div class="modal-hdr" style="background:var(--g900);color:white;border-radius:16px 16px 0 0;padding:14px 16px;">
-      <span style="font-weight:700;font-size:0.9rem;">⚙ Filtres</span>
+      <span style="font-weight:700;font-size:0.9rem;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><polygon points="1,2 19,2 12.5,10 12.5,18 7.5,15 7.5,10"/></svg> Filtres</span>
       <span id="mfActiveCount" style="font-size:0.7rem;background:var(--blue);color:white;padding:2px 8px;border-radius:100px;display:none;"></span>
       <div style="flex:1;"></div>
       <button class="tb-btn" onclick="resetMobileFilters()" style="color:#f87171;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);font-size:0.72rem;">✕ Reset</button>
@@ -2045,61 +2045,34 @@ function printReport() {
   ge('printStatsGrid').innerHTML = statsHtml;
 
   const visibleCols = COL_DEF.filter(c => c.visible);
-
-  // Largeurs fixes de référence en px (desktop A3 paysage) — indépendantes du viewport mobile
-  const COL_PX_REF = {
-    num:49, ref:49, date:100, inter:90, disp:150, desc:130,
-    avis:37, obs:220, docs:100, suivi:61, repK:180, repL:180, lots:80
-  };
-  const totalPx = visibleCols.reduce((sum,c)=>sum+(COL_PX_REF[c.key]||parseInt(c.width)||80),0);
-  const totalMm = 397; // largeur utile A3 paysage (420mm - 23mm marges)
+  const totalPx = visibleCols.reduce((sum,c)=>sum+parseInt(c.width),0);
+  const totalMm = 397;
   let styleRules = '';
   let idx=1;
   for(let col of visibleCols){
-    const pxRef = COL_PX_REF[col.key] || parseInt(col.width) || 80;
-    let mm = (pxRef/totalPx)*totalMm;
+    let mm = (parseInt(col.width)/totalPx)*totalMm;
     styleRules += `#mainTable th:nth-child(${idx}), #mainTable td:nth-child(${idx}) { width: ${mm.toFixed(1)}mm !important; min-width: ${mm.toFixed(1)}mm !important; }\n`;
     idx++;
   }
   styleRules += `#mainTable th:last-child, #mainTable td:last-child { display: none !important; }\n`;
-  // Neutraliser tout style mobile résiduel sur le tableau
-  styleRules += `#mainTable { width: 100% !important; table-layout: fixed !important; }\n`;
-  styleRules += `#mainTable th, #mainTable td { display: table-cell !important; box-sizing: border-box !important; overflow: hidden !important; }\n`;
   const printStyle = document.createElement('style');
   printStyle.id = 'print-col-widths';
-  printStyle.setAttribute('media', 'print');
   printStyle.textContent = styleRules;
   document.head.appendChild(printStyle);
   rebuildTableHeader(); renderTable();
+  window.print();
 
-  // Sur mobile : forcer le viewport desktop (1400px) avant impression
-  const metaViewport = document.querySelector('meta[name="viewport"]');
-  const originalViewport = metaViewport ? metaViewport.content : null;
-  if (metaViewport) {
-    metaViewport.content = 'width=1400';
-    document.body.classList.add('printing');
-  }
-
-  // Laisser le temps au navigateur de recalculer le layout
   setTimeout(() => {
-    window.print();
-
-    setTimeout(() => {
-      // Restaurer le viewport mobile
-      if (metaViewport && originalViewport) {
-        metaViewport.content = originalViewport;
-        document.body.classList.remove('printing');
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.document.title = oldTitle;
       }
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.document.title = oldTitle;
-        }
-      } catch(e) {}
-      document.title = oldTitle;
-      printStyle.remove();
-      rebuildTableHeader(); renderTable();
-    }, 500);
-  }, 300);
+    } catch(e) {}
+    document.title = oldTitle;
+    printStyle.remove();
+    rebuildTableHeader(); renderTable();
+  }, 500);
+}
 // ======================= VERSION RAPIDE (corrigée avec data-*) =======================
 let rapCurrent=null,rapFiltered=[];
 let rapSelectedLots=new Set(),rapSelectedInters=new Set();
