@@ -984,7 +984,7 @@ th[data-col="repL"], td[data-col="repL"] {
   <button class="tb-btn" onclick="resetFilters()" title="Réinitialiser les filtres">✕</button>
   <div style="flex:1;"></div>
   <div style="width:1px;height:20px;background:var(--g200);margin:0 4px;"></div>
-  <button class="tb-btn tb-mobile-only" id="tbFiltersBtn" onclick="openMobileFilters()" title="Filtres"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><polygon points="1,2 19,2 12.5,10 12.5,18 7.5,15 7.5,10"/></svg> Filtres</button>
+  <button class="tb-btn tb-mobile-only" id="tbFiltersBtn" onclick="openMobileFilters()" title="Filtres">⚙ Filtres</button>
   <button class="tb-btn accent" onclick="openAddModal()">+ Ajouter</button>
   <button class="tb-btn accent" onclick="openPAModal()">+ PA</button>
   <button class="tb-btn" onclick="openRapide()">⚡ Vision rapide</button>
@@ -1028,13 +1028,21 @@ th[data-col="repL"], td[data-col="repL"] {
     <span style="font-family:var(--mono);font-size:0.7rem;" id="panelNum">—</span>
     <button class="tb-btn panel-nav-desktop" onclick="navRow(-1)">Pré ↑</button>
     <button class="tb-btn panel-nav-desktop" onclick="navRow(1)">↓ Sui</button>
-    <button class="tb-btn panel-hdr-mobile" onclick="openMobileFilters()" title="Filtres" style="font-size:0.8rem;"><svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><polygon points="1,2 19,2 12.5,10 12.5,18 7.5,15 7.5,10"/></svg></button>
+    <button class="tb-btn panel-hdr-mobile" onclick="openMobileFilters()" title="Filtres" style="font-size:0.8rem;">⚙</button>
     <button class="tb-btn panel-hdr-mobile accent" onclick="openPAModal()" title="+PA" style="font-size:0.75rem;">+PA</button>
     <button class="tb-btn" onclick="closePanel()">×</button>
   </div>
   <div class="panel-body">
-    <div class="form-section"><div class="section-title">Dispositions examinées</div><div style="white-space:pre-wrap;" id="e_lblColE">—</div></div>
-    <div class="form-section"><div class="section-title">Observations</div><div class="obs-readonly" id="e_obs_readonly">—</div></div>
+    <div class="form-section" id="sec_disp">
+      <div class="section-title">Dispositions examinées</div>
+      <div style="white-space:pre-wrap;" id="e_lblColE">—</div>
+      <textarea id="e_disp_edit" rows="3" style="display:none;width:100%;resize:none;overflow:hidden;"></textarea>
+    </div>
+    <div class="form-section" id="sec_obs">
+      <div class="section-title">Observations</div>
+      <div class="obs-readonly" id="e_obs_readonly">—</div>
+      <textarea id="e_obs_edit" rows="3" style="display:none;width:100%;resize:none;overflow:hidden;"></textarea>
+    </div>
     <div class="form-section">
       <div class="section-title">Réponses</div>
       <div class="form-row"><label>Réponses ENT / MOE</label><textarea id="e_repK" rows="3"></textarea></div>
@@ -1237,7 +1245,7 @@ th[data-col="repL"], td[data-col="repL"] {
 <div class="modal-overlay" id="mobileFiltersModal">
   <div class="modal" style="width:100vw;max-width:100vw;max-height:92vh;margin:auto 0 0 0;border-radius:16px 16px 0 0;display:flex;flex-direction:column;position:fixed;bottom:0;left:0;right:0;">
     <div class="modal-hdr" style="background:var(--g900);color:white;border-radius:16px 16px 0 0;padding:14px 16px;">
-      <span style="font-weight:700;font-size:0.9rem;display:flex;align-items:center;gap:6px;"><svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><polygon points="1,2 19,2 12.5,10 12.5,18 7.5,15 7.5,10"/></svg> Filtres</span>
+      <span style="font-weight:700;font-size:0.9rem;">⚙ Filtres</span>
       <span id="mfActiveCount" style="font-size:0.7rem;background:var(--blue);color:white;padding:2px 8px;border-radius:100px;display:none;"></span>
       <div style="flex:1;"></div>
       <button class="tb-btn" onclick="resetMobileFilters()" style="color:#f87171;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);font-size:0.72rem;">✕ Reset</button>
@@ -1793,6 +1801,19 @@ function applyFilters(){
   });
   if(sortKey)rows.sort((a,b)=>{const av=String(a[sortKey]||''),bv=String(b[sortKey]||'');return av<bv?-sortDir:av>bv?sortDir:0;});
   filteredRows=rows;renderTable();updateStats();
+  // Si le panel est ouvert, mettre à jour avec la nouvelle position de la ligne
+  if(editingIdx !== null){
+    const prevId = filteredRows[editingIdx]?.id;
+    // Chercher la même ligne dans les nouveaux résultats
+    const newIdx = prevId !== undefined ? rows.findIndex(r => r.id === prevId) : -1;
+    if(newIdx >= 0){
+      editingIdx = newIdx; // mettre à jour l'index sans réouvrir le panel
+      openEditPanel(newIdx);
+    } else {
+      // La ligne n'est plus visible avec ces filtres : fermer le panel
+      closePanel();
+    }
+  }
   // Mobile : ouvrir automatiquement le panel sur la première ligne au 1er chargement
   if(window.innerWidth <= 640 && filteredRows.length > 0 && editingIdx === null && !_panelAutoOpened){
     _panelAutoOpened = true;
@@ -1861,8 +1882,21 @@ function openEditPanel(fi){
   editingIdx=fi;const r=filteredRows[fi];
   ge('panelTitle').innerHTML=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - Avis : ${r.avis||'-'}`;
   ge('panelNum').innerText=r.num||'(sans n°)';
-  ge('e_lblColE').innerText=r.disp||'—';
-  ge('e_obs_readonly').innerText=r.obs||'—';
+  // Disp et Obs : éditables pour les PA, readonly sinon
+  const isPA = String(r.num||'').toUpperCase().startsWith('PA');
+  ge('e_lblColE').style.display   = isPA ? 'none' : '';
+  ge('e_disp_edit').style.display = isPA ? '' : 'none';
+  ge('e_obs_readonly').style.display = isPA ? 'none' : '';
+  ge('e_obs_edit').style.display     = isPA ? '' : 'none';
+  if(isPA){
+    ge('e_disp_edit').value = r.disp||'';
+    ge('e_obs_edit').value  = r.obs||'';
+    autoResizeTextarea(ge('e_disp_edit'));
+    autoResizeTextarea(ge('e_obs_edit'));
+  } else {
+    ge('e_lblColE').innerText      = r.disp||'—';
+    ge('e_obs_readonly').innerText = r.obs||'—';
+  }
   ge('e_repK').value=r.repK||'';ge('e_repL').value=r.repL||'';ge('e_lots').value=r.lots||'';
   ge('e_rd6').checked=r.rd6;ge('rd6Toggle').classList.toggle('active',r.rd6);
   currentSuivi=r.suivi;updateSuiviUI();
@@ -1873,10 +1907,9 @@ function openEditPanel(fi){
     window.scrollTo(0,0);
     document.body.style.overflow = 'hidden';
     ge('editPanel').scrollTop = 0;
-    // Notifier le parent (index.html) d'élever l'iframe
     try { window.parent.postMessage({ type: 'rapso_panel_open' }, '*'); } catch(e){}
   }
-  requestAnimationFrame(()=>{['e_repK','e_repL'].forEach(id=>autoResizeTextarea(ge(id)));});
+  requestAnimationFrame(()=>{['e_repK','e_repL','e_disp_edit','e_obs_edit'].forEach(id=>autoResizeTextarea(ge(id)));});
 }
 function closePanel(){
   ge('overlay').classList.remove('open');
@@ -1893,8 +1926,11 @@ function toggleRD6(){const cb=ge('e_rd6');cb.checked=!cb.checked;ge('rd6Toggle')
 function saveRow(){
   if(editingIdx===null)return;
   const r=filteredRows[editingIdx];const gi=getRows().findIndex(x=>x.id===r.id);if(gi===-1)return;
-  const prev={repK:r.repK,repL:r.repL,lots:r.lots,suivi:r.suivi,rd6:r.rd6};
-  data[currentTab][gi]={...r,repK:ge('e_repK').value,repL:ge('e_repL').value,lots:ge('e_lots').value,suivi:currentSuivi,rd6:ge('e_rd6').checked};
+  const isPA = String(r.num||'').toUpperCase().startsWith('PA');
+  const prev={repK:r.repK,repL:r.repL,lots:r.lots,suivi:r.suivi,rd6:r.rd6,disp:r.disp,obs:r.obs};
+  const newDisp = isPA ? ge('e_disp_edit').value : r.disp;
+  const newObs  = isPA ? ge('e_obs_edit').value  : r.obs;
+  data[currentTab][gi]={...r,repK:ge('e_repK').value,repL:ge('e_repL').value,lots:ge('e_lots').value,suivi:currentSuivi,rd6:ge('e_rd6').checked,disp:newDisp,obs:newObs};
   if(data[currentTab][gi].rd6&&!data[currentTab][gi].num.includes('/RD6'))data[currentTab][gi].num+='/RD6';
   else if(!data[currentTab][gi].rd6)data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
   // Log des champs modifiés
@@ -1909,6 +1945,8 @@ function saveRow(){
   if(prev.repK !== ge('e_repK').value) changes.push('Réponse MOE');
   if(prev.repL !== ge('e_repL').value) changes.push('Obs. SOCOTEC');
   if(prev.lots !== ge('e_lots').value) changes.push('Lots : ' + ge('e_lots').value);
+  if(isPA && prev.disp !== newDisp) changes.push('Dispositions');
+  if(isPA && prev.obs  !== newObs)  changes.push('Observations');
   if(changes.length) logAction('edit', numAvis, changes.join(' | '));
   applyFilters();ge('saveFeedback').classList.add('show');setTimeout(()=>ge('saveFeedback').classList.remove('show'),1800);
   persistLocal();pushToParent();
