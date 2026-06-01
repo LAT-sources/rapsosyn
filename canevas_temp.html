@@ -1961,7 +1961,16 @@ function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx
 })();
 
 // --- Modal PA ---
-function openPAModal(){['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>ge(id).checked=false);['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>ge(id).value='');ge('pa_date').value=new Date().toISOString().slice(0,10);ge('paFeedback').innerText='';ge('paModal').classList.add('open');}
+function openPAModal(){
+  ['pa_F','pa_S','pa_D','pa_PM'].forEach(id=>ge(id).checked=false);
+  ['pa_disp','pa_obs','pa_repK','pa_repL','pa_lots'].forEach(id=>ge(id).value='');
+  ge('pa_date').value=new Date().toISOString().slice(0,10);
+  ge('paFeedback').innerText='';
+  // Pré-remplir l'intervenant avec l'utilisateur connecté
+  const interEl = ge('pa_inter');
+  if(interEl) interEl.value = getRapsoUserName();
+  ge('paModal').classList.add('open');
+}
 function closePAModal(){ge('paModal').classList.remove('open');}
 function addPA(){
   const cat=ge('pa_F').checked?'F':ge('pa_S').checked?'S':ge('pa_D').checked?'D':ge('pa_PM').checked?'PM':'';
