@@ -2071,19 +2071,35 @@ function printReport() {
   printStyle.textContent = styleRules;
   document.head.appendChild(printStyle);
   rebuildTableHeader(); renderTable();
-  window.print();
 
+  // Sur mobile : forcer le viewport desktop (1400px) avant impression
+  const metaViewport = document.querySelector('meta[name="viewport"]');
+  const originalViewport = metaViewport ? metaViewport.content : null;
+  if (metaViewport) {
+    metaViewport.content = 'width=1400';
+    document.body.classList.add('printing');
+  }
+
+  // Laisser le temps au navigateur de recalculer le layout
   setTimeout(() => {
-    try {
-      if (window.parent && window.parent !== window) {
-        window.parent.document.title = oldTitle;
+    window.print();
+
+    setTimeout(() => {
+      // Restaurer le viewport mobile
+      if (metaViewport && originalViewport) {
+        metaViewport.content = originalViewport;
+        document.body.classList.remove('printing');
       }
-    } catch(e) {}
-    document.title = oldTitle;
-    printStyle.remove();
-    rebuildTableHeader(); renderTable();
-  }, 500);
-}
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.document.title = oldTitle;
+        }
+      } catch(e) {}
+      document.title = oldTitle;
+      printStyle.remove();
+      rebuildTableHeader(); renderTable();
+    }, 500);
+  }, 300);
 // ======================= VERSION RAPIDE (corrigée avec data-*) =======================
 let rapCurrent=null,rapFiltered=[];
 let rapSelectedLots=new Set(),rapSelectedInters=new Set();
