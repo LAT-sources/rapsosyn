@@ -1034,14 +1034,20 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
   <div class="panel-body">
     <div class="form-section" id="sec_disp">
-      <div class="section-title">Dispositions examinées</div>
+      <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Dispositions examinées</span>
+        <button id="btn_edit_disp" onclick="togglePAEdit('disp')" style="display:none;background:none;border:1px solid var(--g300);border-radius:4px;padding:1px 6px;cursor:pointer;font-size:0.68rem;color:var(--g500);" title="Modifier">✏️</button>
+      </div>
       <div style="white-space:pre-wrap;" id="e_lblColE">—</div>
       <div class="form-row" id="e_disp_row" style="display:none;margin-bottom:0;">
         <textarea id="e_disp_edit" rows="3" style="resize:none;overflow:hidden;"></textarea>
       </div>
     </div>
     <div class="form-section" id="sec_obs">
-      <div class="section-title">Observations</div>
+      <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Observations</span>
+        <button id="btn_edit_obs" onclick="togglePAEdit('obs')" style="display:none;background:none;border:1px solid var(--g300);border-radius:4px;padding:1px 6px;cursor:pointer;font-size:0.68rem;color:var(--g500);" title="Modifier">✏️</button>
+      </div>
       <div class="obs-readonly" id="e_obs_readonly">—</div>
       <div class="form-row" id="e_obs_row" style="display:none;margin-bottom:0;">
         <textarea id="e_obs_edit" rows="3" style="resize:none;overflow:hidden;"></textarea>
@@ -1881,19 +1887,17 @@ function openEditPanel(fi){
   ge('panelTitle').innerHTML=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - Avis : ${r.avis||'-'}`;
   ge('panelNum').innerText=r.num||'(sans n°)';
   const isPA = String(r.num||'').toUpperCase().startsWith('PA');
-  // Dispositions : readonly ou éditable selon PA
-  ge('e_lblColE').style.display   = isPA ? 'none' : '';
-  ge('e_disp_row').style.display  = isPA ? '' : 'none';
-  // Observations : readonly ou éditable selon PA
-  ge('e_obs_readonly').style.display = isPA ? 'none' : '';
-  ge('e_obs_row').style.display      = isPA ? '' : 'none';
-  if(isPA){
-    ge('e_disp_edit').value = r.disp||'';
-    ge('e_obs_edit').value  = r.obs||'';
-  } else {
-    ge('e_lblColE').innerText      = r.disp||'—';
-    ge('e_obs_readonly').innerText = r.obs||'—';
-  }
+  // Toujours afficher en readonly
+  ge('e_lblColE').style.display      = '';
+  ge('e_disp_row').style.display     = 'none';
+  ge('e_obs_readonly').style.display = '';
+  ge('e_obs_row').style.display      = 'none';
+  ge('e_lblColE').innerText          = r.disp||'—';
+  ge('e_obs_readonly').innerText     = r.obs||'—';
+  // Bouton ✏️ visible seulement si PA ET utilisateur = créateur
+  const isCreator = isPA && (cleanIntervenant(r.inter)||'').toLowerCase() === getRapsoUserName().toLowerCase();
+  ge('btn_edit_disp').style.display = isCreator ? '' : 'none';
+  ge('btn_edit_obs').style.display  = isCreator ? '' : 'none';
   ge('e_repK').value=r.repK||'';ge('e_repL').value=r.repL||'';ge('e_lots').value=r.lots||'';
   ge('e_rd6').checked=r.rd6;ge('rd6Toggle').classList.toggle('active',r.rd6);
   currentSuivi=r.suivi;updateSuiviUI();
@@ -1907,6 +1911,31 @@ function openEditPanel(fi){
     try { window.parent.postMessage({ type: 'rapso_panel_open' }, '*'); } catch(e){}
   }
   requestAnimationFrame(()=>{['e_repK','e_repL','e_disp_edit','e_obs_edit'].forEach(id=>autoResizeTextarea(ge(id)));});
+}
+function togglePAEdit(field){
+  const isDisp = field === 'disp';
+  const readonlyEl = isDisp ? ge('e_lblColE')      : ge('e_obs_readonly');
+  const editRow    = isDisp ? ge('e_disp_row')      : ge('e_obs_row');
+  const editArea   = isDisp ? ge('e_disp_edit')     : ge('e_obs_edit');
+  const btn        = isDisp ? ge('btn_edit_disp')   : ge('btn_edit_obs');
+  const isEditing  = editRow.style.display !== 'none';
+  if(isEditing){
+    // Repasser en readonly avec la valeur éditée
+    readonlyEl.innerText      = editArea.value || '—';
+    readonlyEl.style.display  = '';
+    editRow.style.display     = 'none';
+    btn.textContent           = '✏️';
+    btn.title                 = 'Modifier';
+  } else {
+    // Passer en mode édition
+    editArea.value            = readonlyEl.innerText === '—' ? '' : readonlyEl.innerText;
+    readonlyEl.style.display  = 'none';
+    editRow.style.display     = '';
+    btn.textContent           = '✓';
+    btn.title                 = 'Valider';
+    autoResizeTextarea(editArea);
+    editArea.focus();
+  }
 }
 function closePanel(){
   ge('overlay').classList.remove('open');
@@ -1924,9 +1953,11 @@ function saveRow(){
   if(editingIdx===null)return;
   const r=filteredRows[editingIdx];const gi=getRows().findIndex(x=>x.id===r.id);if(gi===-1)return;
   const isPA = String(r.num||'').toUpperCase().startsWith('PA');
+  const isCreator = isPA && (cleanIntervenant(r.inter)||'').toLowerCase() === getRapsoUserName().toLowerCase();
   const prev={repK:r.repK,repL:r.repL,lots:r.lots,suivi:r.suivi,rd6:r.rd6,disp:r.disp,obs:r.obs};
-  const newDisp = isPA ? ge('e_disp_edit').value : r.disp;
-  const newObs  = isPA ? ge('e_obs_edit').value  : r.obs;
+  // Lire disp/obs depuis l'élément visible (readonly ou textarea)
+  const newDisp = isCreator ? (ge('e_disp_row').style.display !== 'none' ? ge('e_disp_edit').value : ge('e_lblColE').innerText === '—' ? '' : ge('e_lblColE').innerText) : r.disp;
+  const newObs  = isCreator ? (ge('e_obs_row').style.display  !== 'none' ? ge('e_obs_edit').value  : ge('e_obs_readonly').innerText === '—' ? '' : ge('e_obs_readonly').innerText) : r.obs;
   data[currentTab][gi]={...r,repK:ge('e_repK').value,repL:ge('e_repL').value,lots:ge('e_lots').value,suivi:currentSuivi,rd6:ge('e_rd6').checked,disp:newDisp,obs:newObs};
   if(data[currentTab][gi].rd6&&!data[currentTab][gi].num.includes('/RD6'))data[currentTab][gi].num+='/RD6';
   else if(!data[currentTab][gi].rd6)data[currentTab][gi].num=data[currentTab][gi].num.replace('/RD6','');
