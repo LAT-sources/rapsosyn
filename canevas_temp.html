@@ -1074,7 +1074,7 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 <div class="panel-ftr">
   <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
-  <button class="tb-btn" onclick="deleteRow()" style="color:var(--red);border-color:var(--red);">Sup</button>
+  <button class="tb-btn" id="btn_delete_row" onclick="deleteRow()" style="display:none;">Sup</button>
   <button class="tb-btn" onclick="closePanel()">Annuler</button>
   <div class="panel-nav-mobile">
     <button class="tb-btn" onclick="navRow(-1)" title="Précédent">↑ Préc</button>
@@ -1898,6 +1898,7 @@ function openEditPanel(fi){
   const isCreator = isPA && (cleanIntervenant(r.inter)||'').toLowerCase() === getRapsoUserName().toLowerCase();
   ge('btn_edit_disp').style.display = isCreator ? '' : 'none';
   ge('btn_edit_obs').style.display  = isCreator ? '' : 'none';
+  ge('btn_delete_row').style.display = isCreator ? '' : 'none';
   ge('e_repK').value=r.repK||'';ge('e_repL').value=r.repL||'';ge('e_lots').value=r.lots||'';
   ge('e_rd6').checked=r.rd6;ge('rd6Toggle').classList.toggle('active',r.rd6);
   currentSuivi=r.suivi;updateSuiviUI();
@@ -1978,7 +1979,20 @@ function saveRow(){
   applyFilters();ge('saveFeedback').classList.add('show');setTimeout(()=>ge('saveFeedback').classList.remove('show'),1800);
   persistLocal();pushToParent();
 }
-function deleteRow(){if(editingIdx===null)return;const r=filteredRows[editingIdx];if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;const gi=getRows().findIndex(x=>x.id===r.id);if(gi>=0){logAction('delete',r.num,'Avis supprimé');data[currentTab].splice(gi,1);closePanel();applyFilters();persistLocal();pushToParent();}}
+function deleteRow(){
+  if(editingIdx===null)return;
+  const r=filteredRows[editingIdx];
+  if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;
+  const gi=getRows().findIndex(x=>x.id===r.id);
+  if(gi>=0){
+    logAction('delete',r.num,'Avis supprimé');
+    data[currentTab].splice(gi,1);
+    closePanel();
+    applyFilters();
+    persistLocal();  // backup local avant push
+    pushToParent();
+  }
+}
 
 // --- Redimensionnement panel ---
 (function(){
