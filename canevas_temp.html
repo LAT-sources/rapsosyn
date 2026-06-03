@@ -1036,7 +1036,7 @@ th[data-col="repL"], td[data-col="repL"] {
     <div class="form-section" id="sec_disp">
       <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Dispositions examinées</span>
-        <button id="btn_edit_disp" onclick="togglePAEdit('disp')" style="display:none;background:none;border:1px solid var(--g300);border-radius:4px;padding:1px 6px;cursor:pointer;font-size:0.68rem;color:var(--g500);" title="Modifier">✏️</button>
+        <button id="btn_edit_disp" onclick="togglePAEdit('disp')" style="display:none;background:none;border:none;padding:0 2px;cursor:pointer;font-size:0.72rem;color:var(--g400);line-height:1;opacity:.6;" title="Corriger">✎</button>
       </div>
       <div style="white-space:pre-wrap;" id="e_lblColE">—</div>
       <div class="form-row" id="e_disp_row" style="display:none;margin-bottom:0;">
@@ -1046,7 +1046,7 @@ th[data-col="repL"], td[data-col="repL"] {
     <div class="form-section" id="sec_obs">
       <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;">
         <span>Observations</span>
-        <button id="btn_edit_obs" onclick="togglePAEdit('obs')" style="display:none;background:none;border:1px solid var(--g300);border-radius:4px;padding:1px 6px;cursor:pointer;font-size:0.68rem;color:var(--g500);" title="Modifier">✏️</button>
+        <button id="btn_edit_obs" onclick="togglePAEdit('obs')" style="display:none;background:none;border:none;padding:0 2px;cursor:pointer;font-size:0.72rem;color:var(--g400);line-height:1;opacity:.6;" title="Corriger">✎</button>
       </div>
       <div class="obs-readonly" id="e_obs_readonly">—</div>
       <div class="form-row" id="e_obs_row" style="display:none;margin-bottom:0;">
@@ -1074,7 +1074,7 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 <div class="panel-ftr">
   <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
-  <button class="tb-btn" id="btn_delete_row" onclick="deleteRow()" style="display:none;">Sup</button>
+  <button class="tb-btn" id="btn_delete_row" onclick="deleteRow()" style="display:none;color:var(--red);border-color:var(--red);">Sup</button>
   <button class="tb-btn" onclick="closePanel()">Annuler</button>
   <div class="panel-nav-mobile">
     <button class="tb-btn" onclick="navRow(-1)" title="Précédent">↑ Préc</button>
@@ -1925,8 +1925,8 @@ function togglePAEdit(field){
     readonlyEl.innerText      = editArea.value || '—';
     readonlyEl.style.display  = '';
     editRow.style.display     = 'none';
-    btn.textContent           = '✏️';
-    btn.title                 = 'Modifier';
+    btn.textContent = '✎';
+    btn.title       = 'Corriger';
   } else {
     // Passer en mode édition
     editArea.value            = readonlyEl.innerText === '—' ? '' : readonlyEl.innerText;
