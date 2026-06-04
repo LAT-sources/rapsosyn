@@ -1898,7 +1898,6 @@ function openEditPanel(fi){
   const isCreator = isPA && (cleanIntervenant(r.inter)||'').toLowerCase() === getRapsoUserName().toLowerCase();
   ge('btn_edit_disp').style.display = isCreator ? '' : 'none';
   ge('btn_edit_obs').style.display  = isCreator ? '' : 'none';
-  // Sup : visible pour tous sauf PA non-créateur
   ge('btn_delete_row').style.display = (!isPA || isCreator) ? '' : 'none';
   ge('e_repK').value=r.repK||'';ge('e_repL').value=r.repL||'';ge('e_lots').value=r.lots||'';
   ge('e_rd6').checked=r.rd6;ge('rd6Toggle').classList.toggle('active',r.rd6);
@@ -1986,11 +1985,24 @@ function deleteRow(){
   if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;
   const gi=getRows().findIndex(x=>x.id===r.id);
   if(gi>=0){
-    logAction('delete',r.num,'Avis supprimé');
+    // 1. Sauvegarde JSON locale avant suppression
+    try {
+      const affaire = ge('affaireDisplay')?.innerText || 'rapso';
+      const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+      const backup = { meta:{ affaire, dossier: ge('dossierInput')?.value||'' }, data };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type:'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `backup_${affaire}_${ts}.json`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } catch(e){ console.warn('Backup JSON échoué', e); }
+    // 2. Suppression
+    logAction('delete', r.num, 'Avis supprimé');
     data[currentTab].splice(gi,1);
     closePanel();
     applyFilters();
-    persistLocal();  // backup local avant push
+    persistLocal();
     pushToParent();
   }
 }
