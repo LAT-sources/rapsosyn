@@ -1898,7 +1898,7 @@ function openEditPanel(fi){
   const isCreator = isPA && (cleanIntervenant(r.inter)||'').toLowerCase() === getRapsoUserName().toLowerCase();
   ge('btn_edit_disp').style.display = isCreator ? '' : 'none';
   ge('btn_edit_obs').style.display  = isCreator ? '' : 'none';
-  ge('btn_delete_row').style.display = (!isPA || isCreator) ? '' : 'none';
+  ge('btn_delete_row').style.display = isCreator ? '' : 'none';
   ge('e_repK').value=r.repK||'';ge('e_repL').value=r.repL||'';ge('e_lots').value=r.lots||'';
   ge('e_rd6').checked=r.rd6;ge('rd6Toggle').classList.toggle('active',r.rd6);
   currentSuivi=r.suivi;updateSuiviUI();
