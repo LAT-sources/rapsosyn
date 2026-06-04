@@ -1074,7 +1074,7 @@ th[data-col="repL"], td[data-col="repL"] {
   </div>
 <div class="panel-ftr">
   <button class="tb-btn green" onclick="saveRow()">Enregistrer</button>
-  <button class="tb-btn" id="btn_delete_row" onclick="deleteRow()" style="display:none;color:var(--red);border-color:var(--red);">Sup</button>
+  <button class="tb-btn" id="btn_delete_row" onclick="deleteRow()" style="visibility:hidden;color:var(--red);border-color:var(--red);">Sup</button>
   <button class="tb-btn" onclick="closePanel()">Annuler</button>
   <div class="panel-nav-mobile">
     <button class="tb-btn" onclick="navRow(-1)" title="Précédent">↑ Préc</button>
@@ -1898,7 +1898,8 @@ function openEditPanel(fi){
   const isCreator = isPA && (cleanIntervenant(r.inter)||'').toLowerCase() === getRapsoUserName().toLowerCase();
   ge('btn_edit_disp').style.display = isCreator ? '' : 'none';
   ge('btn_edit_obs').style.display  = isCreator ? '' : 'none';
-  ge('btn_delete_row').style.display = isCreator ? '' : 'none';
+  // Sup : visible pour tous sauf PA non-créateur
+  ge('btn_delete_row').style.display = (!isPA || isCreator) ? '' : 'none';
   ge('e_repK').value=r.repK||'';ge('e_repL').value=r.repL||'';ge('e_lots').value=r.lots||'';
   ge('e_rd6').checked=r.rd6;ge('rd6Toggle').classList.toggle('active',r.rd6);
   currentSuivi=r.suivi;updateSuiviUI();
