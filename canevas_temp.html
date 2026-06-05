@@ -1898,7 +1898,7 @@ function openEditPanel(fi){
   const isCreator = isPA && (cleanIntervenant(r.inter)||'').toLowerCase() === getRapsoUserName().toLowerCase();
   ge('btn_edit_disp').style.display = isCreator ? '' : 'none';
   ge('btn_edit_obs').style.display  = isCreator ? '' : 'none';
-  ge('btn_delete_row').style.visibility = isCreator ? 'visible' : 'hidden';
+  ge('btn_delete_row').style.visibility = 'hidden'; // toujours caché à l'ouverture
   ge('e_repK').value=r.repK||'';ge('e_repL').value=r.repL||'';ge('e_lots').value=r.lots||'';
   ge('e_rd6').checked=r.rd6;ge('rd6Toggle').classList.toggle('active',r.rd6);
   currentSuivi=r.suivi;updateSuiviUI();
@@ -1927,6 +1927,9 @@ function togglePAEdit(field){
     editRow.style.display     = 'none';
     btn.textContent = '✎';
     btn.title       = 'Corriger';
+    // Cacher Sup si aucun des deux champs n'est en édition
+    const otherEditing = isDisp ? ge('e_obs_row').style.display !== 'none' : ge('e_disp_row').style.display !== 'none';
+    if(!otherEditing) ge('btn_delete_row').style.visibility = 'hidden';
   } else {
     // Passer en mode édition
     editArea.value            = readonlyEl.innerText === '—' ? '' : readonlyEl.innerText;
@@ -1936,6 +1939,8 @@ function togglePAEdit(field){
     btn.title                 = 'Valider';
     autoResizeTextarea(editArea);
     editArea.focus();
+    // Afficher Sup
+    ge('btn_delete_row').style.visibility = 'visible';
   }
 }
 function closePanel(){
@@ -1985,19 +1990,6 @@ function deleteRow(){
   if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;
   const gi=getRows().findIndex(x=>x.id===r.id);
   if(gi>=0){
-    // 1. Sauvegarde JSON locale avant suppression
-    try {
-      const affaire = ge('affaireDisplay')?.innerText || 'rapso';
-      const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
-      const backup = { meta:{ affaire, dossier: ge('dossierInput')?.value||'' }, data };
-      const blob = new Blob([JSON.stringify(backup, null, 2)], { type:'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `backup_${affaire}_${ts}.json`;
-      a.click();
-      URL.revokeObjectURL(a.href);
-    } catch(e){ console.warn('Backup JSON échoué', e); }
-    // 2. Suppression
     logAction('delete', r.num, 'Avis supprimé');
     data[currentTab].splice(gi,1);
     closePanel();
