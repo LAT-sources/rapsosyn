@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RAPSOSYN">
+<meta name="theme-color" content="#1a56db">
+<link rel="manifest" href="/manifest.json">
 <title>RAPSOSYN – Portail de gestion</title>
 <style>
 /* ══════════════════════════════════════════════════════
@@ -1958,6 +1964,167 @@ function postAction(action) {
   } else {
     toast('Impossible de communiquer avec le canevas', 'r');
   }
+}
+</script>
+<script>
+/* ═══════════════════════════════════════════════════
+   PWA – Service Worker + Sync intelligente
+   ═══════════════════════════════════════════════════ */
+
+/* ── Enregistrement du Service Worker ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js');
+      console.log('[SW] Enregistré:', reg.scope);
+
+      // Mise à jour disponible → notifier l'utilisateur
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showPwaToast('🔄 Mise à jour disponible — rechargez pour l\'appliquer', () => {
+              newWorker.postMessage({ type: 'sw_skip_waiting' });
+              window.location.reload();
+            });
+          }
+        });
+      });
+    } catch(e) {
+      console.warn('[SW] Échec enregistrement:', e);
+    }
+
+    // Écouter les messages du SW (sync trigger)
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data?.type === 'sw_sync_trigger') {
+        handleOnlineSync();
+      }
+    });
+  });
+}
+
+/* ── Détection connexion/déconnexion ── */
+let _wasOffline = !navigator.onLine;
+
+window.addEventListener('online', () => {
+  _wasOffline = false;
+  handleOnlineSync();
+  showPwaToast('✅ Connexion rétablie — synchronisation en cours…');
+});
+
+window.addEventListener('offline', () => {
+  _wasOffline = true;
+  showPwaToast('⚠️ Hors connexion — les saisies sont conservées localement');
+});
+
+/* ── Sync intelligente : fusion sans écrasement ── */
+async function handleOnlineSync() {
+  if (!currentUser) return;
+  try {
+    // 1. Charger les données fraîches depuis Firebase
+    const snapshot = await db.ref('/canevas').once('value');
+    const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
+    const cloudCanevas = toArray(snapshot.val());
+
+    let changed = false;
+
+    // 2. Pour chaque canevas local, fusionner avec Firebase
+    canevas.forEach(localCan => {
+      const cloudCan = cloudCanevas.find(c => String(c.id) === String(localCan.id));
+      if (!cloudCan) return; // nouveau canevas local → sera poussé tel quel
+
+      const localData  = localCan.synthData  || { v2: [], v1: [] };
+      const cloudData  = cloudCan.synthData  || { v2: [], v1: [] };
+
+      // Fusionner v2 et v1 séparément
+      ['v2', 'v1'].forEach(tab => {
+        const localRows = localData[tab]  || [];
+        const cloudRows = cloudData[tab]  || [];
+
+        // Index des lignes cloud par id
+        const cloudIdx = {};
+        cloudRows.forEach((r, i) => { if (r.id !== undefined) cloudIdx[String(r.id)] = i; });
+
+        // Appliquer les lignes locales modifiées
+        let tabChanged = false;
+        localRows.forEach(localRow => {
+          if (localRow.id === undefined) return;
+          const key = String(localRow.id);
+          if (cloudIdx[key] !== undefined) {
+            const cloudRow = cloudRows[cloudIdx[key]];
+            // Comparer : si la ligne locale a des champs renseignés que le cloud n'a pas → prendre local
+            const fields = ['repK','repL','lots','suivi','rd6','disp','obs'];
+            fields.forEach(f => {
+              if ((localRow[f] !== undefined && localRow[f] !== '' && localRow[f] !== false) &&
+                  (cloudRow[f] === undefined || cloudRow[f] === '' || cloudRow[f] === false)) {
+                cloudRows[cloudIdx[key]][f] = localRow[f];
+                tabChanged = true;
+              }
+            });
+          } else {
+            // Ligne locale non trouvée dans cloud (ajout local hors-ligne)
+            cloudRows.push(localRow);
+            tabChanged = true;
+          }
+        });
+
+        if (tabChanged) {
+          cloudCan.synthData = cloudCan.synthData || {};
+          cloudCan.synthData[tab] = cloudRows;
+          changed = true;
+        }
+      });
+    });
+
+    // 3. Si des données locales ont enrichi Firebase → sauvegarder
+    if (changed) {
+      // Mettre à jour le tableau local avec les données fusionnées
+      canevas = cloudCanevas;
+      await db.ref('/canevas').set(cloudCanevas);
+      renderCanevas();
+      renderArchive();
+      console.log('[SYNC] Données locales fusionnées avec Firebase');
+    }
+
+    // 4. Background Sync API (si supportée) pour les prochaines fois
+    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+      const reg = await navigator.serviceWorker.ready;
+      await reg.sync.register('rapsosyn-sync').catch(() => {});
+    }
+
+  } catch(e) {
+    console.warn('[SYNC] Erreur synchronisation:', e);
+  }
+}
+
+/* ── Toast PWA ── */
+function showPwaToast(msg, action = null) {
+  const existing = document.getElementById('pwaToast');
+  if (existing) existing.remove();
+  const el = document.createElement('div');
+  el.id = 'pwaToast';
+  el.style.cssText = `
+    position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+    background:#1e293b;color:white;padding:10px 18px;border-radius:10px;
+    font-size:0.82rem;font-weight:500;z-index:99999;
+    display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.4);
+    max-width:90vw;white-space:nowrap;animation:tIn .25s ease both;
+  `;
+  el.innerHTML = `<span>${msg}</span>`;
+  if (action) {
+    const btn = document.createElement('button');
+    btn.textContent = 'Recharger';
+    btn.style.cssText = 'background:var(--blue);border:none;color:white;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:0.78rem;';
+    btn.onclick = action;
+    el.appendChild(btn);
+  }
+  document.body.appendChild(el);
+  if (!action) setTimeout(() => el.remove(), 4000);
+}
+
+/* ── Détecter si déjà installée comme PWA ── */
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  document.documentElement.classList.add('pwa-mode');
 }
 </script>
 </body>
