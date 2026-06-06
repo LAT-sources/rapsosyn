@@ -1883,6 +1883,13 @@ function switchTab(t){currentTab=t;ge('tabV2').classList.toggle('active',t==='v2
 
 // --- Panel édition ---
 function openEditPanel(fi){
+  // Remettre les crayons en état initial
+  const bd = ge('btn_edit_disp'), bo = ge('btn_edit_obs');
+  if(bd){ bd.textContent='✎'; bd.title='Corriger'; }
+  if(bo){ bo.textContent='✎'; bo.title='Corriger'; }
+  ge('e_disp_row').style.display = 'none';
+  ge('e_obs_row').style.display  = 'none';
+  ge('btn_delete_row').style.visibility = 'hidden';
   editingIdx=fi;const r=filteredRows[fi];
   ge('panelTitle').innerHTML=`Avis n°: ${r.num||'(vide)'} - ${r.ref||'-'} - ${fmtDate(r.date)||'-'} - ${cleanIntervenant(r.inter)||'-'} - Avis : ${r.avis||'-'}`;
   ge('panelNum').innerText=r.num||'(sans n°)';
@@ -1990,12 +1997,18 @@ function deleteRow(){
   if(!confirm(`Supprimer définitivement l'avis ${r.num} ?`))return;
   const gi=getRows().findIndex(x=>x.id===r.id);
   if(gi>=0){
+    const prevIdx = editingIdx;
     logAction('delete', r.num, 'Avis supprimé');
     data[currentTab].splice(gi,1);
-    closePanel();
+    editingIdx=null;
     applyFilters();
     persistLocal();
     pushToParent();
+    // Rouvrir sur la ligne suivante ou précédente
+    if(filteredRows.length > 0){
+      const nextIdx = Math.min(prevIdx, filteredRows.length-1);
+      openEditPanel(nextIdx);
+    }
   }
 }
 
