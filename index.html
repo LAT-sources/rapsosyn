@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,9 +11,7 @@
 <link rel="manifest" href="/manifest.json">
 <title>RAPSOSYN – Portail de gestion</title>
 <style>
-/* ══════════════════════════════════════════════════════
-   STYLES (inchangés)
-   ══════════════════════════════════════════════════════ */
+/* ========== STYLES COMPLETS (inchangés) ========== */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
   --blue:#1a56db;--blue-d:#1447c0;--blue-l:#e8f0fe;--blue-ll:#f0f5ff;
@@ -90,6 +88,7 @@ body{font-family:var(--font);background:var(--g50);color:var(--g800);min-height:
 .u-info{overflow:hidden;}
 .u-name{font-size:0.78rem;font-weight:600;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .u-role{font-size:0.67rem;color:rgba(255,255,255,.35);white-space:nowrap;}
+.offline-badge{background:#ef4444;color:white;font-size:0.65rem;padding:2px 6px;border-radius:20px;margin-left:8px;display:inline-block;}
 .app-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .page{flex:1;display:flex;flex-direction:column;overflow:hidden;}
 .page.hidden{display:none!important;}
@@ -231,7 +230,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 .syn-notif-txt{flex:1;}
 .syn-notif-close{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.35);font-size:1.05rem;line-height:1;padding:0 0 0 8px;transition:color .15s;}
 .syn-notif-close:hover{color:white;}
-.syn-refresh{position:relative;}
 .syn-refresh .notif-badge{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:100px;background:var(--red);color:white;font-size:0.62rem;font-weight:800;display:none;align-items:center;justify-content:center;padding:0 4px;border:2px solid var(--g800);animation:badgePop .3s cubic-bezier(.34,1.56,.64,1) both;}
 .syn-refresh .notif-badge.show{display:flex;}
 @keyframes badgePop{from{transform:scale(0);}to{transform:scale(1);}}
@@ -260,127 +258,36 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--g300);border-radius:3px;}
 
-/* Menu Actions (intégré dans la topbar sombre) */
-.actions-dropdown {
-  position: relative;
-  display: inline-block;
-  margin-left: 2px;
+.actions-dropdown { position: relative; display: inline-block; margin-left: 2px; }
+.actions-menu { position: absolute; top: 100%; right: 0; z-index: 999; background: #1e293b; border: 1px solid rgba(255,255,255,.15); border-radius: 10px; min-width: 230px; display: none; padding: 6px 0; margin-top: 6px; box-shadow: 0 12px 40px rgba(0,0,0,.45); }
+.actions-menu.show { display: block; }
+.actions-menu button { display: block; width: 100%; text-align: left; padding: 8px 16px; background: none; border: none; color: rgba(255,255,255,.75); font-family: var(--font); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.12s; white-space: nowrap; }
+.actions-menu button:hover { background: rgba(255,255,255,.08); color: #fff; }
+.actions-menu button + button { border-top: 1px solid rgba(255,255,255,.06); }
+
+@media (max-width: 640px) {
+  .syn-topbar { gap: 6px; padding: 0 10px; height: 46px; }
+  .syn-title { display: none !important; }
+  #synRoleChip { display: none !important; }
+  .syn-counters { display: none !important; }
+  .syn-back { flex-shrink: 0; }
+  .syn-topbar > button[onclick*="saveFromSynthese"] { display: none !important; }
+  .syn-refresh .syn-refresh-label { display: none; }
+  #synRefreshBtn { padding: 6px 8px; min-width: 0; }
+  .syn-live-dot .syn-live-label { display: none; }
+  #synLiveTxt { display: none !important; }
+  .syn-live-dot { gap: 0; padding: 4px 6px; min-width: 0; }
+  .syn-back .syn-back-label { display: none; }
+  .syn-back { padding: 6px 10px; }
+  .syn-menu-label { display: none; }
+  .syn-topbar .actions-menu { position: fixed; top: 46px; left: 0; right: 0; width: 100%; border-radius: 0; box-shadow: 0 8px 32px rgba(0,0,0,.4); z-index: 9999; background: var(--g900); border: none; border-top: 1px solid rgba(255,255,255,.08); }
+  .syn-topbar .actions-menu button { color: rgba(255,255,255,.85); padding: 14px 20px; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,.05); }
+  #synInfoBtn { display: flex !important; }
 }
-.actions-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  z-index: 999;
-  background: #1e293b;
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 10px;
-  min-width: 230px;
-  display: none;
-  padding: 6px 0;
-  margin-top: 6px;
-  box-shadow: 0 12px 40px rgba(0,0,0,.45);
-}
-.actions-menu.show {
-  display: block;
-}
-.actions-menu button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 8px 16px;
-  background: none;
-  border: none;
-  color: rgba(255,255,255,.75);
-  font-family: var(--font);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.12s;
-  white-space: nowrap;
-}
-.actions-menu button:hover {
-  background: rgba(255,255,255,.08);
-  color: #fff;
-}
-.actions-menu button + button {
-  border-top: 1px solid rgba(255,255,255,.06);
-}
-
-  /* ═══════════════════════ MOBILE TOPBAR SYNTHÈSE ═══════════════════════ */
-  @media (max-width: 640px) {
-
-    /* Topbar : compacte */
-    .syn-topbar { gap: 6px; padding: 0 10px; height: 46px; }
-
-    /* Retour à gauche, tout le reste à droite via spacer */
-    .syn-title { display: none !important; }
-    #synRoleChip { display: none !important; }
-    .syn-counters { display: none !important; }
-    .syn-back { flex-shrink: 0; }
-    /* Supprimer le margin-left auto résiduel */
-    .syn-back + * { margin-left: 0; }
-
-    /* Bouton Enregistrer (diskette) caché */
-    .syn-topbar > button[onclick*="saveFromSynthese"] { display: none !important; }
-
-    /* Synchroniser : icône seule, sans texte */
-    .syn-refresh .syn-refresh-label { display: none; }
-    #synRefreshBtn { padding: 6px 8px; min-width: 0; }
-
-    /* Voyant live : point seul, texte caché */
-    .syn-live-dot .syn-live-label { display: none; }
-    #synLiveTxt { display: none !important; }
-    .syn-live-dot { gap: 0; padding: 4px 6px; min-width: 0; }
-
-    /* Bouton retour compact */
-    .syn-back .syn-back-label { display: none; }
-    .syn-back { padding: 6px 10px; }
-
-    /* Menu ☰ : texte caché */
-    .syn-menu-label { display: none; }
-
-    /* Volet (actions-dropdown dans topbar) : fond sombre correct */
-    .syn-topbar .actions-menu {
-      position: fixed;
-      top: 46px;
-      left: 0;
-      right: 0;
-      width: 100%;
-      border-radius: 0;
-      box-shadow: 0 8px 32px rgba(0,0,0,.4);
-      z-index: 9999;
-      background: var(--g900);
-      border: none;
-      border-top: 1px solid rgba(255,255,255,.08);
-    }
-    .syn-topbar .actions-menu button {
-      color: rgba(255,255,255,.85);
-      padding: 14px 20px;
-      font-size: 0.85rem;
-      border-bottom: 1px solid rgba(255,255,255,.05);
-    }
-    .syn-topbar .actions-menu button:hover {
-      background: rgba(255,255,255,.07);
-      color: white;
-    }
-
-    /* Bouton info projet mobile */
-    #synInfoBtn { display: flex !important; }
-  }
-
-  @media (min-width: 641px) {
-    #synInfoBtn { display: none !important; }
-  }
-   /* ══════════════════════════════════════════════════════
-   RESPONSIVE MOBILE (sans modification de la topbar Synthèse)
-   ══════════════════════════════════════════════════════ */
+@media (min-width: 641px) { #synInfoBtn { display: none !important; } }
 @media (max-width: 768px) {
-  /* LOGIN */
   #scLogin { flex-direction: column; overflow-y: auto; }
-  .login-left {
-    width: 100%; min-height: 160px; padding: 24px 20px 20px;
-    flex-direction: row; align-items: center; gap: 14px;
-  }
+  .login-left { width: 100%; min-height: 160px; padding: 24px 20px 20px; flex-direction: row; align-items: center; gap: 14px; }
   .ll-deco1, .ll-deco2 { display: none; }
   .ll-tag { display: none; }
   .ll-version { display: none; }
@@ -389,168 +296,54 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   .login-right { padding: 24px 20px 32px; flex: 1; }
   .login-card { max-width: 100%; }
   .lc-title { font-size: 1.4rem; }
-
-  /* APP LAYOUT — sidebar devient une barre de navigation en bas */
   #scApp { flex-direction: column; }
-  .sidebar {
-    width: 100% !important;
-    height: auto;
-    flex-direction: row;
-    order: 2;
-    border-top: 1px solid rgba(255,255,255,.08);
-    flex-shrink: 0;
-    overflow: visible;
-  }
+  .sidebar { width: 100% !important; height: auto; flex-direction: row; order: 2; border-top: 1px solid rgba(255,255,255,.08); flex-shrink: 0; overflow: visible; }
   .sidebar.slim { width: 100% !important; }
   .sb-logo { display: none; }
   .sb-toggle { display: none; }
-  .sb-nav {
-    flex-direction: row;
-    flex: 1;
-    padding: 0;
-    gap: 0;
-    overflow: visible;
-    align-items: stretch;
-  }
+  .sb-nav { flex-direction: row; flex: 1; padding: 0; gap: 0; overflow: visible; align-items: stretch; }
   .nav-label { display: none; }
   .nav-sep { display: none; }
-  .nav-item {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3px;
-    padding: 10px 6px 8px;
-    border-radius: 0;
-    font-size: 0.62rem;
-    flex: 1;
-    white-space: normal;
-    text-align: center;
-    min-height: 56px;
-  }
+  .nav-item { flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 10px 6px 8px; border-radius: 0; font-size: 0.62rem; flex: 1; white-space: normal; text-align: center; min-height: 56px; }
   .nav-item svg { width: 20px; height: 20px; }
   .nav-item span { line-height: 1.2; }
-  .sb-user {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 6px 10px 8px;
-    gap: 3px;
-    border-top: none;
-    border-left: 1px solid rgba(255,255,255,.08);
-    min-width: 60px;
-  }
+  .sb-user { flex-direction: column; align-items: center; justify-content: center; padding: 6px 10px 8px; gap: 3px; border-top: none; border-left: 1px solid rgba(255,255,255,.08); min-width: 60px; }
   .u-av { width: 26px; height: 26px; font-size: 0.65rem; }
   .u-info { display: none; }
-
-  /* APP MAIN */
   .app-main { order: 1; flex: 1; overflow: hidden; }
-
-  /* TOPBAR des pages (Canevas, Archives, Utilisateurs) */
   .topbar { padding: 0 12px; height: 48px; gap: 8px; }
   .tb-title { font-size: 0.88rem; }
   .tb-actions { gap: 4px; }
   .btn-sm { padding: 5px 10px; font-size: 0.75rem; }
-  .btn-sm svg { width: 12px; height: 12px; }
-
-  /* FILTERBAR — défilement horizontal */
-  .filterbar {
-    padding: 6px 10px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 5px;
-    -webkit-overflow-scrolling: touch;
-  }
+  .filterbar { padding: 6px 10px; flex-wrap: nowrap; overflow-x: auto; gap: 5px; -webkit-overflow-scrolling: touch; }
   .filterbar::-webkit-scrollbar { display: none; }
-  .fb-input, .fb-select, .fav-btn {
-    flex-shrink: 0;
-    font-size: 0.78rem;
-    padding: 5px 9px;
-  }
+  .fb-input, .fb-select, .fav-btn { flex-shrink: 0; font-size: 0.78rem; padding: 5px 9px; }
   .fb-input { min-width: 90px; width: auto !important; }
   .fb-select { min-width: 110px; }
-
-  /* TABLE → transformation en cartes */
   .table-wrap { padding: 10px 10px; }
   table.main-table thead { display: none; }
-  table.main-table, table.main-table tbody,
-  table.main-table tr, table.main-table td { display: block; width: 100%; }
-  table.main-table tr {
-    background: white;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    box-shadow: var(--sh);
-    padding: 10px 12px;
-    position: relative;
-    border: none;
-  }
+  table.main-table, table.main-table tbody, table.main-table tr, table.main-table td { display: block; width: 100%; }
+  table.main-table tr { background: white; border-radius: 10px; margin-bottom: 10px; box-shadow: var(--sh); padding: 10px 12px; position: relative; border: none; }
   table.main-table tr:hover { background: #f0f7ff; }
-  table.main-table td {
-    padding: 2px 0;
-    border: none;
-    text-align: left !important;
-  }
-  /* Colonne étoile (favoris) placée en haut à droite */
-  table.main-table td:first-child {
-    position: absolute;
-    top: 10px; right: 42px;
-    width: auto;
-    padding: 0;
-  }
-  /* Colonne Actions */
-  table.main-table td:last-child {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid var(--g100);
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    text-align: left !important;
-    justify-content: flex-start;
-  }
-  table.main-table td .badge { margin-left: 0; }
-  table.main-table td .av {
-    width: 24px; height: 24px;
-    font-size: 0.65rem;
-    display: inline-flex;
-  }
-  table.main-table tr td:empty { display: none; }
-
-  /* GRILLE UTILISATEURS */
+  table.main-table td { padding: 2px 0; border: none; text-align: left !important; }
+  table.main-table td:first-child { position: absolute; top: 10px; right: 42px; width: auto; padding: 0; }
+  table.main-table td:last-child { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--g100); display: flex; gap: 6px; flex-wrap: wrap; text-align: left !important; justify-content: flex-start; }
   .users-grid { padding: 10px; gap: 8px; }
   .user-card { padding: 12px; gap: 10px; flex-wrap: wrap; }
   .uc-actions { width: 100%; gap: 6px; flex-wrap: wrap; }
   .uc-actions .btn { flex: 1; justify-content: center; font-size: 0.75rem; min-width: 80px; }
-
-  /* MODALS (popups) */
-  .modal {
-    width: 100% !important;
-    max-width: 100% !important;
-    max-height: 95vh;
-    border-radius: 16px 16px 0 0;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    margin: 0;
-    animation: mInMobile .25s ease both;
-  }
-  @keyframes mInMobile {
-    from { transform: translateY(100%); }
-    to   { transform: translateY(0); }
-  }
+  .modal { width: 100% !important; max-width: 100% !important; max-height: 95vh; border-radius: 16px 16px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; animation: mInMobile .25s ease both; }
+  @keyframes mInMobile { from { transform: translateY(100%); } to { transform: translateY(0); } }
   .modal-bd { align-items: flex-end; }
   .mf-grid { grid-template-columns: 1fr; gap: 0; }
   .m-body { gap: 10px; padding: 14px 16px; }
   .m-hdr { padding: 14px 16px 12px; }
   .m-foot { padding: 10px 16px; gap: 8px; }
   .m-foot .btn { flex: 1; justify-content: center; padding: 10px; }
-
-  /* BANDEAUX ARCHIVES */
   .archive-info { margin: 8px 10px 0; font-size: 0.78rem; padding: 8px 12px; }
-
-  /* TOAST NOTIFICATIONS */
   .toast-container { bottom: 70px; right: 10px; left: 10px; }
   .toast { min-width: unset; width: 100%; }
 }
-  /* ════════════════════════════════════════════════════════════ */
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -559,45 +352,21 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 </head>
 <body>
 
-<!-- ═════════════════════ LOGIN ═════════════════════ -->
+<!-- LOGIN -->
 <div id="scLogin" class="screen">
   <div class="login-left">
     <div class="ll-deco1"></div><div class="ll-deco2"></div><div class="ll-deco3"></div>
-    <div class="ll-logo" style="position:relative;z-index:1">
-      <div class="ll-logo-icon">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="12" fill="#1a56db"/>
-          <path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
-          <circle cx="14" cy="14" r="3" fill="white"/>
-        </svg>
-      </div>
-      <div class="ll-brand">RAPSO<span>SYN</span></div>
-    </div>
-    <div class="ll-tag" style="position:relative;z-index:1">
-      <h2>Plateforme de suivi<br>des avis</h2>
-      <p>Gestion collaborative des canevas, intervenants et rapports de synthèse.</p>
-    </div>
-    <div class="ll-version" style="position:relative;z-index:1">v2.0 — AML Luxembourg</div>
+    <div class="ll-logo"><div class="ll-logo-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="#1a56db"/><path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2.2"/><circle cx="14" cy="14" r="3" fill="white"/></svg></div><div class="ll-brand">RAPSO<span>SYN</span></div></div>
+    <div class="ll-tag"><h2>Plateforme de suivi<br>des avis</h2><p>Gestion collaborative des canevas, intervenants et rapports de synthèse.</p></div>
+    <div class="ll-version">v2.0 — AML Luxembourg</div>
   </div>
   <div class="login-right">
     <div class="login-card">
       <div class="lc-title">Bienvenue !</div>
       <div class="lc-sub">Connectez-vous avec vos identifiants pour accéder à vos projets.</div>
       <div class="login-err" id="loginErr">Identifiants incorrects.</div>
-      <div class="lf-group">
-        <label class="lf-label">Email</label>
-        <input class="lf-input" id="lEmail" type="email" placeholder="votre@email.com">
-      </div>
-      <div class="lf-group">
-        <label class="lf-label">Mot de passe</label>
-        <div class="lf-input-wrap">
-          <input class="lf-input" id="lPwd" type="password" placeholder="••••••••">
-          <button class="lf-eye" onclick="togglePwd('lPwd',this)">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-        <span class="lf-forgot" onclick="openForgotPwd()">Mot de passe oublié ?</span>
-      </div>
+      <div class="lf-group"><label class="lf-label">Email</label><input class="lf-input" id="lEmail" type="email" placeholder="votre@email.com"></div>
+      <div class="lf-group"><label class="lf-label">Mot de passe</label><div class="lf-input-wrap"><input class="lf-input" id="lPwd" type="password" placeholder="••••••••"><button class="lf-eye" onclick="togglePwd('lPwd',this)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div><span class="lf-forgot" onclick="openForgotPwd()">Mot de passe oublié ?</span></div>
       <label class="lf-check"><input type="checkbox" checked> Se souvenir de moi</label>
       <button class="btn-login" onclick="doLogin()">Se connecter</button>
       <button class="btn-email">Courriel uniquement</button>
@@ -605,414 +374,70 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   </div>
 </div>
 
-<!-- ═════════════════════ APP ═════════════════════ -->
+<!-- APP -->
 <div id="scApp" class="screen hidden">
   <aside class="sidebar" id="sidebar">
-    <div class="sb-logo">
-      <div class="sb-logo-icon">
-        <svg width="20" height="20" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="rgba(255,255,255,.15)"/><path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="white"/></svg>
-      </div>
-      <div class="sb-logo-text">RAPSO<span>SYN</span></div>
-    </div>
-    <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      <span>Réduire</span>
-    </button>
+    <div class="sb-logo"><div class="sb-logo-icon"><svg width="20" height="20" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="rgba(255,255,255,.15)"/><path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2"/><circle cx="14" cy="14" r="2.5" fill="white"/></svg></div><div class="sb-logo-text">RAPSO<span>SYN</span></div></div>
+    <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg><span>Réduire</span></button>
     <nav class="sb-nav">
       <div class="nav-label">Principal</div>
-      <button class="nav-item active" data-page="canevas" onclick="showPage('canevas',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <span>Mes canevas</span>
-      </button>
-      <button class="nav-item" data-page="archive" onclick="showPage('archive',this)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-        <span>Archives</span>
-      </button>
+      <button class="nav-item active" data-page="canevas" onclick="showPage('canevas',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Mes canevas</span></button>
+      <button class="nav-item" data-page="archive" onclick="showPage('archive',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg><span>Archives</span></button>
       <div class="nav-sep" id="adminNav"></div>
       <div class="nav-label" id="adminLabel" style="display:none">Administration</div>
-      <button class="nav-item" id="navUsers" data-page="users" onclick="showPage('users',this)" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        <span>Utilisateurs</span>
-      </button>
+      <button class="nav-item" id="navUsers" data-page="users" onclick="showPage('users',this)" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Utilisateurs</span></button>
     </nav>
-    <div class="sb-user" onclick="logout()">
-      <div class="u-av" id="sbAv" style="background:var(--blue)">?</div>
-      <div class="u-info">
-        <div class="u-name" id="sbName">—</div>
-        <div class="u-role" id="sbRole">—</div>
-      </div>
-    </div>
+    <div class="sb-user" onclick="logout()"><div class="u-av" id="sbAv" style="background:var(--blue)">?</div><div class="u-info"><div class="u-name" id="sbName">—</div><div class="u-role" id="sbRole">—</div></div></div>
   </aside>
-
   <div class="app-main">
     <div class="page" id="pageCanevas">
-      <div class="topbar">
-        <div class="tb-title">Canevas &nbsp;<span class="count-badge" id="canevasCount">0</span></div>
-        <div class="tb-actions">
-          <button class="btn btn-ghost btn-sm" onclick="openModalCanevas('create')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nouveau canevas
-          </button>
-        </div>
-      </div>
-      <div class="filterbar">
-        <button class="fav-btn" id="favBtn" onclick="toggleFav()">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          Favoris
-        </button>
-        <input class="fb-input" id="fNom"    placeholder="Nom du projet…"  oninput="renderCanevas()">
-        <input class="fb-input" id="fChrono" placeholder="Référence…"      oninput="renderCanevas()" style="width:130px">
-        <input class="fb-input" id="fClient" placeholder="Client…"          oninput="renderCanevas()" style="width:105px">
-        <input class="fb-input" id="fVille"  placeholder="Ville…"           oninput="renderCanevas()" style="width:90px">
-        <select class="fb-select" id="fStatut" onchange="renderCanevas()">
-          <option value="">Tous les statuts</option>
-          <option value="Commandée">Commandée</option>
-          <option value="En attente">En attente</option>
-          <option value="En cours">En cours</option>
-        </select>
-        <input class="fb-input" id="fPilote" placeholder="Pilote…" oninput="renderCanevas()" style="width:90px">
-      </div>
-      <div class="table-wrap">
-        <table class="main-table" id="canevasTable">
-          <thead>
-            <tr>
-              <th></th>
-              <th onclick="sortCan('nom')">Nom du projet ↕</th>
-              <th onclick="sortCan('chrono')">Référence ↕</th>
-              <th onclick="sortCan('client')">Client ↕</th>
-              <th onclick="sortCan('ville')">Ville ↕</th>
-              <th onclick="sortCan('statut')">Statut ↕</th>
-              <th>Pilote</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="canevasBody"></tbody>
-        </table>
-      </div>
+      <div class="topbar"><div class="tb-title">Canevas &nbsp;<span class="count-badge" id="canevasCount">0</span></div><div class="tb-actions"><button class="btn btn-ghost btn-sm" onclick="openModalCanevas('create')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nouveau canevas</button></div></div>
+      <div class="filterbar"><button class="fav-btn" id="favBtn" onclick="toggleFav()"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Favoris</button><input class="fb-input" id="fNom" placeholder="Nom du projet…" oninput="renderCanevas()"><input class="fb-input" id="fChrono" placeholder="Référence…" oninput="renderCanevas()" style="width:130px"><input class="fb-input" id="fClient" placeholder="Client…" oninput="renderCanevas()" style="width:105px"><input class="fb-input" id="fVille" placeholder="Ville…" oninput="renderCanevas()" style="width:90px"><select class="fb-select" id="fStatut" onchange="renderCanevas()"><option value="">Tous les statuts</option><option value="Commandée">Commandée</option><option value="En attente">En attente</option><option value="En cours">En cours</option></select><input class="fb-input" id="fPilote" placeholder="Pilote…" oninput="renderCanevas()" style="width:90px"></div>
+      <div class="table-wrap"><table class="main-table" id="canevasTable"><thead><tr><th></th><th onclick="sortCan('nom')">Nom du projet ↕</th><th onclick="sortCan('chrono')">Référence ↕</th><th onclick="sortCan('client')">Client ↕</th><th onclick="sortCan('ville')">Ville ↕</th><th onclick="sortCan('statut')">Statut ↕</th><th>Pilote</th><th>Actions</th></tr></thead><tbody id="canevasBody"></tbody></table></div>
     </div>
-
     <div class="page hidden" id="pageArchive">
-      <div class="topbar">
-        <div class="tb-title">Archives &nbsp;<span class="count-badge" id="archiveCount">0</span></div>
-        <div class="tb-actions">
-          <button class="btn btn-ghost btn-sm" onclick="exportArchive()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Exporter liste
-          </button>
-        </div>
-      </div>
-      <div class="archive-info">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Les canevas archivés sont en lecture seule. Vous pouvez les consulter ou les désarchiver.
-      </div>
-      <div class="filterbar">
-        <input class="fb-input" id="afNom" placeholder="Nom du projet…" oninput="renderArchive()">
-        <input class="fb-input" id="afClient" placeholder="Client…" oninput="renderArchive()" style="width:110px">
-        <input class="fb-input" id="afVille"  placeholder="Ville…"  oninput="renderArchive()" style="width:90px">
-        <input class="fb-input" id="afPilote" placeholder="Pilote…" oninput="renderArchive()" style="width:90px">
-      </div>
-      <div class="table-wrap">
-        <table class="main-table" id="archiveTable">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Nom du projet</th>
-              <th>Référence</th>
-              <th>Client</th>
-              <th>Ville</th>
-              <th>Archivé le</th>
-              <th>Pilote</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="archiveBody"></tbody>
-        </table>
-      </div>
+      <div class="topbar"><div class="tb-title">Archives &nbsp;<span class="count-badge" id="archiveCount">0</span></div><div class="tb-actions"><button class="btn btn-ghost btn-sm" onclick="exportArchive()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exporter liste</button></div></div>
+      <div class="archive-info"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Les canevas archivés sont en lecture seule. Vous pouvez les consulter ou les désarchiver.</div>
+      <div class="filterbar"><input class="fb-input" id="afNom" placeholder="Nom du projet…" oninput="renderArchive()"><input class="fb-input" id="afClient" placeholder="Client…" oninput="renderArchive()" style="width:110px"><input class="fb-input" id="afVille" placeholder="Ville…" oninput="renderArchive()" style="width:90px"><input class="fb-input" id="afPilote" placeholder="Pilote…" oninput="renderArchive()" style="width:90px"></div>
+      <div class="table-wrap"><table class="main-table" id="archiveTable"><thead><tr><th></th><th>Nom du projet</th><th>Référence</th><th>Client</th><th>Ville</th><th>Archivé le</th><th>Pilote</th><th>Actions</th></tr></thead><tbody id="archiveBody"></tbody></table></div>
     </div>
-
     <div class="page hidden" id="pageUsers">
-      <div class="topbar">
-        <div class="tb-title">Utilisateurs &nbsp;<span class="count-badge" id="usersCount">0</span></div>
-        <div class="tb-actions">
-          <button class="btn btn-purple btn-sm" onclick="openModalUser('create')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Créer un compte
-          </button>
-        </div>
-      </div>
+      <div class="topbar"><div class="tb-title">Utilisateurs &nbsp;<span class="count-badge" id="usersCount">0</span></div><div class="tb-actions"><button class="btn btn-purple btn-sm" onclick="openModalUser('create')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Créer un compte</button></div></div>
       <div class="users-grid" id="usersGrid"></div>
     </div>
   </div>
 </div>
 
-<!-- ═════════════════════ SYNTHESE VIEWER ═════════════════════ -->
+<!-- SYNTHESE VIEWER -->
 <div id="scSynthese" class="screen hidden">
   <div class="syn-topbar">
-    <button class="syn-back" onclick="closeSynthese()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      <span class="syn-back-label">Retour</span>
-    </button>
-    <div class="syn-spacer" style="flex:1;"></div>
-    <div class="syn-title" id="synTitle">—</div>
-    <span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;flex-shrink:0;"></span>
-    <div class="syn-counters" id="synCounters" style="margin:0 4px;">
-      <span class="sc sc-lev" id="sc_oui">✅ 0</span>
-      <span class="sc sc-par" id="sc_par">⚠️ 0</span>
-      <span class="sc sc-non" id="sc_non">❌ 0</span>
-      <span class="sc sc-tot" id="sc_tot">/ 0</span>
-    </div>
-    <div class="syn-status idle" id="synStatus">
-      <span class="sdot"></span>
-      <span id="synStatusTxt">En attente</span>
-    </div>
-    <div class="syn-live-dot" id="synLiveDot" title="Connexion Firebase temps réel">
-      <span class="ld"></span>
-      <span class="syn-live-label" id="synLiveTxt">Connexion…</span>
-    </div>
-    <!-- Bouton info projet — mobile uniquement -->
-    <button id="synInfoBtn" class="syn-refresh" onclick="showSynInfoPopup()" title="Infos projet" style="display:none;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    </button>
-    <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-        <polyline points="1 4 1 10 7 10"/>
-        <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
-      </svg>
-      <span class="syn-refresh-label">Synchroniser</span>
-      <span class="notif-badge" id="refreshBadge">!</span>
-    </button>
-    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde" style="margin-left:2px;">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-    </button>
-
-    <!-- Bouton Actions -->
-    <div class="actions-dropdown">
-      <button class="syn-refresh" onclick="toggleActionsMenu(event)">☰ <span class="syn-menu-label">MENU ▾</span></button>
-      <div class="actions-menu" id="actionsMenu">
-        <button onclick="postAction('actualiser'); closeActionsMenu();">⟳ Mettre à jour</button>
-        <button onclick="postAction('import'); closeActionsMenu();">↺ Rénitialiser le canevas</button>
-        <button onclick="postAction('migration'); closeActionsMenu();">⇄ Migration</button>
-        <button onclick="postAction('exportJSON'); closeActionsMenu();">⤓ Enregistrer en local</button>
-        <button onclick="postAction('loadJSON'); closeActionsMenu();">⤒ Ouvrir un dossier local</button>
-        <button onclick="postAction('stats'); closeActionsMenu();">◔ Statistiques</button>
-        <button onclick="postAction('print'); closeActionsMenu();">⎙ Imprimer le pdf</button>
-        <button onclick="postAction('exportExcel'); closeActionsMenu();">⌗ Télécharger l'excel</button>
-        <button onclick="postAction('toggleColumns'); closeActionsMenu();">☷ Gérer les colonnes</button>
-      </div>
-    </div>
-  </div>  
-  <div class="syn-pending-bar" id="synPendingBar">
-    <span class="pb-icon">🔔</span>
-    <div class="pb-meta">
-      <div class="pb-title" id="pbTitle">Modifications disponibles</div>
-      <div class="pb-detail" id="pbDetail">Un autre utilisateur a modifié ce canevas</div>
-    </div>
-    <span class="pb-user" id="pbUser"></span>
-    <button class="pb-apply" onclick="applyPendingUpdate()">⬇ Appliquer</button>
-    <button class="pb-dismiss" onclick="dismissPending()">Ignorer</button>
+    <button class="syn-back" onclick="closeSynthese()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg><span class="syn-back-label">Retour</span></button>
+    <div class="syn-spacer" style="flex:1;"></div><div class="syn-title" id="synTitle">—</div><span id="synRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;"></span>
+    <div class="syn-counters" id="synCounters"><span class="sc sc-lev" id="sc_oui">✅ 0</span><span class="sc sc-par" id="sc_par">⚠️ 0</span><span class="sc sc-non" id="sc_non">❌ 0</span><span class="sc sc-tot" id="sc_tot">/ 0</span></div>
+    <div class="syn-status idle" id="synStatus"><span class="sdot"></span><span id="synStatusTxt">En attente</span></div>
+    <div class="syn-live-dot" id="synLiveDot"><span class="ld"></span><span class="syn-live-label" id="synLiveTxt">Connexion…</span></div>
+    <button id="synInfoBtn" class="syn-refresh" onclick="showSynInfoPopup()" title="Infos projet" style="display:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></button>
+    <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg><span class="syn-refresh-label">Synchroniser</span><span class="notif-badge" id="refreshBadge">!</span></button>
+    <button class="syn-refresh" onclick="saveFromSynthese()" title="Forcer sauvegarde"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></button>
+    <div class="actions-dropdown"><button class="syn-refresh" onclick="toggleActionsMenu(event)">☰ <span class="syn-menu-label">MENU ▾</span></button><div class="actions-menu" id="actionsMenu"><button onclick="postAction('actualiser'); closeActionsMenu();">⟳ Mettre à jour</button><button onclick="postAction('import'); closeActionsMenu();">↺ Rénitialiser le canevas</button><button onclick="postAction('migration'); closeActionsMenu();">⇄ Migration</button><button onclick="postAction('exportJSON'); closeActionsMenu();">⤓ Enregistrer en local</button><button onclick="postAction('loadJSON'); closeActionsMenu();">⤒ Ouvrir un dossier local</button><button onclick="postAction('stats'); closeActionsMenu();">◔ Statistiques</button><button onclick="postAction('print'); closeActionsMenu();">⎙ Imprimer le pdf</button><button onclick="postAction('exportExcel'); closeActionsMenu();">⌗ Télécharger l'excel</button><button onclick="postAction('toggleColumns'); closeActionsMenu();">☷ Gérer les colonnes</button></div></div>
   </div>
-  <div class="syn-notif" id="synNotif">
-    <span class="nicon" id="synNotifIcon">ℹ️</span>
-    <span class="syn-notif-txt" id="synNotifTxt"></span>
-    <button class="syn-notif-close" onclick="hideNotif()">✕</button>
-  </div>
+  <div class="syn-pending-bar" id="synPendingBar"><span class="pb-icon">🔔</span><div class="pb-meta"><div class="pb-title" id="pbTitle">Modifications disponibles</div><div class="pb-detail" id="pbDetail">Un autre utilisateur a modifié ce canevas</div></div><span class="pb-user" id="pbUser"></span><button class="pb-apply" onclick="applyPendingUpdate()">⬇ Appliquer</button><button class="pb-dismiss" onclick="dismissPending()">Ignorer</button></div>
+  <div class="syn-notif" id="synNotif"><span class="nicon" id="synNotifIcon">ℹ️</span><span class="syn-notif-txt" id="synNotifTxt"></span><button class="syn-notif-close" onclick="hideNotif()">✕</button></div>
   <iframe id="synFrame" class="syn-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads"></iframe>
 </div>
 
-<!-- ═════════ MODALS ═════════ -->
-<div class="modal-bd" id="mdCanevas">
-  <div class="modal">
-    <div class="m-hdr">
-      <div class="m-icon blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      <div class="m-title" id="mdCanTitle">Nouveau canevas</div>
-      <button class="m-close" onclick="closeModal('mdCanevas')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body">
-      <!-- Zone de drop pour fichier Excel (création uniquement) -->
-      <div id="canevasDropZone" style="display:none; border:2px dashed var(--g300); border-radius:12px; padding:20px; text-align:center; margin-bottom:12px; cursor:pointer; background:var(--g50);">
-        <div style="font-size:0.85rem; color:var(--g500);">📂 Glissez un fichier .xlsx/.xls ici pour pré-remplir le projet</div>
-        <input type="file" id="canevasFileInput" accept=".xlsx,.xlsm,.xls" style="display:none" onchange="handleCanevasFileSelect(this)">
-      </div>
-      <div class="mf-row"><label>Nom du projet <span class="req">*</span></label><input class="mf-input" id="mNom" placeholder="ex: LUXEMBOURG – Complexe sportif…"></div>
-      <div class="mf-grid">
-        <div class="mf-row"><label>Référence / Chronorapso <span class="req">*</span></label><input class="mf-input" id="mChrono" placeholder="ex: 2507JB000000021/1"></div>
-        <div class="mf-row"><label>Ville</label><input class="mf-input" id="mVille" placeholder="ex: Luxembourg"></div>
-      </div>
-      <div class="mf-grid">
-        <div class="mf-row"><label>Client</label><input class="mf-input" id="mClient" placeholder="Nom du client"></div>
-        <div class="mf-row"><label>Statut</label>
-          <select class="mf-select" id="mStatut">
-            <option value="Commandée">Commandée</option>
-            <option value="En attente">En attente</option>
-            <option value="En cours">En cours</option>
-          </select>
-        </div>
-      </div>
-      <div class="mf-grid">
-        <div class="mf-row"><label>Pilote assigné</label>
-          <select class="mf-select" id="mPilote"></select>
-        </div>
-        <div class="mf-row"><label>Intervenants assignés</label>
-          <select class="mf-select" id="mIntervenants" multiple style="height:80px;border-radius:8px;padding:4px;"></select>
-        </div>
-      </div>
-      <div class="mf-row"><label>Notes</label><textarea class="mf-ta" id="mNotes" placeholder="Informations complémentaires…"></textarea></div>
-    </div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdCanevas')">Annuler</button>
-      <button class="btn btn-primary" onclick="saveCanevas()">💾 Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bd" id="mdArchive">
-  <div class="modal sm">
-    <div class="m-hdr">
-      <div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div>
-      <div class="m-title">Archiver ce canevas ?</div>
-      <button class="m-close" onclick="closeModal('mdArchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body"><p class="confirm-text" id="archiveText">Ce canevas sera déplacé dans les archives.</p></div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdArchive')">Annuler</button>
-      <button class="btn btn-danger" id="archiveOk">Archiver</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bd" id="mdDeleteCan">
-  <div class="modal sm">
-    <div class="m-hdr">
-      <div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></div>
-      <div class="m-title">Supprimer définitivement ?</div>
-      <button class="m-close" onclick="closeModal('mdDeleteCan')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body">
-      <p class="confirm-text" id="deleteCanText">Ce canevas sera supprimé définitivement.</p>
-      <div style="background:#fef2f2;border:1px solid #fecaca;padding:10px 14px;margin-top:12px;font-size:0.78rem;color:#991b1b;line-height:1.5;">
-        ⚠️ <strong>Action irréversible.</strong> Toutes les données (avis, réponses, historique) seront perdues définitivement. Cette action ne peut pas être annulée.
-      </div>
-      <div style="margin-top:14px;">
-        <label style="font-size:0.75rem;font-weight:600;color:var(--g600);display:block;margin-bottom:5px;">Confirmez en tapant le nom du canevas :</label>
-        <input id="deleteCanConfirmInput" type="text" placeholder="Nom du canevas..." style="width:100%;border:1px solid var(--g300);padding:7px 10px;font-family:var(--font);font-size:0.8rem;outline:none;">
-        <div id="deleteCanError" style="color:#b91c1c;font-size:0.72rem;margin-top:4px;display:none;">Le nom ne correspond pas.</div>
-      </div>
-    </div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdDeleteCan')">Annuler</button>
-      <button class="btn btn-danger" id="deleteCanOk" disabled>🗑 Supprimer définitivement</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bd" id="mdDesarchive">
-  <div class="modal sm">
-    <div class="m-hdr">
-      <div class="m-icon green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg></div>
-      <div class="m-title">Désarchiver ?</div>
-      <button class="m-close" onclick="closeModal('mdDesarchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body"><p class="confirm-text">Ce canevas sera restauré dans la liste des canevas actifs.</p></div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdDesarchive')">Annuler</button>
-      <button class="btn btn-success" id="desarchiveOk">Restaurer</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bd" id="mdUser">
-  <div class="modal">
-    <div class="m-hdr">
-      <div class="m-icon purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-      <div class="m-title" id="mdUserTitle">Créer un compte</div>
-      <button class="m-close" onclick="closeModal('mdUser')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body">
-      <div class="mf-grid">
-        <div class="mf-row"><label>Prénom <span class="req">*</span></label><input class="mf-input" id="uPrenom" placeholder="Jean"></div>
-        <div class="mf-row"><label>Nom <span class="req">*</span></label><input class="mf-input" id="uNom" placeholder="Dupont"></div>
-      </div>
-      <div class="mf-row"><label>Email <span class="req">*</span></label><input class="mf-input" id="uEmail" type="email" placeholder="jean.dupont@socotec.lu"></div>
-      <div class="mf-grid">
-        <div class="mf-row"><label>Initiales</label><input class="mf-input" id="uInitiales" placeholder="JD" maxlength="3" style="text-transform:uppercase"></div>
-        <div class="mf-row"><label>Rôle</label>
-          <select class="mf-select" id="uRole">
-            <option value="user">Intervenant</option>
-            <option value="admin">Administrateur</option>
-          </select>
-        </div>
-      </div>
-      <div class="mf-sep"></div>
-      <div class="mf-row">
-        <label id="uPwdLabel">Mot de passe <span class="req">*</span></label>
-        <div class="pw-wrap">
-          <input class="mf-input" id="uPwd" type="password" placeholder="Minimum 6 caractères">
-          <button class="pw-eye" onclick="togglePwd('uPwd',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        </div>
-        <span class="mf-hint" id="uPwdHint">Laissez vide pour ne pas modifier</span>
-      </div>
-      <div class="mf-row">
-        <label>Confirmer le mot de passe</label>
-        <div class="pw-wrap">
-          <input class="mf-input" id="uPwd2" type="password" placeholder="Répétez le mot de passe">
-          <button class="pw-eye" onclick="togglePwd('uPwd2',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
-        </div>
-      </div>
-    </div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdUser')">Annuler</button>
-      <button class="btn btn-purple" onclick="saveUser()">💾 Enregistrer</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bd" id="mdDelUser">
-  <div class="modal sm">
-    <div class="m-hdr">
-      <div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
-      <div class="m-title">Supprimer ce compte ?</div>
-      <button class="m-close" onclick="closeModal('mdDelUser')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    </div>
-    <div class="m-body"><p class="confirm-text" id="delUserText">Cette action est irréversible.</p></div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdDelUser')">Annuler</button>
-      <button class="btn btn-danger" id="delUserOk">Supprimer</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-bd" id="mdForgotPwd">
-  <div class="modal sm">
-    <div class="m-hdr">
-      <div class="m-icon blue">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      </div>
-      <div class="m-title">Réinitialiser le mot de passe</div>
-      <button class="m-close" onclick="closeModal('mdForgotPwd')">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="m-body">
-      <p class="confirm-text">Entrez votre adresse e-mail. Vous recevrez un lien pour réinitialiser votre mot de passe.</p>
-      <div class="mf-row" style="margin-top:4px">
-        <label>Adresse e-mail <span class="req">*</span></label>
-        <input class="mf-input" id="forgotEmail" type="email" placeholder="votre@email.com">
-      </div>
-      <div id="forgotMsg" style="display:none;font-size:0.8rem;padding:8px 12px;border-radius:7px;margin-top:2px;"></div>
-    </div>
-    <div class="m-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mdForgotPwd')">Annuler</button>
-      <button class="btn btn-primary" onclick="sendResetEmail()">📧 Envoyer le lien</button>
-    </div>
-  </div>
-</div>
-
+<!-- MODALS -->
+<div class="modal-bd" id="mdCanevas"><div class="modal"><div class="m-hdr"><div class="m-icon blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="m-title" id="mdCanTitle">Nouveau canevas</div><button class="m-close" onclick="closeModal('mdCanevas')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="m-body"><div id="canevasDropZone" style="display:none; border:2px dashed var(--g300); border-radius:12px; padding:20px; text-align:center; margin-bottom:12px; cursor:pointer; background:var(--g50);"><div style="font-size:0.85rem; color:var(--g500);">📂 Glissez un fichier .xlsx/.xls ici pour pré-remplir le projet</div><input type="file" id="canevasFileInput" accept=".xlsx,.xlsm,.xls" style="display:none" onchange="handleCanevasFileSelect(this)"></div><div class="mf-row"><label>Nom du projet <span class="req">*</span></label><input class="mf-input" id="mNom" placeholder="ex: LUXEMBOURG – Complexe sportif…"></div><div class="mf-grid"><div class="mf-row"><label>Référence / Chronorapso <span class="req">*</span></label><input class="mf-input" id="mChrono" placeholder="ex: 2507JB000000021/1"></div><div class="mf-row"><label>Ville</label><input class="mf-input" id="mVille" placeholder="ex: Luxembourg"></div></div><div class="mf-grid"><div class="mf-row"><label>Client</label><input class="mf-input" id="mClient" placeholder="Nom du client"></div><div class="mf-row"><label>Statut</label><select class="mf-select" id="mStatut"><option value="Commandée">Commandée</option><option value="En attente">En attente</option><option value="En cours">En cours</option></select></div></div><div class="mf-grid"><div class="mf-row"><label>Pilote assigné</label><select class="mf-select" id="mPilote"></select></div><div class="mf-row"><label>Intervenants assignés</label><select class="mf-select" id="mIntervenants" multiple style="height:80px;border-radius:8px;padding:4px;"></select></div></div><div class="mf-row"><label>Notes</label><textarea class="mf-ta" id="mNotes" placeholder="Informations complémentaires…"></textarea></div></div><div class="m-foot"><button class="btn btn-ghost" onclick="closeModal('mdCanevas')">Annuler</button><button class="btn btn-primary" onclick="saveCanevas()">💾 Enregistrer</button></div></div></div>
+<div class="modal-bd" id="mdArchive"><div class="modal sm"><div class="m-hdr"><div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div><div class="m-title">Archiver ce canevas ?</div><button class="m-close" onclick="closeModal('mdArchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="m-body"><p class="confirm-text" id="archiveText">Ce canevas sera déplacé dans les archives.</p></div><div class="m-foot"><button class="btn btn-ghost" onclick="closeModal('mdArchive')">Annuler</button><button class="btn btn-danger" id="archiveOk">Archiver</button></div></div></div>
+<div class="modal-bd" id="mdDeleteCan"><div class="modal sm"><div class="m-hdr"><div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></div><div class="m-title">Supprimer définitivement ?</div><button class="m-close" onclick="closeModal('mdDeleteCan')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="m-body"><p class="confirm-text" id="deleteCanText">Ce canevas sera supprimé définitivement.</p><div style="background:#fef2f2;border:1px solid #fecaca;padding:10px 14px;margin-top:12px;font-size:0.78rem;color:#991b1b;line-height:1.5;">⚠️ <strong>Action irréversible.</strong> Toutes les données (avis, réponses, historique) seront perdues définitivement.</div><div style="margin-top:14px;"><label style="font-size:0.75rem;font-weight:600;color:var(--g600);display:block;margin-bottom:5px;">Confirmez en tapant le nom du canevas :</label><input id="deleteCanConfirmInput" type="text" placeholder="Nom du canevas..." style="width:100%;border:1px solid var(--g300);padding:7px 10px;font-family:var(--font);font-size:0.8rem;outline:none;"><div id="deleteCanError" style="color:#b91c1c;font-size:0.72rem;margin-top:4px;display:none;">Le nom ne correspond pas.</div></div></div><div class="m-foot"><button class="btn btn-ghost" onclick="closeModal('mdDeleteCan')">Annuler</button><button class="btn btn-danger" id="deleteCanOk" disabled>🗑 Supprimer définitivement</button></div></div></div>
+<div class="modal-bd" id="mdDesarchive"><div class="modal sm"><div class="m-hdr"><div class="m-icon green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg></div><div class="m-title">Désarchiver ?</div><button class="m-close" onclick="closeModal('mdDesarchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="m-body"><p class="confirm-text">Ce canevas sera restauré dans la liste des canevas actifs.</p></div><div class="m-foot"><button class="btn btn-ghost" onclick="closeModal('mdDesarchive')">Annuler</button><button class="btn btn-success" id="desarchiveOk">Restaurer</button></div></div></div>
+<div class="modal-bd" id="mdUser"><div class="modal"><div class="m-hdr"><div class="m-icon purple"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="m-title" id="mdUserTitle">Créer un compte</div><button class="m-close" onclick="closeModal('mdUser')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="m-body"><div class="mf-grid"><div class="mf-row"><label>Prénom <span class="req">*</span></label><input class="mf-input" id="uPrenom" placeholder="Jean"></div><div class="mf-row"><label>Nom <span class="req">*</span></label><input class="mf-input" id="uNom" placeholder="Dupont"></div></div><div class="mf-row"><label>Email <span class="req">*</span></label><input class="mf-input" id="uEmail" type="email" placeholder="jean.dupont@socotec.lu"></div><div class="mf-grid"><div class="mf-row"><label>Initiales</label><input class="mf-input" id="uInitiales" placeholder="JD" maxlength="3" style="text-transform:uppercase"></div><div class="mf-row"><label>Rôle</label><select class="mf-select" id="uRole"><option value="user">Intervenant</option><option value="admin">Administrateur</option></select></div></div><div class="mf-sep"></div><div class="mf-row"><label id="uPwdLabel">Mot de passe <span class="req">*</span></label><div class="pw-wrap"><input class="mf-input" id="uPwd" type="password" placeholder="Minimum 6 caractères"><button class="pw-eye" onclick="togglePwd('uPwd',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div><span class="mf-hint" id="uPwdHint">Laissez vide pour ne pas modifier</span></div><div class="mf-row"><label>Confirmer le mot de passe</label><div class="pw-wrap"><input class="mf-input" id="uPwd2" type="password" placeholder="Répétez le mot de passe"><button class="pw-eye" onclick="togglePwd('uPwd2',this)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div></div><div class="m-foot"><button class="btn btn-ghost" onclick="closeModal('mdUser')">Annuler</button><button class="btn btn-purple" onclick="saveUser()">💾 Enregistrer</button></div></div></div>
+<div class="modal-bd" id="mdDelUser"><div class="modal sm"><div class="m-hdr"><div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div><div class="m-title">Supprimer ce compte ?</div><button class="m-close" onclick="closeModal('mdDelUser')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="m-body"><p class="confirm-text" id="delUserText">Cette action est irréversible.</p></div><div class="m-foot"><button class="btn btn-ghost" onclick="closeModal('mdDelUser')">Annuler</button><button class="btn btn-danger" id="delUserOk">Supprimer</button></div></div></div>
+<div class="modal-bd" id="mdForgotPwd"><div class="modal sm"><div class="m-hdr"><div class="m-icon blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div class="m-title">Réinitialiser le mot de passe</div><button class="m-close" onclick="closeModal('mdForgotPwd')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="m-body"><p class="confirm-text">Entrez votre adresse e-mail. Vous recevrez un lien pour réinitialiser votre mot de passe.</p><div class="mf-row" style="margin-top:4px"><label>Adresse e-mail <span class="req">*</span></label><input class="mf-input" id="forgotEmail" type="email" placeholder="votre@email.com"></div><div id="forgotMsg" style="display:none;font-size:0.8rem;padding:8px 12px;border-radius:7px;margin-top:2px;"></div></div><div class="m-foot"><button class="btn btn-ghost" onclick="closeModal('mdForgotPwd')">Annuler</button><button class="btn btn-primary" onclick="sendResetEmail()">📧 Envoyer le lien</button></div></div></div>
 <div class="toast-container" id="toastContainer"></div>
 
 <script>
-/* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET – CORRIGÉ + GLISSER‑DÉPOSER CRÉATION
-   ════════════════════════════════════════════════════════ */
+// Configuration Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
   authDomain: "rapsosyn.firebaseapp.com",
@@ -1023,9 +448,10 @@ const firebaseConfig = {
   appId: "1:351086396148:web:d3070d8e5bee2efb4294a1"
 };
 firebase.initializeApp(firebaseConfig);
-var db = firebase.database();
-var auth = firebase.auth();
+const db = firebase.database();
+const auth = firebase.auth();
 
+// Variables globales
 let currentUser = null;
 let editingCanId = null;
 let editingUserId = null;
@@ -1035,8 +461,9 @@ let users = [];
 let canevas = [];
 let nextCanId = 1;
 let isOnline = true;
-let pendingImportData = null;   // données du fichier glissé lors de la création
+let pendingImportData = null;
 
+// Helper
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function gv(id) { return document.getElementById(id)?.value || ''; }
 function userByInit(init) { return users.find(u => u.initiales === init); }
@@ -1046,60 +473,49 @@ function togglePwd(id, btn) { const i = document.getElementById(id); i.type = i.
 function show(id) { document.getElementById(id).classList.remove('hidden'); }
 function hide(id) { document.getElementById(id).classList.add('hidden'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('slim');
-  const btn = document.getElementById('sbToggle').querySelector('span');
-  btn.textContent = document.getElementById('sidebar').classList.contains('slim') ? '' : 'Réduire';
-}
-function showPage(page, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
-  const pageId = 'page' + page.charAt(0).toUpperCase() + page.slice(1);
-  const pageEl = document.getElementById(pageId);
-  if (pageEl) pageEl.classList.remove('hidden');
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  else { const nb = document.querySelector(`[data-page="${page}"]`); if (nb) nb.classList.add('active'); }
-  if (page === 'canevas') renderCanevas();
-  if (page === 'archive') renderArchive();
-  if (page === 'users') renderUsers();
-}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('slim'); const btn = document.getElementById('sbToggle').querySelector('span'); btn.textContent = document.getElementById('sidebar').classList.contains('slim') ? '' : 'Réduire'; }
 function toast(msg, type = 'g', duration = 2800) {
-  const el = document.createElement('div');
-  el.className = 'toast ' + type;
-  const icon = type === 'g' ? '✓' : type === 'r' ? '✕' : 'ℹ';
-  el.innerHTML = `<span style="font-weight:700">${icon}</span> ${msg}`;
+  const el = document.createElement('div'); el.className = 'toast ' + type; const icon = type === 'g' ? '✓' : type === 'r' ? '✕' : 'ℹ'; el.innerHTML = `<span style="font-weight:700">${icon}</span> ${msg}`;
   document.getElementById('toastContainer').appendChild(el);
   setTimeout(() => { el.style.animation = 'tOut .25s forwards'; setTimeout(() => el.remove(), 250); }, duration);
 }
-
-/* STOCKAGE */
-function fromUserList(val) {
-  if (!val) return {};
-  if (Array.isArray(val)) { const map = {}; val.forEach(u => { if (u?.uid) map[u.uid] = u; }); return map; }
-  return val;
+function setOfflineIndicator(offline) {
+  let badge = document.getElementById('offlineIndicator');
+  if (offline) {
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.id = 'offlineIndicator';
+      badge.className = 'offline-badge';
+      badge.textContent = '📡 HORS LIGNE';
+      document.querySelector('.sb-user .u-info')?.appendChild(badge);
+    }
+  } else if (badge) badge.remove();
 }
+
+// Stockage
+function fromUserList(val) { if (!val) return {}; if (Array.isArray(val)) { const map = {}; val.forEach(u => { if (u?.uid) map[u.uid] = u; }); return map; } return val; }
 function toUsersArray(map) { return Object.values(map || {}); }
 async function loadFromCloud() {
   try {
     const snapshot = await db.ref('/').once('value');
     const record = snapshot.val() || {};
-    const toArray = (val) => {
-      if (!val) return [];
-      if (Array.isArray(val)) return val;
-      return Object.values(val);
-    };
+    const toArray = (val) => { if (!val) return []; if (Array.isArray(val)) return val; return Object.values(val); };
     canevas = toArray(record.canevas);
     const usersMap = fromUserList(record.users);
     users = toUsersArray(usersMap);
     users.forEach(u => { if (!Array.isArray(u.favs)) u.favs = []; });
     nextCanId = canevas.length ? Math.max(...canevas.map(c => c.id)) + 1 : 1;
     isOnline = true;
+    localStorage.setItem('rs_canevas', JSON.stringify(canevas));
+    localStorage.setItem('rs_users', JSON.stringify(users));
+    setOfflineIndicator(false);
     return true;
   } catch (err) {
-    console.warn('Mode hors ligne');
+    console.warn('Mode hors ligne – chargement localStorage');
     canevas = JSON.parse(localStorage.getItem('rs_canevas') || '[]');
     users   = JSON.parse(localStorage.getItem('rs_users') || '[]');
     isOnline = false;
+    setOfflineIndicator(true);
     return false;
   }
 }
@@ -1108,21 +524,20 @@ async function saveToCloud() {
   const usersObj = {};
   users.forEach(u => { if (u.uid) usersObj[u.uid] = u; });
   localStorage.setItem('rs_users', JSON.stringify(users));
+  if (!isOnline) return;
   try {
-    if (Object.keys(usersObj).length > 0) {
-      await db.ref('/').update({ canevas, users: usersObj });
-    } else {
-      await db.ref('/').update({ canevas });
-    }
-    isOnline = true;
+    if (Object.keys(usersObj).length > 0) await db.ref('/').update({ canevas, users: usersObj });
+    else await db.ref('/').update({ canevas });
   } catch (err) {
-    console.warn('Sauvegarde cloud échouée');
+    console.warn('Sauvegarde cloud échouée', err);
     isOnline = false;
+    setOfflineIndicator(true);
+    toast('Hors ligne – modifications enregistrées localement', 'b', 3000);
     throw err;
   }
 }
 
-/* AUTH */
+// Authentification
 function doLogin() {
   const email = gv('lEmail').trim();
   const pwd = gv('lPwd');
@@ -1134,30 +549,44 @@ function doLogin() {
       if (!uProfile) throw new Error('Profil utilisateur introuvable');
       currentUser = { ...uProfile, uid: auth.currentUser.uid };
       currentUser.favs = uProfile.favs || [];
+      localStorage.setItem('rs_user_session', JSON.stringify({
+        uid: currentUser.uid, prenom: currentUser.prenom, nom: currentUser.nom,
+        initiales: currentUser.initiales, role: currentUser.role, color: currentUser.color,
+        favs: currentUser.favs, email: currentUser.email, actif: currentUser.actif
+      }));
       return loadFromCloud();
     })
     .then(() => {
-      // Synchroniser currentUser avec l’élément du tableau `users`
       const me = users.find(u => u.uid === currentUser.uid);
       if (me) currentUser = me;
-      if (document.getElementById('sbAv')) {
-        document.getElementById('sbAv').textContent = currentUser.initiales;
-        document.getElementById('sbAv').style.background = currentUser.color;
-        document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
-        document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Administrateur' : '👤 Intervenant';
-        const isAdmin = currentUser.role === 'admin';
-        document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
-        document.getElementById('navUsers').style.display  = isAdmin ? '' : 'none';
-        document.getElementById('adminNav').style.display  = isAdmin ? '' : 'none';
-      }
+      document.getElementById('sbAv').textContent = currentUser.initiales;
+      document.getElementById('sbAv').style.background = currentUser.color;
+      document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
+      document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Administrateur' : '👤 Intervenant';
+      const isAdmin = currentUser.role === 'admin';
+      document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
+      document.getElementById('navUsers').style.display  = isAdmin ? '' : 'none';
+      document.getElementById('adminNav').style.display  = isAdmin ? '' : 'none';
       show('scApp'); hide('scLogin'); hide('scSynthese');
       showPage('canevas');
     })
-    .catch(err => { document.getElementById('loginErr').style.display = 'block'; console.error('Erreur login:', err); });
+    .catch(err => { document.getElementById('loginErr').style.display = 'block'; console.error(err); });
 }
-function logout() { auth.signOut(); currentUser = null; show('scLogin'); hide('scApp'); hide('scSynthese'); }
+function logout() { auth.signOut(); currentUser = null; localStorage.removeItem('rs_user_session'); show('scLogin'); hide('scApp'); hide('scSynthese'); }
 
-/* USERS */
+// Pages
+function showPage(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById('page' + page.charAt(0).toUpperCase() + page.slice(1)).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  else { const nb = document.querySelector(`[data-page="${page}"]`); if (nb) nb.classList.add('active'); }
+  if (page === 'canevas') renderCanevas();
+  if (page === 'archive') renderArchive();
+  if (page === 'users') renderUsers();
+}
+
+// Utilisateurs
 const COLORS = ['#22c55e','#1a56db','#7c3aed','#f97316','#0d9488','#ef4444','#f59e0b','#64748b'];
 function createFirebaseUser(email, password, prenom, nom, role, initiales) {
   return auth.createUserWithEmailAndPassword(email, password).then(cred => {
@@ -1238,32 +667,17 @@ function confirmDelUser(uid) {
   if (!u) return;
   if (u.uid === currentUser?.uid) { toast('Impossible de supprimer votre propre compte','r'); return; }
   document.getElementById('delUserText').textContent = `Supprimer le compte de ${u.prenom} ${u.nom} ? Cette action est irréversible.`;
-  document.getElementById('delUserOk').onclick = () => {
-    deleteFirebaseUser(uid).then(() => { toast('Compte supprimé','b'); closeModal('mdDelUser'); renderUsers(); });
-  };
+  document.getElementById('delUserOk').onclick = () => { deleteFirebaseUser(uid).then(() => { toast('Compte supprimé','b'); closeModal('mdDelUser'); renderUsers(); }); };
   document.getElementById('mdDelUser').classList.add('open');
 }
 function renderUsers() {
   document.getElementById('usersCount').textContent = users.length;
   const grid = document.getElementById('usersGrid');
   if (!users.length) { grid.innerHTML = '<div class="empty"><div class="empty-title">Aucun utilisateur</div></div>'; return; }
-  grid.innerHTML = users.map(u => `
-    <div class="user-card">
-      <div class="uc-av" style="background:${u.color}">${esc(u.initiales)}</div>
-      <div class="uc-info">
-        <div class="uc-name">${esc(u.prenom)} ${esc(u.nom)}</div>
-        <div class="uc-email">${esc(u.email)}</div>
-        <div class="uc-meta"><span class="badge ${u.role==='admin'?'b-cmd':'b-act'}">${u.role==='admin'?'⚡ Admin':'👤 Intervenant'}</span> <span style="font-family:var(--mono);font-size:.7rem;color:var(--g400)">${esc(u.initiales)}</span> ${u.actif===false?'<span class="badge b-arch">Désactivé</span>':''}</div>
-      </div>
-      <div class="uc-actions">
-        <button class="btn btn-ghost btn-sm" onclick="openModalUser('edit','${u.uid}')">✏️ Modifier</button>
-        <button class="btn btn-ghost btn-sm" onclick="toggleUserActif('${u.uid}')">${u.actif===false?'✅ Activer':'⛔ Désactiver'}</button>
-        ${u.uid !== currentUser?.uid ? `<button class="btn btn-danger btn-sm" onclick="confirmDelUser('${u.uid}')">🗑</button>` : ''}
-      </div>
-    </div>`).join('');
+  grid.innerHTML = users.map(u => `<div class="user-card"><div class="uc-av" style="background:${u.color}">${esc(u.initiales)}</div><div class="uc-info"><div class="uc-name">${esc(u.prenom)} ${esc(u.nom)}</div><div class="uc-email">${esc(u.email)}</div><div class="uc-meta"><span class="badge ${u.role==='admin'?'b-cmd':'b-act'}">${u.role==='admin'?'⚡ Admin':'👤 Intervenant'}</span> <span style="font-family:var(--mono);font-size:.7rem;color:var(--g400)">${esc(u.initiales)}</span> ${u.actif===false?'<span class="badge b-arch">Désactivé</span>':''}</div></div><div class="uc-actions"><button class="btn btn-ghost btn-sm" onclick="openModalUser(\'edit\',\'${u.uid}\')">✏️ Modifier</button><button class="btn btn-ghost btn-sm" onclick="toggleUserActif(\'${u.uid}\')">${u.actif===false?'✅ Activer':'⛔ Désactiver'}</button>${u.uid !== currentUser?.uid ? `<button class="btn btn-danger btn-sm" onclick="confirmDelUser('${u.uid}')">🗑</button>` : ''}</div></div>`).join('');
 }
 
-/* CANEVAS */
+// Canevas
 function canVisible() {
   if (!currentUser) return [];
   return canevas.filter(c => {
@@ -1274,9 +688,7 @@ function canVisible() {
       if (!piloteMatch && !intervenantMatch) return false;
     }
     if (favOnly && Array.isArray(currentUser.favs) && !currentUser.favs.includes(c.id)) return false;
-    const nom = gv('fNom').toLowerCase(), chrono = gv('fChrono').toLowerCase(),
-          client = gv('fClient').toLowerCase(), ville = gv('fVille').toLowerCase(),
-          statut = gv('fStatut'), pilote = gv('fPilote').toLowerCase();
+    const nom = gv('fNom').toLowerCase(), chrono = gv('fChrono').toLowerCase(), client = gv('fClient').toLowerCase(), ville = gv('fVille').toLowerCase(), statut = gv('fStatut'), pilote = gv('fPilote').toLowerCase();
     if (nom && !c.nom.toLowerCase().includes(nom)) return false;
     if (chrono && !c.chrono.toLowerCase().includes(chrono)) return false;
     if (client && !c.client.toLowerCase().includes(client)) return false;
@@ -1286,75 +698,38 @@ function canVisible() {
     return true;
   });
 }
-function sortCan(key) {
-  if (canSort.key === key) canSort.dir *= -1; else { canSort.key = key; canSort.dir = 1; }
-  renderCanevas();
-}
+function sortCan(key) { if (canSort.key === key) canSort.dir *= -1; else { canSort.key = key; canSort.dir = 1; } renderCanevas(); }
 function toggleFav() { favOnly = !favOnly; document.getElementById('favBtn').classList.toggle('on', favOnly); renderCanevas(); }
 function renderCanevas() {
   let rows = canVisible();
-  if (canSort.key) rows = [...rows].sort((a, b) => {
-    const av = String(a[canSort.key]||''), bv = String(b[canSort.key]||'');
-    return av < bv ? -canSort.dir : av > bv ? canSort.dir : 0;
-  });
+  if (canSort.key) rows = [...rows].sort((a,b) => { const av = String(a[canSort.key]||''), bv = String(b[canSort.key]||''); return av < bv ? -canSort.dir : av > bv ? canSort.dir : 0; });
   document.getElementById('canevasCount').textContent = rows.length;
   const tbody = document.getElementById('canevasBody');
-  if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><div class="empty-title">Aucun canevas</div><div class="empty-sub">Créez votre premier canevas ou ajustez les filtres</div></div></td></tr>`;
-    return;
-  }
-  tbody.innerHTML = rows.map(c => {
-    const stBadge = c.statut === 'Commandée' ? 'b-cmd' : c.statut === 'En attente' ? 'b-att' : 'b-act';
-    const canEdit = currentUser.role === 'admin' || c.pilote === currentUser.initiales;
-    return `<tr ondblclick="openSynthese(${c.id})">
-      <td><button class="star-btn ${Array.isArray(currentUser.favs) && currentUser.favs.includes(c.id) ? 'on' : ''}" onclick="toggleStar(${c.id},event)">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="${Array.isArray(currentUser.favs) && currentUser.favs.includes(c.id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-      </button></td>
-      <td><div class="td-name">${esc(c.nom)}</div></td>
-      <td><div class="td-chrono">${esc(c.chrono)}</div></td>
-      <td class="td-client">${esc(c.client)}</td>
-      <td>${esc(c.ville)}</td>
-      <td><span class="badge ${stBadge}">${esc(c.statut)}</span></td>
-      <td><span class="av" style="background:${avBg(c.pilote)}" title="${fullName(c.pilote)}">${esc(c.pilote)}</span></td>
-      <td>
-        <button class="btn btn-primary btn-xs" onclick="openSynthese(${c.id})">📂 Ouvrir</button>
-        ${canEdit ? `<button class="btn-icon blue" onclick="openModalCanevas('edit',${c.id},event)" title="Modifier"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>` : ''}
-        ${(currentUser.role === 'admin' || c.pilote === currentUser.initiales) ? `<button class="btn-icon danger" onclick="confirmArchive(${c.id},event)" title="Archiver"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>` : ''}
-        ${currentUser.role === 'admin' ? `<button class="btn-icon danger" onclick="confirmDeleteCan(${c.id},event)" title="Supprimer définitivement de Firebase" style="opacity:.7"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}
-      </td>
-    </tr>`;
-  }).join('');
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><div class="empty-title">Aucun canevas</div><div class="empty-sub">Créez votre premier canevas ou ajustez les filtres</div></div></td></tr>`; return; }
+  tbody.innerHTML = rows.map(c => { const stBadge = c.statut === 'Commandée' ? 'b-cmd' : c.statut === 'En attente' ? 'b-att' : 'b-act'; const canEdit = currentUser.role === 'admin' || c.pilote === currentUser.initiales; return `<tr ondblclick="openSynthese(${c.id})"><td><button class="star-btn ${Array.isArray(currentUser.favs) && currentUser.favs.includes(c.id) ? 'on' : ''}" onclick="toggleStar(${c.id},event)"><svg width="15" height="15" viewBox="0 0 24 24" fill="${Array.isArray(currentUser.favs) && currentUser.favs.includes(c.id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button></td><td><div class="td-name">${esc(c.nom)}</div></td><td><div class="td-chrono">${esc(c.chrono)}</div></td><td class="td-client">${esc(c.client)}</td><td>${esc(c.ville)}</td><td><span class="badge ${stBadge}">${esc(c.statut)}</span></td><td><span class="av" style="background:${avBg(c.pilote)}" title="${fullName(c.pilote)}">${esc(c.pilote)}</span></td><td><button class="btn btn-primary btn-xs" onclick="openSynthese(${c.id})">📂 Ouvrir</button>${canEdit ? `<button class="btn-icon blue" onclick="openModalCanevas('edit',${c.id},event)" title="Modifier"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>` : ''}${(currentUser.role === 'admin' || c.pilote === currentUser.initiales) ? `<button class="btn-icon danger" onclick="confirmArchive(${c.id},event)" title="Archiver"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>` : ''}${currentUser.role === 'admin' ? `<button class="btn-icon danger" onclick="confirmDeleteCan(${c.id},event)" title="Supprimer définitivement" style="opacity:.7"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}</td></tr>`; }).join('');
 }
 function toggleStar(id, e) {
   e.stopPropagation();
   if (!currentUser) return;
   if (!Array.isArray(currentUser.favs)) currentUser.favs = [];
   const idx = currentUser.favs.indexOf(id);
-  if (idx >= 0) currentUser.favs.splice(idx, 1);
-  else currentUser.favs.push(id);
+  if (idx >= 0) currentUser.favs.splice(idx, 1); else currentUser.favs.push(id);
   const userInList = users.find(u => u.uid === currentUser.uid);
   if (userInList) userInList.favs = currentUser.favs;
   saveToCloud();
   renderCanevas();
 }
 
-// ─── Glisser‑déposer création canevas ───
+// Drag & drop création
 function setupCanevasDrop() {
   const dropZone = document.getElementById('canevasDropZone');
   if (!dropZone) return;
   dropZone.addEventListener('click', () => document.getElementById('canevasFileInput').click());
   dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--blue)'; });
   dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = '');
-  dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.style.borderColor = '';
-    const file = e.dataTransfer.files[0];
-    if (file) processCanevasFile(file);
-  });
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor = ''; const file = e.dataTransfer.files[0]; if (file) processCanevasFile(file); });
 }
-function handleCanevasFileSelect(input) {
-  if (input.files[0]) processCanevasFile(input.files[0]);
-}
+function handleCanevasFileSelect(input) { if (input.files[0]) processCanevasFile(input.files[0]); }
 function processCanevasFile(file) {
   const reader = new FileReader();
   reader.onload = e => {
@@ -1373,33 +748,16 @@ function processCanevasFile(file) {
         const nv = String(row[1] || '').trim();
         const obs = String(row[7] || '');
         const suivi = (obs.includes("Rappel de l'observation précédente") || obs.includes("Rappel de l’observation précédente")) ? 'Oui' : '';
-        src.push({
-          num: nv,
-          ref: String(row[0] || '').trim(),
-          date: normalizeDate(row[2]),
-          inter: String(row[3] || '').trim(),
-          disp: String(row[4] || '').trim(),
-          avis: String(row[5] || '').trim(),
-          desc: String(row[6] || '').trim(),
-          obs: obs,
-          docs: cleanDocs(String(row[8] || '').trim()),
-          suivi: suivi,
-          repK: '',
-          repL: '',
-          lots: '',
-          rd6: nv.includes('/RD6')
-        });
+        src.push({ num: nv, ref: String(row[0] || '').trim(), date: normalizeDate(row[2]), inter: String(row[3] || '').trim(), disp: String(row[4] || '').trim(), avis: String(row[5] || '').trim(), desc: String(row[6] || '').trim(), obs: obs, docs: cleanDocs(String(row[8] || '').trim()), suivi: suivi, repK: '', repL: '', lots: '', rd6: nv.includes('/RD6') });
       }
       pendingImportData = { v2: src, v1: [] };
       toast('Fichier chargé, données prêtes pour le canevas.', 'b');
-    } catch (err) {
-      toast('Erreur lecture fichier : ' + err.message, 'r');
-    }
+    } catch (err) { toast('Erreur lecture fichier : ' + err.message, 'r'); }
   };
   reader.readAsArrayBuffer(file);
 }
 function normalizeDate(d) { if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
-function cleanDocs(v) { if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
+function cleanDocs(v) { if(!v)return''; let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
 
 function openModalCanevas(mode, id = null, e = null) {
   if (e) e.stopPropagation();
@@ -1442,11 +800,7 @@ function saveCanevas() {
     toast('Canevas modifié','g');
   } else {
     const newCan = { id: nextCanId++, nom, chrono, nomimp: '', ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes'), fav: false, archived: false, archivedDate: null, synthData: null };
-    if (pendingImportData) {
-      newCan.synthData = pendingImportData;
-      newCan.nomimp = nom;
-      pendingImportData = null;
-    }
+    if (pendingImportData) { newCan.synthData = pendingImportData; newCan.nomimp = nom; pendingImportData = null; }
     canevas.unshift(newCan);
     toast('Canevas créé ✓','g');
   }
@@ -1456,61 +810,20 @@ function confirmArchive(id, e) {
   if (e) e.stopPropagation();
   const c = canevas.find(x => x.id === id);
   document.getElementById('archiveText').textContent = `« ${c.nom.slice(0,70)} » sera déplacé dans les archives.`;
-  document.getElementById('archiveOk').onclick = () => {
-    c.archived = true; c.archivedDate = new Date().toISOString().slice(0,10);
-    saveToCloud(); closeModal('mdArchive'); renderCanevas(); renderArchive();
-    toast('Canevas archivé','b');
-  };
+  document.getElementById('archiveOk').onclick = () => { c.archived = true; c.archivedDate = new Date().toISOString().slice(0,10); saveToCloud(); closeModal('mdArchive'); renderCanevas(); renderArchive(); toast('Canevas archivé','b'); };
   document.getElementById('mdArchive').classList.add('open');
 }
-
-/* ARCHIVES */
 function renderArchive() {
-  const nom = gv('afNom').toLowerCase(), client = gv('afClient').toLowerCase(),
-        ville = gv('afVille').toLowerCase(), pilote = gv('afPilote').toLowerCase();
-  let rows = canevas.filter(c => {
-    if (!c.archived) return false;
-    if (currentUser.role !== 'admin') {
-      const piloteMatch = c.pilote === currentUser.initiales;
-      const intervenantMatch = Array.isArray(c.intervenants) && c.intervenants.includes(currentUser.initiales);
-      if (!piloteMatch && !intervenantMatch) return false;
-    }
-    if (nom && !c.nom.toLowerCase().includes(nom)) return false;
-    if (client && !c.client.toLowerCase().includes(client)) return false;
-    if (ville && !c.ville.toLowerCase().includes(ville)) return false;
-    if (pilote && !c.pilote.toLowerCase().includes(pilote)) return false;
-    return true;
-  });
+  const nom = gv('afNom').toLowerCase(), client = gv('afClient').toLowerCase(), ville = gv('afVille').toLowerCase(), pilote = gv('afPilote').toLowerCase();
+  let rows = canevas.filter(c => { if (!c.archived) return false; if (currentUser.role !== 'admin') { const piloteMatch = c.pilote === currentUser.initiales; const intervenantMatch = Array.isArray(c.intervenants) && c.intervenants.includes(currentUser.initiales); if (!piloteMatch && !intervenantMatch) return false; } if (nom && !c.nom.toLowerCase().includes(nom)) return false; if (client && !c.client.toLowerCase().includes(client)) return false; if (ville && !c.ville.toLowerCase().includes(ville)) return false; if (pilote && !c.pilote.toLowerCase().includes(pilote)) return false; return true; });
   document.getElementById('archiveCount').textContent = rows.length;
   const tbody = document.getElementById('archiveBody');
-  if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg><div class="empty-title">Aucune archive</div><div class="empty-sub">Les canevas archivés apparaissent ici</div></div></td></tr>`;
-    return;
-  }
-  tbody.innerHTML = rows.map(c => `
-    <tr style="opacity:.75" ondblclick="openSynthese(${c.id})">
-      <td><span class="badge b-arch">Archivé</span></td>
-      <td><div class="td-name" style="color:var(--g600)">${esc(c.nom)}</div></td>
-      <td><div class="td-chrono">${esc(c.chrono)}</div></td>
-      <td class="td-client">${esc(c.client)}</td>
-      <td>${esc(c.ville)}</td>
-      <td><span style="font-family:var(--mono);font-size:.74rem">${c.archivedDate||'—'}</span></td>
-      <td><span class="av" style="background:${avBg(c.pilote)}" title="${fullName(c.pilote)}">${esc(c.pilote)}</span></td>
-      <td>
-        <button class="btn btn-ghost btn-xs" onclick="openSynthese(${c.id})">📂 Consulter</button>
-        ${(currentUser.role==='admin' || c.pilote===currentUser.initiales)?`<button class="btn btn-success btn-xs" onclick="confirmDesarchive(${c.id},event)">↩ Restaurer</button>`:''}
-        ${currentUser.role==='admin'?`<button class="btn btn-danger btn-xs" onclick="confirmDeleteCan(${c.id},event)" title="Supprimer définitivement de Firebase">🗑 Supprimer</button>`:''}
-      </td>
-    </tr>`).join('');
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg><div class="empty-title">Aucune archive</div><div class="empty-sub">Les canevas archivés apparaissent ici</div></div></td></tr>`; return; }
+  tbody.innerHTML = rows.map(c => `<tr style="opacity:.75" ondblclick="openSynthese(${c.id})"><td><span class="badge b-arch">Archivé</span></td><td><div class="td-name" style="color:var(--g600)">${esc(c.nom)}</div></td><td><div class="td-chrono">${esc(c.chrono)}</div></td><td class="td-client">${esc(c.client)}</td><td>${esc(c.ville)}</td><td><span style="font-family:var(--mono);font-size:.74rem">${c.archivedDate||'—'}</span></td><td><span class="av" style="background:${avBg(c.pilote)}" title="${fullName(c.pilote)}">${esc(c.pilote)}</span></td><td><button class="btn btn-ghost btn-xs" onclick="openSynthese(${c.id})">📂 Consulter</button>${(currentUser.role==='admin' || c.pilote===currentUser.initiales)?`<button class="btn btn-success btn-xs" onclick="confirmDesarchive(${c.id},event)">↩ Restaurer</button>`:''}${currentUser.role==='admin'?`<button class="btn btn-danger btn-xs" onclick="confirmDeleteCan(${c.id},event)" title="Supprimer définitivement">🗑 Supprimer</button>`:''}</td></tr>`).join('');
 }
 function confirmDesarchive(id, e) {
   if (e) e.stopPropagation();
-  document.getElementById('desarchiveOk').onclick = () => {
-    const c = canevas.find(x => x.id === id);
-    c.archived = false; c.archivedDate = null;
-    saveToCloud(); closeModal('mdDesarchive'); renderArchive(); renderCanevas();
-    toast('Canevas restauré','g');
-  };
+  document.getElementById('desarchiveOk').onclick = () => { const c = canevas.find(x => x.id === id); c.archived = false; c.archivedDate = null; saveToCloud(); closeModal('mdDesarchive'); renderArchive(); renderCanevas(); toast('Canevas restauré','g'); };
   document.getElementById('mdDesarchive').classList.add('open');
 }
 function confirmDeleteCan(id, e) {
@@ -1519,399 +832,65 @@ function confirmDeleteCan(id, e) {
   const c = canevas.find(x => x.id === id);
   if (!c) return;
   const nomCanevas = c.nom || '';
-  const isArchived = !!c.archived;
-
-  // Remplir le modal
-  document.getElementById('deleteCanText').innerHTML =
-    `Le canevas <strong>« ${esc(nomCanevas.slice(0,70))} »</strong> sera supprimé <strong style="color:#b91c1c">définitivement</strong>.<br>
-     <span style="font-size:0.76rem;color:var(--g500);margin-top:4px;display:block">
-       ${esc(c.chrono||'—')} · ${esc(c.client||'—')} · ${esc(c.ville||'—')}
-       ${isArchived ? ' · <em>Archivé</em>' : ''}
-     </span>`;
-
+  document.getElementById('deleteCanText').innerHTML = `Le canevas <strong>« ${esc(nomCanevas.slice(0,70))} »</strong> sera supprimé <strong style="color:#b91c1c">définitivement</strong>.<br><span style="font-size:0.76rem;color:var(--g500);margin-top:4px;display:block">${esc(c.chrono||'—')} · ${esc(c.client||'—')} · ${esc(c.ville||'—')} ${c.archived ? ' · <em>Archivé</em>' : ''}</span>`;
   const input = document.getElementById('deleteCanConfirmInput');
-  const errEl  = document.getElementById('deleteCanError');
-  const okBtn  = document.getElementById('deleteCanOk');
-
-  // Réinitialiser
-  input.value = '';
-  input.placeholder = `Tapez : ${nomCanevas}`;
-  errEl.style.display = 'none';
-  errEl.textContent = 'Le nom ne correspond pas.';
-  okBtn.disabled = true;
-
-  // Validation en temps réel
-  input.oninput = () => {
-    const match = input.value.trim() === nomCanevas.trim();
-    okBtn.disabled = !match;
-    errEl.style.display = (!match && input.value.length > 0) ? '' : 'none';
-  };
-
-  okBtn.onclick = async () => {
-    if (input.value.trim() !== nomCanevas.trim()) return;
-    closeModal('mdDeleteCan');
-    try {
-      // 1. Supprimer du tableau local
-      const idx = canevas.findIndex(x => x.id === id);
-      if (idx >= 0) canevas.splice(idx, 1);
-      // 2. Fermer la synthèse si c'était le canevas ouvert
-      if (currentCanId === id) {
-        currentCanId = null;
-        show('scApp'); hide('scSynthese');
-      }
-      // 3. Sauvegarder dans Firebase (écrase la liste sans ce canevas)
-      await saveToCloud();
-      // 4. Rafraîchir les deux vues
-      renderCanevas();
-      renderArchive();
-      toast(`🗑 Canevas « ${nomCanevas.slice(0,40)} » supprimé définitivement`, 'r', 5000);
-    } catch(err) {
-      // En cas d'erreur cloud : remettre le canevas localement
-      toast('Erreur Firebase — suppression annulée', 'r');
-      console.error('Delete canevas error:', err);
-    }
-  };
-
+  const errEl = document.getElementById('deleteCanError');
+  const okBtn = document.getElementById('deleteCanOk');
+  input.value = ''; input.placeholder = `Tapez : ${nomCanevas}`; errEl.style.display = 'none'; okBtn.disabled = true;
+  input.oninput = () => { const match = input.value.trim() === nomCanevas.trim(); okBtn.disabled = !match; errEl.style.display = (!match && input.value.length > 0) ? '' : 'none'; };
+  okBtn.onclick = async () => { if (input.value.trim() !== nomCanevas.trim()) return; closeModal('mdDeleteCan'); const idx = canevas.findIndex(x => x.id === id); if (idx >= 0) canevas.splice(idx, 1); if (currentCanId === id) { currentCanId = null; show('scApp'); hide('scSynthese'); } await saveToCloud(); renderCanevas(); renderArchive(); toast(`🗑 Canevas « ${nomCanevas.slice(0,40)} » supprimé définitivement`, 'r', 5000); };
   document.getElementById('mdDeleteCan').classList.add('open');
-  // Focus auto sur le champ
   setTimeout(() => input.focus(), 100);
 }
-
 function exportArchive() {
   const rows = canevas.filter(c => c.archived);
   const lines = ['Nom;Référence;Client;Ville;Pilote;Archivé le', ...rows.map(c => [c.nom,c.chrono,c.client,c.ville,c.pilote,c.archivedDate||''].join(';'))];
   const blob = new Blob(['\uFEFF' + lines.join('\n')], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'archives_rapsosyn.csv'; a.click();
-  toast('Export CSV téléchargé','g');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'archives_rapsosyn.csv'; a.click(); toast('Export CSV téléchargé','g');
 }
+   <script>
+// ==================== SUITE DU SCRIPT (PARTIE 2) ====================
 
-/* SYNTHESE VIEWER */
+// Synthèse viewer
 let currentCanId = null;
-async function openSynthese(id) {
-  const c = canevas.find(x => x.id === id);
-  if (!c) return;
-  currentCanId = id;
-  document.getElementById('synTitle').textContent = c.nom;
-  document.getElementById('synRoleChip').textContent = c.archived ? '🔒 Archivé – lecture seule' : '✏️ Édition';
-  let templateHTML;
-  try {
-    const response = await fetch('canevas_temp.html?ts=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
-    templateHTML = await response.text();
-  } catch(err) { toast('Impossible de charger le template canevas_temp.html','r'); return; }
-  const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
-  const affaireValue = c.nomimp || c.nom || '';
-  const metaScript = `<script>
-    window.RAPSO_AFFAIRE    = ${JSON.stringify(affaireValue)};
-    window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
-    window.CANEVAS_ID       = ${JSON.stringify(c.id)};
-    window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
-    window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
-    window.RAPSO_USER       = ${JSON.stringify(currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : { prenom: '?', nom: '', initiales: '?', role: '' })};
-  <\/script>`;
-  templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
-  templateHTML = templateHTML.replace('<!-- RAPSO_DATA -->', '<!-- data injected via RAPSO_SYNTH_DATA -->');
-  const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
-  const blobUrl = URL.createObjectURL(blob);
-  const frame = document.getElementById('synFrame');
-  if (frame.src && frame.src.startsWith('blob:')) { URL.revokeObjectURL(frame.src); }
-  frame.src = blobUrl;
-  setSynStatus('idle', 'En attente');
-  updateSynCounters(synthData);
-  hideNotif(); dismissPending();
-  _lastLocalHash = hashData(synthData);
-  hide('scApp'); show('scSynthese');
-  setTimeout(() => startLiveListener(id), 1200);
-}
-
-function showSynInfoPopup() {
-  // Afficher un petit popup avec infos du projet + compteurs
-  const c = canevas.find(x => x.id === currentCanId);
-  if (!c) return;
-  const oui = document.getElementById('sc_oui')?.textContent || '0';
-  const par = document.getElementById('sc_par')?.textContent || '0';
-  const non = document.getElementById('sc_non')?.textContent || '0';
-  const tot = document.getElementById('sc_tot')?.textContent || '0';
-  const msg = `${c.nomimp || c.nom || '—'}
-${c.client || ''} · ${c.ville || ''}
-Dossier : ${c.chrono || '—'}
-
-${oui}  ${par}  ${non}  ${tot}`;
-  alert(msg);
-}
-
-function closeSynthese() {
-  stopLiveListener();
-  const frame = document.getElementById('synFrame');
-  try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
-  setTimeout(() => {
-    if (frame.src && frame.src.startsWith('blob:')) { URL.revokeObjectURL(frame.src); }
-    frame.src = '';
-    hide('scSynthese'); show('scApp');
-    renderCanevas();
-  }, 150);
-}
-function saveFromSynthese() {
-  const frame = document.getElementById('synFrame');
-  try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
-  toast('Demande de sauvegarde envoyée','b');
-}
-
-/* SYNC LIVE */
 let _notifTimer = null, _pendingData = null, _liveListener = null, _isSelfWrite = false, _lastLocalHash = '';
-function hashData(d) {
-  if (!d) return '';
-  const rowSig = r => [r.id||'', r.suivi||'', r.rd6?'1':'0', r.repK||'', r.repL||'', r.lots||'', r.num||''].join('|');
-  return JSON.stringify({
-    v2: (d.v2||[]).length, v1: (d.v1||[]).length,
-    sV2: (d.v2||[]).map(rowSig).join('§'),
-    sV1: (d.v1||[]).map(rowSig).join('§'),
-    hl: (d.historique||[]).length
-  });
-}
-function showNotif(txt, type = 'ok', duration = 3500) {
-  const el = document.getElementById('synNotif');
-  const ico = document.getElementById('synNotifIcon');
-  const msg = document.getElementById('synNotifTxt');
-  if (!el) return;
-  ico.textContent = type === 'ok' ? '✅' : type === 'warn' ? '⚠️' : '❌';
-  msg.textContent = txt;
-  el.className = 'syn-notif show n' + type;
-  clearTimeout(_notifTimer);
-  if (duration > 0) _notifTimer = setTimeout(hideNotif, duration);
-}
+function hashData(d) { if (!d) return ''; const rowSig = r => [r.id||'', r.suivi||'', r.rd6?'1':'0', r.repK||'', r.repL||'', r.lots||'', r.num||''].join('|'); return JSON.stringify({ v2: (d.v2||[]).length, v1: (d.v1||[]).length, sV2: (d.v2||[]).map(rowSig).join('§'), sV1: (d.v1||[]).map(rowSig).join('§'), hl: (d.historique||[]).length }); }
+function showNotif(txt, type = 'ok', duration = 3500) { const el = document.getElementById('synNotif'); const ico = document.getElementById('synNotifIcon'); const msg = document.getElementById('synNotifTxt'); if (!el) return; ico.textContent = type === 'ok' ? '✅' : type === 'warn' ? '⚠️' : '❌'; msg.textContent = txt; el.className = 'syn-notif show n' + type; clearTimeout(_notifTimer); if (duration > 0) _notifTimer = setTimeout(hideNotif, duration); }
 function hideNotif() { const el = document.getElementById('synNotif'); if (el) el.classList.remove('show'); }
-function setSynStatus(state, txt) {
-  const el = document.getElementById('synStatus');
-  const txtEl = document.getElementById('synStatusTxt');
-  if (!el) return;
-  txtEl.textContent = txt;
-  el.className = 'syn-status ' + state;
-}
-function setLiveDot(connected) {
-  const el = document.getElementById('synLiveDot');
-  const tx = document.getElementById('synLiveTxt');
-  if (!el) return;
-  el.className = 'syn-live-dot ' + (connected ? 'connected' : 'disconnected');
-  tx.textContent = connected ? 'Connecté' : 'Hors ligne';
-}
-function updateSynCounters(data) {
-  if (!data) return;
-  const all = [...(data.v2||[]), ...(data.v1||[])];
-  const lev = all.filter(r => r.suivi === 'Oui').length;
-  const par = all.filter(r => r.suivi === 'Par').length;
-  const non = all.filter(r => r.suivi === 'Non').length;
-  document.getElementById('sc_oui').textContent = '✅ ' + lev;
-  document.getElementById('sc_par').textContent = '⚠️ ' + par;
-  document.getElementById('sc_non').textContent = '❌ ' + non;
-  document.getElementById('sc_tot').textContent = '/ ' + all.length;
-}
-function showPendingBar(freshCan) {
-  _pendingData = freshCan;
-  const badge = document.getElementById('refreshBadge');
-  if (badge) badge.classList.add('show');
-  const freshData = freshCan.synthData || { v2: [], v1: [] };
-  const all = [...(freshData.v2||[]), ...(freshData.v1||[])];
-  const lev = all.filter(r => r.suivi === 'Oui').length, non = all.filter(r => r.suivi === 'Non').length;
-  const pilote = users.find(u => u.initiales === freshCan.pilote);
-  const modUser = pilote ? pilote.prenom + ' ' + pilote.nom : freshCan.pilote || '?';
-  document.getElementById('pbTitle').textContent = '🔔 Modifications disponibles sur ce canevas';
-  document.getElementById('pbDetail').textContent = `${all.length} avis au total · ${lev} levé(s) · ${non} maintenu(s)`;
-  document.getElementById('pbUser').textContent = '✏️ ' + modUser;
-  document.getElementById('synPendingBar').classList.add('show');
-  setSynStatus('saving', 'Mise à jour dispo.');
-}
-function dismissPending() {
-  _pendingData = null;
-  document.getElementById('synPendingBar').classList.remove('show');
-  document.getElementById('refreshBadge')?.classList.remove('show');
-  setSynStatus('idle', 'En attente');
-}
-async function applyPendingUpdate() {
-  const btn = document.getElementById('synRefreshBtn');
-  if (!btn) return;
-  btn.classList.add('spinning');
-  dismissPending();
-  setSynStatus('saving', 'Application…');
-  let freshCan = _pendingData;
-  if (!freshCan && currentCanId) {
-    try {
-      const snap = await db.ref('/canevas').once('value');
-      const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
-      const arr = toArray(snap.val());
-      freshCan = arr.find(x => String(x.id) === String(currentCanId));
-    } catch(e) { setSynStatus('error', 'Erreur réseau'); showNotif('Impossible de récupérer les données.','err',5000); btn.classList.remove('spinning'); return; }
-  }
-  if (freshCan) {
-    const newData = freshCan.synthData || { v2: [], v1: [] };
-    const idx = canevas.findIndex(x => String(x.id) === String(currentCanId));
-    if (idx >= 0) canevas[idx] = freshCan;
-    _lastLocalHash = hashData(newData);
-    try {
-      document.getElementById('synFrame').contentWindow.postMessage(
-        { type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '', user: currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : null },
-        '*'
-      );
-      updateSynCounters(newData);
-      setSynStatus('saved', 'À jour'); showNotif('Modifications appliquées ✓','ok',3000);
-    } catch(e) { await openSynthese(currentCanId); setSynStatus('saved', 'Rechargé'); showNotif('Canevas rechargé ✓','ok',3000); }
-    setTimeout(() => setSynStatus('idle', 'En attente'), 4500);
-  } else { setSynStatus('error', 'Introuvable'); showNotif('Canevas introuvable sur Firebase.','err',5000); }
-  btn.classList.remove('spinning');
-  _pendingData = null;
-}
-function startLiveListener(canId) {
-  stopLiveListener();
-  setLiveDot(true);
-  let firstCall = true;
-  _liveListener = db.ref('/canevas').on('value', snapshot => {
-    setLiveDot(true);
-    if (firstCall) { firstCall = false; return; }
-    if (_isSelfWrite) { _isSelfWrite = false; return; }
-    const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
-    const freshCanevas = toArray(snapshot.val());
-    const fresh = freshCanevas.find(x => String(x.id) === String(canId));
-    if (!fresh) return;
-    const freshData = fresh.synthData || { v2: [], v1: [] };
-    const freshHash = hashData(freshData);
-    const localCan = canevas.find(x => String(x.id) === String(canId));
-    const localHash = hashData(localCan?.synthData);
-    if (freshHash !== localHash && freshHash !== _lastLocalHash) {
-      showPendingBar(fresh);
-    }
-  }, error => {
-    console.warn('Listener error:', error);
-    setLiveDot(false);
-    setSynStatus('error','Connexion perdue');
-    showNotif('Connexion Firebase perdue','err',0);
-  });
-}
-function stopLiveListener() {
-  if (_liveListener) { db.ref('/canevas').off('value', _liveListener); _liveListener = null; }
-  setLiveDot(false);
-  _pendingData = null;
-  document.getElementById('synPendingBar')?.classList.remove('show');
-  document.getElementById('refreshBadge')?.classList.remove('show');
-}
+function setSynStatus(state, txt) { const el = document.getElementById('synStatus'); const txtEl = document.getElementById('synStatusTxt'); if (!el) return; txtEl.textContent = txt; el.className = 'syn-status ' + state; }
+function setLiveDot(connected) { const el = document.getElementById('synLiveDot'); const tx = document.getElementById('synLiveTxt'); if (!el) return; el.className = 'syn-live-dot ' + (connected ? 'connected' : 'disconnected'); tx.textContent = connected ? 'Connecté' : 'Hors ligne'; }
+function updateSynCounters(data) { if (!data) return; const all = [...(data.v2||[]), ...(data.v1||[])]; const lev = all.filter(r => r.suivi === 'Oui').length; const par = all.filter(r => r.suivi === 'Par').length; const non = all.filter(r => r.suivi === 'Non').length; document.getElementById('sc_oui').textContent = '✅ ' + lev; document.getElementById('sc_par').textContent = '⚠️ ' + par; document.getElementById('sc_non').textContent = '❌ ' + non; document.getElementById('sc_tot').textContent = '/ ' + all.length; }
+function showPendingBar(freshCan) { _pendingData = freshCan; const badge = document.getElementById('refreshBadge'); if (badge) badge.classList.add('show'); const freshData = freshCan.synthData || { v2: [], v1: [] }; const all = [...(freshData.v2||[]), ...(freshData.v1||[])]; const lev = all.filter(r => r.suivi === 'Oui').length, non = all.filter(r => r.suivi === 'Non').length; const pilote = users.find(u => u.initiales === freshCan.pilote); const modUser = pilote ? pilote.prenom + ' ' + pilote.nom : freshCan.pilote || '?'; document.getElementById('pbTitle').textContent = '🔔 Modifications disponibles sur ce canevas'; document.getElementById('pbDetail').textContent = `${all.length} avis au total · ${lev} levé(s) · ${non} maintenu(s)`; document.getElementById('pbUser').textContent = '✏️ ' + modUser; document.getElementById('synPendingBar').classList.add('show'); setSynStatus('saving', 'Mise à jour dispo.'); }
+function dismissPending() { _pendingData = null; document.getElementById('synPendingBar').classList.remove('show'); document.getElementById('refreshBadge')?.classList.remove('show'); setSynStatus('idle', 'En attente'); }
+async function applyPendingUpdate() { const btn = document.getElementById('synRefreshBtn'); if (!btn) return; btn.classList.add('spinning'); dismissPending(); setSynStatus('saving', 'Application…'); let freshCan = _pendingData; if (!freshCan && currentCanId) { try { const snap = await db.ref('/canevas').once('value'); const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v); const arr = toArray(snap.val()); freshCan = arr.find(x => String(x.id) === String(currentCanId)); } catch(e) { setSynStatus('error', 'Erreur réseau'); showNotif('Impossible de récupérer les données.','err',5000); btn.classList.remove('spinning'); return; } } if (freshCan) { const newData = freshCan.synthData || { v2: [], v1: [] }; const idx = canevas.findIndex(x => String(x.id) === String(currentCanId)); if (idx >= 0) canevas[idx] = freshCan; _lastLocalHash = hashData(newData); try { document.getElementById('synFrame').contentWindow.postMessage({ type: 'rapso_inject', data: newData, dossier: freshCan.chrono, affaire: freshCan.nomimp || freshCan.nom || '', user: currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : null }, '*'); updateSynCounters(newData); setSynStatus('saved', 'À jour'); showNotif('Modifications appliquées ✓','ok',3000); } catch(e) { await openSynthese(currentCanId); setSynStatus('saved', 'Rechargé'); showNotif('Canevas rechargé ✓','ok',3000); } setTimeout(() => setSynStatus('idle', 'En attente'), 4500); } else { setSynStatus('error', 'Introuvable'); showNotif('Canevas introuvable sur Firebase.','err',5000); } btn.classList.remove('spinning'); _pendingData = null; }
+function startLiveListener(canId) { stopLiveListener(); setLiveDot(true); let firstCall = true; _liveListener = db.ref('/canevas').on('value', snapshot => { setLiveDot(true); if (firstCall) { firstCall = false; return; } if (_isSelfWrite) { _isSelfWrite = false; return; } const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v); const freshCanevas = toArray(snapshot.val()); const fresh = freshCanevas.find(x => String(x.id) === String(canId)); if (!fresh) return; const freshData = fresh.synthData || { v2: [], v1: [] }; const freshHash = hashData(freshData); const localCan = canevas.find(x => String(x.id) === String(canId)); const localHash = hashData(localCan?.synthData); if (freshHash !== localHash && freshHash !== _lastLocalHash) { showPendingBar(fresh); } }, error => { console.warn('Listener error:', error); setLiveDot(false); setSynStatus('error','Connexion perdue'); showNotif('Connexion Firebase perdue','err',0); }); }
+function stopLiveListener() { if (_liveListener) { db.ref('/canevas').off('value', _liveListener); _liveListener = null; } setLiveDot(false); _pendingData = null; document.getElementById('synPendingBar')?.classList.remove('show'); document.getElementById('refreshBadge')?.classList.remove('show'); }
+function openSynthese(id) { const c = canevas.find(x => x.id === id); if (!c) return; currentCanId = id; document.getElementById('synTitle').textContent = c.nom; document.getElementById('synRoleChip').textContent = c.archived ? '🔒 Archivé – lecture seule' : '✏️ Édition'; fetch('canevas_temp.html?ts=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } }).then(response => response.text()).catch(() => { toast('Impossible de charger le template canevas_temp.html','r'); return; }).then(templateHTML => { const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] }; const affaireValue = c.nomimp || c.nom || ''; const metaScript = `<script>window.RAPSO_AFFAIRE = ${JSON.stringify(affaireValue)}; window.RAPSO_DOSSIER = ${JSON.stringify(c.chrono)}; window.CANEVAS_ID = ${JSON.stringify(c.id)}; window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)}; window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))}; window.RAPSO_USER = ${JSON.stringify(currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : { prenom: '?', nom: '', initiales: '?', role: '' })};<\/script>`; templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript); const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' }); const blobUrl = URL.createObjectURL(blob); const frame = document.getElementById('synFrame'); if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src); frame.src = blobUrl; setSynStatus('idle', 'En attente'); updateSynCounters(synthData); hideNotif(); dismissPending(); _lastLocalHash = hashData(synthData); hide('scApp'); show('scSynthese'); setTimeout(() => startLiveListener(id), 1200); }); }
+function closeSynthese() { stopLiveListener(); const frame = document.getElementById('synFrame'); try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {} setTimeout(() => { if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src); frame.src = ''; hide('scSynthese'); show('scApp'); renderCanevas(); }, 150); }
+function saveFromSynthese() { const frame = document.getElementById('synFrame'); try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {} toast('Demande de sauvegarde envoyée','b'); }
+function showSynInfoPopup() { const c = canevas.find(x => x.id === currentCanId); if (!c) return; const oui = document.getElementById('sc_oui')?.textContent || '0'; const par = document.getElementById('sc_par')?.textContent || '0'; const non = document.getElementById('sc_non')?.textContent || '0'; const tot = document.getElementById('sc_tot')?.textContent || '0'; alert(`${c.nomimp || c.nom || '—'}\n${c.client || ''} · ${c.ville || ''}\nDossier : ${c.chrono || '—'}\n\n${oui}  ${par}  ${non}  ${tot}`); }
 
-/* MESSAGE HANDLER */
+// Message handler
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
-
-  // Mobile : élever l'iframe quand le panel s'ouvre
-  if (e.data.type === 'rapso_panel_open') {
-    const frame = document.getElementById('synFrame');
-    const topbarH = document.querySelector('.syn-topbar')?.offsetHeight || 46;
-    if (frame) {
-      frame.style.position = 'fixed';
-      frame.style.top = topbarH + 'px';
-      frame.style.left = '0';
-      frame.style.right = '0';
-      frame.style.bottom = '0';
-      frame.style.width = '100vw';
-      frame.style.height = `calc(100dvh - ${topbarH}px)`;
-      frame.style.zIndex = '9000';
-      frame.style.border = 'none';
-    }
-    document.body.style.overflow = 'hidden';
-    return;
-  }
-  if (e.data.type === 'rapso_panel_close') {
-    const frame = document.getElementById('synFrame');
-    if (frame) {
-      frame.style.position = '';
-      frame.style.inset = '';
-      frame.style.width = '';
-      frame.style.height = '';
-      frame.style.zIndex = '';
-    }
-    document.body.style.overflow = '';
-    return;
-  }
-
-  if (e.data.type === 'rapso_save') {
-    const canId = e.data.canId;
-    const incomingData = e.data.data;
-    if (canId === undefined || canId === null || !incomingData) return;
-    const c = canevas.find(x => String(x.id) === String(canId));
-    if (c) {
-      const newHash = hashData(incomingData);
-      if (newHash !== _lastLocalHash) {
-        c.synthData = incomingData;
-        if(Array.isArray(incomingData.historique)) c.historique = incomingData.historique;
-        _lastLocalHash = newHash;
-        setSynStatus('saving', 'Sauvegarde…');
-        updateSynCounters(incomingData);
-        _isSelfWrite = true;
-        saveToCloud().then(() => { setSynStatus('saved', 'Sauvegardé'); setTimeout(() => setSynStatus('idle', 'En attente'), 4000); }).catch(() => { _isSelfWrite = false; setSynStatus('error', 'Échec sauvegarde'); showNotif('Sauvegarde Firebase échouée','err',5000); });
-        renderCanevas();
-      }
-    }
-  }
-  if (e.data.type === 'rapso_update_affaire') {
-    const canId = e.data.canId;
-    const affaire = e.data.affaire;
-    if (canId !== undefined && affaire) {
-      const c = canevas.find(x => String(x.id) === String(canId));
-      if (c) {
-        c.nomimp = affaire;
-        saveToCloud();
-        toast('Affaire mise à jour', 'g');
-      }
-    }
-  }
-  if (e.data.type === 'rapso_inject_ack') {
-    updateSynCounters(e.data.data);
-  }
+  if (e.data.type === 'rapso_panel_open') { const frame = document.getElementById('synFrame'); const topbarH = document.querySelector('.syn-topbar')?.offsetHeight || 46; if (frame) { frame.style.position = 'fixed'; frame.style.top = topbarH + 'px'; frame.style.left = '0'; frame.style.right = '0'; frame.style.bottom = '0'; frame.style.width = '100vw'; frame.style.height = `calc(100dvh - ${topbarH}px)`; frame.style.zIndex = '9000'; frame.style.border = 'none'; } document.body.style.overflow = 'hidden'; return; }
+  if (e.data.type === 'rapso_panel_close') { const frame = document.getElementById('synFrame'); if (frame) { frame.style.position = ''; frame.style.inset = ''; frame.style.width = ''; frame.style.height = ''; frame.style.zIndex = ''; } document.body.style.overflow = ''; return; }
+  if (e.data.type === 'rapso_save') { const canId = e.data.canId; const incomingData = e.data.data; if (canId === undefined || !incomingData) return; const c = canevas.find(x => String(x.id) === String(canId)); if (c) { const newHash = hashData(incomingData); if (newHash !== _lastLocalHash) { c.synthData = incomingData; if(Array.isArray(incomingData.historique)) c.historique = incomingData.historique; _lastLocalHash = newHash; setSynStatus('saving', 'Sauvegarde…'); updateSynCounters(incomingData); _isSelfWrite = true; saveToCloud().then(() => { setSynStatus('saved', 'Sauvegardé'); setTimeout(() => setSynStatus('idle', 'En attente'), 4000); }).catch(() => { _isSelfWrite = false; setSynStatus('error', 'Échec sauvegarde'); showNotif('Sauvegarde Firebase échouée','err',5000); }); renderCanevas(); } } }
+  if (e.data.type === 'rapso_update_affaire') { const canId = e.data.canId; const affaire = e.data.affaire; if (canId !== undefined && affaire) { const c = canevas.find(x => String(x.id) === String(canId)); if (c) { c.nomimp = affaire; saveToCloud(); toast('Affaire mise à jour', 'g'); } } }
+  if (e.data.type === 'rapso_inject_ack') { updateSynCounters(e.data.data); }
 });
 
-/* MOT DE PASSE OUBLIÉ */
-function openForgotPwd() {
-  const emailField = document.getElementById('forgotEmail');
-  const msg = document.getElementById('forgotMsg');
-  // Pré-remplir avec l'email saisi sur la page de connexion
-  emailField.value = document.getElementById('lEmail')?.value || '';
-  msg.style.display = 'none';
-  document.getElementById('mdForgotPwd').classList.add('open');
-  setTimeout(() => emailField.focus(), 120);
-}
-function sendResetEmail() {
-  const email = document.getElementById('forgotEmail').value.trim();
-  const msg = document.getElementById('forgotMsg');
+// Mot de passe oublié
+function openForgotPwd() { document.getElementById('forgotEmail').value = document.getElementById('lEmail')?.value || ''; document.getElementById('forgotMsg').style.display = 'none'; document.getElementById('mdForgotPwd').classList.add('open'); setTimeout(() => document.getElementById('forgotEmail').focus(), 120); }
+function sendResetEmail() { const email = document.getElementById('forgotEmail').value.trim(); const msg = document.getElementById('forgotMsg'); const showMsg = (ok, txt) => { msg.style.cssText = ok ? 'display:block;background:#dcfce7;border:1px solid #86efac;color:#15803d;font-size:0.8rem;padding:8px 12px;border-radius:7px;margin-top:2px;' : 'display:block;background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;font-size:0.8rem;padding:8px 12px;border-radius:7px;margin-top:2px;'; msg.textContent = txt; }; if (!email) { showMsg(false, 'Veuillez saisir votre adresse e-mail.'); return; } auth.sendPasswordResetEmail(email).then(() => { showMsg(true, '✅ E-mail envoyé ! Vérifiez votre boîte de réception (et vos spams).'); setTimeout(() => closeModal('mdForgotPwd'), 3500); }).catch(err => { console.error(err); const codes = { 'auth/user-not-found': 'Aucun compte trouvé pour cet e-mail.', 'auth/invalid-email': 'Adresse e-mail invalide.', 'auth/too-many-requests': 'Trop de tentatives. Réessayez dans quelques minutes.', 'auth/unauthorized-domain': 'Domaine non autorisé — ajoutez-le dans Firebase Console > Authentication > Authorized domains.', 'auth/network-request-failed': 'Erreur réseau. Vérifiez votre connexion internet.' }; showMsg(false, '❌ ' + (codes[err.code] || `Erreur (${err.code})`)); }); }
 
-  const showMsg = (ok, txt) => {
-    msg.style.cssText = ok
-      ? 'display:block;background:#dcfce7;border:1px solid #86efac;color:#15803d;font-size:0.8rem;padding:8px 12px;border-radius:7px;margin-top:2px;'
-      : 'display:block;background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;font-size:0.8rem;padding:8px 12px;border-radius:7px;margin-top:2px;';
-    msg.textContent = txt;
-  };
+// Actions menu
+function toggleActionsMenu(e) { if (e) e.stopPropagation(); document.getElementById('actionsMenu').classList.toggle('show'); }
+function closeActionsMenu() { document.getElementById('actionsMenu').classList.remove('show'); }
+document.addEventListener('click', function(e) { if (!e.target.closest('.actions-dropdown')) closeActionsMenu(); });
+function postAction(action) { const iframe = document.getElementById('synFrame'); if (iframe && iframe.contentWindow) { iframe.contentWindow.postMessage({ type: 'rapso_action', action: action }, '*'); toast('Action envoyée : ' + action, 'b'); } else { toast('Impossible de communiquer avec le canevas', 'r'); } }
 
-  if (!email) { showMsg(false, 'Veuillez saisir votre adresse e-mail.'); return; }
-
-  // Utiliser la variable auth déjà initialisée en haut du script
-  if (typeof auth === 'undefined' || !auth) {
-    showMsg(false, 'Service d\'authentification non disponible. Rechargez la page.');
-    return;
-  }
-
-  auth.sendPasswordResetEmail(email)
-    .then(() => {
-      showMsg(true, '✅ E-mail envoyé ! Vérifiez votre boîte de réception (et vos spams).');
-      setTimeout(() => closeModal('mdForgotPwd'), 3500);
-    })
-    .catch(err => {
-      console.error('Reset pwd error:', err.code, err.message);
-      const codes = {
-        'auth/user-not-found':      'Aucun compte trouvé pour cet e-mail.',
-        'auth/invalid-email':       'Adresse e-mail invalide.',
-        'auth/too-many-requests':   'Trop de tentatives. Réessayez dans quelques minutes.',
-        'auth/unauthorized-domain': 'Domaine non autorisé — ajoutez-le dans Firebase Console > Authentication > Authorized domains.',
-        'auth/network-request-failed': 'Erreur réseau. Vérifiez votre connexion internet.'
-      };
-      showMsg(false, '❌ ' + (codes[err.code] || `Erreur (${err.code})`));
-    });
-}
-
-/* INIT */
+// Initialisation et Auth state
 window.addEventListener('load', async () => {
   await loadFromCloud();
   setupCanevasDrop();
@@ -1923,209 +902,52 @@ window.addEventListener('load', async () => {
       if (snap.exists()) {
         const me = users.find(u => u.uid === firebaseUser.uid);
         currentUser = me || { ...snap.val(), uid: firebaseUser.uid };
-        if (document.getElementById('sbAv')) {
-          document.getElementById('sbAv').textContent = currentUser.initiales;
-          document.getElementById('sbAv').style.background = currentUser.color;
-          document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
-          document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Admin' : '👤 User';
-          const isAdmin = currentUser.role === 'admin';
-          document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
-          document.getElementById('navUsers').style.display = isAdmin ? '' : 'none';
-          document.getElementById('adminNav').style.display = isAdmin ? '' : 'none';
-          show('scApp'); hide('scLogin');
-          showPage('canevas');
-        }
+        localStorage.setItem('rs_user_session', JSON.stringify({ uid: currentUser.uid, prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role, color: currentUser.color, favs: currentUser.favs, email: currentUser.email, actif: currentUser.actif }));
+        document.getElementById('sbAv').textContent = currentUser.initiales;
+        document.getElementById('sbAv').style.background = currentUser.color;
+        document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
+        document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Admin' : '👤 User';
+        const isAdmin = currentUser.role === 'admin';
+        document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
+        document.getElementById('navUsers').style.display = isAdmin ? '' : 'none';
+        document.getElementById('adminNav').style.display = isAdmin ? '' : 'none';
+        show('scApp'); hide('scLogin'); showPage('canevas');
       }
     } else {
-      if (currentUser) logout();
-    }
-  });
-});
-   /* ─── Menu Actions ─── */
-function toggleActionsMenu(e) {
-  if (e) e.stopPropagation();
-  document.getElementById('actionsMenu').classList.toggle('show');
-}
-function closeActionsMenu() {
-  document.getElementById('actionsMenu').classList.remove('show');
-}
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.actions-dropdown')) {
-    closeActionsMenu();
-  }
-});
-
-/* ─── Communication avec RapsoSynthèse (iframe) ─── */
-function postAction(action) {
-  const iframe = document.getElementById('synFrame');
-  if (iframe && iframe.contentWindow) {
-    iframe.contentWindow.postMessage({ type: 'rapso_action', action: action }, '*');
-    toast('Action envoyée : ' + action, 'b');
-  } else {
-    toast('Impossible de communiquer avec le canevas', 'r');
-  }
-}
-</script>
-<script>
-/* ═══════════════════════════════════════════════════
-   PWA – Service Worker + Sync intelligente
-   ═══════════════════════════════════════════════════ */
-
-/* ── Enregistrement du Service Worker ── */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    try {
-      const reg = await navigator.serviceWorker.register('/sw.js');
-      console.log('[SW] Enregistré:', reg.scope);
-
-      // Mise à jour disponible → notifier l'utilisateur
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            showPwaToast('🔄 Mise à jour disponible — rechargez pour l\'appliquer', () => {
-              newWorker.postMessage({ type: 'sw_skip_waiting' });
-              window.location.reload();
-            });
-          }
-        });
-      });
-    } catch(e) {
-      console.warn('[SW] Échec enregistrement:', e);
-    }
-
-    // Écouter les messages du SW (sync trigger)
-    navigator.serviceWorker.addEventListener('message', event => {
-      if (event.data?.type === 'sw_sync_trigger') {
-        handleOnlineSync();
+      // Pas d'utilisateur Firebase : tentative de restauration hors ligne
+      const stored = localStorage.getItem('rs_user_session');
+      if (stored && !navigator.onLine) {
+        currentUser = JSON.parse(stored);
+        canevas = JSON.parse(localStorage.getItem('rs_canevas') || '[]');
+        users   = JSON.parse(localStorage.getItem('rs_users') || '[]');
+        isOnline = false;
+        setOfflineIndicator(true);
+        document.getElementById('sbAv').textContent = currentUser.initiales;
+        document.getElementById('sbAv').style.background = currentUser.color;
+        document.getElementById('sbName').textContent = currentUser.prenom + ' ' + currentUser.nom;
+        document.getElementById('sbRole').textContent = currentUser.role === 'admin' ? '⚡ Admin' : '👤 User';
+        const isAdmin = currentUser.role === 'admin';
+        document.getElementById('adminLabel').style.display = isAdmin ? '' : 'none';
+        document.getElementById('navUsers').style.display = isAdmin ? '' : 'none';
+        document.getElementById('adminNav').style.display = isAdmin ? '' : 'none';
+        show('scApp'); hide('scLogin'); showPage('canevas');
+        toast('Mode hors ligne – données en lecture seule', 'b', 4000);
+      } else {
+        if (currentUser) logout();
       }
-    });
+    }
   });
-}
-
-/* ── Détection connexion/déconnexion ── */
-let _wasOffline = !navigator.onLine;
-
-window.addEventListener('online', () => {
-  _wasOffline = false;
-  handleOnlineSync();
-  showPwaToast('✅ Connexion rétablie — synchronisation en cours…');
 });
 
-window.addEventListener('offline', () => {
-  _wasOffline = true;
-  showPwaToast('⚠️ Hors connexion — les saisies sont conservées localement');
+// Gestion connexion/déconnexion réseau
+window.addEventListener('online', async () => {
+  isOnline = true;
+  setOfflineIndicator(false);
+  await loadFromCloud();
+  renderCanevas(); renderArchive(); renderUsers();
+  toast('✅ Connexion rétablie – données synchronisées', 'g');
 });
-
-/* ── Sync intelligente : fusion sans écrasement ── */
-async function handleOnlineSync() {
-  if (!currentUser) return;
-  try {
-    // 1. Charger les données fraîches depuis Firebase
-    const snapshot = await db.ref('/canevas').once('value');
-    const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
-    const cloudCanevas = toArray(snapshot.val());
-
-    let changed = false;
-
-    // 2. Pour chaque canevas local, fusionner avec Firebase
-    canevas.forEach(localCan => {
-      const cloudCan = cloudCanevas.find(c => String(c.id) === String(localCan.id));
-      if (!cloudCan) return; // nouveau canevas local → sera poussé tel quel
-
-      const localData  = localCan.synthData  || { v2: [], v1: [] };
-      const cloudData  = cloudCan.synthData  || { v2: [], v1: [] };
-
-      // Fusionner v2 et v1 séparément
-      ['v2', 'v1'].forEach(tab => {
-        const localRows = localData[tab]  || [];
-        const cloudRows = cloudData[tab]  || [];
-
-        // Index des lignes cloud par id
-        const cloudIdx = {};
-        cloudRows.forEach((r, i) => { if (r.id !== undefined) cloudIdx[String(r.id)] = i; });
-
-        // Appliquer les lignes locales modifiées
-        let tabChanged = false;
-        localRows.forEach(localRow => {
-          if (localRow.id === undefined) return;
-          const key = String(localRow.id);
-          if (cloudIdx[key] !== undefined) {
-            const cloudRow = cloudRows[cloudIdx[key]];
-            // Comparer : si la ligne locale a des champs renseignés que le cloud n'a pas → prendre local
-            const fields = ['repK','repL','lots','suivi','rd6','disp','obs'];
-            fields.forEach(f => {
-              if ((localRow[f] !== undefined && localRow[f] !== '' && localRow[f] !== false) &&
-                  (cloudRow[f] === undefined || cloudRow[f] === '' || cloudRow[f] === false)) {
-                cloudRows[cloudIdx[key]][f] = localRow[f];
-                tabChanged = true;
-              }
-            });
-          } else {
-            // Ligne locale non trouvée dans cloud (ajout local hors-ligne)
-            cloudRows.push(localRow);
-            tabChanged = true;
-          }
-        });
-
-        if (tabChanged) {
-          cloudCan.synthData = cloudCan.synthData || {};
-          cloudCan.synthData[tab] = cloudRows;
-          changed = true;
-        }
-      });
-    });
-
-    // 3. Si des données locales ont enrichi Firebase → sauvegarder
-    if (changed) {
-      // Mettre à jour le tableau local avec les données fusionnées
-      canevas = cloudCanevas;
-      await db.ref('/canevas').set(cloudCanevas);
-      renderCanevas();
-      renderArchive();
-      console.log('[SYNC] Données locales fusionnées avec Firebase');
-    }
-
-    // 4. Background Sync API (si supportée) pour les prochaines fois
-    if ('serviceWorker' in navigator && 'SyncManager' in window) {
-      const reg = await navigator.serviceWorker.ready;
-      await reg.sync.register('rapsosyn-sync').catch(() => {});
-    }
-
-  } catch(e) {
-    console.warn('[SYNC] Erreur synchronisation:', e);
-  }
-}
-
-/* ── Toast PWA ── */
-function showPwaToast(msg, action = null) {
-  const existing = document.getElementById('pwaToast');
-  if (existing) existing.remove();
-  const el = document.createElement('div');
-  el.id = 'pwaToast';
-  el.style.cssText = `
-    position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
-    background:#1e293b;color:white;padding:10px 18px;border-radius:10px;
-    font-size:0.82rem;font-weight:500;z-index:99999;
-    display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.4);
-    max-width:90vw;white-space:nowrap;animation:tIn .25s ease both;
-  `;
-  el.innerHTML = `<span>${msg}</span>`;
-  if (action) {
-    const btn = document.createElement('button');
-    btn.textContent = 'Recharger';
-    btn.style.cssText = 'background:var(--blue);border:none;color:white;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:0.78rem;';
-    btn.onclick = action;
-    el.appendChild(btn);
-  }
-  document.body.appendChild(el);
-  if (!action) setTimeout(() => el.remove(), 4000);
-}
-
-/* ── Détecter si déjà installée comme PWA ── */
-if (window.matchMedia('(display-mode: standalone)').matches) {
-  document.documentElement.classList.add('pwa-mode');
-}
+window.addEventListener('offline', () => { isOnline = false; setOfflineIndicator(true); toast('⚠️ Hors connexion – modifications enregistrées localement', 'b'); });
 </script>
 </body>
 </html>
