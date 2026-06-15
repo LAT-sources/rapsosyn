@@ -482,6 +482,11 @@
       text-overflow: unset !important;
       color: #1e293b !important;
     }
+    /* Colonnes texte long : respecter les sauts de ligne */
+    td[data-col="obs"], td[data-col="repK"], td[data-col="repL"],
+    td[data-col="disp"], td[data-col="desc"] {
+      white-space: pre-wrap !important;
+    }
     /* Largeurs colonnes A3 paysage basées sur COL_DEF (somme px = 1426) */
     th:nth-child(1), td:nth-child(1) { width: 14mm !important; min-width: 14mm; } /* N° (49px) */
     th:nth-child(2), td:nth-child(2) { width: 14mm !important; min-width: 14mm; } /* Réf (49px) */
@@ -1875,6 +1880,8 @@ function renderTable(){
       else if(c.key==='date')cells+=`<td data-col="date" style="font-family:var(--mono);white-space:nowrap">${escapeHtml(fmtDate(r.date))}</td>`;
       else if(c.key==='ref')cells+=`<td data-col="ref" style="font-family:var(--mono);font-size:.68rem">${escapeHtml(r.ref)}</td>`;
       else if(c.key==='inter')cells+=`<td data-col="inter">${escapeHtml(interClean)}</td>`;
+      else if(c.key==='obs' || c.key==='repK' || c.key==='repL' || c.key==='disp' || c.key==='desc')
+        cells+=`<td data-col="${c.key}" style="white-space:pre-wrap;word-break:break-word;">${escapeHtml(r[c.key])}</td>`;
       else cells+=`<td data-col="${c.key}">${escapeHtml(r[c.key])}</td>`;
     });
     cells+=`<td class="col-actions"><button class="tb-btn" onclick="openEditPanel(${i})" style="padding:2px 8px;">Edit</button></td>`;
