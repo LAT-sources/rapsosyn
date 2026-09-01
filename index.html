@@ -306,7 +306,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   border-top: 1px solid rgba(255,255,255,.06);
 }
 
-  /* ═══════════════════ MOBILE TOPBAR SYNTHÈSE ═══════════════════════ */
+  /* ═══════════════════════ MOBILE TOPBAR SYNTHÈSE ═══════════════════════ */
   @media (max-width: 640px) {
 
     /* Topbar : compacte */
@@ -1613,9 +1613,8 @@ function exportArchive() {
 /* SYNTHESE VIEWER */
 let currentCanId = null;
 async function openSynthese(id) {
-  console.log('openSynthese appelé pour id:', id);
   const c = canevas.find(x => x.id === id);
-  if (!c) { console.warn('Canevas non trouvé'); return; }
+  if (!c) return;
   currentCanId = id;
   document.getElementById('synTitle').textContent = c.nom;
   document.getElementById('synRoleChip').textContent = c.archived ? '🔒 Archivé – lecture seule' : '✏️ Édition';
@@ -2047,11 +2046,10 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ── RAPSORD VIEWER ── */
-   const RAPSORD_TEMPLATE_URL = '/rapsord_v2_improved.html';
+const RAPSORD_TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/rapsord_v2_improved.html';
 let currentRapsordId = null;
 
 async function openRapsord(id, e) {
-  console.log('openRapsord appelé pour id:', id);
   if (e) e.stopPropagation();
   const c = canevas.find(x => x.id === id);
   if (!c) return;
@@ -2081,7 +2079,7 @@ async function openRapsord(id, e) {
   }
 
   // 3. Injecter via <!-- RAPSO_META --> (même pattern que openSynthese)
-  const rdDataStr = JSON.stringify(rdData).replace(/\//g, '\\').replace(/`/g, '\\`');
+  const rdDataStr = JSON.stringify(rdData).replace(/\/g, '\\').replace(/`/g, '\`');
   const metaScript = '<script>'
     + 'window.RAPSORD_CAN_ID='   + JSON.stringify(c.id) + ';'
     + 'window.RAPSORD_CAN_NOM='  + JSON.stringify(c.nom || '') + ';'
@@ -2128,7 +2126,7 @@ function downloadRdDocx() {
     frame.contentWindow.postMessage({ type: 'rapsord_generate_docx' }, '*');
     toast('Téléchargement JSON RD0 en cours…', 'b');
   } catch(e) {
-    toast("Impossible de contacter l'iframe RAPSORD", 'r');
+    toast('Impossible de contacter l'iframe RAPSORD', 'r');
   }
 }
 
