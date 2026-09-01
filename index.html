@@ -773,8 +773,8 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <button id="synInfoBtn" class="syn-refresh" onclick="showSynInfoPopup()" title="Infos projet" style="display:none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     </button>
-    <button class="syn-refresh" id="synRdBtn" onclick="openRapsordFromSynthese()" title="Ouvrir RAPSORD RD0 pour ce dossier">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <button class="syn-refresh" id="synRdBtn" onclick="openRapsordFromSynthese()" title="Ouvrir RAPSORD RD0">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
       <span class="syn-refresh-label">RD</span>
     </button>
     <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
@@ -832,13 +832,13 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     </button>
     <div class="syn-title" id="rapsordTitle">—</div>
     <div style="flex:1"></div>
-    <span style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);font-weight:600;white-space:nowrap;flex-shrink:0;">📋 RAPSORD RD0</span>
-    <button class="syn-refresh" onclick="downloadRdDocx()" title="Générer le rapport Word RD0" style="margin-left:4px;">
+    <span style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-weight:600;white-space:nowrap;">📋 RAPSORD RD0</span>
+    <button class="syn-refresh" onclick="downloadRdDocx()" title="Télécharger JSON pour génération Word">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       <span class="syn-refresh-label">Word RD0</span>
     </button>
   </div>
-  <iframe id="rapsordFrame" class="syn-frame" 
+  <iframe id="rapsordFrame" class="syn-frame"
     sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads allow-popups">
   </iframe>
 </div>
@@ -1334,7 +1334,7 @@ function renderCanevas() {
       <td><button class="star-btn ${Array.isArray(currentUser.favs) && currentUser.favs.includes(c.id) ? 'on' : ''}" onclick="toggleStar(${c.id},event)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="${Array.isArray(currentUser.favs) && currentUser.favs.includes(c.id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       </button></td>
-      <td><div class="td-name">${esc(c.nom)} ${c.hasRd0 ? '<span title="RD0 renseigné" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-left:5px;vertical-align:middle;"></span>' : ''}</div></td>
+      <td><div class="td-name">${esc(c.nom)}${c.hasRd0 ? ' <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-left:4px;vertical-align:middle;" title="RD0 renseigné"></span>' : ''}</div></td>
       <td><div class="td-chrono">${esc(c.chrono)}</div></td>
       <td class="td-client">${esc(c.client)}</td>
       <td>${esc(c.ville)}</td>
@@ -1342,7 +1342,7 @@ function renderCanevas() {
       <td><span class="av" style="background:${avBg(c.pilote)}" title="${fullName(c.pilote)}">${esc(c.pilote)}</span></td>
       <td>
         <button class="btn btn-primary btn-xs" onclick="openSynthese(${c.id})">📂 Ouvrir</button>
-        <button class="btn btn-orange btn-xs" onclick="openRapsord(${c.id},event)" title="Ouvrir RAPSORD RD0">📋 RD</button>
+        <button class="btn btn-orange btn-xs" onclick="openRapsord(${c.id},event)" title="RAPSORD RD0">📋 RD</button>
         ${canEdit ? `<button class="btn-icon blue" onclick="openModalCanevas('edit',${c.id},event)" title="Modifier"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>` : ''}
         ${(currentUser.role === 'admin' || c.pilote === currentUser.initiales) ? `<button class="btn-icon danger" onclick="confirmArchive(${c.id},event)" title="Archiver"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>` : ''}
         ${currentUser.role === 'admin' ? `<button class="btn-icon danger" onclick="confirmDeleteCan(${c.id},event)" title="Supprimer définitivement de Firebase" style="opacity:.7"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}
@@ -1887,6 +1887,23 @@ window.addEventListener('message', function(e) {
   if (e.data.type === 'rapso_inject_ack') {
     updateSynCounters(e.data.data);
   }
+
+  // ── RAPSORD RD0 save — même pattern que rapso_save ──
+  if (e.data.type === 'rapsord_save') {
+    const canId = e.data.canId;
+    const payload = e.data.data;
+    if (canId === undefined || canId === null || !payload) return;
+    db.ref('/rd0/' + canId).set(payload)
+      .then(() => {
+        const idx = canevas.findIndex(x => String(x.id) === String(canId));
+        if (idx >= 0 && !canevas[idx].hasRd0) {
+          canevas[idx].hasRd0 = true;
+          saveToCloud();
+          renderCanevas();
+        }
+      })
+      .catch(err => console.warn('RAPSORD save error:', err));
+  }
 });
 
 /* MOT DE PASSE OUBLIÉ */
@@ -2028,7 +2045,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-/* ── RAPSORD VIEWER — même pattern que openSynthese/canevas_temp ── */
+/* ── RAPSORD VIEWER ── */
 const RAPSORD_TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/rapsord_v2_improved.html';
 let currentRapsordId = null;
 
@@ -2039,43 +2056,46 @@ async function openRapsord(id, e) {
   currentRapsordId = id;
   document.getElementById('rapsordTitle').textContent = c.nom + (c.chrono ? ' — ' + c.chrono : '');
 
-  // 1. Charger le template HTML depuis GitHub (comme canevas_temp.html)
+  // 1. Charger le template depuis GitHub (comme canevas_temp.html)
   let templateHTML;
   try {
-    const res = await fetch(RAPSORD_TEMPLATE_URL + '?ts=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+    const res = await fetch(RAPSORD_TEMPLATE_URL + '?ts=' + Date.now(), {
+      cache: 'no-store', headers: { 'Cache-Control': 'no-cache' }
+    });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     templateHTML = await res.text();
   } catch(err) {
-    toast('Impossible de charger rapsord_v2_improved.html — ' + err.message, 'r');
+    toast('Impossible de charger rapsord_v2_improved.html : ' + err.message, 'r');
     return;
   }
 
-  // 2. Lire les données RD0 depuis Firebase /rd0/<id> (comme synthData dans openSynthese)
+  // 2. Lire les données RD0 depuis Firebase /rd0/<id>
   let rdData = {};
   try {
     const snap = await db.ref('/rd0/' + id).once('value');
     rdData = snap.val() || {};
   } catch(err) {
-    console.warn('RAPSORD: pas de données RD0 sur Firebase, démarrage vierge');
+    console.warn('RAPSORD: pas de données RD0 existantes');
   }
 
-  // 3. Injecter via <!-- RAPSO_META --> exactement comme openSynthese injecte RAPSO_SYNTH_DATA
-  const metaScript = `<script>
-    window.RAPSORD_CAN_ID   = ${JSON.stringify(c.id)};
-    window.RAPSORD_CAN_NOM  = ${JSON.stringify(c.nom || '')};
-    window.RAPSORD_CHRONO   = ${JSON.stringify(c.chrono || '')};
-    window.RAPSORD_CLIENT   = ${JSON.stringify(c.client || '')};
-    window.RAPSORD_VILLE    = ${JSON.stringify(c.ville || '')};
-    window.RAPSORD_DATA     = ${JSON.stringify(JSON.stringify(rdData))};
-    window.RAPSORD_READONLY = ${JSON.stringify(!!c.archived)};
-    window.RAPSORD_USER     = ${JSON.stringify(currentUser ? {
-      prenom: currentUser.prenom, nom: currentUser.nom,
-      initiales: currentUser.initiales, role: currentUser.role
-    } : {})};
-  <\/script>`;
+  // 3. Injecter via <!-- RAPSO_META --> (même pattern que openSynthese)
+  const rdDataStr = JSON.stringify(rdData).replace(/\/g, '\\').replace(/`/g, '\`');
+  const metaScript = '<script>'
+    + 'window.RAPSORD_CAN_ID='   + JSON.stringify(c.id) + ';'
+    + 'window.RAPSORD_CAN_NOM='  + JSON.stringify(c.nom || '') + ';'
+    + 'window.RAPSORD_CHRONO='   + JSON.stringify(c.chrono || '') + ';'
+    + 'window.RAPSORD_CLIENT='   + JSON.stringify(c.client || '') + ';'
+    + 'window.RAPSORD_VILLE='    + JSON.stringify(c.ville || '') + ';'
+    + 'window.RAPSORD_DATA='     + JSON.stringify(JSON.stringify(rdData)) + ';'
+    + 'window.RAPSORD_READONLY=' + JSON.stringify(!!c.archived) + ';'
+    + 'window.RAPSORD_USER='     + JSON.stringify(currentUser ? {
+        prenom: currentUser.prenom, nom: currentUser.nom,
+        initiales: currentUser.initiales, role: currentUser.role
+      } : {}) + ';'
+    + '<\/script>';
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
 
-  // 4. Charger dans l'iframe (comme synFrame)
+  // 4. Charger dans l'iframe
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
   const blobUrl = URL.createObjectURL(blob);
   const frame = document.getElementById('rapsordFrame');
@@ -2083,9 +2103,6 @@ async function openRapsord(id, e) {
   frame.src = blobUrl;
 
   hide('scApp'); hide('scSynthese'); show('scRapsord');
-
-  // 5. Écouter rapsord_save (comme rapso_save dans index.html pour canevas_temp)
-  // Le handler global window.addEventListener est utilisé comme dans l'existant
 }
 
 function openRapsordFromSynthese() {
@@ -2094,7 +2111,6 @@ function openRapsordFromSynthese() {
 
 function closeRapsord() {
   const frame = document.getElementById('rapsordFrame');
-  // Demander sauvegarde finale comme closeSynthese
   try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
   setTimeout(() => {
     if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
@@ -2108,7 +2124,7 @@ function downloadRdDocx() {
   const frame = document.getElementById('rapsordFrame');
   try {
     frame.contentWindow.postMessage({ type: 'rapsord_generate_docx' }, '*');
-    toast('Génération Word RD0 — téléchargement du JSON en cours…', 'b');
+    toast('Téléchargement JSON RD0 en cours…', 'b');
   } catch(e) {
     toast('Impossible de contacter l'iframe RAPSORD', 'r');
   }
