@@ -2028,7 +2028,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-/* ── RAPSORD VIEWER ── */
+/* ── RAPSORD VIEWER — même pattern que openSynthese/canevas_temp ── */
 const RAPSORD_TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/rapsord_v2_improved.html';
 let currentRapsordId = null;
 
@@ -2037,31 +2037,31 @@ async function openRapsord(id, e) {
   const c = canevas.find(x => x.id === id);
   if (!c) return;
   currentRapsordId = id;
-  document.getElementById('rapsordTitle').textContent = c.nom + ' — ' + (c.chrono || '');
+  document.getElementById('rapsordTitle').textContent = c.nom + (c.chrono ? ' — ' + c.chrono : '');
 
+  // 1. Charger le template HTML depuis GitHub (comme canevas_temp.html)
   let templateHTML;
   try {
-    const response = await fetch(RAPSORD_TEMPLATE_URL + '?ts=' + Date.now(), { cache: 'no-store' });
-    if (!response.ok) throw new Error('HTTP ' + response.status);
-    templateHTML = await response.text();
+    const res = await fetch(RAPSORD_TEMPLATE_URL + '?ts=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    templateHTML = await res.text();
   } catch(err) {
-    toast('Impossible de charger rapsord_v2_improved.html depuis GitHub — ' + err.message, 'r');
+    toast('Impossible de charger rapsord_v2_improved.html — ' + err.message, 'r');
     return;
   }
 
-  // Récupérer les données RD0 depuis Firebase (chemin /rd0/<id>)
+  // 2. Lire les données RD0 depuis Firebase /rd0/<id> (comme synthData dans openSynthese)
   let rdData = {};
   try {
     const snap = await db.ref('/rd0/' + id).once('value');
     rdData = snap.val() || {};
   } catch(err) {
-    console.warn('Pas de données RD0 existantes:', err);
+    console.warn('RAPSORD: pas de données RD0 sur Firebase, démarrage vierge');
   }
 
-  // Injecter les métadonnées du canevas + données RD0 dans l'iframe
+  // 3. Injecter via <!-- RAPSO_META --> exactement comme openSynthese injecte RAPSO_SYNTH_DATA
   const metaScript = `<script>
-    window.RAPSORD_MODE     = 'firebase';
-    window.RAPSORD_CAN_ID   = ${JSON.stringify(id)};
+    window.RAPSORD_CAN_ID   = ${JSON.stringify(c.id)};
     window.RAPSORD_CAN_NOM  = ${JSON.stringify(c.nom || '')};
     window.RAPSORD_CHRONO   = ${JSON.stringify(c.chrono || '')};
     window.RAPSORD_CLIENT   = ${JSON.stringify(c.client || '')};
@@ -2071,11 +2071,11 @@ async function openRapsord(id, e) {
     window.RAPSORD_USER     = ${JSON.stringify(currentUser ? {
       prenom: currentUser.prenom, nom: currentUser.nom,
       initiales: currentUser.initiales, role: currentUser.role
-    } : { prenom: '?', nom: '', initiales: '?', role: '' })};
-    window.FIREBASE_DB_URL  = ${JSON.stringify(typeof db !== 'undefined' && db.app && db.app.options ? db.app.options.databaseURL : '')};
+    } : {})};
   <\/script>`;
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
 
+  // 4. Charger dans l'iframe (comme synFrame)
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
   const blobUrl = URL.createObjectURL(blob);
   const frame = document.getElementById('rapsordFrame');
@@ -2084,23 +2084,8 @@ async function openRapsord(id, e) {
 
   hide('scApp'); hide('scSynthese'); show('scRapsord');
 
-  // Écouter les sauvegardes depuis l'iframe
-  window._rapsordMsgHandler && window.removeEventListener('message', window._rapsordMsgHandler);
-  window._rapsordMsgHandler = async (event) => {
-    if (!event.data || event.data.type !== 'rapsord_save') return;
-    const payload = event.data.data;
-    if (!payload || !currentRapsordId) return;
-    try {
-      await db.ref('/rd0/' + currentRapsordId).set(payload);
-      // Mettre à jour le flag rd0 dans le canevas
-      const idx = canevas.findIndex(x => x.id === currentRapsordId);
-      if (idx >= 0) { canevas[idx].hasRd0 = true; await saveToCloud(); }
-      toast('RD0 sauvegardé dans Firebase ✓', 'g');
-    } catch(err) {
-      toast('Erreur sauvegarde RD0 : ' + err.message, 'r');
-    }
-  };
-  window.addEventListener('message', window._rapsordMsgHandler);
+  // 5. Écouter rapsord_save (comme rapso_save dans index.html pour canevas_temp)
+  // Le handler global window.addEventListener est utilisé comme dans l'existant
 }
 
 function openRapsordFromSynthese() {
@@ -2109,26 +2094,23 @@ function openRapsordFromSynthese() {
 
 function closeRapsord() {
   const frame = document.getElementById('rapsordFrame');
-  // Demander une dernière sauvegarde avant fermeture
+  // Demander sauvegarde finale comme closeSynthese
   try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
   setTimeout(() => {
     if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
     frame.src = '';
-    window._rapsordMsgHandler && window.removeEventListener('message', window._rapsordMsgHandler);
     hide('scRapsord'); show('scApp');
     renderCanevas();
   }, 200);
 }
 
-async function downloadRdDocx() {
-  // Récupère les données RD0 depuis Firebase et les transmet à l'iframe
-  // pour que l'iframe déclenche le téléchargement via generate_from_template
+function downloadRdDocx() {
   const frame = document.getElementById('rapsordFrame');
   try {
     frame.contentWindow.postMessage({ type: 'rapsord_generate_docx' }, '*');
-    toast('Génération du Word RD0 en cours…', 'b');
+    toast('Génération Word RD0 — téléchargement du JSON en cours…', 'b');
   } catch(e) {
-    toast('Impossible de générer le Word depuis cet écran', 'r');
+    toast('Impossible de contacter l'iframe RAPSORD', 'r');
   }
 }
 
