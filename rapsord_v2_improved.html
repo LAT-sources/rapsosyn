@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<!-- RAPSO_META -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAPSORD — Socotec Luxembourg</title>
@@ -892,11 +891,9 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 <div id="sbar">
   <span class="hint2" id="sbar-hint">Données non enregistrées</span>
   <button onclick="importJSON()">📂 Charger</button>
-  <button onclick="exportJSON()">💾 JSON local</button>
+  <button onclick="exportJSON()">💾 JSON</button>
   <button onclick="saveToCanevas()">📁 Canevas</button>
-  <button class="prim" onclick="saveToFirebase ? saveToFirebase() : (saveToCanevas(), exportJSON())">
-    💾 Enregistrer ▸
-  </button>
+  <button class="prim" onclick="saveToCanevas();exportJSON()">Enregistrer ▸</button>
 </div>
 
 <div id="mover" onclick="closeMdlg(event)">
@@ -1092,7 +1089,12 @@ function collect(){
     D.codes.push(row);
   }
 }
-function save(){collect();updDash();document.getElementById('sbar-hint').textContent='Données modifiées — pensez à exporter le JSON';}
+function save(){
+  collect();
+  updDash();
+  document.getElementById('sbar-hint').textContent='Modifications en cours…';
+  // pushToParent est appelé automatiquement toutes les 4s par setInterval
+}
 function updDash(){
   document.getElementById('d-ref').textContent=D.ref||'—';
   document.getElementById('d-op').textContent=D.op_titre||D.op_desc||'—';
@@ -1256,83 +1258,11 @@ function filterCanevas(){
   renderCanevas(document.getElementById('cav-search').value);
 }
 
-// ─── FIREBASE / postMessage INTEGRATION ──────────────────────────────────────
-(function initFirebaseMode() {
-  // Charger les données injectées depuis index.html (window.RAPSORD_DATA)
-  if (window.RAPSORD_DATA) {
-    try {
-      const injected = JSON.parse(window.RAPSORD_DATA);
-      if (injected && typeof injected === 'object') {
-        D = injected;
-      }
-    } catch(e) { console.warn('RAPSORD: erreur parsing données injectées', e); }
-  }
-
-  // Pré-remplir depuis les métadonnées du canevas si champs vides
-  if (window.RAPSORD_CAN_NOM && !D.op_titre) D.op_titre = window.RAPSORD_CAN_NOM;
-  if (window.RAPSORD_CHRONO  && !D.dossier)  D.dossier  = window.RAPSORD_CHRONO;
-  if (window.RAPSORD_CLIENT  && !D.moa)      D.moa      = window.RAPSORD_CLIENT;
-
-  // Read-only si archivé
-  if (window.RAPSORD_READONLY) {
-    document.querySelectorAll('input,select,textarea,button').forEach(el => {
-      if (!el.classList.contains('open-btn') && el.id !== 'cav-search')
-        el.disabled = true;
-    });
-  }
-})();
-
-// ─── SAUVEGARDE Firebase via postMessage ──────────────────────────────────────
-function saveToFirebase() {
-  collect();
-  // Envoyer les données à index.html via postMessage
-  try {
-    window.parent.postMessage({ type: 'rapsord_save', data: D }, '*');
-    document.getElementById('sbar-hint').textContent = 'Sauvegardé dans Firebase ✓';
-  } catch(e) {
-    console.warn('RAPSORD: impossible d'envoyer postMessage', e);
-  }
-  // Aussi sauvegarder localement comme fallback
-  try {
-    const key = 'rapsord_' + (window.RAPSORD_CAN_ID || 'local');
-    localStorage.setItem(key, JSON.stringify(D));
-  } catch(e) {}
-}
-
-// Écouter la demande de sauvegarde depuis index.html
-window.addEventListener('message', (event) => {
-  if (!event.data) return;
-  if (event.data.type === 'rapso_request_save') {
-    saveToFirebase();
-  }
-  if (event.data.type === 'rapsord_generate_docx') {
-    collect();
-    // Télécharger le JSON pour génération Word
-    const ref = (D.ref || D.dossier || 'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
-    const blob = new Blob([JSON.stringify(D, null, 2)], {type: 'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'RAPSORD_' + ref + '.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
-});
-
-// Sauvegarde automatique toutes les 30s si en mode Firebase
-if (window.RAPSORD_MODE === 'firebase') {
-  setInterval(saveToFirebase, 30000);
-}
-
 // ─── INIT ────────────────────────────────────────────────────────────────────
 addCode(); addCode();
 rebuildPC();
 updDash();
 renderCanevas();
-
-// Appliquer les données chargées depuis Firebase
-if (window.RAPSORD_DATA || window.RAPSORD_CAN_NOM) {
-  try { applyData(); } catch(e) {}
-}
 </script>
 </body>
 </html>
