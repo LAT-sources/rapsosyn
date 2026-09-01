@@ -2081,7 +2081,7 @@ async function openRapsord(id, e) {
   }
 
   // 3. Injecter via <!-- RAPSO_META --> (même pattern que openSynthese)
-  const rdDataStr = JSON.stringify(rdData).replace(/\/g, '\\').replace(/`/g, '\`');
+  const rdDataStr = JSON.stringify(rdData).replace(/\//g, '\\').replace(/`/g, '\\`');
   const metaScript = '<script>'
     + 'window.RAPSORD_CAN_ID='   + JSON.stringify(c.id) + ';'
     + 'window.RAPSORD_CAN_NOM='  + JSON.stringify(c.nom || '') + ';'
