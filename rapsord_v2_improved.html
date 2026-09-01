@@ -134,27 +134,13 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 .open-btn{background:none;border:1px solid var(--bord);padding:3px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:var(--font)}
 .open-btn:hover{background:var(--bleu-cl);border-color:var(--bleu)}
 
-/* ── SAVE BAR ── */
+/* ── SAVE BAR (modifiée) ── */
 #sbar{position:fixed;bottom:0;left:210px;right:0;background:var(--bleu-h);color:#fff;padding:8px 28px;display:flex;align-items:center;gap:12px;z-index:50}
 #sbar .hint2{font-size:11px;opacity:.7;flex:1}
 #sbar button{padding:6px 14px;border-radius:5px;font-size:12px;cursor:pointer;font-family:var(--font);border:1px solid rgba(255,255,255,.3);color:#fff;background:rgba(255,255,255,.1)}
 #sbar button:hover{background:rgba(255,255,255,.2)}
 #sbar button.prim{background:#2d8a40;border-color:#2d8a40}
-#sbar button.sync{background:#1a56db;border-color:#1a56db;color:white}
-#sbar button.force{background:#f59e0b;border-color:#f59e0b;color:white}
-
-/* ── MODAL ── */
-#mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
-#mover.on{display:flex}
-#mdlg{background:var(--blanc);border-radius:10px;padding:22px;width:480px;max-height:82vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.2)}
-#mdlg h3{font-size:15px;font-weight:600;margin-bottom:14px;color:var(--bleu-h)}
-.mact{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
-.mact button{padding:7px 16px;border-radius:5px;font-size:12.5px;cursor:pointer;font-family:var(--font);border:1px solid var(--bord)}
-.mact button.prim{background:var(--bleu);color:#fff;border-color:var(--bleu)}
-.mdlg-btn{width:100%;margin-bottom:8px;padding:9px;border:1px solid var(--bord);border-radius:6px;cursor:pointer;font-size:12.5px;text-align:left;background:var(--blanc);font-family:var(--font)}
-.mdlg-btn:hover{background:var(--bleu-cl);border-color:var(--bleu)}
-.mdlg-btn.danger{border-color:var(--rouge);color:var(--rouge)}
-.mdlg-btn.danger:hover{background:#fef0f0}
+#sbar button.sync{background:#1a56db;border-color:#1a56db}
 
 @media print{#side,#hdr,#sbar{display:none!important}#main{max-width:100%;padding:8mm}}
 </style>
@@ -204,700 +190,613 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 </div>
 
 <div id="main">
-
-<!-- ── DASHBOARD ── -->
-<div class="panel on" id="panel-dash">
-  <div class="ptitle">Tableau de bord — Gestion du dossier</div>
-  <div class="dash-row">
-    <div class="dcard"><div class="num" id="d-ref" style="font-size:15px;padding-top:4px">—</div><div class="lbl">Référence</div></div>
-    <div class="dcard"><div class="num" id="d-op" style="font-size:14px;padding-top:4px">—</div><div class="lbl">Opération</div></div>
-    <div class="dcard"><div class="num" id="d-date">—</div><div class="lbl">Date RD0</div></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">État des documents</div>
-    <div class="status-row"><div class="name">RD0 — Définition des risques</div><div class="badge enc" id="s-rd0">En cours</div><button class="open-btn" onclick="nav('id')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD1 — Fondations spéciales</div><div class="badge" id="s-rd1">Non requis</div><button class="open-btn" onclick="nav('rd1')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD2 — Procédés non traditionnels</div><div class="badge" id="s-rd2">Non requis</div><button class="open-btn" onclick="nav('rd2')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD3 — Rapport final étanchéité</div><div class="badge" id="s-rd3">Non requis</div><button class="open-btn" onclick="nav('rd3')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD4 — Travaux sur existants</div><div class="badge" id="s-rd4">Non requis</div><button class="open-btn" onclick="nav('rd4')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD5 — Modification majeure du risque</div><div class="badge" id="s-rd5">Non requis</div><button class="open-btn" onclick="nav('rd5')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD6 — Fin de travaux (Quitus)</div><div class="badge" id="s-rd6">Non requis</div><button class="open-btn" onclick="nav('rd6')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">PC — Liste des postes contrôlés</div><div class="badge ok">Disponible</div><button class="open-btn" onclick="nav('pc')">Ouvrir</button></div>
-  </div>
-</div>
-
-<!-- ── IDENTIFICATION (PAGE DE GARDE) ── -->
-<div class="panel" id="panel-id">
-  <div class="ptitle">Page de garde — Identification du dossier</div>
-  <div class="hint" style="margin-bottom:12px">SQ-04_MOD_LUX_01 V2 — Ces données apparaissent sur la page de garde du rapport Word.</div>
-
-  <div class="card">
-    <div class="ctitle">Références Socotec</div>
-    <div class="fg">
-      <div class="f"><label>Référence (ex: JB000-26-070)</label><input type="text" id="ref" placeholder="JB000-26-xxx" oninput="save()"></div>
-      <div class="f"><label>N° dossier interne (ex: 2502JB000000025)</label><input type="text" id="dossier" oninput="save()"></div>
-      <div class="f"><label>Date de rédaction du RD0</label><input type="date" id="date_rd0" oninput="save()"></div>
-      <div class="f"><label>Version</label><input type="text" id="version" value="1" oninput="save()"></div>
+  <!-- DASHBOARD -->
+  <div class="panel on" id="panel-dash">
+    <div class="ptitle">Tableau de bord — Gestion du dossier</div>
+    <div class="dash-row">
+      <div class="dcard"><div class="num" id="d-ref" style="font-size:15px;padding-top:4px">—</div><div class="lbl">Référence</div></div>
+      <div class="dcard"><div class="num" id="d-op" style="font-size:14px;padding-top:4px">—</div><div class="lbl">Opération</div></div>
+      <div class="dcard"><div class="num" id="d-date">—</div><div class="lbl">Date RD0</div></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">État des documents</div>
+      <div class="status-row"><div class="name">RD0 — Définition des risques</div><div class="badge enc" id="s-rd0">En cours</div><button class="open-btn" onclick="nav('id')">Ouvrir</button></div>
+      <div class="status-row"><div class="name">RD1 — Fondations spéciales</div><div class="badge" id="s-rd1">Non requis</div><button class="open-btn" onclick="nav('rd1')">Ouvrir</button></div>
+      <div class="status-row"><div class="name">RD2 — Procédés non traditionnels</div><div class="badge" id="s-rd2">Non requis</div><button class="open-btn" onclick="nav('rd2')">Ouvrir</button></div>
+      <div class="status-row"><div class="name">RD3 — Rapport final étanchéité</div><div class="badge" id="s-rd3">Non requis</div><button class="open-btn" onclick="nav('rd3')">Ouvrir</button></div>
+      <div class="status-row"><div class="name">RD4 — Travaux sur existants</div><div class="badge" id="s-rd4">Non requis</div><button class="open-btn" onclick="nav('rd4')">Ouvrir</button></div>
+      <div class="status-row"><div class="name">RD5 — Modification majeure du risque</div><div class="badge" id="s-rd5">Non requis</div><button class="open-btn" onclick="nav('rd5')">Ouvrir</button></div>
+      <div class="status-row"><div class="name">RD6 — Fin de travaux (Quitus)</div><div class="badge" id="s-rd6">Non requis</div><button class="open-btn" onclick="nav('rd6')">Ouvrir</button></div>
+      <div class="status-row"><div class="name">PC — Liste des postes contrôlés</div><div class="badge ok">Disponible</div><button class="open-btn" onclick="nav('pc')">Ouvrir</button></div>
     </div>
   </div>
-
-  <div class="card">
-    <div class="ctitle">Ingénieurs chargés du contrôle</div>
-    <div class="fg">
-      <div class="f"><label>Sur dossier</label><input type="text" id="ing_doss" placeholder="Nom(s) ingénieur(s)" oninput="save()"></div>
-      <div class="f"><label>Sur chantier</label><input type="text" id="ing_chan" placeholder="Nom(s) ingénieur(s)" oninput="save()"></div>
+  <!-- IDENTIFICATION -->
+  <div class="panel" id="panel-id">
+    <div class="ptitle">Page de garde — Identification du dossier</div>
+    <div class="hint" style="margin-bottom:12px">SQ-04_MOD_LUX_01 V2 — Ces données apparaissent sur la page de garde du rapport Word.</div>
+    <div class="card">
+      <div class="ctitle">Références Socotec</div>
+      <div class="fg">
+        <div class="f"><label>Référence (ex: JB000-26-070)</label><input type="text" id="ref" placeholder="JB000-26-xxx" oninput="save()"></div>
+        <div class="f"><label>N° dossier interne (ex: 2502JB000000025)</label><input type="text" id="dossier" oninput="save()"></div>
+        <div class="f"><label>Date de rédaction du RD0</label><input type="date" id="date_rd0" oninput="save()"></div>
+        <div class="f"><label>Version</label><input type="text" id="version" value="1" oninput="save()"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Ingénieurs chargés du contrôle</div>
+      <div class="fg">
+        <div class="f"><label>Sur dossier</label><input type="text" id="ing_doss" placeholder="Nom(s) ingénieur(s)" oninput="save()"></div>
+        <div class="f"><label>Sur chantier</label><input type="text" id="ing_chan" placeholder="Nom(s) ingénieur(s)" oninput="save()"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Nom de l'opération (titre du rapport)</div>
+      <div class="fg1">
+        <div class="f"><label>Intitulé complet (ex: FINDEL - SKYPARK BUSINESS CENTER – L19 0104B)</label>
+          <input type="text" id="op_titre" oninput="save()"></div>
+      </div>
     </div>
   </div>
-
-  <div class="card">
-    <div class="ctitle">Nom de l'opération (titre du rapport)</div>
-    <div class="fg1">
-      <div class="f"><label>Intitulé complet (ex: FINDEL - SKYPARK BUSINESS CENTER – L19 0104B)</label>
-        <input type="text" id="op_titre" oninput="save()"></div>
+  <!-- TITRE I (abrégé) -->
+  <div class="panel" id="panel-t1">
+    <div class="ptitle">Titre I — Opération &amp; Intervenants</div>
+    <div class="card">
+      <div class="ctitle">Maître de l'ouvrage &amp; Opération</div>
+      <div class="fg">
+        <div class="f s2"><label>Maître de l'ouvrage (nom + adresse)</label><textarea id="moa" rows="2" oninput="save()"></textarea></div>
+        <div class="f s2"><label>Références et adresse précise de l'opération</label><textarea id="op_ref" rows="2" oninput="save()"></textarea></div>
+        <div class="f s2"><label>Descriptif de l'opération</label><input type="text" id="op_desc" oninput="save()"></div>
+        <div class="f s2"><label>Contractant du bureau de contrôle (si différent du MOA)</label><textarea id="contractant" rows="2" oninput="save()"></textarea></div>
+        <div class="f"><label>Nom et fonction du signataire MOA</label><input type="text" id="sig_moa" oninput="save()"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Contrôle exercé</div>
+      <div class="fg" style="margin-bottom:12px">
+        <div class="f">
+          <label>Type de mission</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('conc','Conception',this)"><input type="radio" name="conc"> Conception</label>
+            <label class="ro" onclick="setR('conc','Conception + exécution',this)"><input type="radio" name="conc"> Conception + exécution</label>
+          </div>
+        </div>
+        <div class="f">
+          <label>Contrôle exercé depuis le début de l'opération</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('ctrl_dep','OUI',this)"><input type="radio" name="ctrl_dep"> OUI</label>
+            <label class="ro" onclick="setR('ctrl_dep','NON',this)"><input type="radio" name="ctrl_dep"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Missions confiées (DB, F, Av…)</label><input type="text" id="missions" oninput="save()"></div>
+        <div class="f"><label>Date du début de l'intervention</label><input type="date" id="date_debut" oninput="save()"></div>
+      </div>
+      <div class="ctitle" style="font-size:12px;margin-bottom:8px">Domaines contrôlés</div>
+      <div class="mg" id="dom-grid">
+        <div class="mc" onclick="togMC(this,'Sols/Fondations/Structures')"><input type="checkbox"> Sols/Fondations/Structures</div>
+        <div class="mc" onclick="togMC(this,'Enveloppe')"><input type="checkbox"> Enveloppe : clos/couvert</div>
+        <div class="mc" onclick="togMC(this,'Étanchéité toitures')"><input type="checkbox"> Étanchéité toitures</div>
+        <div class="mc" onclick="togMC(this,'Stabilité')"><input type="checkbox"> Stabilité</div>
+        <div class="mc" onclick="togMC(this,'Étanchéité façades')"><input type="checkbox"> Étanchéité façades</div>
+        <div class="mc" onclick="togMC(this,'Étanchéité sous-sols')"><input type="checkbox"> Étanchéité sous-sols</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Participants à la construction</div>
+      <div class="fg">
+        <div class="f s2"><label>Architecte / Maître d'œuvre (conception)</label><textarea id="archi_conc" rows="2" oninput="save()"></textarea></div>
+        <div class="f s2"><label>Architecte / Maître d'œuvre (exécution)</label><textarea id="archi_exec" rows="2" oninput="save()"></textarea></div>
+        <div class="f"><label>BE Sols / Géotechnicien</label><textarea id="be_sol" rows="2" oninput="save()"></textarea></div>
+        <div class="f"><label>BE Structures</label><textarea id="be_struct" rows="2" oninput="save()"></textarea></div>
+        <div class="f s2"><label>Autres (project manager, génie technique…)</label><textarea id="be_autres" rows="2" oninput="save()"></textarea></div>
+        <div class="f s2"><label>Entreprise(s) de gros-œuvre</label><textarea id="gros_oeuvre" rows="2" oninput="save()"></textarea></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Principales caractéristiques — Codes normatifs</div>
+      <div style="margin-bottom:10px;font-size:12px;color:var(--txt2)">Tableau des codes (Titre I Suite 2) — remplir les codes par ouvrage.</div>
+      <table class="tbl" id="codes-tbl">
+        <thead><tr><th style="width:80px">Ouvrage</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
+        <tbody id="codes-body"></tbody>
+      </table>
+      <button class="add-btn" onclick="addCode()">+ Ajouter un ouvrage</button>
+      <div class="f" style="margin-top:10px"><label>Commentaires sur les codes</label><textarea id="codes_comm" rows="3" oninput="save()"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Description du bâtiment</div>
+      <div class="f"><label>Le bâtiment comprend (description complète)</label><textarea id="bat_desc" rows="8" oninput="save()"></textarea></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Coût &amp; Délais</div>
+      <div class="fg">
+        <div class="f">
+          <label>Honoraires compris dans le montant des travaux ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('hon','OUI',this)"><input type="radio" name="hon"> OUI</label>
+            <label class="ro" onclick="setR('hon','NON',this)"><input type="radio" name="hon"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Montant total des travaux HTA</label><input type="text" id="montant" placeholder="… HTA" oninput="save()"></div>
+        <div class="f">
+          <label>Équipements spéciaux ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('eqp','OUI',this)"><input type="radio" name="eqp"> OUI</label>
+            <label class="ro" onclick="setR('eqp','NON',this)"><input type="radio" name="eqp"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Évaluation équipements spéciaux HTA</label><input type="text" id="montant_eqp" placeholder="… HTA" oninput="save()"></div>
+        <div class="f s2"><label>Nature des équipements spéciaux</label><input type="text" id="nature_eqp" oninput="save()"></div>
+        <div class="f"><label>Date début des travaux (mois/année)</label><input type="text" id="date_trav" placeholder="ex: 03/2026" oninput="save()"></div>
+        <div class="f"><label>Date 1re visite du bureau de contrôle</label><input type="date" id="date_visite1" oninput="save()"></div>
+        <div class="f"><label>Date envisagée de réception (mois/année)</label><input type="text" id="date_recep" placeholder="ex: 12/2027" oninput="save()"></div>
+      </div>
+      <div class="f" style="margin-top:10px">
+        <label>Commentaires sur les références des intervenants</label>
+        <textarea id="comm_interv" rows="3" oninput="save()" placeholder="Aucun commentaire n'est à formuler sur les références (non communiquées)."></textarea>
+      </div>
     </div>
   </div>
-</div>
-
-<!-- ── TITRE I ── -->
-<div class="panel" id="panel-t1">
-  <div class="ptitle">Titre I — Opération &amp; Intervenants</div>
-
-  <div class="card">
-    <div class="ctitle">Maître de l'ouvrage &amp; Opération</div>
-    <div class="fg">
-      <div class="f s2"><label>Maître de l'ouvrage (nom + adresse)</label><textarea id="moa" rows="2" oninput="save()"></textarea></div>
-      <div class="f s2"><label>Références et adresse précise de l'opération</label><textarea id="op_ref" rows="2" oninput="save()"></textarea></div>
-      <div class="f s2"><label>Descriptif de l'opération</label><input type="text" id="op_desc" oninput="save()"></div>
-      <div class="f s2"><label>Contractant du bureau de contrôle (si différent du MOA)</label><textarea id="contractant" rows="2" oninput="save()"></textarea></div>
-      <div class="f"><label>Nom et fonction du signataire MOA</label><input type="text" id="sig_moa" oninput="save()"></div>
+  <!-- TITRE II (abrégé) -->
+  <div class="panel" id="panel-t2">
+    <div class="ptitle">Titre II — Description du site</div>
+    <div class="card">
+      <div class="fg3">
+        <div class="f"><label>Altitude (m)</label><input type="text" id="altitude" oninput="save()"></div>
+        <div class="f">
+          <label>Zone cyclonique</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('cycl','OUI',this)"><input type="radio" name="cycl"> OUI</label>
+            <label class="ro" onclick="setR('cycl','NON',this)"><input type="radio" name="cycl"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Vitesse de vent (vb,0 en m/s)</label><input type="text" id="vent" value="24" oninput="save()"></div>
+        <div class="f"><label>Catégorie du terrain</label><input type="text" id="cat_terrain" value="II" oninput="save()"></div>
+        <div class="f">
+          <label>Charge de neige éventuelle</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('neige','OUI',this)"><input type="radio" name="neige"> OUI</label>
+            <label class="ro" onclick="setR('neige','NON',this)"><input type="radio" name="neige"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Valeur neige (sk, kN/m²)</label><input type="text" id="neige_val" oninput="save()"></div>
+      </div>
+      <div class="fg" style="margin-top:10px">
+        <div class="f"><label>Précisions réglementaires vent</label><input type="text" id="reg_vent" value="suivant EN 1991-1-4 (nov. 2005) + EN 1991-1-4:2005/AN-LU: 2011" oninput="save()"></div>
+        <div class="f"><label>Précisions réglementaires neige</label><input type="text" id="reg_neige" value="suivant EN 1991-1-3 (avril 2004) + EN 1991-1-3:2003/AN-LU: 2011" oninput="save()"></div>
+      </div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">Contrôle exercé</div>
-    <div class="fg" style="margin-bottom:12px">
-      <div class="f">
-        <label>Type de mission</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('conc','Conception',this)"><input type="radio" name="conc"> Conception</label>
-          <label class="ro" onclick="setR('conc','Conception + exécution',this)"><input type="radio" name="conc"> Conception + exécution</label>
+    <div class="card">
+      <div class="ctitle">Risques eau</div>
+      <div class="fg">
+        <div class="f">
+          <label>Risque d'envahissement par hautes eaux (fleuve, nappe)</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('inond','OUI',this)"><input type="radio" name="inond"> OUI</label>
+            <label class="ro" onclick="setR('inond','NON',this)"><input type="radio" name="inond"> NON</label>
+          </div>
         </div>
+        <div class="f"><label>Précision sur le risque eau</label><input type="text" id="inond_prec" placeholder="Information non communiquée" oninput="save()"></div>
+        <div class="f"><label>Niveau maximal nappe / rez-de-chaussée</label><input type="text" id="nappe_rc" placeholder="Néant à ce stade" oninput="save()"></div>
+        <div class="f"><label>Niveau maximal nappe / dernier sous-sol</label><input type="text" id="nappe_ss" placeholder="Néant à ce stade" oninput="save()"></div>
       </div>
-      <div class="f">
-        <label>Contrôle exercé depuis le début de l'opération</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('ctrl_dep','OUI',this)"><input type="radio" name="ctrl_dep"> OUI</label>
-          <label class="ro" onclick="setR('ctrl_dep','NON',this)"><input type="radio" name="ctrl_dep"> NON</label>
-        </div>
-      </div>
-      <div class="f"><label>Missions confiées (DB, F, Av…)</label><input type="text" id="missions" oninput="save()"></div>
-      <div class="f"><label>Date du début de l'intervention</label><input type="date" id="date_debut" oninput="save()"></div>
     </div>
-    <div class="ctitle" style="font-size:12px;margin-bottom:8px">Domaines contrôlés</div>
-    <div class="mg" id="dom-grid">
-      <div class="mc" onclick="togMC(this,'Sols/Fondations/Structures')"><input type="checkbox"> Sols/Fondations/Structures</div>
-      <div class="mc" onclick="togMC(this,'Enveloppe')"><input type="checkbox"> Enveloppe : clos/couvert</div>
-      <div class="mc" onclick="togMC(this,'Étanchéité toitures')"><input type="checkbox"> Étanchéité toitures</div>
-      <div class="mc" onclick="togMC(this,'Stabilité')"><input type="checkbox"> Stabilité</div>
-      <div class="mc" onclick="togMC(this,'Étanchéité façades')"><input type="checkbox"> Étanchéité façades</div>
-      <div class="mc" onclick="togMC(this,'Étanchéité sous-sols')"><input type="checkbox"> Étanchéité sous-sols</div>
+    <div class="card">
+      <div class="ctitle">Sismique &amp; Environnement</div>
+      <div class="fg">
+        <div class="f">
+          <label>Zone sismique</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('sism','OUI',this)"><input type="radio" name="sism"> OUI</label>
+            <label class="ro" onclick="setR('sism','NON',this)"><input type="radio" name="sism"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Niveau de protection sismique</label><input type="text" id="sism_prec" placeholder="Sans objet" oninput="save()"></div>
+        <div class="f">
+          <label>Site en milieu agressif</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('agr','OUI',this)"><input type="radio" name="agr"> OUI</label>
+            <label class="ro" onclick="setR('agr','NON',this)"><input type="radio" name="agr"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Nature de l'agressivité / protection</label><input type="text" id="agr_prec" placeholder="Néant à ce stade" oninput="save()"></div>
+      </div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">Participants à la construction</div>
-    <div class="fg">
-      <div class="f s2"><label>Architecte / Maître d'œuvre (conception)</label><textarea id="archi_conc" rows="2" oninput="save()"></textarea></div>
-      <div class="f s2"><label>Architecte / Maître d'œuvre (exécution)</label><textarea id="archi_exec" rows="2" oninput="save()"></textarea></div>
-      <div class="f"><label>BE Sols / Géotechnicien</label><textarea id="be_sol" rows="2" oninput="save()"></textarea></div>
-      <div class="f"><label>BE Structures</label><textarea id="be_struct" rows="2" oninput="save()"></textarea></div>
-      <div class="f s2"><label>Autres (project manager, génie technique…)</label><textarea id="be_autres" rows="2" oninput="save()"></textarea></div>
-      <div class="f s2"><label>Entreprise(s) de gros-œuvre</label><textarea id="gros_oeuvre" rows="2" oninput="save()"></textarea></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">Principales caractéristiques — Codes normatifs</div>
-    <div style="margin-bottom:10px;font-size:12px;color:var(--txt2)">Tableau des codes (Titre I Suite 2) — remplir les codes par ouvrage.</div>
-    <table class="tbl" id="codes-tbl">
-      <thead><tr><th style="width:80px">Ouvrage</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
-      <tbody id="codes-body"></tbody>
-    </table>
-    <button class="add-btn" onclick="addCode()">+ Ajouter un ouvrage</button>
-    <div class="f" style="margin-top:10px"><label>Commentaires sur les codes</label><textarea id="codes_comm" rows="3" oninput="save()"></textarea></div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">Description du bâtiment</div>
-    <div class="f"><label>Le bâtiment comprend (description complète)</label><textarea id="bat_desc" rows="8" oninput="save()"></textarea></div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">Coût &amp; Délais</div>
-    <div class="fg">
-      <div class="f">
-        <label>Honoraires compris dans le montant des travaux ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('hon','OUI',this)"><input type="radio" name="hon"> OUI</label>
-          <label class="ro" onclick="setR('hon','NON',this)"><input type="radio" name="hon"> NON</label>
+    <div class="card">
+      <div class="ctitle">Géologie — Topographie — Fondations</div>
+      <div class="fg">
+        <div class="f s2"><label>Nature du sol d'assise des fondations</label><input type="text" id="sol_assise" placeholder="Néant à ce stade" oninput="save()"></div>
+        <div class="f">
+          <label>Bureau d'études de sol intervenu ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('be_sol_int','OUI',this)"><input type="radio" name="be_sol_int"> OUI</label>
+            <label class="ro" onclick="setR('be_sol_int','NON',this)"><input type="radio" name="be_sol_int"> NON</label>
+          </div>
         </div>
-      </div>
-      <div class="f"><label>Montant total des travaux HTA</label><input type="text" id="montant" placeholder="… HTA" oninput="save()"></div>
-      <div class="f">
-        <label>Équipements spéciaux ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('eqp','OUI',this)"><input type="radio" name="eqp"> OUI</label>
-          <label class="ro" onclick="setR('eqp','NON',this)"><input type="radio" name="eqp"> NON</label>
+        <div class="f">
+          <label>Rapport géotechnique disponible ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('rgt','OUI',this)"><input type="radio" name="rgt"> OUI</label>
+            <label class="ro" onclick="setR('rgt','NON',this)"><input type="radio" name="rgt"> NON</label>
+          </div>
         </div>
-      </div>
-      <div class="f"><label>Évaluation équipements spéciaux HTA</label><input type="text" id="montant_eqp" placeholder="… HTA" oninput="save()"></div>
-      <div class="f s2"><label>Nature des équipements spéciaux</label><input type="text" id="nature_eqp" oninput="save()"></div>
-      <div class="f"><label>Date début des travaux (mois/année)</label><input type="text" id="date_trav" placeholder="ex: 03/2026" oninput="save()"></div>
-      <div class="f"><label>Date 1re visite du bureau de contrôle</label><input type="date" id="date_visite1" oninput="save()"></div>
-      <div class="f"><label>Date envisagée de réception (mois/année)</label><input type="text" id="date_recep" placeholder="ex: 12/2027" oninput="save()"></div>
-    </div>
-    <div class="f" style="margin-top:10px">
-      <label>Commentaires sur les références des intervenants</label>
-      <textarea id="comm_interv" rows="3" oninput="save()" placeholder="Aucun commentaire n'est à formuler sur les références (non communiquées)."></textarea>
-    </div>
-  </div>
-</div>
-
-<!-- ── TITRE II — SITE ── -->
-<div class="panel" id="panel-t2">
-  <div class="ptitle">Titre II — Description du site</div>
-  <div class="card">
-    <div class="fg3">
-      <div class="f"><label>Altitude (m)</label><input type="text" id="altitude" oninput="save()"></div>
-      <div class="f">
-        <label>Zone cyclonique</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('cycl','OUI',this)"><input type="radio" name="cycl"> OUI</label>
-          <label class="ro" onclick="setR('cycl','NON',this)"><input type="radio" name="cycl"> NON</label>
+        <div class="f s2"><label>Références rapport géotechnique</label><input type="text" id="rgt_ref" placeholder="Étude non communiquée" oninput="save()"></div>
+        <div class="f">
+          <label>Investigations complémentaires nécessaires ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('inv_comp','OUI',this)"><input type="radio" name="inv_comp"> OUI</label>
+            <label class="ro" onclick="setR('inv_comp','NON',this)"><input type="radio" name="inv_comp"> NON</label>
+          </div>
         </div>
-      </div>
-      <div class="f"><label>Vitesse de vent (vb,0 en m/s)</label><input type="text" id="vent" value="24" oninput="save()"></div>
-      <div class="f"><label>Catégorie du terrain</label><input type="text" id="cat_terrain" value="II" oninput="save()"></div>
-      <div class="f">
-        <label>Charge de neige éventuelle</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('neige','OUI',this)"><input type="radio" name="neige"> OUI</label>
-          <label class="ro" onclick="setR('neige','NON',this)"><input type="radio" name="neige"> NON</label>
+        <div class="f s2"><label>Solution de fondation retenue</label><input type="text" id="fond_sol" placeholder="Selon les coupes, fondations superficielles de type radier." oninput="save()"></div>
+        <div class="f">
+          <label>Adéquation sol / système de fondation ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('adequ_fond','OUI',this)"><input type="radio" name="adequ_fond"> OUI</label>
+            <label class="ro" onclick="setR('adequ_fond','NON',this)"><input type="radio" name="adequ_fond"> NON</label>
+          </div>
         </div>
-      </div>
-      <div class="f"><label>Valeur neige (sk, kN/m²)</label><input type="text" id="neige_val" oninput="save()"></div>
-    </div>
-    <div class="fg" style="margin-top:10px">
-      <div class="f"><label>Précisions réglementaires vent</label><input type="text" id="reg_vent" value="suivant EN 1991-1-4 (nov. 2005) + EN 1991-1-4:2005/AN-LU: 2011" oninput="save()"></div>
-      <div class="f"><label>Précisions réglementaires neige</label><input type="text" id="reg_neige" value="suivant EN 1991-1-3 (avril 2004) + EN 1991-1-3:2003/AN-LU: 2011" oninput="save()"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">Risques eau</div>
-    <div class="fg">
-      <div class="f">
-        <label>Risque d'envahissement par hautes eaux (fleuve, nappe)</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('inond','OUI',this)"><input type="radio" name="inond"> OUI</label>
-          <label class="ro" onclick="setR('inond','NON',this)"><input type="radio" name="inond"> NON</label>
-        </div>
-      </div>
-      <div class="f"><label>Précision sur le risque eau</label><input type="text" id="inond_prec" placeholder="Information non communiquée" oninput="save()"></div>
-      <div class="f"><label>Niveau maximal nappe / rez-de-chaussée</label><input type="text" id="nappe_rc" placeholder="Néant à ce stade" oninput="save()"></div>
-      <div class="f"><label>Niveau maximal nappe / dernier sous-sol</label><input type="text" id="nappe_ss" placeholder="Néant à ce stade" oninput="save()"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">Sismique &amp; Environnement</div>
-    <div class="fg">
-      <div class="f">
-        <label>Zone sismique</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('sism','OUI',this)"><input type="radio" name="sism"> OUI</label>
-          <label class="ro" onclick="setR('sism','NON',this)"><input type="radio" name="sism"> NON</label>
-        </div>
-      </div>
-      <div class="f"><label>Niveau de protection sismique</label><input type="text" id="sism_prec" placeholder="Sans objet" oninput="save()"></div>
-      <div class="f">
-        <label>Site en milieu agressif</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('agr','OUI',this)"><input type="radio" name="agr"> OUI</label>
-          <label class="ro" onclick="setR('agr','NON',this)"><input type="radio" name="agr"> NON</label>
-        </div>
-      </div>
-      <div class="f"><label>Nature de l'agressivité / protection</label><input type="text" id="agr_prec" placeholder="Néant à ce stade" oninput="save()"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">Géologie — Topographie — Fondations</div>
-    <div class="fg">
-      <div class="f s2"><label>Nature du sol d'assise des fondations</label><input type="text" id="sol_assise" placeholder="Néant à ce stade" oninput="save()"></div>
-      <div class="f">
-        <label>Bureau d'études de sol intervenu ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('be_sol_int','OUI',this)"><input type="radio" name="be_sol_int"> OUI</label>
-          <label class="ro" onclick="setR('be_sol_int','NON',this)"><input type="radio" name="be_sol_int"> NON</label>
-        </div>
-      </div>
-      <div class="f">
-        <label>Rapport géotechnique disponible ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('rgt','OUI',this)"><input type="radio" name="rgt"> OUI</label>
-          <label class="ro" onclick="setR('rgt','NON',this)"><input type="radio" name="rgt"> NON</label>
-        </div>
-      </div>
-      <div class="f s2"><label>Références rapport géotechnique</label><input type="text" id="rgt_ref" placeholder="Étude non communiquée" oninput="save()"></div>
-      <div class="f">
-        <label>Investigations complémentaires nécessaires ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('inv_comp','OUI',this)"><input type="radio" name="inv_comp"> OUI</label>
-          <label class="ro" onclick="setR('inv_comp','NON',this)"><input type="radio" name="inv_comp"> NON</label>
-        </div>
-      </div>
-      <div class="f s2"><label>Solution de fondation retenue</label><input type="text" id="fond_sol" placeholder="Selon les coupes, fondations superficielles de type radier." oninput="save()"></div>
-      <div class="f">
-        <label>Adéquation sol / système de fondation ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('adequ_fond','OUI',this)"><input type="radio" name="adequ_fond"> OUI</label>
-          <label class="ro" onclick="setR('adequ_fond','NON',this)"><input type="radio" name="adequ_fond"> NON</label>
-        </div>
-      </div>
-      <div class="f">
-        <label>Rapport RD1 renseigné ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('rd1_rens','OUI',this)"><input type="radio" name="rd1_rens"> OUI</label>
-          <label class="ro" onclick="setR('rd1_rens','NON',this)"><input type="radio" name="rd1_rens"> NON</label>
+        <div class="f">
+          <label>Rapport RD1 renseigné ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('rd1_rens','OUI',this)"><input type="radio" name="rd1_rens"> OUI</label>
+            <label class="ro" onclick="setR('rd1_rens','NON',this)"><input type="radio" name="rd1_rens"> NON</label>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
-<!-- ── TITRE III — STRUCTURES ── -->
-<div class="panel" id="panel-t3">
-  <div class="ptitle">Titre III — Description des ouvrages</div>
-
-  <div class="card">
-    <div class="ctitle">Structures verticales</div>
-    <div class="f"><textarea id="struct_vert" rows="4" oninput="save()"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Façades lourdes et revêtements extérieurs</div>
-    <div class="f"><textarea id="fac_lourde" rows="3" oninput="save()"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Façades légères et menuiseries légères</div>
-    <div class="fg">
-      <div class="f"><label>Ossature (aluminium, bois ou autres)</label><textarea id="fac_oss" rows="2" oninput="save()"></textarea></div>
-      <div class="f"><label>Remplissage (verre, paroi composite…)</label><textarea id="fac_rmp" rows="2" oninput="save()"></textarea></div>
-      <div class="f"><label>Surface totale (m²)</label><input type="text" id="fac_surf" oninput="save()"></div>
-      <div class="f">
-        <label>Possibilité de remplacement facile ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('fac_remp','OUI',this)"><input type="radio" name="fac_remp"> OUI</label>
-          <label class="ro" onclick="setR('fac_remp','NON',this)"><input type="radio" name="fac_remp"> NON</label>
+  <!-- TITRE III (abrégé) -->
+  <div class="panel" id="panel-t3">
+    <div class="ptitle">Titre III — Description des ouvrages</div>
+    <div class="card"><div class="ctitle">Structures verticales</div><div class="f"><textarea id="struct_vert" rows="4" oninput="save()"></textarea></div></div>
+    <div class="card"><div class="ctitle">Façades lourdes et revêtements extérieurs</div><div class="f"><textarea id="fac_lourde" rows="3" oninput="save()"></textarea></div></div>
+    <div class="card"><div class="ctitle">Façades légères et menuiseries légères</div>
+      <div class="fg">
+        <div class="f"><label>Ossature (aluminium, bois ou autres)</label><textarea id="fac_oss" rows="2" oninput="save()"></textarea></div>
+        <div class="f"><label>Remplissage (verre, paroi composite…)</label><textarea id="fac_rmp" rows="2" oninput="save()"></textarea></div>
+        <div class="f"><label>Surface totale (m²)</label><input type="text" id="fac_surf" oninput="save()"></div>
+        <div class="f"><label>Possibilité de remplacement facile ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('fac_remp','OUI',this)"><input type="radio" name="fac_remp"> OUI</label>
+            <label class="ro" onclick="setR('fac_remp','NON',this)"><input type="radio" name="fac_remp"> NON</label>
+          </div>
         </div>
+        <div class="f s2"><label>Précisions</label><textarea id="fac_prec" rows="2" oninput="save()"></textarea></div>
       </div>
-      <div class="f s2"><label>Précisions</label><textarea id="fac_prec" rows="2" oninput="save()"></textarea></div>
     </div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Planchers</div>
-    <div class="f"><textarea id="planchers" rows="4" oninput="save()"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Éléments porteurs de la toiture</div>
-    <div class="f"><textarea id="toiture" rows="3" oninput="save()"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Dispositifs de transmission des efforts horizontaux aux fondations</div>
-    <div class="fg">
-      <div class="f">
-        <label>Procédé traditionnel ? (si NON → remplir RD2)</label>
+    <div class="card"><div class="ctitle">Planchers</div><div class="f"><textarea id="planchers" rows="4" oninput="save()"></textarea></div></div>
+    <div class="card"><div class="ctitle">Éléments porteurs de la toiture</div><div class="f"><textarea id="toiture" rows="3" oninput="save()"></textarea></div></div>
+    <div class="card"><div class="ctitle">Dispositifs de transmission des efforts horizontaux aux fondations</div>
+      <div class="fg"><div class="f"><label>Procédé traditionnel ? (si NON → remplir RD2)</label>
         <div class="rg">
           <label class="ro" onclick="setR('trad_h','OUI',this)"><input type="radio" name="trad_h"> OUI</label>
           <label class="ro" onclick="setR('trad_h','NON',this)"><input type="radio" name="trad_h"> NON → RD2</label>
         </div>
+      </div></div>
+    </div>
+    <div class="card"><div class="ctitle">Étanchéité / Imperméabilisation des sous-sols</div>
+      <div class="fg">
+        <div class="f"><label>Inondabilité (eaux de ruissellement, nappe)</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('inond_ss','OUI',this)"><input type="radio" name="inond_ss"> OUI</label>
+            <label class="ro" onclick="setR('inond_ss','NON',this)"><input type="radio" name="inond_ss"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Précisions sur le risque</label><textarea id="inond_ss_prec" rows="2" oninput="save()"></textarea></div>
+        <div class="f"><label>Solution verticale</label><textarea id="etan_vert" rows="2" oninput="save()"></textarea></div>
+        <div class="f"><label>Solution horizontale</label><textarea id="etan_horiz" rows="2" oninput="save()"></textarea></div>
       </div>
     </div>
+    <div class="card"><div class="ctitle">Système rapporté d'imperméabilisation des façades</div><div class="f"><textarea id="imp_fac" rows="2" oninput="save()" placeholder="Absence de système d'imperméabilisation."></textarea></div></div>
+    <div class="card"><div class="ctitle">Étanchéité des toitures-terrasses</div><div class="f"><textarea id="etan_toit" rows="4" oninput="save()"></textarea></div></div>
+    <div class="card"><div class="ctitle">Couvertures</div><div class="f"><textarea id="couvert" rows="2" oninput="save()"></textarea></div></div>
+    <div class="card"><div class="ctitle">Dallages sur terre-pleins intérieurs</div>
+      <div class="fg">
+        <div class="f"><label>Charges réparties</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('dall_rep','OUI',this)"><input type="radio" name="dall_rep"> OUI</label>
+            <label class="ro" onclick="setR('dall_rep','NON',this)"><input type="radio" name="dall_rep"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Valeur charges réparties</label><input type="text" id="dall_rep_val" placeholder="Sans objet" oninput="save()"></div>
+        <div class="f"><label>Charges ponctuelles / roulantes</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('dall_ponc','OUI',this)"><input type="radio" name="dall_ponc"> OUI</label>
+            <label class="ro" onclick="setR('dall_ponc','NON',this)"><input type="radio" name="dall_ponc"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Valeur charges ponctuelles</label><input type="text" id="dall_ponc_val" placeholder="Sans objet" oninput="save()"></div>
+        <div class="f"><label>Tassement limite défini contractuellement</label><input type="text" id="tassement" placeholder="Sans objet" oninput="save()"></div>
+        <div class="f"><label>Nature du revêtement, fractionnement</label><input type="text" id="dall_rev" placeholder="Sans objet" oninput="save()"></div>
+      </div>
+    </div>
+    <div class="card"><div class="ctitle">Carrelages, revêtements scellés</div><div class="f"><textarea id="carrelage" rows="3" oninput="save()"></textarea></div></div>
   </div>
-  <div class="card">
-    <div class="ctitle">Étanchéité / Imperméabilisation des sous-sols</div>
-    <div class="fg">
-      <div class="f">
-        <label>Inondabilité (eaux de ruissellement, nappe)</label>
+  <!-- TITRE IV -->
+  <div class="panel" id="panel-t4">
+    <div class="ptitle">Titre IV — Risques aggravants</div>
+    <div class="card"><div class="ctitle">A. Points d'attention</div><div class="f"><textarea id="points_att" rows="8" oninput="save()"></textarea></div></div>
+    <div class="card"><div class="ctitle">B. Risques à prévention prioritaire</div><div class="f"><textarea id="risques_prio" rows="8" oninput="save()"></textarea></div></div>
+    <div class="card">
+      <div class="fg"><div class="f"><label>Réglementation technique utilisée</label><textarea id="reg_tech" rows="2" oninput="save()" placeholder="Règles EN 1990 à 1999 + AN-LU; règles DTU (Fr), règles CRTI-B pour les marchés publics."></textarea></div></div>
+      <div class="stitle" style="margin-top:12px">Missions complémentaires</div>
+      <div class="mg" id="miss-comp-grid">
+        <div class="mc" onclick="togMC(this,'Sismique')"><input type="checkbox"> Sismique</div>
+        <div class="mc" onclick="togMC(this,'Sécurité Incendie')"><input type="checkbox"> Sécurité Incendie</div>
+        <div class="mc" onclick="togMC(this,'Éléments d\'équipement')"><input type="checkbox"> Éléments d'équipement</div>
+      </div>
+      <div class="f" style="margin-top:10px"><label>Autres missions complémentaires (préciser)</label><input type="text" id="miss_autres" placeholder="Sans objet" oninput="save()"></div>
+    </div>
+  </div>
+  <!-- TITRE V -->
+  <div class="panel" id="panel-t5">
+    <div class="ptitle">Titre V — Conclusions</div>
+    <div class="card">
+      <div class="fg">
+        <div class="f"><label>Nb pages du rapport RD0</label><input type="number" id="nb_pages" oninput="save()"></div>
+        <div class="f"><label>Nb pages d'annexes (postes contrôlés)</label><input type="number" id="nb_ann" oninput="save()"></div>
+      </div>
+      <div class="stitle">Rapports complémentaires nécessaires</div>
+      <div class="mg" id="rd-req-grid">
+        <div class="mc" onclick="togRD(this,'rd1')"><input type="checkbox"> RD1 — Fondations spéciales</div>
+        <div class="mc" onclick="togRD(this,'rd2')"><input type="checkbox"> RD2 — Procédés non traditionnels</div>
+        <div class="mc" onclick="togRD(this,'rd3')"><input type="checkbox"> RD3 — Rapport final étanchéité</div>
+        <div class="mc" onclick="togRD(this,'rd4')"><input type="checkbox"> RD4 — Travaux sur existants</div>
+        <div class="mc" onclick="togRD(this,'rd5')"><input type="checkbox"> RD5 — Modification du risque</div>
+        <div class="mc" onclick="togRD(this,'rd6')"><input type="checkbox"> RD6 — Fin de travaux</div>
+      </div>
+      <div class="f" style="margin-top:10px"><label>Autres rapports complémentaires (préciser)</label><input type="text" id="rd_autres" placeholder="Sans objet" oninput="save()"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Avis préalable</div>
+      <div class="avis-wrap" id="avis-wrap">
         <div class="rg">
-          <label class="ro" onclick="setR('inond_ss','OUI',this)"><input type="radio" name="inond_ss"> OUI</label>
-          <label class="ro" onclick="setR('inond_ss','NON',this)"><input type="radio" name="inond_ss"> NON</label>
+          <label class="ro" onclick="setAvis('Favorable',this)"><input type="radio" name="avis"> Avis préalable favorable</label>
+          <label class="ro" onclick="setAvis('Favorable avec réserves',this)"><input type="radio" name="avis"> Favorable avec réserves</label>
+          <label class="ro" onclick="setAvis('Défavorable',this)"><input type="radio" name="avis"> Défavorable</label>
         </div>
       </div>
-      <div class="f"><label>Précisions sur le risque</label><textarea id="inond_ss_prec" rows="2" oninput="save()"></textarea></div>
-      <div class="f"><label>Solution verticale</label><textarea id="etan_vert" rows="2" oninput="save()"></textarea></div>
-      <div class="f"><label>Solution horizontale</label><textarea id="etan_horiz" rows="2" oninput="save()"></textarea></div>
+      <div class="f" style="margin-top:10px"><label>Précisions / réserves sur l'avis</label><textarea id="avis_prec" rows="3" oninput="save()" placeholder="(tenir en compte des différents points d'attention du TITRE IV)"></textarea></div>
     </div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Système rapporté d'imperméabilisation des façades</div>
-    <div class="f"><textarea id="imp_fac" rows="2" oninput="save()" placeholder="Absence de système d'imperméabilisation."></textarea></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Étanchéité des toitures-terrasses</div>
-    <div class="f"><textarea id="etan_toit" rows="4" oninput="save()"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Couvertures</div>
-    <div class="f"><textarea id="couvert" rows="2" oninput="save()"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Dallages sur terre-pleins intérieurs</div>
-    <div class="fg">
-      <div class="f">
-        <label>Charges réparties</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('dall_rep','OUI',this)"><input type="radio" name="dall_rep"> OUI</label>
-          <label class="ro" onclick="setR('dall_rep','NON',this)"><input type="radio" name="dall_rep"> NON</label>
+    <div class="card">
+      <div class="fg">
+        <div class="f"><label>Intervention services spécialisés prévue ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('spec','OUI',this)"><input type="radio" name="spec"> OUI</label>
+            <label class="ro" onclick="setR('spec','NON',this)"><input type="radio" name="spec"> NON</label>
+          </div>
         </div>
-      </div>
-      <div class="f"><label>Valeur charges réparties</label><input type="text" id="dall_rep_val" placeholder="Sans objet" oninput="save()"></div>
-      <div class="f">
-        <label>Charges ponctuelles / roulantes</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('dall_ponc','OUI',this)"><input type="radio" name="dall_ponc"> OUI</label>
-          <label class="ro" onclick="setR('dall_ponc','NON',this)"><input type="radio" name="dall_ponc"> NON</label>
-        </div>
-      </div>
-      <div class="f"><label>Valeur charges ponctuelles</label><input type="text" id="dall_ponc_val" placeholder="Sans objet" oninput="save()"></div>
-      <div class="f"><label>Tassement limite défini contractuellement</label><input type="text" id="tassement" placeholder="Sans objet" oninput="save()"></div>
-      <div class="f"><label>Nature du revêtement, fractionnement</label><input type="text" id="dall_rev" placeholder="Sans objet" oninput="save()"></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Carrelages, revêtements scellés</div>
-    <div class="f"><textarea id="carrelage" rows="3" oninput="save()"></textarea></div>
-  </div>
-</div>
-
-<!-- ── TITRE IV — RISQUES ── -->
-<div class="panel" id="panel-t4">
-  <div class="ptitle">Titre IV — Risques aggravants</div>
-  <div class="card">
-    <div class="ctitle">A. Points d'attention</div>
-    <div class="f"><textarea id="points_att" rows="8" oninput="save()"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">B. Risques à prévention prioritaire</div>
-    <div class="f"><textarea id="risques_prio" rows="8" oninput="save()"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="fg">
-      <div class="f"><label>Réglementation technique utilisée</label><textarea id="reg_tech" rows="2" oninput="save()" placeholder="Règles EN 1990 à 1999 + AN-LU; règles DTU (Fr), règles CRTI-B pour les marchés publics."></textarea></div>
-    </div>
-    <div class="stitle" style="margin-top:12px">Missions complémentaires</div>
-    <div class="mg" id="miss-comp-grid">
-      <div class="mc" onclick="togMC(this,'Sismique')"><input type="checkbox"> Sismique</div>
-      <div class="mc" onclick="togMC(this,'Sécurité Incendie')"><input type="checkbox"> Sécurité Incendie</div>
-      <div class="mc" onclick="togMC(this,'Éléments d\'équipement')"><input type="checkbox"> Éléments d'équipement</div>
-    </div>
-    <div class="f" style="margin-top:10px"><label>Autres missions complémentaires (préciser)</label><input type="text" id="miss_autres" placeholder="Sans objet" oninput="save()"></div>
-  </div>
-</div>
-
-<!-- ── TITRE V — CONCLUSIONS ── -->
-<div class="panel" id="panel-t5">
-  <div class="ptitle">Titre V — Conclusions</div>
-  <div class="card">
-    <div class="fg">
-      <div class="f"><label>Nb pages du rapport RD0</label><input type="number" id="nb_pages" oninput="save()"></div>
-      <div class="f"><label>Nb pages d'annexes (postes contrôlés)</label><input type="number" id="nb_ann" oninput="save()"></div>
-    </div>
-    <div class="stitle">Rapports complémentaires nécessaires</div>
-    <div class="mg" id="rd-req-grid">
-      <div class="mc" onclick="togRD(this,'rd1')"><input type="checkbox"> RD1 — Fondations spéciales</div>
-      <div class="mc" onclick="togRD(this,'rd2')"><input type="checkbox"> RD2 — Procédés non traditionnels</div>
-      <div class="mc" onclick="togRD(this,'rd3')"><input type="checkbox"> RD3 — Rapport final étanchéité</div>
-      <div class="mc" onclick="togRD(this,'rd4')"><input type="checkbox"> RD4 — Travaux sur existants</div>
-      <div class="mc" onclick="togRD(this,'rd5')"><input type="checkbox"> RD5 — Modification du risque</div>
-      <div class="mc" onclick="togRD(this,'rd6')"><input type="checkbox"> RD6 — Fin de travaux</div>
-    </div>
-    <div class="f" style="margin-top:10px"><label>Autres rapports complémentaires (préciser)</label><input type="text" id="rd_autres" placeholder="Sans objet" oninput="save()"></div>
-  </div>
-
-  <div class="card">
-    <div class="ctitle">Avis préalable</div>
-    <div class="avis-wrap" id="avis-wrap">
-      <div class="rg">
-        <label class="ro" onclick="setAvis('Favorable',this)"><input type="radio" name="avis"> Avis préalable favorable</label>
-        <label class="ro" onclick="setAvis('Favorable avec réserves',this)"><input type="radio" name="avis"> Favorable avec réserves</label>
-        <label class="ro" onclick="setAvis('Défavorable',this)"><input type="radio" name="avis"> Défavorable</label>
-      </div>
-    </div>
-    <div class="f" style="margin-top:10px">
-      <label>Précisions / réserves sur l'avis</label>
-      <textarea id="avis_prec" rows="3" oninput="save()" placeholder="(tenir en compte des différents points d'attention du TITRE IV)"></textarea>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="fg">
-      <div class="f">
-        <label>Intervention services spécialisés prévue ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('spec','OUI',this)"><input type="radio" name="spec"> OUI</label>
-          <label class="ro" onclick="setR('spec','NON',this)"><input type="radio" name="spec"> NON</label>
-        </div>
-      </div>
-      <div class="f"><label>Si oui, sur quelle partie</label><input type="text" id="spec_prec" placeholder="Sans objet" oninput="save()"></div>
-      <div class="f s2"><label>Nombre minimal de visites de chantier prévues</label><input type="text" id="nb_visites" placeholder="3/mois  2/mois  1/mois — Dégressif selon l'avancement." oninput="save()"></div>
-      <div class="f"><label>Dont, pour sols et structures</label><input type="text" id="nb_visites_sol" placeholder="3/mois  2/mois" oninput="save()"></div>
-      <div class="f">
-        <label>Documents et avis à adresser ultérieurement ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('docs_ult','OUI',this)"><input type="radio" name="docs_ult"> OUI</label>
-          <label class="ro" onclick="setR('docs_ult','NON',this)"><input type="radio" name="docs_ult"> NON</label>
+        <div class="f"><label>Si oui, sur quelle partie</label><input type="text" id="spec_prec" placeholder="Sans objet" oninput="save()"></div>
+        <div class="f s2"><label>Nombre minimal de visites de chantier prévues</label><input type="text" id="nb_visites" placeholder="3/mois  2/mois  1/mois — Dégressif selon l'avancement." oninput="save()"></div>
+        <div class="f"><label>Dont, pour sols et structures</label><input type="text" id="nb_visites_sol" placeholder="3/mois  2/mois" oninput="save()"></div>
+        <div class="f"><label>Documents et avis à adresser ultérieurement ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('docs_ult','OUI',this)"><input type="radio" name="docs_ult"> OUI</label>
+            <label class="ro" onclick="setR('docs_ult','NON',this)"><input type="radio" name="docs_ult"> NON</label>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
-
-<!-- ── SIGNATURE ── -->
-<div class="panel" id="panel-sig">
-  <div class="ptitle">Signature &amp; Destinataires</div>
-  <div class="card">
-    <div class="fg">
-      <div class="f"><label>Fait à</label><input type="text" id="fait_a" value="Livange" oninput="save()"></div>
-      <div class="f"><label>Le</label><input type="date" id="fait_le" oninput="save()"></div>
-      <div class="f s2"><label>L'ingénieur chargé du contrôle (signature)</label><input type="text" id="sig_ing" oninput="save()"></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Destinataires du rapport</div>
-    <div class="fg">
-      <div class="f"><label>Maître d'ouvrage délégué</label><input type="text" id="dest_moa" oninput="save()"></div>
-      <div class="f"><label>Assureur</label><input type="text" id="dest_ass" value="/" oninput="save()"></div>
-      <div class="f"><label>Autre</label><input type="text" id="dest_autre" value="/" oninput="save()"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ── RD1 ── -->
-<div class="panel" id="panel-rd1">
-  <div class="ptitle">RD1 — Fondations spéciales</div>
-  <div class="card">
-    <div class="fg">
-      <div class="f"><label>Type de fondation spéciale</label><input type="text" id="rd1_type" placeholder="Pieux, puits, parois moulées…" oninput="save()"></div>
-      <div class="f"><label>Nb éléments</label><input type="number" id="rd1_nb" oninput="save()"></div>
-      <div class="f"><label>Diamètre (m)</label><input type="text" id="rd1_diam" oninput="save()"></div>
-      <div class="f"><label>Profondeur (m)</label><input type="text" id="rd1_prof" oninput="save()"></div>
-    </div>
-    <div class="f" style="margin-top:10px"><label>Adéquation sol / fondations</label><textarea id="rd1_adequ" rows="4" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD1</label><textarea id="rd1_conclu" rows="4" oninput="save()"></textarea></div>
-  </div>
-</div>
-
-<!-- ── RD2 ── -->
-<div class="panel" id="panel-rd2">
-  <div class="ptitle">RD2 — Procédés non traditionnels</div>
-  <div class="card">
-    <div class="f"><label>Description du procédé non traditionnel</label><textarea id="rd2_desc" rows="5" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD2</label><textarea id="rd2_conclu" rows="4" oninput="save()"></textarea></div>
-  </div>
-</div>
-
-<!-- ── PC — POSTES CONTRÔLÉS ── -->
-<div class="panel" id="panel-pc">
-  <div class="ptitle">Annexe PC — Liste des postes contrôlés</div>
-  <div class="hint" style="margin-bottom:14px">SQ-04_MOD_LUX_10-V2 — Nota : La liste ci-dessous est extraite des corps d'état contrôlés selon le code civil Luxembourgeois.</div>
-
-  <div class="card">
-    <div class="ctitle">OUVRAGES SOUMIS À GARANTIE DÉCENNALE</div>
-    <table class="pc-tbl" id="pc-dec-tbl">
-      <thead><tr><th style="width:120px">Lot</th><th>Ouvrage</th><th style="width:200px">Statut</th></tr></thead>
-      <tbody id="pc-dec-body"></tbody>
-    </table>
-  </div>
-  <div class="card">
-    <div class="ctitle">OUVRAGES SOUMIS À GARANTIE BIENNALE</div>
-    <table class="pc-tbl" id="pc-bi-tbl">
-      <thead><tr><th style="width:120px">Lot</th><th>Ouvrage</th><th style="width:200px">Statut</th></tr></thead>
-      <tbody id="pc-bi-body"></tbody>
-    </table>
-  </div>
-</div>
-
-
-<!-- ── RD3 ── -->
-<div class="panel" id="panel-rd3">
-  <div class="ptitle">RD3 — Rapport final étanchéité</div>
-  <div class="card">
-    <div class="ctitle">Réceptions d'étanchéité</div>
-    <div class="fg">
-      <div class="f"><label>Date de la dernière visite de réception</label><input type="date" id="rd3_date_recep" oninput="save()"></div>
-      <div class="f"><label>Ingénieur présent</label><input type="text" id="rd3_ing" oninput="save()"></div>
-    </div>
-    <div class="f" style="margin-top:10px"><label>Ouvrages contrôlés (toitures, façades, sous-sols…)</label><textarea id="rd3_ouvrages" rows="4" oninput="save()"></textarea></div>
-    <div class="fg" style="margin-top:10px">
-      <div class="f">
-        <label>Avis d'étanchéité</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('rd3_avis','Favorable',this)"><input type="radio" name="rd3_avis"> Favorable</label>
-          <label class="ro" onclick="setR('rd3_avis','Favorable avec réserves',this)"><input type="radio" name="rd3_avis"> Favorable avec réserves</label>
-          <label class="ro" onclick="setR('rd3_avis','Défavorable',this)"><input type="radio" name="rd3_avis"> Défavorable</label>
-        </div>
+  <!-- SIGNATURE -->
+  <div class="panel" id="panel-sig">
+    <div class="ptitle">Signature &amp; Destinataires</div>
+    <div class="card">
+      <div class="fg">
+        <div class="f"><label>Fait à</label><input type="text" id="fait_a" value="Livange" oninput="save()"></div>
+        <div class="f"><label>Le</label><input type="date" id="fait_le" oninput="save()"></div>
+        <div class="f s2"><label>L'ingénieur chargé du contrôle (signature)</label><input type="text" id="sig_ing" oninput="save()"></div>
       </div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Réserves / observations</label><textarea id="rd3_reserves" rows="4" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD3</label><textarea id="rd3_conclu" rows="4" oninput="save()"></textarea></div>
-  </div>
-</div>
-
-<!-- ── RD4 ── -->
-<div class="panel" id="panel-rd4">
-  <div class="ptitle">RD4 — Travaux neufs sur existants</div>
-  <div class="card">
-    <div class="ctitle">Description des travaux sur existants</div>
-    <div class="f"><label>Nature des travaux sur existants</label><textarea id="rd4_nature" rows="4" oninput="save()"></textarea></div>
-    <div class="fg" style="margin-top:10px">
-      <div class="f"><label>Date de début d'intervention</label><input type="date" id="rd4_date" oninput="save()"></div>
-      <div class="f">
-        <label>Risques liés aux existants identifiés ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('rd4_risques','OUI',this)"><input type="radio" name="rd4_risques"> OUI</label>
-          <label class="ro" onclick="setR('rd4_risques','NON',this)"><input type="radio" name="rd4_risques"> NON</label>
-        </div>
-      </div>
-    </div>
-    <div class="f" style="margin-top:10px"><label>Description des risques identifiés</label><textarea id="rd4_risq_desc" rows="4" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Mesures préconisées</label><textarea id="rd4_mesures" rows="3" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD4</label><textarea id="rd4_conclu" rows="4" oninput="save()"></textarea></div>
-  </div>
-</div>
-
-<!-- ── RD5 ── -->
-<div class="panel" id="panel-rd5">
-  <div class="ptitle">RD5 — Modification majeure du risque au cours des travaux</div>
-  <div class="card">
-    <div class="ctitle">Modification du risque en cours de chantier</div>
-    <div class="fg">
-      <div class="f"><label>Date de constat</label><input type="date" id="rd5_date" oninput="save()"></div>
-      <div class="f"><label>Ingénieur ayant constaté</label><input type="text" id="rd5_ing" oninput="save()"></div>
-    </div>
-    <div class="f" style="margin-top:10px"><label>Description de la modification du risque</label><textarea id="rd5_desc" rows="5" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Impact sur les ouvrages garantis</label><textarea id="rd5_impact" rows="4" oninput="save()"></textarea></div>
-    <div class="fg" style="margin-top:10px">
-      <div class="f">
-        <label>Nouvel avis préalable</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('rd5_avis','Favorable',this)"><input type="radio" name="rd5_avis"> Favorable</label>
-          <label class="ro" onclick="setR('rd5_avis','Favorable avec réserves',this)"><input type="radio" name="rd5_avis"> Favorable avec réserves</label>
-          <label class="ro" onclick="setR('rd5_avis','Défavorable',this)"><input type="radio" name="rd5_avis"> Défavorable</label>
-        </div>
-      </div>
-    </div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD5</label><textarea id="rd5_conclu" rows="4" oninput="save()"></textarea></div>
-  </div>
-</div>
-
-<!-- ── RD6 — FIN DE TRAVAUX ── -->
-<div class="panel" id="panel-rd6">
-  <div class="ptitle">RD6 — Fin de travaux (Quitus)</div>
-  <div class="card">
-    <div class="ctitle">Réception des ouvrages</div>
-    <div class="fg">
-      <div class="f"><label>Date de rédaction du RD6</label><input type="date" id="rd6_date" oninput="save()"></div>
-      <div class="f"><label>Date de réception des travaux</label><input type="date" id="rd6_date_recep" oninput="save()"></div>
-      <div class="f"><label>Date de mise en service / prévue</label><input type="date" id="rd6_date_service" oninput="save()"></div>
-      <div class="f">
-        <label>Travaux achevés ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('rd6_acheve','OUI',this)"><input type="radio" name="rd6_acheve"> OUI</label>
-          <label class="ro" onclick="setR('rd6_acheve','NON',this)"><input type="radio" name="rd6_acheve"> NON</label>
-        </div>
+    <div class="card">
+      <div class="ctitle">Destinataires du rapport</div>
+      <div class="fg">
+        <div class="f"><label>Maître d'ouvrage délégué</label><input type="text" id="dest_moa" oninput="save()"></div>
+        <div class="f"><label>Assureur</label><input type="text" id="dest_ass" value="/" oninput="save()"></div>
+        <div class="f"><label>Autre</label><input type="text" id="dest_autre" value="/" oninput="save()"></div>
       </div>
     </div>
   </div>
-  <div class="card">
-    <div class="ctitle">Levée des réserves</div>
-    <div class="fg">
-      <div class="f">
-        <label>Réserves émises lors de la réception ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('rd6_res_emis','OUI',this)"><input type="radio" name="rd6_res_emis"> OUI</label>
-          <label class="ro" onclick="setR('rd6_res_emis','NON',this)"><input type="radio" name="rd6_res_emis"> NON</label>
+  <!-- RD1 -->
+  <div class="panel" id="panel-rd1">
+    <div class="ptitle">RD1 — Fondations spéciales</div>
+    <div class="card">
+      <div class="fg">
+        <div class="f"><label>Type de fondation spéciale</label><input type="text" id="rd1_type" placeholder="Pieux, puits, parois moulées…" oninput="save()"></div>
+        <div class="f"><label>Nb éléments</label><input type="number" id="rd1_nb" oninput="save()"></div>
+        <div class="f"><label>Diamètre (m)</label><input type="text" id="rd1_diam" oninput="save()"></div>
+        <div class="f"><label>Profondeur (m)</label><input type="text" id="rd1_prof" oninput="save()"></div>
+      </div>
+      <div class="f" style="margin-top:10px"><label>Adéquation sol / fondations</label><textarea id="rd1_adequ" rows="4" oninput="save()"></textarea></div>
+      <div class="f" style="margin-top:10px"><label>Conclusion RD1</label><textarea id="rd1_conclu" rows="4" oninput="save()"></textarea></div>
+    </div>
+  </div>
+  <!-- RD2 -->
+  <div class="panel" id="panel-rd2">
+    <div class="ptitle">RD2 — Procédés non traditionnels</div>
+    <div class="card">
+      <div class="f"><label>Description du procédé non traditionnel</label><textarea id="rd2_desc" rows="5" oninput="save()"></textarea></div>
+      <div class="f" style="margin-top:10px"><label>Conclusion RD2</label><textarea id="rd2_conclu" rows="4" oninput="save()"></textarea></div>
+    </div>
+  </div>
+  <!-- PC -->
+  <div class="panel" id="panel-pc">
+    <div class="ptitle">Annexe PC — Liste des postes contrôlés</div>
+    <div class="hint" style="margin-bottom:14px">SQ-04_MOD_LUX_10-V2 — Nota : La liste ci-dessous est extraite des corps d'état contrôlés selon le code civil Luxembourgeois.</div>
+    <div class="card">
+      <div class="ctitle">OUVRAGES SOUMIS À GARANTIE DÉCENNALE</div>
+      <table class="pc-tbl" id="pc-dec-tbl">
+        <thead><tr><th style="width:120px">Lot</th><th>Ouvrage</th><th style="width:200px">Statut</th></tr></thead>
+        <tbody id="pc-dec-body"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="ctitle">OUVRAGES SOUMIS À GARANTIE BIENNALE</div>
+      <table class="pc-tbl" id="pc-bi-tbl">
+        <thead><tr><th style="width:120px">Lot</th><th>Ouvrage</th><th style="width:200px">Statut</th></tr></thead>
+        <tbody id="pc-bi-body"></tbody>
+      </table>
+    </div>
+  </div>
+  <!-- RD3 -->
+  <div class="panel" id="panel-rd3">
+    <div class="ptitle">RD3 — Rapport final étanchéité</div>
+    <div class="card">
+      <div class="ctitle">Réceptions d'étanchéité</div>
+      <div class="fg">
+        <div class="f"><label>Date de la dernière visite de réception</label><input type="date" id="rd3_date_recep" oninput="save()"></div>
+        <div class="f"><label>Ingénieur présent</label><input type="text" id="rd3_ing" oninput="save()"></div>
+      </div>
+      <div class="f" style="margin-top:10px"><label>Ouvrages contrôlés (toitures, façades, sous-sols…)</label><textarea id="rd3_ouvrages" rows="4" oninput="save()"></textarea></div>
+      <div class="fg" style="margin-top:10px">
+        <div class="f"><label>Avis d'étanchéité</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('rd3_avis','Favorable',this)"><input type="radio" name="rd3_avis"> Favorable</label>
+            <label class="ro" onclick="setR('rd3_avis','Favorable avec réserves',this)"><input type="radio" name="rd3_avis"> Favorable avec réserves</label>
+            <label class="ro" onclick="setR('rd3_avis','Défavorable',this)"><input type="radio" name="rd3_avis"> Défavorable</label>
+          </div>
         </div>
       </div>
-      <div class="f">
-        <label>Réserves levées ?</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('rd6_res_lev','OUI',this)"><input type="radio" name="rd6_res_lev"> OUI</label>
-          <label class="ro" onclick="setR('rd6_res_lev','NON',this)"><input type="radio" name="rd6_res_lev"> NON</label>
-          <label class="ro" onclick="setR('rd6_res_lev','Partiellement',this)"><input type="radio" name="rd6_res_lev"> Partiellement</label>
+      <div class="f" style="margin-top:10px"><label>Réserves / observations</label><textarea id="rd3_reserves" rows="4" oninput="save()"></textarea></div>
+      <div class="f" style="margin-top:10px"><label>Conclusion RD3</label><textarea id="rd3_conclu" rows="4" oninput="save()"></textarea></div>
+    </div>
+  </div>
+  <!-- RD4 -->
+  <div class="panel" id="panel-rd4">
+    <div class="ptitle">RD4 — Travaux neufs sur existants</div>
+    <div class="card">
+      <div class="ctitle">Description des travaux sur existants</div>
+      <div class="f"><label>Nature des travaux sur existants</label><textarea id="rd4_nature" rows="4" oninput="save()"></textarea></div>
+      <div class="fg" style="margin-top:10px">
+        <div class="f"><label>Date de début d'intervention</label><input type="date" id="rd4_date" oninput="save()"></div>
+        <div class="f"><label>Risques liés aux existants identifiés ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('rd4_risques','OUI',this)"><input type="radio" name="rd4_risques"> OUI</label>
+            <label class="ro" onclick="setR('rd4_risques','NON',this)"><input type="radio" name="rd4_risques"> NON</label>
+          </div>
+        </div>
+      </div>
+      <div class="f" style="margin-top:10px"><label>Description des risques identifiés</label><textarea id="rd4_risq_desc" rows="4" oninput="save()"></textarea></div>
+      <div class="f" style="margin-top:10px"><label>Mesures préconisées</label><textarea id="rd4_mesures" rows="3" oninput="save()"></textarea></div>
+      <div class="f" style="margin-top:10px"><label>Conclusion RD4</label><textarea id="rd4_conclu" rows="4" oninput="save()"></textarea></div>
+    </div>
+  </div>
+  <!-- RD5 -->
+  <div class="panel" id="panel-rd5">
+    <div class="ptitle">RD5 — Modification majeure du risque au cours des travaux</div>
+    <div class="card">
+      <div class="ctitle">Modification du risque en cours de chantier</div>
+      <div class="fg">
+        <div class="f"><label>Date de constat</label><input type="date" id="rd5_date" oninput="save()"></div>
+        <div class="f"><label>Ingénieur ayant constaté</label><input type="text" id="rd5_ing" oninput="save()"></div>
+      </div>
+      <div class="f" style="margin-top:10px"><label>Description de la modification du risque</label><textarea id="rd5_desc" rows="5" oninput="save()"></textarea></div>
+      <div class="f" style="margin-top:10px"><label>Impact sur les ouvrages garantis</label><textarea id="rd5_impact" rows="4" oninput="save()"></textarea></div>
+      <div class="fg" style="margin-top:10px">
+        <div class="f"><label>Nouvel avis préalable</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('rd5_avis','Favorable',this)"><input type="radio" name="rd5_avis"> Favorable</label>
+            <label class="ro" onclick="setR('rd5_avis','Favorable avec réserves',this)"><input type="radio" name="rd5_avis"> Favorable avec réserves</label>
+            <label class="ro" onclick="setR('rd5_avis','Défavorable',this)"><input type="radio" name="rd5_avis"> Défavorable</label>
+          </div>
+        </div>
+      </div>
+      <div class="f" style="margin-top:10px"><label>Conclusion RD5</label><textarea id="rd5_conclu" rows="4" oninput="save()"></textarea></div>
+    </div>
+  </div>
+  <!-- RD6 -->
+  <div class="panel" id="panel-rd6">
+    <div class="ptitle">RD6 — Fin de travaux (Quitus)</div>
+    <div class="card">
+      <div class="ctitle">Réception des ouvrages</div>
+      <div class="fg">
+        <div class="f"><label>Date de rédaction du RD6</label><input type="date" id="rd6_date" oninput="save()"></div>
+        <div class="f"><label>Date de réception des travaux</label><input type="date" id="rd6_date_recep" oninput="save()"></div>
+        <div class="f"><label>Date de mise en service / prévue</label><input type="date" id="rd6_date_service" oninput="save()"></div>
+        <div class="f"><label>Travaux achevés ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('rd6_acheve','OUI',this)"><input type="radio" name="rd6_acheve"> OUI</label>
+            <label class="ro" onclick="setR('rd6_acheve','NON',this)"><input type="radio" name="rd6_acheve"> NON</label>
+          </div>
         </div>
       </div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Détail des réserves maintenues</label><textarea id="rd6_res_detail" rows="4" oninput="save()"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Avis final</div>
-    <div class="fg">
-      <div class="f">
-        <label>Avis de fin de travaux</label>
-        <div class="rg">
-          <label class="ro" onclick="setR('rd6_avis','Favorable',this)"><input type="radio" name="rd6_avis"> Favorable</label>
-          <label class="ro" onclick="setR('rd6_avis','Favorable avec réserves',this)"><input type="radio" name="rd6_avis"> Favorable avec réserves</label>
-          <label class="ro" onclick="setR('rd6_avis','Défavorable',this)"><input type="radio" name="rd6_avis"> Défavorable</label>
+    <div class="card">
+      <div class="ctitle">Levée des réserves</div>
+      <div class="fg">
+        <div class="f"><label>Réserves émises lors de la réception ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('rd6_res_emis','OUI',this)"><input type="radio" name="rd6_res_emis"> OUI</label>
+            <label class="ro" onclick="setR('rd6_res_emis','NON',this)"><input type="radio" name="rd6_res_emis"> NON</label>
+          </div>
+        </div>
+        <div class="f"><label>Réserves levées ?</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('rd6_res_lev','OUI',this)"><input type="radio" name="rd6_res_lev"> OUI</label>
+            <label class="ro" onclick="setR('rd6_res_lev','NON',this)"><input type="radio" name="rd6_res_lev"> NON</label>
+            <label class="ro" onclick="setR('rd6_res_lev','Partiellement',this)"><input type="radio" name="rd6_res_lev"> Partiellement</label>
+          </div>
         </div>
       </div>
+      <div class="f" style="margin-top:10px"><label>Détail des réserves maintenues</label><textarea id="rd6_res_detail" rows="4" oninput="save()"></textarea></div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD6 — Quitus</label><textarea id="rd6_conclu" rows="6" oninput="save()" placeholder="Dans le cadre de notre mission de contrôle technique, définie par la convention n° …"></textarea></div>
-    <div class="fg" style="margin-top:10px">
-      <div class="f"><label>Fait à</label><input type="text" id="rd6_fait_a" value="Livange" oninput="save()"></div>
-      <div class="f"><label>Le</label><input type="date" id="rd6_fait_le" oninput="save()"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ── CANEVAS ── -->
-<div class="panel" id="panel-canevas">
-  <div class="ptitle">📁 Gestion des canevas</div>
-  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <button class="open-btn" style="padding:6px 14px;font-size:12px" onclick="newDossier()">+ Nouveau dossier</button>
-    <button class="open-btn" style="padding:6px 14px;font-size:12px" onclick="importJSON()">📂 Charger JSON</button>
-    <button class="open-btn" style="padding:6px 14px;font-size:12px" onclick="exportJSON()">💾 Exporter JSON</button>
-    <input type="text" id="cav-search" placeholder="Rechercher un dossier…" oninput="filterCanevas()" style="flex:1;min-width:200px;border:1px solid var(--bord);border-radius:5px;padding:5px 10px;font-size:12px">
-  </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <table style="width:100%;border-collapse:collapse;font-size:12.5px">
-      <thead>
-        <tr style="background:var(--bleu-cl);border-bottom:1px solid var(--bord)">
-          <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--bleu-h)">Référence</th>
-          <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--bleu-h)">Opération</th>
-          <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--bleu-h)">Date RD0</th>
-          <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--bleu-h)">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="canevas-body"></tbody>
-    </table>
-    <div id="canevas-empty" style="padding:24px;text-align:center;color:var(--txt2);font-size:12px;display:none">
-      Aucun dossier enregistré. Créez un nouveau dossier ou chargez un JSON.
+    <div class="card">
+      <div class="ctitle">Avis final</div>
+      <div class="fg">
+        <div class="f"><label>Avis de fin de travaux</label>
+          <div class="rg">
+            <label class="ro" onclick="setR('rd6_avis','Favorable',this)"><input type="radio" name="rd6_avis"> Favorable</label>
+            <label class="ro" onclick="setR('rd6_avis','Favorable avec réserves',this)"><input type="radio" name="rd6_avis"> Favorable avec réserves</label>
+            <label class="ro" onclick="setR('rd6_avis','Défavorable',this)"><input type="radio" name="rd6_avis"> Défavorable</label>
+          </div>
+        </div>
+      </div>
+      <div class="f" style="margin-top:10px"><label>Conclusion RD6 — Quitus</label><textarea id="rd6_conclu" rows="6" oninput="save()" placeholder="Dans le cadre de notre mission de contrôle technique, définie par la convention n° …"></textarea></div>
+      <div class="fg" style="margin-top:10px">
+        <div class="f"><label>Fait à</label><input type="text" id="rd6_fait_a" value="Livange" oninput="save()"></div>
+        <div class="f"><label>Le</label><input type="date" id="rd6_fait_le" oninput="save()"></div>
+      </div>
     </div>
   </div>
-</div>
-
+  <!-- CANEVAS -->
+  <div class="panel" id="panel-canevas">
+    <div class="ptitle">📁 Gestion des canevas</div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="open-btn" style="padding:6px 14px;font-size:12px" onclick="newDossier()">+ Nouveau dossier</button>
+      <button class="open-btn" style="padding:6px 14px;font-size:12px" onclick="importJSON()">📂 Charger JSON</button>
+      <button class="open-btn" style="padding:6px 14px;font-size:12px" onclick="exportJSON()">💾 Exporter JSON</button>
+      <input type="text" id="cav-search" placeholder="Rechercher un dossier…" oninput="filterCanevas()" style="flex:1;min-width:200px;border:1px solid var(--bord);border-radius:5px;padding:5px 10px;font-size:12px">
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px">
+        <thead>
+          <tr style="background:var(--bleu-cl);border-bottom:1px solid var(--bord)">
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--bleu-h)">Référence</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--bleu-h)">Opération</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--bleu-h)">Date RD0</th>
+            <th style="padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--bleu-h)">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="canevas-body"></tbody>
+      </table>
+      <div id="canevas-empty" style="padding:24px;text-align:center;color:var(--txt2);font-size:12px;display:none">
+        Aucun dossier enregistré. Créez un nouveau dossier ou chargez un JSON.
+      </div>
+    </div>
+  </div>
 </div><!-- #main -->
 </div><!-- #app -->
 
+<!-- ════════════════════════════════════════════════════════════════
+     BARRE DE SAUVEGARDE – exactement comme canevas_temp
+     ════════════════════════════════════════════════════════════════ -->
 <div id="sbar">
   <span class="hint2" id="sbar-hint">Données non enregistrées</span>
   <button onclick="importJSON()">📂 Charger</button>
   <button onclick="exportJSON()">💾 JSON</button>
   <button onclick="saveToCanevas()">📁 Canevas</button>
-  <button class="sync" onclick="pushToParent()">🔄 Synchroniser</button>
-  <button class="force" onclick="save(); pushToParent();">💾 Forcer sauvegarde</button>
-  <button class="prim" onclick="saveToCanevas();exportJSON();pushToParent();">Enregistrer ▸</button>
+  <button onclick="pushToParent()" title="Synchroniser avec le serveur" style="background:#1a56db;border-color:#1a56db;">🔄 Synchroniser</button>
+  <button class="prim" onclick="save(); pushToParent();">💾 Forcer sauvegarde</button>
 </div>
 
 <div id="mover" onclick="closeMdlg(event)">
@@ -1097,8 +996,8 @@ function save(){
   collect();
   updDash();
   document.getElementById('sbar-hint').textContent='Modifications en cours…';
-  // pushToParent est appelé automatiquement toutes les 4s par setInterval
 }
+
 function updDash(){
   document.getElementById('d-ref').textContent=D.ref||'—';
   document.getElementById('d-op').textContent=D.op_titre||D.op_desc||'—';
@@ -1203,7 +1102,6 @@ function saveToCanevas(){
   collect();
   if(!D.ref && !D.op_titre){ alert('Saisissez au moins une référence ou un titre avant de sauvegarder.'); return; }
   const list = loadCanevasList();
-  const key = D.ref || D.op_titre;
   const idx = list.findIndex(c=>c.ref===D.ref && D.ref);
   const entry = {
     ref: D.ref||'—',
@@ -1268,11 +1166,11 @@ rebuildPC();
 updDash();
 renderCanevas();
 
-// ═══════════════════════════════════════════════════════════════
-// COMMUNICATION AVEC LE PARENT (sauvegarde Firebase)
-// ═══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
+// COMMUNICATION AVEC LE PARENT (comme canevas_temp)
+// ════════════════════════════════════════════════════════════════
 
-const _canId = window.RAPSORD_CAN_ID;  // injecté par index.html
+const _canId = window.RAPSORD_CAN_ID;
 
 function pushToParent() {
   if (!_canId) return;
@@ -1288,17 +1186,15 @@ function pushToParent() {
   }
 }
 
-// Surcharger la fonction save() pour envoyer au parent
+// Surcharger save() pour envoyer au parent
 const _origSave = save;
 save = function() {
-  _origSave();        // collecte et mise à jour
-  pushToParent();     // envoi
+  _origSave();
+  pushToParent();
 };
 
-// Sauvegarde périodique (toutes les 4s)
+// Sauvegarde périodique toutes les 4s
 setInterval(pushToParent, 4000);
-
-// Sauvegarde avant de fermer
 window.addEventListener('beforeunload', pushToParent);
 </script>
 </body>
