@@ -306,7 +306,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   border-top: 1px solid rgba(255,255,255,.06);
 }
 
-  /* ═══════════════════ MOBILE TOPBAR SYNTHÈSE ═══════════════════════ */
+  /* ═══════════════════════ MOBILE TOPBAR SYNTHÈSE ═══════════════════════ */
   @media (max-width: 640px) {
 
     /* Topbar : compacte */
@@ -772,6 +772,10 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <!-- Bouton info projet — mobile uniquement -->
     <button id="synInfoBtn" class="syn-refresh" onclick="showSynInfoPopup()" title="Infos projet" style="display:none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </button>
+    <button class="syn-refresh" id="synRdBtn" onclick="openRapsordFromSynthese()" title="Ouvrir RAPSORD RD0">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+      <span class="syn-refresh-label">RD</span>
     </button>
     <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -1330,7 +1334,7 @@ function renderCanevas() {
       <td><button class="star-btn ${Array.isArray(currentUser.favs) && currentUser.favs.includes(c.id) ? 'on' : ''}" onclick="toggleStar(${c.id},event)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="${Array.isArray(currentUser.favs) && currentUser.favs.includes(c.id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       </button></td>
-      <td><div class="td-name">${esc(c.nom)}${c.hasRd0 ? ' <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-left:4px;vertical-align:middle;" title="RD0 renseigné"></span>' : ''}</div></td>
+      <td><div class="td-name">${esc(c.nom)}${c.hasRd0 ? '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-left:4px;vertical-align:middle;" title="RD0 renseigné"></span>' : ''}</div></td>
       <td><div class="td-chrono">${esc(c.chrono)}</div></td>
       <td class="td-client">${esc(c.client)}</td>
       <td>${esc(c.ville)}</td>
@@ -1884,7 +1888,6 @@ window.addEventListener('message', function(e) {
     updateSynCounters(e.data.data);
   }
 
-  // ── RAPSORD RD0 save ──
   if (e.data.type === 'rapsord_save') {
     const canId = e.data.canId;
     const payload = e.data.data;
@@ -1897,9 +1900,8 @@ window.addEventListener('message', function(e) {
           saveToCloud();
           renderCanevas();
         }
-        toast('RAPSORD RD0 sauvegardé ✓', 'g');
       })
-      .catch(err => toast('Erreur sauvegarde RD0: ' + err.message, 'r'));
+      .catch(err => console.warn('RAPSORD save error:', err));
   }
 });
 
@@ -2006,7 +2008,88 @@ function postAction(action) {
 }
 </script>
 <script>
-/* ═══════════════════════════════════════════════════
+/* ══ RAPSORD VIEWER ══ */
+const RAPSORD_TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/rapsord_v2_improved.html';
+let currentRapsordId = null;
+
+async function openRapsord(id, e) {
+  if (e) e.stopPropagation();
+  const c = canevas.find(x => x.id === id);
+  if (!c) return;
+  currentRapsordId = id;
+  document.getElementById('rapsordTitle').textContent = c.nom + (c.chrono ? ' — ' + c.chrono : '');
+
+  let templateHTML;
+  try {
+    const res = await fetch(RAPSORD_TEMPLATE_URL + '?ts=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    templateHTML = await res.text();
+  } catch(err) {
+    toast('Impossible de charger rapsord_v2_improved.html : ' + err.message, 'r');
+    return;
+  }
+
+  let rdData = {};
+  try {
+    const snap = await db.ref('/rd0/' + id).once('value');
+    rdData = snap.val() || {};
+  } catch(err) { console.warn('RAPSORD: pas de RD0 existant'); }
+
+  const u = currentUser ? {
+    prenom: currentUser.prenom, nom: currentUser.nom,
+    initiales: currentUser.initiales, role: currentUser.role
+  } : {};
+
+  const inject = [
+    'window.RAPSORD_CAN_ID='   + JSON.stringify(c.id),
+    'window.RAPSORD_CAN_NOM='  + JSON.stringify(c.nom || ''),
+    'window.RAPSORD_CHRONO='   + JSON.stringify(c.chrono || ''),
+    'window.RAPSORD_CLIENT='   + JSON.stringify(c.client || ''),
+    'window.RAPSORD_VILLE='    + JSON.stringify(c.ville || ''),
+    'window.RAPSORD_DATA='     + JSON.stringify(JSON.stringify(rdData)),
+    'window.RAPSORD_READONLY=' + JSON.stringify(!!c.archived),
+    'window.RAPSORD_USER='     + JSON.stringify(u),
+  ].join(';') + ';';
+
+  const tag = 'scr' + 'ipt';
+  const metaScript = '<' + tag + '>' + inject + '</' + tag + '>';
+  templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
+
+  const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
+  const blobUrl = URL.createObjectURL(blob);
+  const frame = document.getElementById('rapsordFrame');
+  if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
+  frame.src = blobUrl;
+
+  hide('scApp'); hide('scSynthese'); show('scRapsord');
+}
+
+function openRapsordFromSynthese() {
+  if (currentCanId) openRapsord(currentCanId);
+}
+
+function closeRapsord() {
+  const frame = document.getElementById('rapsordFrame');
+  try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(ex) {}
+  setTimeout(() => {
+    if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
+    frame.src = '';
+    hide('scRapsord'); show('scApp');
+    renderCanevas();
+  }, 200);
+}
+
+function downloadRdDocx() {
+  const frame = document.getElementById('rapsordFrame');
+  try {
+    frame.contentWindow.postMessage({ type: 'rapsord_generate_docx' }, '*');
+    toast('Export JSON RD0 en cours…', 'b');
+  } catch(ex) {
+    toast('Impossible de contacter l’iframe RAPSORD', 'r');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
    PWA – Service Worker + Sync intelligente
    ═══════════════════════════════════════════════════ */
 
@@ -2042,91 +2125,6 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-/* ── RAPSORD VIEWER ── */
-const RAPSORD_TEMPLATE_URL = '/rapsord_v2_improved.html'; // URL locale
-let currentRapsordId = null;
-
-async function openRapsord(id, e) {
-  if (e) e.stopPropagation();
-  const c = canevas.find(x => x.id === id);
-  if (!c) return;
-  currentRapsordId = id;
-  document.getElementById('rapsordTitle').textContent = c.nom + (c.chrono ? ' — ' + c.chrono : '');
-
-  // 1. Charger le template depuis le serveur local
-  let templateHTML;
-  try {
-    const res = await fetch(RAPSORD_TEMPLATE_URL + '?ts=' + Date.now(), {
-      cache: 'no-store', headers: { 'Cache-Control': 'no-cache' }
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    templateHTML = await res.text();
-  } catch(err) {
-    toast('Impossible de charger rapsord_v2_improved.html : ' + err.message, 'r');
-    return;
-  }
-
-  // 2. Lire les données RD0 depuis Firebase /rd0/<id>
-  let rdData = {};
-  try {
-    const snap = await db.ref('/rd0/' + id).once('value');
-    rdData = snap.val() || {};
-  } catch(err) {
-    console.warn('RAPSORD: pas de données RD0 existantes');
-  }
-
-  // 3. Injecter via <!-- RAPSO_META --> (même pattern que openSynthese)
-  const rdDataStr = JSON.stringify(rdData).replace(/\//g, '\\').replace(/`/g, '\\`'); // <-- correction ici
-  const metaScript = '<script>'
-    + 'window.RAPSORD_CAN_ID='   + JSON.stringify(c.id) + ';'
-    + 'window.RAPSORD_CAN_NOM='  + JSON.stringify(c.nom || '') + ';'
-    + 'window.RAPSORD_CHRONO='   + JSON.stringify(c.chrono || '') + ';'
-    + 'window.RAPSORD_CLIENT='   + JSON.stringify(c.client || '') + ';'
-    + 'window.RAPSORD_VILLE='    + JSON.stringify(c.ville || '') + ';'
-    + 'window.RAPSORD_DATA='     + JSON.stringify(JSON.stringify(rdData)) + ';'
-    + 'window.RAPSORD_READONLY=' + JSON.stringify(!!c.archived) + ';'
-    + 'window.RAPSORD_USER='     + JSON.stringify(currentUser ? {
-        prenom: currentUser.prenom, nom: currentUser.nom,
-        initiales: currentUser.initiales, role: currentUser.role
-      } : {}) + ';'
-    + '<\/script>';
-  templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
-
-  // 4. Charger dans l'iframe
-  const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
-  const blobUrl = URL.createObjectURL(blob);
-  const frame = document.getElementById('rapsordFrame');
-  if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
-  frame.src = blobUrl;
-
-  hide('scApp'); hide('scSynthese'); show('scRapsord');
-}
-
-function openRapsordFromSynthese() {
-  if (currentCanId) openRapsord(currentCanId);
-}
-
-function closeRapsord() {
-  const frame = document.getElementById('rapsordFrame');
-  try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
-  setTimeout(() => {
-    if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
-    frame.src = '';
-    hide('scRapsord'); show('scApp');
-    renderCanevas();
-  }, 200);
-}
-
-function downloadRdDocx() {
-  const frame = document.getElementById('rapsordFrame');
-  try {
-    frame.contentWindow.postMessage({ type: 'rapsord_generate_docx' }, '*');
-    toast('Téléchargement JSON RD0 en cours…', 'b');
-  } catch(e) {
-    toast("Impossible de contacter l'iframe RAPSORD", 'r');
-  }
-}
-
 /* ── Détection connexion/déconnexion ── */
 let _wasOffline = !navigator.onLine;
 
@@ -2145,32 +2143,38 @@ window.addEventListener('offline', () => {
 async function handleOnlineSync() {
   if (!currentUser) return;
   try {
+    // 1. Charger les données fraîches depuis Firebase
     const snapshot = await db.ref('/canevas').once('value');
     const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
     const cloudCanevas = toArray(snapshot.val());
 
     let changed = false;
 
+    // 2. Pour chaque canevas local, fusionner avec Firebase
     canevas.forEach(localCan => {
       const cloudCan = cloudCanevas.find(c => String(c.id) === String(localCan.id));
-      if (!cloudCan) return;
+      if (!cloudCan) return; // nouveau canevas local → sera poussé tel quel
 
       const localData  = localCan.synthData  || { v2: [], v1: [] };
       const cloudData  = cloudCan.synthData  || { v2: [], v1: [] };
 
+      // Fusionner v2 et v1 séparément
       ['v2', 'v1'].forEach(tab => {
         const localRows = localData[tab]  || [];
         const cloudRows = cloudData[tab]  || [];
 
+        // Index des lignes cloud par id
         const cloudIdx = {};
         cloudRows.forEach((r, i) => { if (r.id !== undefined) cloudIdx[String(r.id)] = i; });
 
+        // Appliquer les lignes locales modifiées
         let tabChanged = false;
         localRows.forEach(localRow => {
           if (localRow.id === undefined) return;
           const key = String(localRow.id);
           if (cloudIdx[key] !== undefined) {
             const cloudRow = cloudRows[cloudIdx[key]];
+            // Comparer : si la ligne locale a des champs renseignés que le cloud n'a pas → prendre local
             const fields = ['repK','repL','lots','suivi','rd6','disp','obs'];
             fields.forEach(f => {
               if ((localRow[f] !== undefined && localRow[f] !== '' && localRow[f] !== false) &&
@@ -2180,6 +2184,7 @@ async function handleOnlineSync() {
               }
             });
           } else {
+            // Ligne locale non trouvée dans cloud (ajout local hors-ligne)
             cloudRows.push(localRow);
             tabChanged = true;
           }
@@ -2193,7 +2198,9 @@ async function handleOnlineSync() {
       });
     });
 
+    // 3. Si des données locales ont enrichi Firebase → sauvegarder
     if (changed) {
+      // Mettre à jour le tableau local avec les données fusionnées
       canevas = cloudCanevas;
       await db.ref('/canevas').set(cloudCanevas);
       renderCanevas();
@@ -2201,6 +2208,7 @@ async function handleOnlineSync() {
       console.log('[SYNC] Données locales fusionnées avec Firebase');
     }
 
+    // 4. Background Sync API (si supportée) pour les prochaines fois
     if ('serviceWorker' in navigator && 'SyncManager' in window) {
       const reg = await navigator.serviceWorker.ready;
       await reg.sync.register('rapsosyn-sync').catch(() => {});
@@ -2236,6 +2244,7 @@ function showPwaToast(msg, action = null) {
   if (!action) setTimeout(() => el.remove(), 4000);
 }
 
+/* ── Détecter si déjà installée comme PWA ── */
 if (window.matchMedia('(display-mode: standalone)').matches) {
   document.documentElement.classList.add('pwa-mode');
 }
