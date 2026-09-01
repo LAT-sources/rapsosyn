@@ -140,6 +140,8 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 #sbar button{padding:6px 14px;border-radius:5px;font-size:12px;cursor:pointer;font-family:var(--font);border:1px solid rgba(255,255,255,.3);color:#fff;background:rgba(255,255,255,.1)}
 #sbar button:hover{background:rgba(255,255,255,.2)}
 #sbar button.prim{background:#2d8a40;border-color:#2d8a40}
+#sbar button.sync{background:#1a56db;border-color:#1a56db;color:white}
+#sbar button.force{background:#f59e0b;border-color:#f59e0b;color:white}
 
 /* ── MODAL ── */
 #mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
@@ -726,6 +728,7 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
   </div>
 </div>
 
+
 <!-- ── RD3 ── -->
 <div class="panel" id="panel-rd3">
   <div class="ptitle">RD3 — Rapport final étanchéité</div>
@@ -892,7 +895,9 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
   <button onclick="importJSON()">📂 Charger</button>
   <button onclick="exportJSON()">💾 JSON</button>
   <button onclick="saveToCanevas()">📁 Canevas</button>
-  <button class="prim" onclick="saveToCanevas();exportJSON()">Enregistrer ▸</button>
+  <button class="sync" onclick="pushToParent()">🔄 Synchroniser</button>
+  <button class="force" onclick="save(); pushToParent();">💾 Forcer sauvegarde</button>
+  <button class="prim" onclick="saveToCanevas();exportJSON();pushToParent();">Enregistrer ▸</button>
 </div>
 
 <div id="mover" onclick="closeMdlg(event)">
@@ -1263,12 +1268,11 @@ rebuildPC();
 updDash();
 renderCanevas();
 
-
 // ═══════════════════════════════════════════════════════════════
-// COMMUNICATION AVEC LE PARENT (comme canevas_temp.html)
+// COMMUNICATION AVEC LE PARENT (sauvegarde Firebase)
 // ═══════════════════════════════════════════════════════════════
 
-const _canId = window.RAPSORD_CAN_ID; // injecté par index.html
+const _canId = window.RAPSORD_CAN_ID;  // injecté par index.html
 
 function pushToParent() {
   if (!_canId) return;
@@ -1287,16 +1291,15 @@ function pushToParent() {
 // Surcharger la fonction save() pour envoyer au parent
 const _origSave = save;
 save = function() {
-  _origSave();   // collecte et mise à jour
-  pushToParent(); // envoi au parent
+  _origSave();        // collecte et mise à jour
+  pushToParent();     // envoi
 };
 
-// Envoi périodique toutes les 4 secondes
+// Sauvegarde périodique (toutes les 4s)
 setInterval(pushToParent, 4000);
 
-// Envoi avant de fermer la page
+// Sauvegarde avant de fermer
 window.addEventListener('beforeunload', pushToParent);
-
 </script>
 </body>
 </html>
