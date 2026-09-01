@@ -726,7 +726,6 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
   </div>
 </div>
 
-
 <!-- ── RD3 ── -->
 <div class="panel" id="panel-rd3">
   <div class="ptitle">RD3 — Rapport final étanchéité</div>
@@ -1263,6 +1262,41 @@ addCode(); addCode();
 rebuildPC();
 updDash();
 renderCanevas();
+
+
+// ═══════════════════════════════════════════════════════════════
+// COMMUNICATION AVEC LE PARENT (comme canevas_temp.html)
+// ═══════════════════════════════════════════════════════════════
+
+const _canId = window.RAPSORD_CAN_ID; // injecté par index.html
+
+function pushToParent() {
+  if (!_canId) return;
+  if (!window.parent || window.parent === window) return;
+  try {
+    window.parent.postMessage({
+      type: 'rapsord_save',
+      canId: _canId,
+      data: JSON.parse(JSON.stringify(D))
+    }, '*');
+  } catch(e) {
+    console.warn('Erreur envoi parent:', e);
+  }
+}
+
+// Surcharger la fonction save() pour envoyer au parent
+const _origSave = save;
+save = function() {
+  _origSave();   // collecte et mise à jour
+  pushToParent(); // envoi au parent
+};
+
+// Envoi périodique toutes les 4 secondes
+setInterval(pushToParent, 4000);
+
+// Envoi avant de fermer la page
+window.addEventListener('beforeunload', pushToParent);
+
 </script>
 </body>
 </html>
