@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<!-- RAPSO_META -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAPSORD — Socotec Luxembourg</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 :root {
+  --blue: #1a56db; --blue-d: #1447c0; --blue-l: #e8f0fe; --blue-ll: #f0f5ff;
+  --g50: #f8fafc; --g100: #f1f5f9; --g200: #e2e8f0; --g300: #cbd5e1;
+  --g400: #94a3b8; --g500: #64748b; --g600: #475569; --g700: #334155;
+  --g800: #1e293b; --g900: #0f172a;
+  --green: #22c55e; --red: #ef4444; --gold: #f59e0b;
+  --font-inter: 'Inter', sans-serif;
+  /* RAPSORD vars */
   --bleu: #1B5EA0;
   --bleu-h: #0d3d6e;
   --bleu-cl: #dce8f5;
@@ -39,7 +48,7 @@ body{font-family:var(--font);background:var(--fond);color:var(--txt);font-size:1
 .hdr-btn.accent{background:var(--bleu);border-color:var(--bleu)}
 
 /* ── LAYOUT ── */
-#app{display:flex;height:calc(100vh - 48px)}
+#app{display:flex;height:calc(100vh - 88px)}
 
 /* ── SIDEBAR ── */
 #side{width:210px;flex-shrink:0;background:var(--blanc);border-right:1px solid var(--bord);overflow-y:auto;display:flex;flex-direction:column}
@@ -154,19 +163,76 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 .mdlg-btn.danger{border-color:var(--rouge);color:var(--rouge)}
 .mdlg-btn.danger:hover{background:#fef0f0}
 
-@media print{#side,#hdr,#sbar{display:none!important}#main{max-width:100%;padding:8mm}}
+@media print{#side,#hdr,#rapsord-toolbar,#sbar-firebase{display:none!important}#main{max-width:100%;padding:8mm}}
+
+/* ── TOPBAR identique canevas_temp ── */
+.rapsord-header{
+  background:white;border-bottom:1px solid var(--g200);padding:6px 16px;
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+.rapsord-header .rd-title{
+  font-weight:700;font-size:0.85rem;color:var(--g800);flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.rapsord-header .rd-ref{
+  font-size:0.72rem;color:var(--g500);font-family:monospace;
+  background:var(--g100);padding:2px 8px;border-radius:4px;white-space:nowrap;
+}
+.rd-toolbar{
+  background:white;border-bottom:1px solid var(--g200);padding:5px 16px;
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;flex-shrink:0;
+}
+.tb-btn{
+  padding:4px 10px;border:1px solid var(--g300);
+  background:white;color:var(--g700);font-family:var(--font-inter),var(--font);font-size:0.73rem;
+  font-weight:500;cursor:pointer;transition:background .1s,color .1s;white-space:nowrap;
+}
+.tb-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-ll);}
+.tb-btn.accent{background:var(--blue);border-color:var(--blue);color:white;}
+.tb-btn.green{background:#16a34a;border-color:#16a34a;color:white;}
+.tb-btn.accent:hover{background:var(--blue-d);}
+.tb-sep2{width:1px;height:20px;background:var(--g200);margin:0 4px;}
+.sync-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--g300);
+  display:inline-block;margin-right:4px;transition:background .3s;
+}
+.sync-dot.syncing{background:var(--gold);animation:pulse .8s infinite;}
+.sync-dot.saved{background:var(--green);}
+.sync-dot.error{background:var(--red);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sync-label{font-size:0.7rem;color:var(--g500);font-weight:500;}
 </style>
 </head>
 <body>
 
-<div id="hdr">
-  <div class="hdr-logo">RAPSORD</div>
-  <div class="hdr-sep"></div>
-  <div class="hdr-proj" id="hdr-proj">Nouveau dossier</div>
-  <div class="hdr-space"></div>
-  <button class="hdr-btn" onclick="openMdlg()">Dossier ▾</button>
-  <button class="hdr-btn accent" onclick="genDocx()">Générer Word ▸</button>
-  <button class="hdr-btn" onclick="window.print()">Imprimer</button>
+<!-- HEADER identique canevas_temp -->
+<div class="rapsord-header" id="rapsord-header">
+  <div class="rd-title" id="hdr-proj">RAPSORD RD0</div>
+  <div class="rd-ref" id="hdr-ref">—</div>
+</div>
+
+<!-- TOOLBAR identique canevas_temp -->
+<div class="rd-toolbar" id="rapsord-toolbar">
+  <button class="tb-btn" onclick="nav('dash')">🏠 Tableau de bord</button>
+  <div class="tb-sep2"></div>
+  <button class="tb-btn" onclick="nav('id')">Page de garde</button>
+  <button class="tb-btn" onclick="nav('t1')">Titre I</button>
+  <button class="tb-btn" onclick="nav('t2')">Titre II</button>
+  <button class="tb-btn" onclick="nav('t3')">Titre III</button>
+  <button class="tb-btn" onclick="nav('t4')">Titre IV</button>
+  <button class="tb-btn" onclick="nav('t5')">Titre V</button>
+  <button class="tb-btn" onclick="nav('sig')">Signature</button>
+  <div class="tb-sep2"></div>
+  <button class="tb-btn" onclick="nav('pc')">PC</button>
+  <div style="flex:1"></div>
+  <div class="tb-sep2"></div>
+  <span class="sync-dot" id="sync-dot"></span>
+  <span class="sync-label" id="sync-label">Non connecté</span>
+  <div class="tb-sep2"></div>
+  <button class="tb-btn" onclick="importJSON()">⤒ Charger JSON</button>
+  <button class="tb-btn" onclick="exportJSON()">⤓ JSON local</button>
+  <button class="tb-btn accent" onclick="collect();pushToParent()">☁ Enregistrer</button>
+  <button class="tb-btn" onclick="window.print()">⎙ Imprimer</button>
 </div>
 
 <div id="app">
@@ -888,12 +954,7 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 </div><!-- #main -->
 </div><!-- #app -->
 
-<div id="sbar">
-  <span class="hint2" id="sbar-hint">Prêt</span>
-  <button onclick="importJSON()">📂 Charger</button>
-  <button onclick="exportJSON()">💾 JSON</button>
-  <button class="prim" onclick="collect();pushToParent()">☁️ Enregistrer ▸</button>
-</div>
+<!-- sbar supprimé — toolbar en haut -->
 
 <div id="mover" onclick="closeMdlg(event)">
   <div id="mdlg">
@@ -1092,13 +1153,15 @@ function save(){
   collect();
   updDash();
   _dirty = true;
-  document.getElementById('sbar-hint').textContent='Modifications en cours…';
+  setSyncStatus('syncing', 'Modification…');
 }
 function updDash(){
   document.getElementById('d-ref').textContent=D.ref||'—';
   document.getElementById('d-op').textContent=D.op_titre||D.op_desc||'—';
   document.getElementById('d-date').textContent=D.date_rd0?new Date(D.date_rd0).toLocaleDateString('fr-FR'):'—';
-  document.getElementById('hdr-proj').textContent=D.ref||(D.op_titre?D.op_titre.substring(0,30):'Nouveau dossier');
+  const proj = D.op_titre||D.ref||'RAPSORD RD0';
+  const el=document.getElementById('hdr-proj'); if(el) el.textContent=proj;
+  const ref=document.getElementById('hdr-ref'); if(ref) ref.textContent=D.ref||D.dossier||'—';
   updBadges();
 }
 
@@ -1257,44 +1320,51 @@ function filterCanevas(){
   renderCanevas(document.getElementById('cav-search').value);
 }
 
-// ─── COMMUNICATION FIREBASE (postMessage parent) ──────────────────────────────
+// ─── FIREBASE — même pattern exact que canevas_temp.html ─────────────────────
 let _dirty = false;
 let _canId = null;
 
-function pushToParent(){
-  if(!window.parent || window.parent === window) return;
-  if(_canId === null && !_dirty) return;
-  collect();
-  window.parent.postMessage({ type:'rapsord_save', canId:_canId, data:D }, '*');
-  document.getElementById('sbar-hint').textContent='Sauvegardé ✓';
-  _dirty = false;
+function setSyncStatus(state, label){
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  if(!dot||!lbl) return;
+  dot.className = 'sync-dot' + (state ? ' '+state : '');
+  lbl.textContent = label;
 }
 
-// Auto-save toutes les 4s (même cadence que canevas_temp)
-setInterval(()=>{ if(_dirty) pushToParent(); }, 4000);
-window.addEventListener('beforeunload', ()=>{ if(_dirty) pushToParent(); });
+function pushToParent(){
+  // Exactement comme canevas_temp : window.CANEVAS_ID -> ici window.RAPSORD_CAN_ID
+  if(!window.parent || window.parent === window) return;
+  const canId = _canId;
+  if(canId === undefined || canId === null) return;
+  collect();
+  try {
+    window.parent.postMessage({ type:'rapsord_save', canId, data:D }, '*');
+    setSyncStatus('saved', 'Sauvegardé ✓');
+    _dirty = false;
+  } catch(e) {
+    setSyncStatus('error', 'Erreur sync');
+  }
+}
 
-// Écoute les messages du parent (index.html)
+// Auto-save toutes les 4s — identique canevas_temp
+setInterval(pushToParent, 4000);
+window.addEventListener('beforeunload', pushToParent);
+
+// Écoute messages du parent — identique canevas_temp
 window.addEventListener('message', function(e){
   if(!e.data) return;
-
-  // Demande de sauvegarde immédiate (ex: avant fermeture)
   if(e.data.type === 'rapso_request_save'){
-    collect();
     pushToParent();
   }
-
-  // Injection de données fraîches depuis Firebase
   if(e.data.type === 'rapsord_inject'){
     try{
       const d = e.data.data;
       if(d && typeof d === 'object'){ D = d; applyData(); }
-      document.getElementById('sbar-hint').textContent='Données synchronisées ✓';
+      setSyncStatus('saved', 'Synchronisé ✓');
       _dirty = false;
     }catch(err){ console.warn('rapsord_inject error:', err); }
   }
-
-  // Export JSON pour génération Word
   if(e.data.type === 'rapsord_generate_docx'){
     collect();
     const ref=(D.ref||D.dossier||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
@@ -1307,18 +1377,21 @@ window.addEventListener('message', function(e){
   }
 });
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
+// ─── INIT — même pattern que canevas_temp ────────────────────────────────────
 addCode(); addCode();
 rebuildPC();
 updDash();
 renderCanevas();
 
-// Charger les données injectées par index.html via window.RAPSORD_DATA
+// Chargement initial depuis window.RAPSORD_DATA (injecté par index.html)
+// Identique à : if(window.RAPSO_SYNTH_DATA){ ... } dans canevas_temp
 (function(){
-  // Récupérer canId
   _canId = (typeof window.RAPSORD_CAN_ID !== 'undefined') ? window.RAPSORD_CAN_ID : null;
 
-  // Charger les données RD0 depuis Firebase (injectées par index.html)
+  if(_canId !== null){
+    setSyncStatus('syncing', 'Connexion…');
+  }
+
   if(typeof window.RAPSORD_DATA !== 'undefined' && window.RAPSORD_DATA){
     try{
       const parsed = JSON.parse(window.RAPSORD_DATA);
@@ -1328,24 +1401,28 @@ renderCanevas();
     }catch(e){ console.warn('RAPSORD_DATA parse error:', e); }
   }
 
-  // Pré-remplir depuis les métadonnées du canevas si champs vides
+  // Pré-remplir depuis métadonnées canevas si vides
   if(typeof window.RAPSORD_CAN_NOM !== 'undefined' && window.RAPSORD_CAN_NOM && !D.op_titre)
     D.op_titre = window.RAPSORD_CAN_NOM;
-  if(typeof window.RAPSORD_CHRONO  !== 'undefined' && window.RAPSORD_CHRONO  && !D.dossier)
-    D.dossier  = window.RAPSORD_CHRONO;
-  if(typeof window.RAPSORD_CLIENT  !== 'undefined' && window.RAPSORD_CLIENT  && !D.moa)
-    D.moa      = window.RAPSORD_CLIENT;
+  if(typeof window.RAPSORD_CHRONO !== 'undefined' && window.RAPSORD_CHRONO && !D.dossier)
+    D.dossier = window.RAPSORD_CHRONO;
+  if(typeof window.RAPSORD_CLIENT !== 'undefined' && window.RAPSORD_CLIENT && !D.moa)
+    D.moa = window.RAPSORD_CLIENT;
 
-  // Appliquer à l'interface
-  applyData();
+  setTimeout(()=>{
+    applyData();
+    if(_canId !== null){
+      setSyncStatus('saved', 'Connecté ✓');
+    } else {
+      setSyncStatus('', 'Mode local');
+    }
+    _dirty = false;
+  }, 0);
 
-  // Mode lecture seule si archivé
   if(typeof window.RAPSORD_READONLY !== 'undefined' && window.RAPSORD_READONLY){
     document.querySelectorAll('input,select,textarea').forEach(el=>el.disabled=true);
-    document.getElementById('sbar-hint').textContent='🔒 Lecture seule';
+    setSyncStatus('', '🔒 Lecture seule');
   }
-
-  _dirty = false;
 })();
 </script>
 </body>
