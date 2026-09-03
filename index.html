@@ -2469,7 +2469,7 @@ function downloadRdDocx() {
     frame.contentWindow.postMessage({ type: 'rapsord_generate_docx' }, '*');
     toast('Génération Word RD0 — téléchargement du JSON en cours…', 'b');
   } catch(e) {
-    toast('Impossible de contacter l'iframe RAPSORD', 'r');
+    toast('Impossible de contacter l\'iframe RAPSORD', 'r');
   }
 }
 
