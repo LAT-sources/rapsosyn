@@ -2162,6 +2162,7 @@ let _rdFromSyn = false;          // true si ouvert depuis scSynthese
 let _rdListener = null;          // Firebase onValue listener
 let _rdPresenceRef = null;       // Firebase presence ref
 let _rdPendingData = null;       // données en attente d'application
+let _lastRdHash = '';            // hash des données actuellement affichées
 
 // ── Helpers UI ───────────────────────────────────────────────────────────────
 function rdShowBadge(id, show){ const el=document.getElementById(id); if(el) el.style.display=show?'':'none'; }
@@ -2193,6 +2194,16 @@ document.addEventListener('click', e=>{
   if(!e.target.closest('#rdMenuBtn') && !e.target.closest('#rdActionMenu'))
     closeRdMenu();
 });
+
+// ── Fonction de hachage pour les données RD0 ──
+function hashRdData(d) {
+  if (!d) return '';
+  // Hacher les champs principaux
+  const fields = ['avis', 'points_att', 'risques_prio', 'rd6_avis', 'rd6_res_detail', 'r_avis', 'r_rd6_avis'];
+  let s = '';
+  fields.forEach(f => { s += (d[f] || '') + '|'; });
+  return s;
+}
 
 // ── Badges dynamiques — lus depuis les données RD0 Firebase ──────────────────
 function rdUpdateBadges(data){
@@ -2234,12 +2245,17 @@ function rdStartSync(id){
     const data = snap.val() || {};
     rdUpdateBadges(data);
 
-    // Si données plus récentes que ce qu'on a, proposer sync
     const frame = document.getElementById('rapsordFrame');
     const hasFrame = frame && frame.src && frame.src.startsWith('blob:');
-    if(hasFrame){
-      rdShowPendingBar(data);   // affiche la barre jaune
-      rdNotif('🔄 Nouvelles données disponibles depuis Firebase');
+    if (hasFrame) {
+      const newHash = hashRdData(data);
+      if (newHash !== _lastRdHash) {
+        // Une modification a eu lieu
+        const editor = data._lastEditor || 'un autre utilisateur';
+        rdShowPendingBar(data, editor);
+        rdNotif('🔄 Nouvelles données disponibles depuis Firebase');
+      }
+      // Sinon, ne rien faire
     } else {
       rdUpdateBadges(data);
     }
@@ -2291,20 +2307,15 @@ function rdStopSync(){
 }
 
 // ── Nouvelle fonction pour afficher la barre jaune RAPSORD ──
-function rdShowPendingBar(freshData) {
+function rdShowPendingBar(freshData, editor) {
   _rdPendingData = freshData;
   const bar = document.getElementById('rdPendingBar');
   const badge = document.getElementById('rdRefreshBadge');
   if (bar) bar.classList.add('show');
   if (badge) badge.style.display = 'inline-flex';
   // Mettre à jour les détails
-  const all = [...(freshData.v2||[]), ...(freshData.v1||[])];
-  const lev = all.filter(r => r.suivi === 'Oui').length;
-  const non = all.filter(r => r.suivi === 'Non').length;
-  document.getElementById('rdPbDetail').textContent = `${all.length} avis au total · ${lev} levé(s) · ${non} maintenu(s)`;
-  // Récupérer le nom du modificateur depuis freshData (s'il est stocké)
-  const modUser = freshData._lastEditor || 'un autre utilisateur';
-  document.getElementById('rdPbUser').textContent = '✏️ ' + modUser;
+  document.getElementById('rdPbDetail').textContent = 'Des modifications ont été apportées à ce dossier';
+  document.getElementById('rdPbUser').textContent = '✏️ ' + (editor || 'un autre utilisateur');
 }
 
 function rdDismissPending() {
@@ -2320,6 +2331,8 @@ function rdApplyPending(){
   if(frame && frame.contentWindow){
     frame.contentWindow.postMessage({ type:'rapsord_inject', data:_rdPendingData }, '*');
   }
+  // Mettre à jour le hash
+  _lastRdHash = hashRdData(_rdPendingData);
   // Masquer la barre et le badge
   document.getElementById('rdPendingBar').classList.remove('show');
   document.getElementById('rdRefreshBadge').style.display = 'none';
@@ -2373,7 +2386,7 @@ async function openRapsord(id, e) {
   currentRapsordId = id;
   document.getElementById('rapsordTitle').textContent = c.nom + (c.chrono ? ' — ' + c.chrono : '');
 
-  // 1. Charger le template HTML depuis GitHub (comme canevas_temp.html)
+  // 1. Charger le template HTML depuis le même domaine
   let templateHTML;
   try {
     const res = await fetch(RAPSORD_TEMPLATE_URL + '?ts=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
@@ -2384,7 +2397,7 @@ async function openRapsord(id, e) {
     return;
   }
 
-  // 2. Lire les données RD0 depuis Firebase /rd0/<id> (comme synthData dans openSynthese)
+  // 2. Lire les données RD0 depuis Firebase /rd0/<id>
   let rdData = {};
   try {
     const snap = await db.ref('/rd0/' + id).once('value');
@@ -2393,7 +2406,7 @@ async function openRapsord(id, e) {
     console.warn('RAPSORD: pas de données RD0 sur Firebase, démarrage vierge');
   }
 
-  // 3. Injecter via <!-- RAPSO_META --> exactement comme openSynthese injecte RAPSO_SYNTH_DATA
+  // 3. Injecter via <!-- RAPSO_META -->
   const metaScript = `<script>
     window.RAPSORD_CAN_ID   = ${JSON.stringify(c.id)};
     window.RAPSORD_CAN_NOM  = ${JSON.stringify(c.nom || '')};
@@ -2409,12 +2422,15 @@ async function openRapsord(id, e) {
   <\/script>`;
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
 
-  // 4. Charger dans l'iframe (comme synFrame)
+  // 4. Charger dans l'iframe
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
   const blobUrl = URL.createObjectURL(blob);
   const frame = document.getElementById('rapsordFrame');
   if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
   frame.src = blobUrl;
+
+  // Initialiser le hash
+  _lastRdHash = hashRdData(rdData);
 
   // Boutons retour selon le contexte
   document.getElementById('rdBackSyn').style.display = _rdFromSyn ? '' : 'none';
@@ -2470,7 +2486,7 @@ function downloadRdDocx() {
     frame.contentWindow.postMessage({ type: 'rapsord_generate_docx' }, '*');
     toast('Génération Word RD0 — téléchargement du JSON en cours…', 'b');
   } catch(e) {
-    toast('Impossible de contacter l\'iframe RAPSORD', 'r');
+    toast("Impossible de contacter l'iframe RAPSORD", 'r');
   }
 }
 
