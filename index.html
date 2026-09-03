@@ -306,7 +306,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   border-top: 1px solid rgba(255,255,255,.06);
 }
 
-  /* ═══════════════════════ MOBILE TOPBAR SYNTHÈSE ═══════════════════════ */
+  /* ═══════════════════ MOBILE TOPBAR SYNTHÈSE ═══════════════════════ */
   @media (max-width: 640px) {
 
     /* Topbar : compacte */
@@ -891,6 +891,18 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       </div>
     </div>
 
+  </div>
+
+  <!-- Barre de modifications disponibles (RAPSORD) -->
+  <div class="syn-pending-bar" id="rdPendingBar">
+    <span class="pb-icon">🔔</span>
+    <div class="pb-meta">
+      <div class="pb-title" id="rdPbTitle">Modifications disponibles</div>
+      <div class="pb-detail" id="rdPbDetail">Un autre utilisateur a modifié ce canevas</div>
+    </div>
+    <span class="pb-user" id="rdPbUser"></span>
+    <button class="pb-apply" onclick="rdApplyPending()">⬇ Appliquer</button>
+    <button class="pb-dismiss" onclick="rdDismissPending()">Ignorer</button>
   </div>
 
   <!-- Notification RD (même système que SYN) -->
@@ -2225,9 +2237,7 @@ function rdStartSync(id){
     const frame = document.getElementById('rapsordFrame');
     const hasFrame = frame && frame.src && frame.src.startsWith('blob:');
     if(hasFrame){
-      _rdPendingData = data;
-      const btn = document.getElementById('rdRefreshBtn');
-      if(btn){ btn.style.display='flex'; }
+      rdShowPendingBar(data);   // affiche la barre jaune
       rdNotif('🔄 Nouvelles données disponibles depuis Firebase');
     } else {
       rdUpdateBadges(data);
@@ -2279,12 +2289,39 @@ function rdStopSync(){
   rdSetLive(false);
 }
 
+// ── Nouvelle fonction pour afficher la barre jaune RAPSORD ──
+function rdShowPendingBar(freshData) {
+  _rdPendingData = freshData;
+  const bar = document.getElementById('rdPendingBar');
+  const badge = document.getElementById('rdRefreshBadge');
+  if (bar) bar.classList.add('show');
+  if (badge) badge.style.display = 'inline-flex';
+  // Mettre à jour les détails
+  const all = [...(freshData.v2||[]), ...(freshData.v1||[])];
+  const lev = all.filter(r => r.suivi === 'Oui').length;
+  const non = all.filter(r => r.suivi === 'Non').length;
+  document.getElementById('rdPbDetail').textContent = `${all.length} avis au total · ${lev} levé(s) · ${non} maintenu(s)`;
+  // Récupérer le nom du modificateur depuis freshData (s'il est stocké)
+  const modUser = freshData._lastEditor || 'un autre utilisateur';
+  document.getElementById('rdPbUser').textContent = '✏️ ' + modUser;
+}
+
+function rdDismissPending() {
+  _rdPendingData = null;
+  document.getElementById('rdPendingBar').classList.remove('show');
+  document.getElementById('rdRefreshBadge').style.display = 'none';
+}
+
+// ── Appliquer les modifications en attente ──
 function rdApplyPending(){
   if(!_rdPendingData) return;
   const frame = document.getElementById('rapsordFrame');
   if(frame && frame.contentWindow){
     frame.contentWindow.postMessage({ type:'rapsord_inject', data:_rdPendingData }, '*');
   }
+  // Masquer la barre et le badge
+  document.getElementById('rdPendingBar').classList.remove('show');
+  document.getElementById('rdRefreshBadge').style.display = 'none';
   _rdPendingData=null;
   const btn=document.getElementById('rdRefreshBtn');
   if(btn) btn.style.display='none';
