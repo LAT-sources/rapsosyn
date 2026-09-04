@@ -2090,7 +2090,9 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ── RAPSORD VIEWER — même pattern que openSynthese/canevas_temp ── */
-const RAPSORD_TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/rapsord_v2_improved.html';
+// ── URL template — jsDelivr évite le CORS de raw.githubusercontent.com ────────
+const RAPSORD_TEMPLATE_URL = 'https://cdn.jsdelivr.net/gh/LAT-sources/rapsosyn@main/rapsord_v2_improved.html';
+const RAPSORD_TEMPLATE_FALLBACK = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/rapsord_v2_improved.html';
 // ── CSS dynamique RD viewer ──────────────────────────────────────────────────
 (function(){
   const s = document.createElement('style');
