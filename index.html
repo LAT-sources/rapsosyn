@@ -2103,7 +2103,9 @@ if ('serviceWorker' in navigator) {
 }
 
 /* ── RAPSORD VIEWER — même pattern que openSynthese/canevas_temp ── */
-const RAPSORD_TEMPLATE_URL = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/rapsord_v2_improved.html';
+// ── URL template — jsDelivr évite le CORS de raw.githubusercontent.com ────────
+const RAPSORD_TEMPLATE_URL = 'https://cdn.jsdelivr.net/gh/LAT-sources/rapsosyn@main/rapsord_v2_improved.html';
+const RAPSORD_TEMPLATE_FALLBACK = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/rapsord_v2_improved.html';
 // ── STATE RD viewer ──────────────────────────────────────────────────────────
 let currentRapsordId = null;
 let _rdFromSyn       = false;
@@ -2369,15 +2371,24 @@ async function openRapsord(id, e) {
   currentRapsordId = id;
   document.getElementById('rapsordTitle').textContent = c.nom + (c.chrono ? ' — ' + c.chrono : '');
 
-  // 1. Charger le template HTML depuis GitHub (comme canevas_temp.html)
+  // 1. Charger le template — jsDelivr (CORS ok) avec fallback
   let templateHTML;
   try {
-    const res = await fetch(RAPSORD_TEMPLATE_URL + '?ts=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+    // jsDelivr ne supporte pas le cache-busting par ?ts= — on utilise @main qui est toujours frais
+    let res = await fetch(RAPSORD_TEMPLATE_URL, { cache: 'no-store' });
+    if (!res.ok) throw new Error('jsDelivr HTTP ' + res.status);
     templateHTML = await res.text();
   } catch(err) {
-    toast('Impossible de charger rapsord_v2_improved.html — ' + err.message, 'r');
-    return;
+    try {
+      // Fallback : proxy CORS via allorigins
+      const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(RAPSORD_TEMPLATE_FALLBACK + '?ts=' + Date.now());
+      const res2 = await fetch(proxy);
+      if (!res2.ok) throw new Error('proxy HTTP ' + res2.status);
+      templateHTML = await res2.text();
+    } catch(err2) {
+      toast('Impossible de charger RAPSORD : ' + err2.message, 'r');
+      return;
+    }
   }
 
   // 2. Lire les données RD0 depuis Firebase /rd0/<id> (comme synthData dans openSynthese)
