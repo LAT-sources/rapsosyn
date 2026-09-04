@@ -48,8 +48,7 @@ body{font-family:var(--font);background:var(--fond);color:var(--txt);font-size:1
 .hdr-btn.accent{background:var(--bleu);border-color:var(--bleu)}
 
 /* ── LAYOUT ── */
-html,body{height:100%;display:flex;flex-direction:column;overflow:hidden;}
-#app{display:flex;flex:1;overflow:hidden;min-height:0;}
+#app{display:flex;height:calc(100vh - 88px)}
 
 /* ── SIDEBAR ── */
 #side{width:210px;flex-shrink:0;background:var(--blanc);border-right:1px solid var(--bord);overflow-y:auto;display:flex;flex-direction:column}
@@ -166,55 +165,7 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 
 @media print{#side,#hdr,#rapsord-toolbar,#sbar-firebase{display:none!important}#main{max-width:100%;padding:8mm}}
 
-/* ── Bandeau présence / notification ── */
-#rd-notif-banner {
-  display: none; align-items: center; gap: 10px;
-  padding: 7px 16px; font-size: 0.78rem; font-weight: 500;
-  flex-shrink: 0; border-bottom: 1px solid transparent;
-}
-#rd-notif-banner.presence {
-  display: flex;
-  background: #fff8e6; border-color: #f59e0b; color: #92400e;
-}
-#rd-notif-banner.sync {
-  display: flex;
-  background: #eff6ff; border-color: #3b82f6; color: #1e40af;
-}
-#rd-notif-banner.saved {
-  display: flex;
-  background: #f0fdf4; border-color: #22c55e; color: #166534;
-}
-.rd-notif-icon { font-size: 1rem; flex-shrink: 0; }
-.rd-notif-txt  { flex: 1; }
-.rd-notif-action {
-  padding: 3px 10px; border: 1px solid currentColor; background: none;
-  color: inherit; font-family: inherit; font-size: 0.72rem;
-  font-weight: 600; cursor: pointer; border-radius: 4px; flex-shrink: 0;
-}
-.rd-notif-action:hover { opacity: .7; }
-.rd-notif-close {
-  background: none; border: none; cursor: pointer;
-  color: inherit; opacity: .6; font-size: 1rem; flex-shrink: 0; padding: 0 2px;
-}
-.rd-notif-close:hover { opacity: 1; }
-/* Pill présence dans toolbar */
-.rd-presence-pill {
-  display: none; align-items: center; gap: 5px;
-  background: #fff8e6; border: 1px solid #f59e0b;
-  padding: 3px 10px; font-size: 0.7rem; font-weight: 600; color: #92400e;
-  flex-shrink: 0;
-}
-.rd-presence-pill.show { display: flex; }
-.rd-presence-dot {
-  width: 7px; height: 7px; border-radius: 50%; background: #f59e0b;
-  animation: rdPulse .9s ease-in-out infinite;
-}
-@keyframes rdPulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-/* Bouton Synchroniser */
-.tb-btn.sync-pending {
-  background: #eff6ff; border-color: #3b82f6; color: #1e40af;
-  animation: rdPulse 1.2s ease-in-out infinite;
-}
+/* ── TOPBAR identique canevas_temp ── */
 .rapsord-header{
   background:white;border-bottom:1px solid var(--g200);padding:6px 16px;
   display:flex;align-items:center;gap:12px;flex-shrink:0;
@@ -274,15 +225,6 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
   <div class="tb-sep2"></div>
   <button class="tb-btn" onclick="nav('pc')">PC</button>
   <div style="flex:1"></div>
-  <!-- Pill présence autres éditeurs -->
-  <div class="rd-presence-pill" id="rd-presence-pill">
-    <span class="rd-presence-dot"></span>
-    <span id="rd-presence-names">1 autre éditeur</span>
-  </div>
-  <!-- Bouton Synchroniser (visible si données en attente) -->
-  <button class="tb-btn" id="rd-sync-btn" onclick="rdApplyPending()" style="display:none;">
-    🔄 Synchroniser
-  </button>
   <div class="tb-sep2"></div>
   <span class="sync-dot" id="sync-dot"></span>
   <span class="sync-label" id="sync-label">Non connecté</span>
@@ -291,14 +233,6 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
   <button class="tb-btn" onclick="exportJSON()">⤓ JSON local</button>
   <button class="tb-btn accent" onclick="collect();pushToParent()">☁ Enregistrer</button>
   <button class="tb-btn" onclick="window.print()">⎙ Imprimer</button>
-</div>
-
-<!-- BANDEAU NOTIFICATION (présence + sync) -->
-<div id="rd-notif-banner">
-  <span class="rd-notif-icon" id="rd-notif-icon">⚠️</span>
-  <span class="rd-notif-txt"  id="rd-notif-txt">—</span>
-  <button class="rd-notif-action" id="rd-notif-action" style="display:none" onclick="rdApplyPending()">Synchroniser</button>
-  <button class="rd-notif-close" onclick="rdCloseNotif()">✕</button>
 </div>
 
 <div id="app">
@@ -1222,12 +1156,12 @@ function save(){
   setSyncStatus('syncing', 'Modification…');
 }
 function updDash(){
-  const safe = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
-  safe('d-ref',  D.ref||'—');
-  safe('d-op',   D.op_titre||D.op_desc||'—');
-  safe('d-date', D.date_rd0?new Date(D.date_rd0).toLocaleDateString('fr-FR'):'—');
-  safe('hdr-proj', D.op_titre||D.ref||'RAPSORD RD0');
-  safe('hdr-ref',  D.ref||D.dossier||'—');
+  document.getElementById('d-ref').textContent=D.ref||'—';
+  document.getElementById('d-op').textContent=D.op_titre||D.op_desc||'—';
+  document.getElementById('d-date').textContent=D.date_rd0?new Date(D.date_rd0).toLocaleDateString('fr-FR'):'—';
+  const proj = D.op_titre||D.ref||'RAPSORD RD0';
+  const el=document.getElementById('hdr-proj'); if(el) el.textContent=proj;
+  const ref=document.getElementById('hdr-ref'); if(ref) ref.textContent=D.ref||D.dossier||'—';
   updBadges();
 }
 
@@ -1237,7 +1171,7 @@ function exportJSON(){
   const name=(D.ref||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
   const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='RAPSORD_'+name+'.json';a.click();
-  const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='JSON exporté ✓';
+  document.getElementById('sbar-hint').textContent='JSON exporté ✓';
 }
 function importJSON(){
   const inp=document.createElement('input');inp.type='file';inp.accept='.json';
@@ -1265,25 +1199,25 @@ function applyData(){
       if(r.parentElement.textContent.trim().startsWith(D.avis)){r.parentElement.classList.add('on');}
     });
     const w=document.getElementById('avis-wrap');
-    if(w) w.className='avis-wrap '+(D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
+    w.className='avis-wrap '+(D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
   }
   // checkboxes mc
   if(D.mc)document.querySelectorAll('#dom-grid .mc,#miss-comp-grid .mc').forEach(el=>{
     const key=el.textContent.trim();
-    if(D.mc[key]){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
+    if(D.mc[key]){el.classList.add('on');el.querySelector('input').checked=true;}
   });
   // rd_req
   if(D.rd_req)document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
-    if(el.textContent.includes('RD1')&&D.rd_req.rd1){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
-    if(el.textContent.includes('RD2')&&D.rd_req.rd2){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
+    if(el.textContent.includes('RD1')&&D.rd_req.rd1){el.classList.add('on');el.querySelector('input').checked=true;}
+    if(el.textContent.includes('RD2')&&D.rd_req.rd2){el.classList.add('on');el.querySelector('input').checked=true;}
   });
   // codes
-  const cb=document.getElementById('codes-body');
-  if(cb){cb.innerHTML='';codeRows=0;if(D.codes)(D.codes).forEach(row=>addCode(row));}
+  document.getElementById('codes-body').innerHTML='';codeRows=0;
+  if(D.codes)(D.codes).forEach(row=>addCode(row));
   // pc
   rebuildPC();
   updDash();
-  const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Dossier chargé ✓';
+  document.getElementById('sbar-hint').textContent='Dossier chargé ✓';
 }
 function rebuildPC(){
   document.getElementById('pc-dec-body').innerHTML='';
@@ -1299,11 +1233,9 @@ function newDossier(){
   document.querySelectorAll('input[type=text],input[type=date],input[type=number],textarea').forEach(e=>e.value='');
   document.querySelectorAll('select').forEach(e=>e.selectedIndex=0);
   document.querySelectorAll('.ro,.mc').forEach(e=>e.classList.remove('on'));
-  const cb=document.getElementById('codes-body');if(cb)cb.innerHTML='';codeRows=0;
-  rebuildPC();updDash();
-  const mo=document.getElementById('mover');if(mo)mo.classList.remove('on');
-  nav('dash');
-  const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Nouveau dossier créé';
+  document.getElementById('codes-body').innerHTML='';codeRows=0;
+  rebuildPC();updDash();closeMdlg();nav('dash');
+  document.getElementById('sbar-hint').textContent='Nouveau dossier créé';
 }
 
 // ─── GENERATE WORD (instruction only) ────────────────────────────────────────
@@ -1419,99 +1351,27 @@ function pushToParent(){
 setInterval(pushToParent, 4000);
 window.addEventListener('beforeunload', pushToParent);
 
-// ─── BANDEAU NOTIFICATION ────────────────────────────────────────────────────
-function rdShowNotif(type, icon, txt, showAction) {
-  const b  = document.getElementById('rd-notif-banner');
-  const ic = document.getElementById('rd-notif-icon');
-  const tx = document.getElementById('rd-notif-txt');
-  const ac = document.getElementById('rd-notif-action');
-  if(!b) return;
-  b.style.display    = 'flex';
-  b.style.background = type==='presence'?'#fff8e6':type==='sync'?'#eff6ff':'#f0fdf4';
-  b.style.borderColor= type==='presence'?'#f59e0b':type==='sync'?'#3b82f6':'#22c55e';
-  b.style.color      = type==='presence'?'#92400e':type==='sync'?'#1e40af':'#166534';
-  if(ic) ic.textContent = icon;
-  if(tx) tx.textContent = txt;
-  if(ac) ac.style.display = showAction ? '' : 'none';
-  _updateAppHeight();
-  if(type==='saved') setTimeout(rdCloseNotif, 3000);
-}
-function rdCloseNotif() {
-  const b = document.getElementById('rd-notif-banner');
-  if(b) { b.style.display='none'; _updateAppHeight(); }
-}
-function _updateAppHeight() {
-  // Rien — la hauteur est gérée par CSS flex
-}
-window.addEventListener('resize', _updateAppHeight);
-
-// Données Firebase en attente d'application
-let _pendingData = null;
-
-function rdApplyPending() {
-  if(!_pendingData) return;
-  D = _pendingData; _pendingData = null;
-  applyData();
-  const btn = document.getElementById('rd-sync-btn');
-  if(btn) { btn.style.display='none'; btn.classList.remove('sync-pending'); }
-  rdShowNotif('saved', '✅', 'Données synchronisées avec Firebase');
-  setSyncStatus('saved', 'Synchronisé ✓');
-  _dirty = false;
-}
-
-// ─── LISTENER messages du parent (index.html) ─────────────────────────────────
-window.addEventListener('message', function(e) {
+// Écoute messages du parent — identique canevas_temp
+window.addEventListener('message', function(e){
   if(!e.data) return;
-
-  // Sauvegarde forcée (fermeture, bouton parent)
-  if(e.data.type === 'rapso_request_save') {
-    collect(); pushToParent();
+  if(e.data.type === 'rapso_request_save'){
+    pushToParent();
   }
-
-  // Nouvelles données Firebase dispo (sync temps réel)
-  if(e.data.type === 'rapsord_inject') {
-    try {
+  if(e.data.type === 'rapsord_inject'){
+    try{
       const d = e.data.data;
-      if(d && typeof d === 'object') {
-        _pendingData = d;
-        const btn = document.getElementById('rd-sync-btn');
-        if(btn) { btn.style.display=''; btn.classList.add('sync-pending'); }
-        rdShowNotif('sync', '🔄', 'Nouvelles données disponibles — cliquez sur Synchroniser', true);
-        setSyncStatus('syncing', 'Mise à jour dispo');
-      }
-    } catch(err) { console.warn('rapsord_inject error:', err); }
+      if(d && typeof d === 'object'){ D = d; applyData(); }
+      setSyncStatus('saved', 'Synchronisé ✓');
+      _dirty = false;
+    }catch(err){ console.warn('rapsord_inject error:', err); }
   }
-
-  // Présence — autre(s) utilisateur(s) en train d'éditer
-  if(e.data.type === 'rapsord_presence') {
-    const others = e.data.others || [];
-    const pill  = document.getElementById('rd-presence-pill');
-    const names = document.getElementById('rd-presence-names');
-    if(others.length > 0) {
-      const noms = others.map(u => u.nom || '?').join(', ');
-      if(pill)  pill.classList.add('show');
-      if(names) names.textContent = noms + (others.length>1?' éditent':' édite') + ' aussi';
-      rdShowNotif('presence', '✏️',
-        noms + (others.length>1?' travaillent':' travaille') + ' sur ce dossier en même temps que vous');
-    } else {
-      if(pill) pill.classList.remove('show');
-    }
-  }
-
-  // Confirmation connexion Firebase
-  if(e.data.type === 'rapsord_connected') {
-    setSyncStatus('saved', 'Connecté ✓');
-    if(e.data.canId !== undefined) _canId = e.data.canId;
-  }
-
-  // Export JSON → génération Word
-  if(e.data.type === 'rapsord_generate_docx') {
+  if(e.data.type === 'rapsord_generate_docx'){
     collect();
-    const ref = (D.ref||D.dossier||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
-    const blob = new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'RAPSORD_' + ref + '.json';
+    const ref=(D.ref||D.dossier||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
+    const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='RAPSORD_'+ref+'.json';
     a.click();
     URL.revokeObjectURL(a.href);
   }
