@@ -1954,6 +1954,8 @@ let _rdListener = null;
 let _rdPresenceRef = null;
 let _rdPendingData = null;
 let _rdPendingBarShown = false;
+let _rdIsSelfWrite = false;
+let _rdLastHash = '';
 
 // ─── Helpers UI ──────────────────────────────────────────────────────────────
 function rdShowBadge(id, show){ const el=document.getElementById(id); if(el) el.style.display=show?'':'none'; }
@@ -2029,6 +2031,8 @@ function rdApplyPending() {
     rdNotif('✅ Données synchronisées');
     // Mettre à jour les badges
     rdUpdateBadges(_rdPendingData);
+    // Mettre à jour le hash local
+    _rdLastHash = JSON.stringify(_rdPendingData);
   }
   rdDismissPending();
 }
@@ -2039,18 +2043,19 @@ function rdStartSync(id){
   rdSetLive(true);
   _rdListener = db.ref('/rd0/' + id).on('value', snap => {
     const data = snap.val() || {};
-    rdUpdateBadges(data);
-    const frame = document.getElementById('rapsordFrame');
-    const hasFrame = frame && frame.src && frame.src.startsWith('blob:');
-    if(hasFrame && !_rdPendingBarShown) {
-      // Vérifier si les données ont réellement changé (hash simple)
-      const localHash = JSON.stringify(data);
-      if (localHash !== _rdLastKnownHash) {
-        _rdLastKnownHash = localHash;
+    // Si c'est une écriture locale, on ignore
+    if (_rdIsSelfWrite) { _rdIsSelfWrite = false; return; }
+    // Comparer les hash
+    const newHash = JSON.stringify(data);
+    if (newHash !== _rdLastHash) {
+      _rdLastHash = newHash; // on met à jour pour éviter les boucles
+      // Afficher la barre si l'iframe est chargée
+      const frame = document.getElementById('rapsordFrame');
+      if (frame && frame.src && frame.src.startsWith('blob:')) {
         rdShowPendingBar(data);
         rdNotif('🔄 Nouvelles données disponibles depuis Firebase');
       }
-    } else {
+      // Mettre à jour les badges même si la barre n'est pas affichée
       rdUpdateBadges(data);
     }
   }, err => {
@@ -2086,8 +2091,6 @@ function rdStartSync(id){
   }
 }
 
-let _rdLastKnownHash = '';
-
 function rdStopSync(){
   if(_rdListener && db && currentRapsordId){
     try{ db.ref('/rd0/'+currentRapsordId).off('value', _rdListener); }catch(e){}
@@ -2097,12 +2100,13 @@ function rdStopSync(){
   if(_rdPresenceRef){ try{ _rdPresenceRef.remove(); }catch(e){} _rdPresenceRef=null; }
   rdSetLive(false);
   rdDismissPending();
-  _rdLastKnownHash = '';
+  _rdLastHash = '';
 }
 
 function rdForceSave(){
   const frame = document.getElementById('rapsordFrame');
   if(!frame||!frame.contentWindow) return;
+  _rdIsSelfWrite = true; // pour éviter de déclencher la barre sur notre propre sauvegarde
   frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*');
   rdNotif('☁ Sauvegarde forcée envoyée…');
 }
@@ -2122,11 +2126,13 @@ function rdLoadJSON(){
     try{
       const data=JSON.parse(txt);
       if(currentRapsordId){
+        _rdIsSelfWrite = true;
         await db.ref('/rd0/'+currentRapsordId).set(data);
         rdNotif('✅ JSON chargé et sauvegardé sur Firebase');
         const frame=document.getElementById('rapsordFrame');
         if(frame&&frame.contentWindow)
           frame.contentWindow.postMessage({type:'rapsord_inject',data},'*');
+        _rdLastHash = JSON.stringify(data);
       }
     }catch(err){ toast('JSON invalide : '+err.message,'r'); }
   };
@@ -2189,7 +2195,7 @@ async function openRapsord(id, e) {
 
   // Réinitialiser la barre de sync
   rdDismissPending();
-  _rdLastKnownHash = JSON.stringify(rdData);
+  _rdLastHash = JSON.stringify(rdData);
 
   hide('scApp'); hide('scSynthese'); show('scRapsord');
 
