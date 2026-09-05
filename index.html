@@ -12,7 +12,7 @@
 <title>RAPSOSYN – Portail de gestion</title>
 <style>
 /* ══════════════════════════════════════════════════════
-   STYLES (inchangés – gardez votre CSS existant)
+   STYLES – Inchangés
    ══════════════════════════════════════════════════════ */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
@@ -860,7 +860,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   <iframe id="synFrame" class="syn-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads"></iframe>
 </div>
 
-<!-- ═════════════════════ RAPSORD VIEWER (avec correction du « 1/2 ») ═════════════════════ -->
+<!-- ═════════════════════ RAPSORD VIEWER ═════════════════════ -->
 <div id="scRapsord" class="screen hidden">
   <div class="syn-topbar" id="rdTopbar">
 
@@ -955,6 +955,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 </div>
 
 <!-- ═════════ MODALS ═════════ -->
+<!-- (tous les modals restent inchangés) -->
 <div class="modal-bd" id="mdCanevas">
   <div class="modal">
     <div class="m-hdr">
@@ -963,7 +964,6 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <button class="m-close" onclick="closeModal('mdCanevas')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="m-body">
-      <!-- Zone de drop pour fichier Excel (création uniquement) -->
       <div id="canevasDropZone" style="display:none; border:2px dashed var(--g300); border-radius:12px; padding:20px; text-align:center; margin-bottom:12px; cursor:pointer; background:var(--g50);">
         <div style="font-size:0.85rem; color:var(--g500);">📂 Glissez un fichier .xlsx/.xls ici pour pré-remplir le projet</div>
         <input type="file" id="canevasFileInput" accept=".xlsx,.xlsm,.xls" style="display:none" onchange="handleCanevasFileSelect(this)">
@@ -1146,7 +1146,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 <script>
 /* ════════════════════════════════════════════════════════
-   SCRIPT COMPLET – CORRIGÉ AVEC _writeId POUR LE RUBAN
+   SCRIPT COMPLET – CORRIGÉ AVEC _writeId (UUID)
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
   apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
@@ -1172,7 +1172,7 @@ let nextCanId = 1;
 let isOnline = true;
 let pendingImportData = null;
 
-// ─── Variables RAPSORD avec _writeId ──────────────────────
+// ─── RAPSORD variables ──────────────────────────────────
 let currentRapsordId = null;
 let _rdFromSyn = false;
 let _rdListener = null;
@@ -1180,7 +1180,7 @@ let _rdPresenceRef = null;
 let _rdPendingData = null;
 let _rdLastHash = '';
 let _rdNotifTimer = null;
-let _writeId = 0;  // ← nouveau compteur pour identifier nos propres écritures
+let _lastWriteId = null;  // ← stocke le dernier UUID écrit
 
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function gv(id) { return document.getElementById(id)?.value || ''; }
@@ -1921,7 +1921,7 @@ function stopLiveListener() {
   document.getElementById('refreshBadge')?.classList.remove('show');
 }
 
-/* ─── GESTIONNAIRE DE MESSAGES (avec correction du ruban) ─── */
+/* ─── GESTIONNAIRE DE MESSAGES (avec UUID) ─── */
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
 
@@ -1992,25 +1992,26 @@ window.addEventListener('message', function(e) {
     updateSynCounters(e.data.data);
   }
 
-  // ── RAPSORD RD0 save avec _writeId (CORRECTION) ──────────
+  // ── RAPSORD RD0 save avec UUID (CORRECTION) ──────────
   if (e.data.type === 'rapsord_save') {
     const canId   = e.data.canId;
     const payload = e.data.data;
     if (canId === undefined || canId === null || !payload) return;
 
-    // Incrémenter l'identifiant d'écriture
-    const currentWriteId = ++_writeId;
-    // Ajouter _writeId au payload (copie)
-    const dataToSave = { ...payload, _writeId: currentWriteId };
+    // Générer un identifiant unique (UUID) pour cette écriture
+    const writeId = crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2);
+    _lastWriteId = writeId;
 
-    // Mettre à jour le hash avant l'écriture (pour éviter les fausses alertes)
+    // Ajouter _writeId aux données
+    const dataToSave = { ...payload, _writeId: writeId };
+
+    // Mettre à jour le hash local
     _rdLastHash = hashRd(dataToSave);
 
     // Écrire dans Firebase
     db.ref('/rd0/' + canId).set(dataToSave)
       .then(() => {
         rdSetLive(true);
-        // Marquer le canevas comme ayant un RD0
         const idx = canevas.findIndex(x => String(x.id) === String(canId));
         if (idx >= 0 && !canevas[idx].hasRd0) {
           canevas[idx].hasRd0 = true;
@@ -2262,7 +2263,7 @@ function rdSetPresence(others) {
   }
 }
 
-// ─── rdStartSync (avec vérification du _writeId) ─────────────
+// ─── rdStartSync (avec UUID) ─────────────────────────────
 function rdStartSync(id) {
   rdStopSync();
   if (!db) return;
@@ -2273,8 +2274,8 @@ function rdStartSync(id) {
     const freshData = snap.val() || {};
     const freshHash = hashRd(freshData);
 
-    // Si c'est notre propre écriture (contient _writeId correspondant)
-    if (freshData._writeId && freshData._writeId === _writeId) {
+    // Si c'est notre propre écriture (UUID identique)
+    if (freshData._writeId && freshData._writeId === _lastWriteId) {
       // Mettre à jour le hash et ne pas afficher la notification
       _rdLastHash = freshHash;
       return;
