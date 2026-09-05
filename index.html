@@ -861,10 +861,11 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 </div>
 
 <!-- ═════════════════════ RAPSORD VIEWER ═════════════════════ -->
+<!-- ═════════════════════ RAPSORD VIEWER (même topbar que SYNTHESE) ═════════════════════ -->
 <div id="scRapsord" class="screen hidden">
   <div class="syn-topbar" id="rdTopbar">
 
-    <!-- ← Retour SYN -->
+    <!-- ← Retour SYN (caché par défaut) -->
     <button class="syn-back" onclick="closeRapsordToSyn()" id="rdBackSyn" title="Revenir au canevas SYN" style="display:none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
       <span class="syn-back-label">SYN</span>
@@ -879,58 +880,64 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <!-- Titre -->
     <div class="syn-title" id="rapsordTitle">—</div>
 
-    <!-- Badges statut (dynamiques) -->
-    <span class="rd-badge edit"  id="rd-badge-edit"   style="display:none;">✏️ Édition</span>
-    <span class="rd-badge lock"  id="rd-badge-lock"   style="display:none;">🔒 Archivé — lecture seule</span>
-    <span class="rd-badge ok"    id="rd-badge-ok"     style="display:none;">✅ A</span>
-    <span class="rd-badge warn"  id="rd-badge-warn"   style="display:none;">⚠️ Points d'attention</span>
-    <span class="rd-badge danger" id="rd-badge-danger" style="display:none;">❌ Avis défavorable</span>
+    <!-- Chip rôle (lecture seule / édition) -->
+    <span id="rdRoleChip" style="font-size:0.7rem;padding:2px 10px;border-radius:100px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-weight:600;white-space:nowrap;flex-shrink:0;">✏️ Édition</span>
 
-    <!-- Présence : autres utilisateurs -->
-    <div class="rd-presence-pill" id="rd-presence" style="display:none;">
-      <span class="rd-presence-dot"></span>
-      <span id="rd-presence-txt">1 autre éditeur</span>
+    <!-- Compteurs (pour RD0) -->
+    <div class="syn-counters" id="rdCounters" style="margin:0 4px;">
+      <span class="sc sc-lev" id="rd_oui">✅ 0</span>
+      <span class="sc sc-par" id="rd_par">⚠️ 0</span>
+      <span class="sc sc-non" id="rd_non">❌ 0</span>
+      <span class="sc sc-tot" id="rd_tot">/ 0</span>
     </div>
 
-    <div style="flex:1"></div>
+    <!-- Statut de synchronisation -->
+    <div class="syn-status idle" id="rdStatus">
+      <span class="sdot"></span>
+      <span id="rdStatusTxt">En attente</span>
+    </div>
 
-    <!-- Live dot -->
-    <div class="syn-live-dot" id="rdLiveDot" style="margin-right:2px;">
+    <!-- Live dot (connexion Firebase) -->
+    <div class="syn-live-dot" id="rdLiveDot" title="Connexion Firebase temps réel">
       <span class="ld"></span>
-      <span class="syn-live-label" id="rdLiveLabel">Connecté</span>
+      <span class="syn-live-label" id="rdLiveLabel">Connexion…</span>
     </div>
 
-    <!-- Synchroniser -->
-    <button class="syn-refresh" id="rdRefreshBtn" onclick="rdApplyPending()" title="Modifications disponibles" style="display:none;">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    <!-- Bouton info projet (mobile) -->
+    <button id="rdInfoBtn" class="syn-refresh" onclick="showRdInfoPopup()" title="Infos projet" style="display:none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </button>
+
+    <!-- Bouton Synchroniser (avec badge) -->
+    <button class="syn-refresh" id="rdRefreshBtn" onclick="rdApplyPending()" title="Des modifications sont disponibles – cliquez pour les appliquer" style="display:none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <polyline points="1 4 1 10 7 10"/>
+        <path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+      </svg>
       <span class="syn-refresh-label">Synchroniser</span>
-      <span class="notif-badge" id="rdRefreshBadge" style="display:none;">!</span>
+      <span class="notif-badge" id="rdRefreshBadge">!</span>
     </button>
 
     <!-- Forcer sauvegarde -->
-    <button class="syn-refresh" id="rdSaveBtn" onclick="rdForceSave()" title="Forcer la sauvegarde">
+    <button class="syn-refresh" onclick="rdForceSave()" title="Forcer sauvegarde" style="margin-left:2px;">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-      <span class="syn-refresh-label">Enregistrer</span>
     </button>
 
-    <!-- MENU ▾ -->
-    <div style="position:relative;">
-      <button class="syn-refresh" onclick="toggleRdMenu()" id="rdMenuBtn">
-        ☰ <span class="syn-refresh-label">MENU ▾</span>
-      </button>
-      <div id="rdActionMenu">
-        <button onclick="downloadRdDocx();closeRdMenu()">📄 Télécharger Word</button>
-        <button onclick="rdLoadJSON();closeRdMenu()">⤒ Charger JSON</button>
-        <button onclick="rdExportJSON();closeRdMenu()">⤓ JSON local</button>
-        <hr>
-        <button onclick="rdForceSave();closeRdMenu()">☁ Enregistrer Firebase</button>
-        <button onclick="window.frames['rapsordFrame']?.contentWindow?.print();closeRdMenu()">⎙ Imprimer</button>
+    <!-- Bouton MENU -->
+    <div class="actions-dropdown">
+      <button class="syn-refresh" onclick="toggleRdMenu(event)">☰ <span class="syn-menu-label">MENU ▾</span></button>
+      <div class="actions-menu" id="rdActionMenu">
+        <button onclick="rdExportJSON(); closeRdMenu();">⤓ Enregistrer en local</button>
+        <button onclick="rdLoadJSON(); closeRdMenu();">⤒ Ouvrir un dossier local</button>
+        <button onclick="rdForceSave(); closeRdMenu();">☁ Enregistrer Firebase</button>
+        <button onclick="downloadRdDocx(); closeRdMenu();">📄 Télécharger Word</button>
+        <button onclick="window.frames['rapsordFrame']?.contentWindow?.print(); closeRdMenu();">⎙ Imprimer</button>
       </div>
     </div>
 
   </div>
 
-  <!-- Pending bar RD (même style que synPendingBar) -->
+  <!-- Pending bar (identique à synPendingBar) -->
   <div class="syn-pending-bar" id="rdPendingBar">
     <span class="pb-icon">🔔</span>
     <div class="pb-meta">
@@ -942,7 +949,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <button class="pb-dismiss" onclick="rdDismissPending()">Ignorer</button>
   </div>
 
-  <!-- Notif RD (même style que synNotif) -->
+  <!-- Notif (identique à synNotif) -->
   <div class="syn-notif" id="rdNotif">
     <span class="nicon" id="rdNotifIcon">ℹ️</span>
     <span class="syn-notif-txt" id="rdNotifTxt"></span>
