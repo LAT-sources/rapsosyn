@@ -2251,11 +2251,6 @@ function rdUpdateBadges(data) {
   const rd6res  = String(data.rd6_res_detail || '').trim();
 
   // ❌ Défavorable (Titre V ou RD6)
-  const hasDef = avis.includes('favorable') && avis.includes('réserves')
-    ? false  // "favorable avec réserves" ≠ défavorable
-    : (avis === 'défavorable' || rd6avis === 'défavorable' || rd6res.length > 0);
-
-  // Correction : "défavorable" strict
   const isStrictDef = avis === 'défavorable' || rd6avis === 'défavorable';
   const hasReserves = avis.includes('réserves') || rd6avis.includes('réserves') || rd6res.length > 0;
 
@@ -2504,12 +2499,6 @@ async function openRapsord(id, e) {
   // Boutons retour selon le contexte
   document.getElementById('rdBackSyn').style.display = _rdFromSyn ? '' : 'none';
   document.getElementById('rdBackApp').style.display = _rdFromSyn ? 'none' : '';
-
-  // Cacher le bouton sync au démarrage
-  const refreshBtn = document.getElementById('rdRefreshBtn');
-  if(refreshBtn) refreshBtn.style.display='none';
-
-  hide('scApp'); hide('scSynthese'); show('scRapsord');
 
   // Badges initiaux depuis les données chargées
   rdUpdateBadges(rdData);
