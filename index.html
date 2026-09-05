@@ -894,17 +894,17 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
     <div style="flex:1"></div>
 
-    <!-- Live dot -->
-    <div class="syn-live-dot" id="rdLiveDot" style="margin-right:2px;">
+    <!-- Live dot — toujours visible comme SYN -->
+    <div class="syn-live-dot disconnected" id="rdLiveDot">
       <span class="ld"></span>
-      <span class="syn-live-label" id="rdLiveLabel">Connecté</span>
+      <span class="syn-live-label" id="rdLiveLabel">Connexion…</span>
     </div>
 
-    <!-- Synchroniser -->
-    <button class="syn-refresh" id="rdRefreshBtn" onclick="rdApplyPending()" title="Modifications disponibles" style="display:none;">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    <!-- Synchroniser — toujours visible comme SYN -->
+    <button class="syn-refresh" id="rdRefreshBtn" onclick="rdApplyPending()" title="Synchroniser les modifications">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
       <span class="syn-refresh-label">Synchroniser</span>
-      <span class="notif-badge" id="rdRefreshBadge" style="display:none;">!</span>
+      <span class="notif-badge" id="rdRefreshBadge">!</span>
     </button>
 
     <!-- Forcer sauvegarde -->
@@ -2004,8 +2004,8 @@ window.addEventListener('message', function(e) {
     const canId   = e.data.canId;
     const payload = e.data.data;
     if (canId === undefined || canId === null || !payload) return;
-    _rdIsSelfWrite = true;
-    _rdLastHash    = hashRd(payload);
+    _rdLastHash    = hashRd(payload);  // ← avant l'écriture
+    _rdIsSelfWrite = true;             // ← ignorer notre propre écriture
     db.ref('/rd0/' + canId).set(payload)
       .then(() => {
         rdSetLive(true);
@@ -2213,18 +2213,18 @@ function hideRdNotif() {
 // ── Pending bar RD (même API que showPendingBar SYN) ─────────────────────────
 function rdShowPendingBar(data, modUser) {
   _rdPendingData = data;
-  const btn = document.getElementById('rdRefreshBtn');
-  if (btn) { btn.style.display='flex'; btn.classList.add('show'); }
+  // Badge ! sur Synchroniser — même que refreshBadge SYN
+  document.getElementById('rdRefreshBadge')?.classList.add('show');
   document.getElementById('rdPbDetail').textContent =
     'Ref: ' + (data.ref||'—') + ' · Avis: ' + (data.avis||'—');
   document.getElementById('rdPbUser').textContent = modUser ? '✏️ ' + modUser : '';
   document.getElementById('rdPendingBar').classList.add('show');
-  showRdNotif('🔔 ' + (modUser||'Quelqu\'un') + ' a modifié ce RD0', 'warn', 0);
+  showRdNotif('🔔 ' + (modUser||'Quelqu’un') + ' a modifié ce RD0', 'warn', 0);
 }
 function rdDismissPending() {
   _rdPendingData = null;
   document.getElementById('rdPendingBar')?.classList.remove('show');
-  document.getElementById('rdRefreshBtn').style.display='none';
+  document.getElementById('rdRefreshBadge')?.classList.remove('show');
 }
 
 // ── Badges dynamiques ────────────────────────────────────────────────────────
@@ -2237,22 +2237,42 @@ function rdUpdateBadges(data) {
   const archived = !!(canevas.find(x => x.id === currentRapsordId)?.archived);
   rdShowBadge('rd-badge-lock', archived);
   rdShowBadge('rd-badge-edit', !archived);
-  const hasAtt = !!(data.points_att?.trim() || data.risques_prio?.trim());
+
+  // ⚠️ Points d'attention Titre IV
+  const hasAtt = !!(
+    (data.points_att   && String(data.points_att).trim())   ||
+    (data.risques_prio && String(data.risques_prio).trim())
+  );
   rdShowBadge('rd-badge-warn', hasAtt);
-  const avis    = (data.avis||data['r_avis']||'').toLowerCase();
-  const rd6avis = (data.rd6_avis||data['r_rd6_avis']||'').toLowerCase();
-  const rd6res  = (data.rd6_res_detail||'').trim();
-  const hasDef  = avis.includes('défavorable') || rd6avis.includes('défavorable') || rd6res.length>0;
-  rdShowBadge('rd-badge-danger', hasDef);
-  rdShowBadge('rd-badge-ok', avis==='favorable' && !hasDef);
+
+  // Lire l'avis depuis toutes les clés possibles
+  const avis    = String(data.avis    || data.r_avis    || '').trim().toLowerCase();
+  const rd6avis = String(data.rd6_avis|| data.r_rd6_avis|| '').trim().toLowerCase();
+  const rd6res  = String(data.rd6_res_detail || '').trim();
+
+  // ❌ Défavorable (Titre V ou RD6)
+  const hasDef = avis.includes('favorable') && avis.includes('réserves')
+    ? false  // "favorable avec réserves" ≠ défavorable
+    : (avis === 'défavorable' || rd6avis === 'défavorable' || rd6res.length > 0);
+
+  // Correction : "défavorable" strict
+  const isStrictDef = avis === 'défavorable' || rd6avis === 'défavorable';
+  const hasReserves = avis.includes('réserves') || rd6avis.includes('réserves') || rd6res.length > 0;
+
+  rdShowBadge('rd-badge-danger', isStrictDef);
+
+  // ✅ Favorable sans réserves
+  const isFav = (avis === 'favorable') && !isStrictDef && !hasReserves;
+  rdShowBadge('rd-badge-ok', isFav);
 }
 
 // ── Live dot RD ───────────────────────────────────────────────────────────────
 function rdSetLive(ok) {
-  const dot = document.getElementById('rdLiveDot');
-  const lbl = document.getElementById('rdLiveLabel');
-  if (dot) dot.querySelector('.ld').style.background = ok ? '#22c55e' : '#94a3b8';
-  if (lbl) lbl.textContent = ok ? 'Connecté' : 'Hors ligne';
+  const el = document.getElementById('rdLiveDot');
+  const tx = document.getElementById('rdLiveLabel');
+  if (!el) return;
+  el.className = 'syn-live-dot ' + (ok ? 'connected' : 'disconnected');
+  if (tx) tx.textContent = ok ? 'Connecté' : 'Hors ligne';
 }
 
 // ── Presence pill ─────────────────────────────────────────────────────────────
@@ -2280,48 +2300,45 @@ function rdSetPresence(others) {
   }
 }
 
-// ── startLiveListener RD — copie exacte de startLiveListener SYN ─────────────
+// ── rdStartSync — copie EXACTE de startLiveListener ─────────────────────────
 function rdStartSync(id) {
   rdStopSync();
   if (!db) return;
   rdSetLive(true);
   let firstCall = true;
 
-  // Notifier l'iframe que la connexion est établie
-  setTimeout(() => {
-    const frame = document.getElementById('rapsordFrame');
-    if (frame && frame.contentWindow) {
-      try { frame.contentWindow.postMessage({ type:'rapsord_connected', canId: id }, '*'); } catch(e) {}
-    }
-  }, 1200);
-
-  // Listener onValue /rd0/<id> — exact comme db.ref('/canevas').on(...)
+  // Initialiser le hash local avec les données déjà chargées
+  // (évite fausse alerte au premier appel — même pattern que SYN)
   _rdListener = db.ref('/rd0/' + id).on('value', snap => {
     rdSetLive(true);
-    if (firstCall) { firstCall = false; rdUpdateBadges(snap.val()||{}); return; }
-    if (_rdIsSelfWrite) { _rdIsSelfWrite = false; return; }
-
     const freshData = snap.val() || {};
     const freshHash = hashRd(freshData);
-    if (freshHash !== _rdLastHash && freshHash !== '') {
-      // Trouver qui a modifié (via presence)
-      let modUser = '';
+
+    if (firstCall) {
+      firstCall = false;
+      _rdLastHash = freshHash;   // ← initialiser le hash de référence
+      rdUpdateBadges(freshData);
+      return;
+    }
+    if (_rdIsSelfWrite) { _rdIsSelfWrite = false; _rdLastHash = freshHash; return; }
+
+    // Vrai changement externe
+    if (freshHash !== _rdLastHash) {
       db.ref('/rd0_presence/' + id).once('value').then(pSnap => {
         const presence = pSnap.val() || {};
         const uid = currentUser?.uid || currentUser?.initiales || 'me';
         const others = Object.entries(presence).filter(([k]) => k !== uid);
-        if (others.length > 0) modUser = others[0][1]?.nom || '';
+        const modUser = others.length > 0 ? (others[0][1]?.nom || '') : '';
         rdShowPendingBar(freshData, modUser);
         rdUpdateBadges(freshData);
       });
     }
   }, err => {
-    console.warn('RD listener error:', err);
     rdSetLive(false);
     showRdNotif('Connexion Firebase perdue', 'err', 0);
   });
 
-  // Presence — écrire notre présence dans /rd0_presence/<id>/<uid>
+  // Présence — écrire dans /rd0_presence/<id>/<uid>
   if (currentUser) {
     const uid = currentUser.uid || currentUser.initiales || 'user';
     _rdPresenceRef = db.ref('/rd0_presence/' + id + '/' + uid);
@@ -2334,9 +2351,9 @@ function rdStartSync(id) {
     // Écouter les autres présences
     db.ref('/rd0_presence/' + id).on('value', snap => {
       const presence = snap.val() || {};
-      const uid = currentUser?.uid || currentUser?.initiales || 'me';
+      const uid2 = currentUser?.uid || currentUser?.initiales || 'me';
       const others = Object.entries(presence)
-        .filter(([k]) => k !== uid)
+        .filter(([k]) => k !== uid2)
         .filter(([, v]) => Date.now() - (v.ts||0) < 120000);
       rdSetPresence(others);
     });
@@ -2349,18 +2366,16 @@ function rdStopSync() {
     try { db.ref('/rd0_presence/' + currentRapsordId).off(); } catch(e) {}
     _rdListener = null;
   }
-  if (_rdPresenceRef) {
-    try { _rdPresenceRef.remove(); } catch(e) {}
-    _rdPresenceRef = null;
-  }
-  _rdPendingData = null;
-  _rdIsSelfWrite = false;
+  if (_rdPresenceRef) { try { _rdPresenceRef.remove(); } catch(e) {} _rdPresenceRef = null; }
+  _rdPendingData  = null;
+  _rdIsSelfWrite  = false;
+  _rdLastHash     = '';
   rdSetLive(false);
   document.getElementById('rdPendingBar')?.classList.remove('show');
-  document.getElementById('rdRefreshBtn') && (document.getElementById('rdRefreshBtn').style.display='none');
+  document.getElementById('rdRefreshBadge')?.classList.remove('show');
 }
 
-// ── rdApplyPending — exact comme applyPendingUpdate SYN ──────────────────────
+// ── rdApplyPending — même pattern que applyPendingUpdate ─────────────────────
 async function rdApplyPending() {
   const btn = document.getElementById('rdRefreshBtn');
   if (btn) btn.classList.add('spinning');
@@ -2387,7 +2402,6 @@ async function rdApplyPending() {
     rdUpdateBadges(freshData);
     showRdNotif('Modifications appliquées ✓', 'ok', 3000);
   }
-
   _rdPendingData = null;
   if (btn) btn.classList.remove('spinning');
 }
