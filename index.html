@@ -551,6 +551,43 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   .toast { min-width: unset; width: 100%; }
 }
   /* ════════════════════════════════════════════════════════════ */
+
+/* ─── RAPSORD VIEWER ─────────────────────────────────────────────────────── */
+.rd-badge{font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:100px;white-space:nowrap;flex-shrink:0;}
+.rd-badge.edit  {background:rgba(99,102,241,.18);color:#818cf8;}
+.rd-badge.lock  {background:rgba(148,163,184,.15);color:#94a3b8;}
+.rd-badge.ok    {background:rgba(34,197,94,.18);color:#16a34a;}
+.rd-badge.warn  {background:rgba(245,158,11,.2);color:#b45309;}
+.rd-badge.danger{background:rgba(239,68,68,.18);color:#dc2626;}
+.rd-presence-pill{display:none;align-items:center;gap:5px;
+  background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.35);
+  border-radius:100px;padding:2px 10px;font-size:.7rem;font-weight:600;
+  color:#b45309;flex-shrink:0;}
+.rd-presence-pill.show{display:flex;}
+.rd-presence-dot{width:7px;height:7px;border-radius:50%;background:#f59e0b;
+  animation:pulse .9s ease-in-out infinite;}
+.sync-dot{display:inline-block;width:8px;height:8px;border-radius:50%;
+  background:#64748b;margin-right:4px;transition:background .3s;flex-shrink:0;}
+.sync-dot.syncing{background:#f59e0b;animation:pulse .8s infinite;}
+.sync-dot.saved  {background:#22c55e;}
+.sync-dot.error  {background:#ef4444;}
+.sync-label{font-size:.7rem;color:rgba(255,255,255,.6);font-weight:500;white-space:nowrap;}
+#rdActionMenu{
+  display:none;position:fixed;top:47px;right:8px;
+  background:#1e293b;border:1px solid rgba(255,255,255,.13);
+  border-radius:10px;min-width:200px;z-index:9990;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;
+}
+#rdActionMenu.open{display:block;}
+#rdActionMenu button{
+  display:flex;align-items:center;gap:8px;width:100%;text-align:left;
+  padding:10px 16px;background:none;border:none;color:rgba(255,255,255,.82);
+  font-family:inherit;font-size:.8rem;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+#rdActionMenu button:last-child{border-bottom:none;}
+#rdActionMenu button:hover{background:rgba(255,255,255,.09);color:white;}
+#rdActionMenu hr{border:none;border-top:1px solid rgba(255,255,255,.08);margin:2px 0;padding:0;}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -773,6 +810,10 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <button id="synInfoBtn" class="syn-refresh" onclick="showSynInfoPopup()" title="Infos projet" style="display:none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     </button>
+    <button class="syn-refresh" id="synRdBtn" onclick="openRapsordFromSynthese()" title="Ouvrir RAPSORD RD0 pour ce dossier">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="syn-refresh-label">RD</span>
+    </button>
     <button class="syn-refresh" id="synRefreshBtn" onclick="applyPendingUpdate()" title="Des modifications sont disponibles – cliquez pour les appliquer">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
         <polyline points="1 4 1 10 7 10"/>
@@ -817,6 +858,100 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <button class="syn-notif-close" onclick="hideNotif()">✕</button>
   </div>
   <iframe id="synFrame" class="syn-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads"></iframe>
+</div>
+
+<!-- ═════════════════════ RAPSORD VIEWER ═════════════════════ -->
+<div id="scRapsord" class="screen hidden">
+  <div class="syn-topbar" id="rdTopbar">
+
+    <!-- ← Retour SYN -->
+    <button class="syn-back" onclick="closeRapsordToSyn()" id="rdBackSyn" title="Revenir au canevas SYN" style="display:none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      <span class="syn-back-label">SYN</span>
+    </button>
+
+    <!-- ← Retour liste -->
+    <button class="syn-back" onclick="closeRapsord()" id="rdBackApp">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      <span class="syn-back-label">Retour</span>
+    </button>
+
+    <!-- Titre -->
+    <div class="syn-title" id="rapsordTitle">—</div>
+
+    <!-- Badges statut (dynamiques) -->
+    <span class="rd-badge edit"  id="rd-badge-edit"   style="display:none;">✏️ Édition</span>
+    <span class="rd-badge lock"  id="rd-badge-lock"   style="display:none;">🔒 Archivé — lecture seule</span>
+    <span class="rd-badge ok"    id="rd-badge-ok"     style="display:none;">✅ A</span>
+    <span class="rd-badge warn"  id="rd-badge-warn"   style="display:none;">⚠️ Points d'attention</span>
+    <span class="rd-badge danger" id="rd-badge-danger" style="display:none;">❌ Avis défavorable</span>
+
+    <!-- Présence : autres utilisateurs -->
+    <div class="rd-presence-pill" id="rd-presence" style="display:none;">
+      <span class="rd-presence-dot"></span>
+      <span id="rd-presence-txt">1 autre éditeur</span>
+    </div>
+
+    <div style="flex:1"></div>
+
+    <!-- Live dot -->
+    <div class="syn-live-dot" id="rdLiveDot" style="margin-right:2px;">
+      <span class="ld"></span>
+      <span class="syn-live-label" id="rdLiveLabel">Connecté</span>
+    </div>
+
+    <!-- Synchroniser -->
+    <button class="syn-refresh" id="rdRefreshBtn" onclick="rdApplyPending()" title="Modifications disponibles" style="display:none;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+      <span class="syn-refresh-label">Synchroniser</span>
+      <span class="notif-badge" id="rdRefreshBadge" style="display:none;">!</span>
+    </button>
+
+    <!-- Forcer sauvegarde -->
+    <button class="syn-refresh" id="rdSaveBtn" onclick="rdForceSave()" title="Forcer la sauvegarde">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      <span class="syn-refresh-label">Enregistrer</span>
+    </button>
+
+    <!-- MENU ▾ -->
+    <div style="position:relative;">
+      <button class="syn-refresh" onclick="toggleRdMenu()" id="rdMenuBtn">
+        ☰ <span class="syn-refresh-label">MENU ▾</span>
+      </button>
+      <div id="rdActionMenu">
+        <button onclick="downloadRdDocx();closeRdMenu()">📄 Télécharger Word</button>
+        <button onclick="rdLoadJSON();closeRdMenu()">⤒ Charger JSON</button>
+        <button onclick="rdExportJSON();closeRdMenu()">⤓ JSON local</button>
+        <hr>
+        <button onclick="rdForceSave();closeRdMenu()">☁ Enregistrer Firebase</button>
+        <button onclick="window.frames['rapsordFrame']?.contentWindow?.print();closeRdMenu()">⎙ Imprimer</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Pending bar RD (même style que synPendingBar) -->
+  <div class="syn-pending-bar" id="rdPendingBar">
+    <span class="pb-icon">🔔</span>
+    <div class="pb-meta">
+      <div class="pb-title" id="rdPbTitle">Modifications disponibles sur ce RD0</div>
+      <div class="pb-detail" id="rdPbDetail">Un autre utilisateur a modifié ce dossier</div>
+    </div>
+    <span class="pb-user" id="rdPbUser"></span>
+    <button class="pb-apply" onclick="rdApplyPending()">⬇ Appliquer</button>
+    <button class="pb-dismiss" onclick="rdDismissPending()">Ignorer</button>
+  </div>
+
+  <!-- Notif RD (même style que synNotif) -->
+  <div class="syn-notif" id="rdNotif">
+    <span class="nicon" id="rdNotifIcon">ℹ️</span>
+    <span class="syn-notif-txt" id="rdNotifTxt"></span>
+    <button class="syn-notif-close" onclick="hideRdNotif()">✕</button>
+  </div>
+
+  <iframe id="rapsordFrame" class="syn-frame"
+    sandbox="allow-scripts allow-forms allow-modals allow-downloads allow-popups">
+  </iframe>
 </div>
 
 <!-- ═════════ MODALS ═════════ -->
@@ -1310,7 +1445,7 @@ function renderCanevas() {
       <td><button class="star-btn ${Array.isArray(currentUser.favs) && currentUser.favs.includes(c.id) ? 'on' : ''}" onclick="toggleStar(${c.id},event)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="${Array.isArray(currentUser.favs) && currentUser.favs.includes(c.id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       </button></td>
-      <td><div class="td-name">${esc(c.nom)}</div></td>
+      <td><div class="td-name">${esc(c.nom)} ${c.hasRd0 ? '<span title="RD0 renseigné" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:#22c55e;margin-left:5px;vertical-align:middle;"></span>' : ''}</div></td>
       <td><div class="td-chrono">${esc(c.chrono)}</div></td>
       <td class="td-client">${esc(c.client)}</td>
       <td>${esc(c.ville)}</td>
@@ -1318,6 +1453,7 @@ function renderCanevas() {
       <td><span class="av" style="background:${avBg(c.pilote)}" title="${fullName(c.pilote)}">${esc(c.pilote)}</span></td>
       <td>
         <button class="btn btn-primary btn-xs" onclick="openSynthese(${c.id})">📂 Ouvrir</button>
+        <button class="btn btn-orange btn-xs" onclick="openRapsord(${c.id},event)" title="Ouvrir RAPSORD RD0">📋 RD</button>
         ${canEdit ? `<button class="btn-icon blue" onclick="openModalCanevas('edit',${c.id},event)" title="Modifier"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>` : ''}
         ${(currentUser.role === 'admin' || c.pilote === currentUser.initiales) ? `<button class="btn-icon danger" onclick="confirmArchive(${c.id},event)" title="Archiver"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></button>` : ''}
         ${currentUser.role === 'admin' ? `<button class="btn-icon danger" onclick="confirmDeleteCan(${c.id},event)" title="Supprimer définitivement de Firebase" style="opacity:.7"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}
@@ -2001,6 +2137,385 @@ if ('serviceWorker' in navigator) {
       }
     });
   });
+}
+
+/* ── RAPSORD VIEWER — même pattern que openSynthese/canevas_temp ── */
+// ── URL template — jsDelivr évite le CORS de raw.githubusercontent.com ────────
+const RAPSORD_TEMPLATE_URL = 'https://cdn.jsdelivr.net/gh/LAT-sources/rapsosyn@main/rapsord_v2_improved.html';
+const RAPSORD_TEMPLATE_FALLBACK = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/rapsord_v2_improved.html';
+// ── STATE RD viewer ──────────────────────────────────────────────────────────
+let currentRapsordId = null;
+let _rdFromSyn       = false;
+let _rdListener      = null;
+let _rdPresenceRef   = null;
+let _rdPendingData   = null;
+let _rdIsSelfWrite   = false;
+let _rdLastHash      = '';
+let _rdNotifTimer    = null;
+
+// ── Hash RD0 (pour détecter vrais changements) ───────────────────────────────
+function hashRd(d) {
+  if (!d) return '';
+  return JSON.stringify({
+    ref:        d.ref        || '',
+    date_rd0:   d.date_rd0   || '',
+    avis:       d.avis       || '',
+    points_att: (d.points_att||'').substring(0,40),
+    risques_prio:(d.risques_prio||'').substring(0,40),
+    moa:        (d.moa||'').substring(0,30),
+    nb_pages:   d.nb_pages   || ''
+  });
+}
+
+// ── Notif RD (même API que showNotif SYN) ────────────────────────────────────
+function showRdNotif(txt, type='ok', duration=4000) {
+  const el  = document.getElementById('rdNotif');
+  const ico = document.getElementById('rdNotifIcon');
+  const msg = document.getElementById('rdNotifTxt');
+  if (!el) return;
+  ico.textContent = type==='ok' ? '✅' : type==='warn' ? '⚠️' : '❌';
+  msg.textContent = txt;
+  el.className = 'syn-notif show n' + type;
+  clearTimeout(_rdNotifTimer);
+  if (duration > 0) _rdNotifTimer = setTimeout(hideRdNotif, duration);
+}
+function hideRdNotif() {
+  document.getElementById('rdNotif')?.classList.remove('show');
+}
+
+// ── Pending bar RD (même API que showPendingBar SYN) ─────────────────────────
+function rdShowPendingBar(data, modUser) {
+  _rdPendingData = data;
+  const btn = document.getElementById('rdRefreshBtn');
+  if (btn) { btn.style.display='flex'; btn.classList.add('show'); }
+  document.getElementById('rdPbDetail').textContent =
+    'Ref: ' + (data.ref||'—') + ' · Avis: ' + (data.avis||'—');
+  document.getElementById('rdPbUser').textContent = modUser ? '✏️ ' + modUser : '';
+  document.getElementById('rdPendingBar').classList.add('show');
+  showRdNotif('🔔 ' + (modUser||'Quelqu\'un') + ' a modifié ce RD0', 'warn', 0);
+}
+function rdDismissPending() {
+  _rdPendingData = null;
+  document.getElementById('rdPendingBar')?.classList.remove('show');
+  document.getElementById('rdRefreshBtn').style.display='none';
+}
+
+// ── Badges dynamiques ────────────────────────────────────────────────────────
+function rdShowBadge(id, show) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = show ? '' : 'none';
+}
+function rdUpdateBadges(data) {
+  if (!data) return;
+  const archived = !!(canevas.find(x => x.id === currentRapsordId)?.archived);
+  rdShowBadge('rd-badge-lock', archived);
+  rdShowBadge('rd-badge-edit', !archived);
+  const hasAtt = !!(data.points_att?.trim() || data.risques_prio?.trim());
+  rdShowBadge('rd-badge-warn', hasAtt);
+  const avis    = (data.avis||data['r_avis']||'').toLowerCase();
+  const rd6avis = (data.rd6_avis||data['r_rd6_avis']||'').toLowerCase();
+  const rd6res  = (data.rd6_res_detail||'').trim();
+  const hasDef  = avis.includes('défavorable') || rd6avis.includes('défavorable') || rd6res.length>0;
+  rdShowBadge('rd-badge-danger', hasDef);
+  rdShowBadge('rd-badge-ok', avis==='favorable' && !hasDef);
+}
+
+// ── Live dot RD ───────────────────────────────────────────────────────────────
+function rdSetLive(ok) {
+  const dot = document.getElementById('rdLiveDot');
+  const lbl = document.getElementById('rdLiveLabel');
+  if (dot) dot.querySelector('.ld').style.background = ok ? '#22c55e' : '#94a3b8';
+  if (lbl) lbl.textContent = ok ? 'Connecté' : 'Hors ligne';
+}
+
+// ── Presence pill ─────────────────────────────────────────────────────────────
+function rdSetPresence(others) {
+  const pill = document.getElementById('rd-presence');
+  const txt  = document.getElementById('rd-presence-txt');
+  if (!pill || !txt) return;
+  if (others.length > 0) {
+    const noms = others.map(([,v]) => v.nom||'?').join(', ');
+    pill.style.display = 'flex';
+    txt.textContent = noms + (others.length>1 ? ' éditent' : ' édite') + ' aussi';
+    showRdNotif('✏️ ' + noms + ' travaille aussi sur ce dossier', 'warn', 5000);
+  } else {
+    pill.style.display = 'none';
+  }
+  // Envoyer rapsord_presence à l'iframe pour afficher le bandeau
+  const frame = document.getElementById('rapsordFrame');
+  if (frame && frame.contentWindow) {
+    try {
+      frame.contentWindow.postMessage({
+        type: 'rapsord_presence',
+        others: others.map(([,v]) => ({ nom: v.nom||'?' }))
+      }, '*');
+    } catch(e) {}
+  }
+}
+
+// ── startLiveListener RD — copie exacte de startLiveListener SYN ─────────────
+function rdStartSync(id) {
+  rdStopSync();
+  if (!db) return;
+  rdSetLive(true);
+  let firstCall = true;
+
+  // Notifier l'iframe que la connexion est établie
+  setTimeout(() => {
+    const frame = document.getElementById('rapsordFrame');
+    if (frame && frame.contentWindow) {
+      try { frame.contentWindow.postMessage({ type:'rapsord_connected', canId: id }, '*'); } catch(e) {}
+    }
+  }, 1200);
+
+  // Listener onValue /rd0/<id> — exact comme db.ref('/canevas').on(...)
+  _rdListener = db.ref('/rd0/' + id).on('value', snap => {
+    rdSetLive(true);
+    if (firstCall) { firstCall = false; rdUpdateBadges(snap.val()||{}); return; }
+    if (_rdIsSelfWrite) { _rdIsSelfWrite = false; return; }
+
+    const freshData = snap.val() || {};
+    const freshHash = hashRd(freshData);
+    if (freshHash !== _rdLastHash && freshHash !== '') {
+      // Trouver qui a modifié (via presence)
+      let modUser = '';
+      db.ref('/rd0_presence/' + id).once('value').then(pSnap => {
+        const presence = pSnap.val() || {};
+        const uid = currentUser?.uid || currentUser?.initiales || 'me';
+        const others = Object.entries(presence).filter(([k]) => k !== uid);
+        if (others.length > 0) modUser = others[0][1]?.nom || '';
+        rdShowPendingBar(freshData, modUser);
+        rdUpdateBadges(freshData);
+      });
+    }
+  }, err => {
+    console.warn('RD listener error:', err);
+    rdSetLive(false);
+    showRdNotif('Connexion Firebase perdue', 'err', 0);
+  });
+
+  // Presence — écrire notre présence dans /rd0_presence/<id>/<uid>
+  if (currentUser) {
+    const uid = currentUser.uid || currentUser.initiales || 'user';
+    _rdPresenceRef = db.ref('/rd0_presence/' + id + '/' + uid);
+    _rdPresenceRef.set({
+      nom: ((currentUser.prenom||'') + ' ' + (currentUser.nom||'')).trim() || currentUser.initiales || '?',
+      ts:  Date.now()
+    });
+    _rdPresenceRef.onDisconnect().remove();
+
+    // Écouter les autres présences
+    db.ref('/rd0_presence/' + id).on('value', snap => {
+      const presence = snap.val() || {};
+      const uid = currentUser?.uid || currentUser?.initiales || 'me';
+      const others = Object.entries(presence)
+        .filter(([k]) => k !== uid)
+        .filter(([, v]) => Date.now() - (v.ts||0) < 120000);
+      rdSetPresence(others);
+    });
+  }
+}
+
+function rdStopSync() {
+  if (_rdListener && db && currentRapsordId) {
+    try { db.ref('/rd0/' + currentRapsordId).off('value', _rdListener); } catch(e) {}
+    try { db.ref('/rd0_presence/' + currentRapsordId).off(); } catch(e) {}
+    _rdListener = null;
+  }
+  if (_rdPresenceRef) {
+    try { _rdPresenceRef.remove(); } catch(e) {}
+    _rdPresenceRef = null;
+  }
+  _rdPendingData = null;
+  _rdIsSelfWrite = false;
+  rdSetLive(false);
+  document.getElementById('rdPendingBar')?.classList.remove('show');
+  document.getElementById('rdRefreshBtn') && (document.getElementById('rdRefreshBtn').style.display='none');
+}
+
+// ── rdApplyPending — exact comme applyPendingUpdate SYN ──────────────────────
+async function rdApplyPending() {
+  const btn = document.getElementById('rdRefreshBtn');
+  if (btn) btn.classList.add('spinning');
+  rdDismissPending();
+
+  let freshData = _rdPendingData;
+  if (!freshData && currentRapsordId) {
+    try {
+      const snap = await db.ref('/rd0/' + currentRapsordId).once('value');
+      freshData = snap.val() || {};
+    } catch(e) {
+      showRdNotif('Impossible de récupérer les données', 'err', 5000);
+      if (btn) btn.classList.remove('spinning');
+      return;
+    }
+  }
+
+  if (freshData) {
+    _rdLastHash = hashRd(freshData);
+    const frame = document.getElementById('rapsordFrame');
+    if (frame?.contentWindow) {
+      frame.contentWindow.postMessage({ type: 'rapsord_inject', data: freshData }, '*');
+    }
+    rdUpdateBadges(freshData);
+    showRdNotif('Modifications appliquées ✓', 'ok', 3000);
+  }
+
+  _rdPendingData = null;
+  if (btn) btn.classList.remove('spinning');
+}
+
+// ── Actions toolbar RD ───────────────────────────────────────────────────────
+function rdForceSave() {
+  const frame = document.getElementById('rapsordFrame');
+  if (!frame?.contentWindow) return;
+  frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*');
+  showRdNotif('Sauvegarde envoyée…', 'ok', 2000);
+}
+function rdExportJSON() {
+  document.getElementById('rapsordFrame')?.contentWindow?.postMessage({ type: 'rapsord_generate_docx' }, '*');
+}
+function rdLoadJSON() {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json';
+  inp.onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      if (currentRapsordId) {
+        _rdIsSelfWrite = true;
+        await db.ref('/rd0/' + currentRapsordId).set(data);
+        _rdLastHash = hashRd(data);
+        document.getElementById('rapsordFrame')?.contentWindow?.postMessage({ type: 'rapsord_inject', data }, '*');
+        rdUpdateBadges(data);
+        showRdNotif('JSON chargé et sauvegardé ✓', 'ok', 3000);
+      }
+    } catch(err) { showRdNotif('JSON invalide : ' + err.message, 'err', 5000); }
+  };
+  inp.click();
+}
+function toggleRdMenu() { document.getElementById('rdActionMenu').classList.toggle('open'); }
+function closeRdMenu()  { document.getElementById('rdActionMenu')?.classList.remove('open'); }
+document.addEventListener('click', e => {
+  if (!e.target.closest('#rdMenuBtn') && !e.target.closest('#rdActionMenu')) closeRdMenu();
+});
+
+// ── Navigation RD ─────────────────────────────────────────────────────────────
+async function openRapsord(id, e) {
+  if (e) { e.stopPropagation(); _rdFromSyn = false; }
+  const c = canevas.find(x => x.id === id);
+  if (!c) return;
+  currentRapsordId = id;
+  document.getElementById('rapsordTitle').textContent = c.nom + (c.chrono ? ' — ' + c.chrono : '');
+
+  // 1. Charger le template — jsDelivr (CORS ok) avec fallback
+  let templateHTML;
+  try {
+    // jsDelivr ne supporte pas le cache-busting par ?ts= — on utilise @main qui est toujours frais
+    let res = await fetch(RAPSORD_TEMPLATE_URL, { cache: 'no-store' });
+    if (!res.ok) throw new Error('jsDelivr HTTP ' + res.status);
+    templateHTML = await res.text();
+  } catch(err) {
+    try {
+      // Fallback : proxy CORS via allorigins
+      const proxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(RAPSORD_TEMPLATE_FALLBACK + '?ts=' + Date.now());
+      const res2 = await fetch(proxy);
+      if (!res2.ok) throw new Error('proxy HTTP ' + res2.status);
+      templateHTML = await res2.text();
+    } catch(err2) {
+      toast('Impossible de charger RAPSORD : ' + err2.message, 'r');
+      return;
+    }
+  }
+
+  // 2. Lire les données RD0 depuis Firebase /rd0/<id> (comme synthData dans openSynthese)
+  let rdData = {};
+  try {
+    const snap = await db.ref('/rd0/' + id).once('value');
+    rdData = snap.val() || {};
+  } catch(err) {
+    console.warn('RAPSORD: pas de données RD0 sur Firebase, démarrage vierge');
+  }
+
+  // 3. Injecter via <!-- RAPSO_META --> exactement comme openSynthese injecte RAPSO_SYNTH_DATA
+  const metaScript = `<script>
+    window.RAPSORD_CAN_ID   = ${JSON.stringify(c.id)};
+    window.RAPSORD_CAN_NOM  = ${JSON.stringify(c.nom || '')};
+    window.RAPSORD_CHRONO   = ${JSON.stringify(c.chrono || '')};
+    window.RAPSORD_CLIENT   = ${JSON.stringify(c.client || '')};
+    window.RAPSORD_VILLE    = ${JSON.stringify(c.ville || '')};
+    window.RAPSORD_DATA     = ${JSON.stringify(JSON.stringify(rdData))};
+    window.RAPSORD_READONLY = ${JSON.stringify(!!c.archived)};
+    window.RAPSORD_USER     = ${JSON.stringify(currentUser ? {
+      prenom: currentUser.prenom, nom: currentUser.nom,
+      initiales: currentUser.initiales, role: currentUser.role
+    } : {})};
+  <\/script>`;
+  templateHTML = templateHTML.replace('<!-- RAPSO_META -->', metaScript);
+
+  // 4. Charger dans l'iframe (comme synFrame)
+  const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
+  const blobUrl = URL.createObjectURL(blob);
+  const frame = document.getElementById('rapsordFrame');
+  if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
+  frame.src = blobUrl;
+
+  // Boutons retour selon le contexte
+  document.getElementById('rdBackSyn').style.display = _rdFromSyn ? '' : 'none';
+  document.getElementById('rdBackApp').style.display = _rdFromSyn ? 'none' : '';
+
+  // Cacher le bouton sync au démarrage
+  const refreshBtn = document.getElementById('rdRefreshBtn');
+  if(refreshBtn) refreshBtn.style.display='none';
+
+  hide('scApp'); hide('scSynthese'); show('scRapsord');
+
+  // Badges initiaux depuis les données chargées
+  rdUpdateBadges(rdData);
+
+  // Démarrer la synchronisation Firebase temps réel
+  rdStartSync(id);
+}
+
+function openRapsordFromSynthese() {
+  if(!currentCanId) return;
+  _rdFromSyn = true;
+  openRapsord(currentCanId);
+}
+
+function closeRapsord() {
+  rdStopSync();
+  const frame = document.getElementById('rapsordFrame');
+  try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
+  setTimeout(() => {
+    if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
+    frame.src = '';
+    hide('scRapsord');
+    show('scApp');
+    renderCanevas();
+  }, 300);
+}
+
+function closeRapsordToSyn() {
+  rdStopSync();
+  const frame = document.getElementById('rapsordFrame');
+  try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
+  setTimeout(() => {
+    if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
+    frame.src = '';
+    hide('scRapsord');
+    show('scSynthese');
+  }, 300);
+}
+
+function downloadRdDocx() {
+  const frame = document.getElementById('rapsordFrame');
+  try {
+    frame.contentWindow.postMessage({ type: 'rapsord_generate_docx' }, '*');
+    toast('Génération Word RD0 — téléchargement du JSON en cours…', 'b');
+  } catch(e) {
+    toast('Impossible de contacter l\'iframe RAPSORD', 'r');
+  }
 }
 
 /* ── Détection connexion/déconnexion ── */
