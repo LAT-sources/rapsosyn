@@ -2000,31 +2000,31 @@ window.addEventListener('message', function(e) {
   }
 
   // ── RAPSORD RD0 save — même pattern que rapso_save ───────────────────────
-  if (e.data.type === 'rapsord_save') {
-    const canId   = e.data.canId;
-    const payload = e.data.data;
-    if (canId === undefined || canId === null || !payload) return;
-    _rdLastHash    = hashRd(payload);  // ← avant l'écriture
-    _rdIsSelfWrite = true;             // ← ignorer notre propre écriture
-    db.ref('/rd0/' + canId).set(payload)
-      .then(() => {
-        rdSetLive(true);
-        // Marquer hasRd0 sur le canevas
-        const idx = canevas.findIndex(x => String(x.id) === String(canId));
-        if (idx >= 0 && !canevas[idx].hasRd0) {
-          canevas[idx].hasRd0 = true;
-          saveToCloud();
-          renderCanevas();
-        }
-        rdUpdateBadges(payload);
-      })
-      .catch(err => {
-        _rdIsSelfWrite = false;
-        console.warn('RAPSORD save error:', err);
-        rdSetLive(false);
-        showRdNotif('Sauvegarde Firebase échouée', 'err', 5000);
-      });
-  }
+if (e.data.type === 'rapsord_save') {
+  const canId = e.data.canId;
+  const payload = e.data.data;
+  if (canId === undefined || canId === null || !payload) return;
+  _rdLastHash = hashRd(payload);
+  _rdIsSelfWrite = true;
+  db.ref('/rd0/' + canId).set(payload)
+    .then(() => {
+      rdSetLive(true);
+      const idx = canevas.findIndex(x => String(x.id) === String(canId));
+      if (idx >= 0 && !canevas[idx].hasRd0) {
+        canevas[idx].hasRd0 = true;
+        saveToCloud();
+        renderCanevas();
+      }
+      rdUpdateBadges(payload);
+      _rdIsSelfWrite = false;   // ← AJOUTER CETTE LIGNE
+    })
+    .catch(err => {
+      _rdIsSelfWrite = false;
+      console.warn('RAPSORD save error:', err);
+      rdSetLive(false);
+      showRdNotif('Sauvegarde Firebase échouée', 'err', 5000);
+    });
+}
 });
 
 /* MOT DE PASSE OUBLIÉ */
