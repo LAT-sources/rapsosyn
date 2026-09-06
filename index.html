@@ -589,8 +589,10 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 #rdActionMenu button:hover{background:rgba(255,255,255,.09);color:white;}
 #rdActionMenu hr{border:none;border-top:1px solid rgba(255,255,255,.08);margin:2px 0;padding:0;}
 
-/* Assurer l'affichage correct du conteneur de synchronisation et de ses enfants */
-#rdLiveDot, #rdRefreshBtn {
+/* ─── CORRECTIF VISIBILITÉ VOYANT & SYNCHRO ────────────────────────────── */
+
+/* Forcer l'affichage global de la classe syn-live-dot et des boutons */
+.syn-live-dot, #rdLiveDot, #rdRefreshBtn {
   display: inline-flex !important;
   align-items: center !important;
   gap: 6px !important;
@@ -598,23 +600,30 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   opacity: 1 !important;
 }
 
-/* Forcer l'affichage des libellés textuels dans la topbar RAPSORD */
+/* Forcer l'affichage des libellés textuels */
+.syn-live-dot .syn-live-label,
 #rdLiveDot .syn-live-label,
 #rdRefreshBtn .syn-refresh-label {
   display: inline-block !important;
   visibility: visible !important;
+  opacity: 1 !important;
 }
 
-/* S'assurer que le point de statut (la pastille) s'affiche bien */
+/* Forcer l'affichage et la taille de la pastille du voyant */
+.syn-live-dot .sync-dot,
 #rdLiveDot .sync-dot {
   display: inline-block !important;
-  width: 8px !important;
-  height: 8px !important;
+  width: 10px !important;
+  height: 10px !important;
+  min-width: 10px !important;
+  min-height: 10px !important;
   border-radius: 50% !important;
   background-color: #94a3b8 !important;
+  flex-shrink: 0 !important;
 }
 
-/* Exemple d'état connecté si la classe change dynamiquement via JS */
+/* État connecté dynamique */
+.syn-live-dot.connected .sync-dot,
 #rdLiveDot.connected .sync-dot {
   background-color: #22c55e !important;
 }
