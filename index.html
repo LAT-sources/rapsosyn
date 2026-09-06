@@ -591,7 +591,9 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
 /* ─── CORRECTIF VISIBILITÉ VOYANT & SYNCHRO ────────────────────────────── */
 
-/* Forcer l'affichage global de la classe syn-live-dot et des boutons */
+/* ─── CORRECTIF VISIBILITÉ VOYANT & TEXTE ────────────────────────────── */
+
+/* Forcer l'affichage global du conteneur */
 .syn-live-dot, #rdLiveDot, #rdRefreshBtn {
   display: inline-flex !important;
   align-items: center !important;
@@ -600,16 +602,15 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   opacity: 1 !important;
 }
 
-/* Forcer l'affichage des libellés textuels */
-.syn-live-dot .syn-live-label,
-#rdLiveDot .syn-live-label,
-#rdRefreshBtn .syn-refresh-label {
+/* Forcer l'affichage du texte de statut (synStatusTxt ou syn-live-label) */
+.syn-live-dot span,
+#rdLiveDot span {
   display: inline-block !important;
   visibility: visible !important;
   opacity: 1 !important;
 }
 
-/* Forcer l'affichage et la taille de la pastille du voyant */
+/* Forcer la taille et la couleur de la pastille */
 .syn-live-dot .sync-dot,
 #rdLiveDot .sync-dot {
   display: inline-block !important;
