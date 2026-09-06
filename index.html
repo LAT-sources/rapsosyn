@@ -589,11 +589,11 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 #rdActionMenu button:hover{background:rgba(255,255,255,.09);color:white;}
 #rdActionMenu hr{border:none;border-top:1px solid rgba(255,255,255,.08);margin:2px 0;padding:0;}
 
-   /* Assurer l'affichage correct du conteneur de synchronisation et de ses enfants */
+/* Assurer l'affichage correct du conteneur de synchronisation et de ses enfants */
 #rdLiveDot, #rdRefreshBtn {
   display: inline-flex !important;
-  align-items: center;
-  gap: 6px;
+  align-items: center !important;
+  gap: 6px !important;
   visibility: visible !important;
   opacity: 1 !important;
 }
@@ -606,17 +606,17 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 }
 
 /* S'assurer que le point de statut (la pastille) s'affiche bien */
-#rdLiveDot .ld {
+#rdLiveDot .sync-dot {
   display: inline-block !important;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: #94a3b8; /* Gris par défaut (disconnected) */
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background-color: #94a3b8 !important;
 }
 
 /* Exemple d'état connecté si la classe change dynamiquement via JS */
-#rdLiveDot.connected .ld {
-  background-color: #22c55e; /* Vert */
+#rdLiveDot.connected .sync-dot {
+  background-color: #22c55e !important;
 }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -924,11 +924,11 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 
     <div style="flex:1"></div>
 
-    <!-- Live dot — toujours visible comme SYN -->
-    <div class="syn-live-dot disconnected" id="rdLiveDot">
-      <span class="ld"></span>
-      <span class="syn-live-label" id="rdLiveLabel">En attente</span>
-    </div>
+<!-- Live dot — toujours visible comme SYN -->
+<div class="syn-live-dot disconnected" id="rdLiveDot">
+  <span class="sync-dot" id="rdLiveDotSpan"></span>
+  <span class="syn-live-label" id="rdLiveLabel">En attente</span>
+</div>
 
     <!-- Synchroniser — toujours visible comme SYN -->
     <button class="syn-refresh" id="rdRefreshBtn" onclick="rdApplyPending()" title="Synchroniser les modifications">
