@@ -1493,18 +1493,50 @@ window.addEventListener('message', function(e) {
     if(e.data.canId !== undefined) _canId = e.data.canId;
   }
 
-  // Export JSON → génération Word
+ // Export JSON → génération Word
   if(e.data.type === 'rapsord_generate_docx') {
-    collect();
-    const ref = (D.ref||D.dossier||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
-    const blob = new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'RAPSORD_' + ref + '.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
+    collect(); // Met à jour l'objet D avec les données du formulaire
+    
+    (async () => {
+      try {
+        const ref = (D.ref || D.dossier || 'rapport').replace(/[^a-zA-Z0-9\-_]/g,'_');
+        
+        // 1. Télécharger le template depuis GitHub
+        const templateUrl = "https://raw.githubusercontent.com/votre-compte/votre-repo/main/RD0_template.docx";
+        const response = await fetch(templateUrl);
+        if (!response.ok) throw new Error("Impossible de télécharger le template depuis GitHub.");
+        const content = await response.arrayBuffer();
+
+        // 2. Initialiser docxtemplater avec PizZip
+        const zip = new PizZip(content);
+        const doc = new docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+        });
+
+        // 3. Injecter l'objet de données D collecté
+        doc.setData(D);
+        doc.render();
+
+        // 4. Générer le Blob Word final
+        const out = doc.getZip().generate({
+            type: "blob",
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+
+        // 5. Déclencher le téléchargement du fichier Word
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(out);
+        a.download = 'RAPSORD_' + ref + '_RD0.docx';
+        a.click();
+        URL.revokeObjectURL(a.href);
+
+      } catch (err) {
+        console.error("Erreur génération Word :", err);
+        alert("Erreur lors de la génération du document Word.");
+      }
+    })();
   }
-});
 
 // ─── INIT — même pattern que canevas_temp ────────────────────────────────────
 addCode(); addCode();
