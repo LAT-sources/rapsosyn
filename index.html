@@ -897,7 +897,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <!-- Live dot — toujours visible comme SYN -->
     <div class="syn-live-dot disconnected" id="rdLiveDot">
       <span class="ld"></span>
-      <span class="syn-live-label" id="rdLiveLabel">Connexion…</span>
+      <span class="syn-live-label" id="rdLiveLabel">En attente</span>
     </div>
 
     <!-- Synchroniser — toujours visible comme SYN -->
@@ -2004,8 +2004,9 @@ window.addEventListener('message', function(e) {
     const canId   = e.data.canId;
     const payload = e.data.data;
     if (canId === undefined || canId === null || !payload) return;
-    _rdLastHash    = hashRd(payload);  // ← avant l'écriture
-    _rdIsSelfWrite = true;             // ← ignorer notre propre écriture
+    _rdLastHash    = hashRd(payload);
+    _rdIsSelfWrite = true;
+    setTimeout(() => { _rdIsSelfWrite = false; }, 5000); // sécurité anti-blocage
     db.ref('/rd0/' + canId).set(payload)
       .then(() => {
         rdSetLive(true);
@@ -2272,7 +2273,7 @@ function rdSetLive(ok) {
   const tx = document.getElementById('rdLiveLabel');
   if (!el) return;
   el.className = 'syn-live-dot ' + (ok ? 'connected' : 'disconnected');
-  if (tx) tx.textContent = ok ? 'Connecté' : 'Hors ligne';
+  if (tx) tx.textContent = ok ? 'Connecté' : 'En attente';
 }
 
 // ── Presence pill ─────────────────────────────────────────────────────────────
@@ -2304,7 +2305,7 @@ function rdSetPresence(others) {
 function rdStartSync(id) {
   rdStopSync();
   if (!db) return;
-  rdSetLive(true);
+  rdSetLive(false); // En attente — sera mis à jour par onValue
   let firstCall = true;
 
   // Initialiser le hash local avec les données déjà chargées
@@ -2320,7 +2321,7 @@ function rdStartSync(id) {
       rdUpdateBadges(freshData);
       return;
     }
-    if (_rdIsSelfWrite) { _rdIsSelfWrite = false; _rdLastHash = freshHash; return; }
+    if (_rdIsSelfWrite) { _rdIsSelfWrite = false; _rdLastHash = freshHash; rdUpdateBadges(freshData); return; }
 
     // Vrai changement externe
     if (freshHash !== _rdLastHash) {
