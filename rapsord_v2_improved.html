@@ -1502,7 +1502,7 @@ window.addEventListener('message', function(e) {
         const ref = (D.ref || D.dossier || 'rapport').replace(/[^a-zA-Z0-9\-_]/g,'_');
         
         // 1. Télécharger le template depuis GitHub
-        const templateUrl = "https://raw.githubusercontent.com/votre-compte/votre-repo/main/RD0_template.docx";
+        const templateUrl = "https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/RD0_template.docx";
         const response = await fetch(templateUrl);
         if (!response.ok) throw new Error("Impossible de télécharger le template depuis GitHub.");
         const content = await response.arrayBuffer();
