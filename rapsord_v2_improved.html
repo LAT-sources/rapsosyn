@@ -1496,47 +1496,36 @@ window.addEventListener('message', function(e) {
     if(e.data.canId !== undefined) _canId = e.data.canId;
   }
 
- // Export JSON → génération Word
+// Export JSON → génération Word
   if(e.data.type === 'rapsord_generate_docx') {
-    collect(); // Met à jour l'objet D avec les données du formulaire
+    collect();
     
     (async () => {
       try {
         const ref = (D.ref || D.dossier || 'rapport').replace(/[^a-zA-Z0-9\-_]/g,'_');
         
-        // 1. Télécharger le template depuis GitHub
-        const templateUrl = "https://raw.githubusercontent.com/LAT-sources/rapsosyn/refs/heads/main/RD0_template.docx";
-        const response = await fetch(templateUrl);
-        if (!response.ok) throw new Error("Impossible de télécharger le template depuis GitHub.");
+        // Téléchargement du template (assurez-vous que RD0_template.docx est dans le même dossier que votre page web)
+        const response = await fetch('RD0_template.docx');
+        if (!response.ok) throw new Error("Template RD0_template.docx introuvable.");
         const content = await response.arrayBuffer();
 
-        // 2. Initialiser docxtemplater avec PizZip
+        // Génération du Word via docxtemplater
         const zip = new PizZip(content);
-        const doc = new docxtemplater(zip, {
-            paragraphLoop: true,
-            linebreaks: true,
-        });
-
-        // 3. Injecter l'objet de données D collecté
+        const doc = new docxtemplater(zip, { paragraphLoop: true, linebreaks: true });
+        
         doc.setData(D);
         doc.render();
 
-        // 4. Générer le Blob Word final
         const out = doc.getZip().generate({
-            type: "blob",
-            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          type: "blob",
+          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         });
 
-        // 5. Déclencher le téléchargement du fichier Word
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(out);
-        a.download = 'RAPSORD_' + ref + '_RD0.docx';
-        a.click();
-        URL.revokeObjectURL(a.href);
+        saveAs(out, 'RAPSORD_' + ref + '_RD0.docx');
 
       } catch (err) {
         console.error("Erreur génération Word :", err);
-        alert("Erreur lors de la génération du document Word.");
+        alert("Erreur : " + err.message);
       }
     })();
   }
