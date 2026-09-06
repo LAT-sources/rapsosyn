@@ -2425,6 +2425,13 @@ function rdForceSave() {
 function rdExportJSON() {
   document.getElementById('rapsordFrame')?.contentWindow?.postMessage({ type: 'rapsord_generate_docx' }, '*');
 }
+   function rdExportJSON() {
+    // Envoie l'ordre à l'iframe (rapord v2) de générer le document Word
+    const iframe = document.getElementById('rapsordFrame'); // Remplacez 'rapsordFrame' par l'ID réel de votre iframe si besoin
+    if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.postMessage({ type: 'rapsord_generate_docx' }, '*');
+    }
+}
 function rdLoadJSON() {
   const inp = document.createElement('input');
   inp.type = 'file'; inp.accept = '.json';
