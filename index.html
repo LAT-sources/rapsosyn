@@ -2102,10 +2102,18 @@ let _rdNotifTimer    = null;
 // Écouteur de messages venant de la Frame (Iframe Rapsord)
 window.addEventListener('message', async (e) => {
   if (e.data?.type === 'rapsord_save_data' && currentRapsordId) {
-    _rdIsSelfWrite = true; // Empêche le bandeau de s'afficher chez vous
-    _rdLastHash = hashRd(e.data.data);
+    const uid = currentUser?.uid || currentUser?.initiales || 'me';
+    _rdIsSelfWrite = true;
+    
+    // On attache l'identifiant de l'auteur aux données sauvegardées
+    const payload = { 
+      ...e.data.data, 
+      _updatedBy: uid 
+    };
+    
+    _rdLastHash = hashRd(payload);
     try {
-      await db.ref('/rd0/' + currentRapsordId).set(e.data.data);
+      await db.ref('/rd0/' + currentRapsordId).set(payload);
     } catch (err) {
       console.error('Erreur sauvegarde RD0:', err);
     }
@@ -2203,29 +2211,28 @@ function startRdListener(id) {
 
   _rdListener = db.ref('/rd0/' + id).on('value', snap => {
     rdSetLive(true);
+    const freshData = snap.val() || {};
+    const myUid = currentUser?.uid || currentUser?.initiales || 'me';
+
     if (firstCall) {
       firstCall = false;
-      const d = snap.val() || {};
-      _rdLastHash = hashRd(d);
-      rdUpdateBadges(d);
+      _rdLastHash = hashRd(freshData);
+      rdUpdateBadges(freshData);
       return;
     }
 
-    // IGNORER NOTRE PROPRE ÉCRITURE
-    if (_rdIsSelfWrite) { 
+    // VERIFICATION STRICTE DE L'AUTEUR : Si la donnée vient de vous, ignorer
+    if (freshData._updatedBy === myUid || _rdIsSelfWrite) { 
       _rdIsSelfWrite = false; 
-      const freshSelfData = snap.val() || {};
-      _rdLastHash = hashRd(freshSelfData);
+      _rdLastHash = hashRd(freshData);
       return; 
     }
 
-    const freshData = snap.val() || {};
     const freshHash = hashRd(freshData);
     if (freshHash !== _rdLastHash) {
       db.ref('/rd0_presence/' + id).once('value').then(pSnap => {
         const presence = pSnap.val() || {};
-        const uid = currentUser?.uid || currentUser?.initiales || 'me';
-        const others = Object.entries(presence).filter(([k]) => k !== uid);
+        const others = Object.entries(presence).filter(([k]) => k !== myUid);
         const modUser = others.length > 0 ? (others[0][1]?.nom || '') : '';
         rdShowPendingBar(freshData, modUser);
         rdUpdateBadges(freshData);
@@ -2400,10 +2407,12 @@ function rdLoadJSON() {
     try {
       const data = JSON.parse(await f.text());
       if (currentRapsordId) {
-        _rdLastHash = hashRd(data);
+        const uid = currentUser?.uid || currentUser?.initiales || 'me';
+        const payload = { ...data, _updatedBy: uid };
+        _rdLastHash = hashRd(payload);
         _rdIsSelfWrite = true;
-        await db.ref('/rd0/'+currentRapsordId).set(data);
-        document.getElementById('rapsordFrame')?.contentWindow?.postMessage({ type:'rapsord_inject', data }, '*');
+        await db.ref('/rd0/'+currentRapsordId).set(payload);
+        document.getElementById('rapsordFrame')?.contentWindow?.postMessage({ type:'rapsord_inject', data: payload }, '*');
         showRdNotif('JSON chargé et sauvegardé \u2713', 'ok', 3000);
       }
     } catch(err) { toast('JSON invalide : '+err.message, 'r'); }
