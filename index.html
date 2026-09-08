@@ -2099,6 +2099,19 @@ let _rdIsSelfWrite   = false;
 let _rdLastHash      = '';
 let _rdNotifTimer    = null;
 
+// Écouteur de messages venant de la Frame (Iframe Rapsord)
+window.addEventListener('message', async (e) => {
+  if (e.data?.type === 'rapsord_save_data' && currentRapsordId) {
+    _rdIsSelfWrite = true; // Empêche le bandeau de s'afficher chez vous
+    _rdLastHash = hashRd(e.data.data);
+    try {
+      await db.ref('/rd0/' + currentRapsordId).set(e.data.data);
+    } catch (err) {
+      console.error('Erreur sauvegarde RD0:', err);
+    }
+  }
+});
+
 // ── hashRd — même idée que hashData ──────────────────────────────────────────
 function hashRd(d) {
   if (!d) return '';
@@ -2197,8 +2210,15 @@ function startRdListener(id) {
       rdUpdateBadges(d);
       return;
     }
-    // Exactement comme SYN : ignorer notre propre écriture et retourner
-    if (_rdIsSelfWrite) { _rdIsSelfWrite = false; return; }
+
+    // IGNORER NOTRE PROPRE ÉCRITURE
+    if (_rdIsSelfWrite) { 
+      _rdIsSelfWrite = false; 
+      const freshSelfData = snap.val() || {};
+      _rdLastHash = hashRd(freshSelfData);
+      return; 
+    }
+
     const freshData = snap.val() || {};
     const freshHash = hashRd(freshData);
     if (freshHash !== _rdLastHash) {
@@ -2232,7 +2252,6 @@ function startRdListener(id) {
 }
 
 function stopRdListener() {
-  // Exact pattern de stopLiveListener SYN
   if (_rdListener) {
     try { db.ref('/rd0/' + currentRapsordId).off('value', _rdListener); } catch(e) {}
     _rdListener = null;
@@ -2247,7 +2266,7 @@ function stopRdListener() {
   document.getElementById('rdRefreshBadge')?.classList.remove('show');
 }
 
-// Alias vers startRdListener/stopRdListener (fonctions uniques)
+// Alias vers startRdListener/stopRdListener
 function rdStartSync(id) { startRdListener(id); }
 function rdStopSync()    { stopRdListener();    }
 
@@ -2330,13 +2349,13 @@ async function openRapsord(id, e) {
 
   hide('scApp'); hide('scSynthese'); show('scRapsord');
 
-  // Démarrer le listener — même délai que SYN (1200ms)
   setTimeout(() => startRdListener(id), 1200);
 }
 
 function openRapsordFromSynthese() { if (currentCanId) { _rdFromSyn=true; openRapsord(currentCanId); } }
 
 function closeRapsord() {
+  _rdIsSelfWrite = true;
   stopRdListener();
   const frame = document.getElementById('rapsordFrame');
   try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
@@ -2348,6 +2367,7 @@ function closeRapsord() {
   }, 300);
 }
 function closeRapsordToSyn() {
+  _rdIsSelfWrite = true;
   stopRdListener();
   const frame = document.getElementById('rapsordFrame');
   try { frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*'); } catch(e) {}
@@ -2365,6 +2385,7 @@ document.addEventListener('click', e => {
   if (!e.target.closest('#rdMenuBtn') && !e.target.closest('#rdActionMenu')) closeRdMenu();
 });
 function rdForceSave() {
+  _rdIsSelfWrite = true;
   document.getElementById('rapsordFrame')?.contentWindow?.postMessage({ type: 'rapso_request_save' }, '*');
   showRdNotif('Sauvegarde envoyée', 'ok', 2000);
 }
@@ -2382,7 +2403,6 @@ function rdLoadJSON() {
         _rdLastHash = hashRd(data);
         _rdIsSelfWrite = true;
         await db.ref('/rd0/'+currentRapsordId).set(data);
-        _rdIsSelfWrite = false;
         document.getElementById('rapsordFrame')?.contentWindow?.postMessage({ type:'rapsord_inject', data }, '*');
         showRdNotif('JSON chargé et sauvegardé \u2713', 'ok', 3000);
       }
