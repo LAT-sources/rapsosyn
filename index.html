@@ -2103,11 +2103,13 @@ function getMyUid() {
   return (currentUser?.uid || currentUser?.initiales || currentUser?.nom || 'me').toString();
 }
 
-// ── hashRd ───────────────────────────────────────────────────────────────────
+// ── hashRd (CORRIGÉ : Exclut les métadonnées pour comparer uniquement le contenu métier) ──
 function hashRd(d) {
   if (!d) return '';
-  // On conserve le timestamp dans le hash pour détecter les vraies sauvegardes
-  return JSON.stringify(d);
+  // On crée une copie sans _meta pour que le hash ne change PAS à cause du timestamp (ts)
+  const cleanObj = { ...d };
+  delete cleanObj._meta;
+  return JSON.stringify(cleanObj);
 }
 
 // ── Notif ────────────────────────────────────────────────────────────────────
@@ -2199,7 +2201,6 @@ async function rdApplyPending() {
   const btn = document.getElementById('rdRefreshBtn');
   if (btn) btn.classList.add('spinning');
 
-  // 1. Extraire la donnée avant le dismiss
   let freshData = _rdPendingData;
   rdDismissPending();
 
@@ -2218,6 +2219,7 @@ async function rdApplyPending() {
     const cleanData = { ...freshData };
     delete cleanData._meta;
 
+    // Met à jour le hash pour ignorer ce contenu si le listener le renvoie
     _rdLastHash = hashRd(freshData);
 
     const frame = document.getElementById('rapsordFrame');
@@ -2244,7 +2246,7 @@ function startRdListener(id) {
     const myUid = getMyUid();
     const freshHash = hashRd(freshData);
 
-    // 1. Bloquer tout traitement si le contenu/timestamp est identique
+    // 1. Bloquer si les DONNÉES MÉTIER n'ont absolument pas changé
     if (freshHash === _rdLastHash) {
       return;
     }
@@ -2263,7 +2265,7 @@ function startRdListener(id) {
       return;
     }
 
-    // 3. Mettre à jour le hash AVANT les opérations asynchrones
+    // 3. Mettre à jour le hash global
     _rdLastHash = freshHash;
 
     // 4. Afficher la barre de notification
@@ -2354,6 +2356,8 @@ async function openRapsord(id, e) {
   try { 
     const snap = await db.ref('/rd0/' + id).once('value'); 
     rdData = snap.val() || {}; 
+    // Initialise le hash au chargement initial
+    _rdLastHash = hashRd(rdData);
     delete rdData._meta;
   } catch(e) { console.warn('RAPSORD: pas de données RD0'); }
 
@@ -2445,7 +2449,7 @@ function rdLoadJSON() {
   inp.click();
 }
 
-// ── Ecouteur de messages iframe ───────────────────────────────────────────────
+// ── Écouteur de messages iframe (CORRIGÉ : Vérification du hash avant écriture) 
 window.addEventListener('message', async (e) => {
   if (!e.data || typeof e.data !== 'object') return;
 
@@ -2453,15 +2457,24 @@ window.addEventListener('message', async (e) => {
     const incomingData = e.data.data;
     if (!incomingData) return;
 
+    // Calcul du hash des données arrivantes
+    const incomingHash = hashRd(incomingData);
+
+    // Si les données entrantes sont identiques à la dernière mise à jour enregistrée,
+    // on annule l'écriture Firebase pour bloquer la boucle.
+    if (incomingHash === _rdLastHash) {
+      return;
+    }
+
     const myUid = getMyUid();
     const payload = { 
       ...incomingData, 
       _meta: { updatedBy: myUid, ts: Date.now() } 
     };
 
-    // Marquage synchrone pour tuer l'événement en retour de Firebase
+    // Verrouillage anti-rebond
     _rdIsSelfWrite = true;
-    _rdLastHash = hashRd(payload);
+    _rdLastHash = incomingHash;
 
     try {
       await db.ref('/rd0/' + currentRapsordId).set(payload);
