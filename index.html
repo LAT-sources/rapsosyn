@@ -2209,7 +2209,7 @@ function rdSetPresence(others) {
   }
 }
 
-// ── startRdListener ──────────────────────────────────────────────────────────
+// ── startRdListener (Corrige la double notification) ──────────────────────
 function startRdListener(id) {
   stopRdListener();
   rdSetLive(false);
@@ -2221,10 +2221,8 @@ function startRdListener(id) {
     const myUid = getMyUid();
     const freshHash = hashRd(freshData);
 
-    // Ignorer si aucun changement effectif dans les données
-    if (freshHash === _rdLastHash) {
-      return;
-    }
+    // Stop immédiatement si la donnée n'a pas changé
+    if (freshHash === _rdLastHash) return;
 
     if (firstCall) {
       firstCall = false;
@@ -2233,25 +2231,25 @@ function startRdListener(id) {
       return;
     }
 
-    // Ignorer si la sauvegarde vient de nous-même (vérification synchrone + méta)
+    // Stop si l'écriture vient de cet utilisateur
     if (freshData._meta?.updatedBy === myUid || _rdIsSelfWrite) {
       _rdIsSelfWrite = false;
       _rdLastHash = freshHash;
       return;
     }
 
-    // Mise à jour immédiate du hash pour bloquer les événements concurrents
+    // VERROU : On bloque le hash AVANT les opérations asynchrones
     _rdLastHash = freshHash;
 
-    // Récupération de l'utilisateur ayant modifié
     try {
       const pSnap = await db.ref('/rd0_presence/' + id).once('value');
       const presence = pSnap.val() || {};
       const others = Object.entries(presence).filter(([k]) => k !== myUid);
       const modUser = others.length > 0 ? (others[0][1]?.nom || '') : '';
+      
       rdShowPendingBar(freshData, modUser);
       rdUpdateBadges(freshData);
-    } catch(e) {
+    } catch(err) {
       rdShowPendingBar(freshData, '');
     }
   }, err => {
@@ -2259,51 +2257,38 @@ function startRdListener(id) {
     console.warn('RD listener error:', err);
   });
 
-  // Présence
+  // Gestion de la présence
   if (currentUser) {
     const uid = getMyUid();
     _rdPresenceRef = db.ref('/rd0_presence/' + id + '/' + uid);
-    _rdPresenceRef.set({ nom: ((currentUser.prenom || '') + ' ' + (currentUser.nom || '')).trim() || currentUser.initiales || '?', ts: Date.now() });
+    _rdPresenceRef.set({ 
+      nom: ((currentUser.prenom || '') + ' ' + (currentUser.nom || '')).trim() || currentUser.initiales || '?', 
+      ts: Date.now() 
+    });
     _rdPresenceRef.onDisconnect().remove();
+    
     db.ref('/rd0_presence/' + id).on('value', snap => {
       const presence = snap.val() || {};
       const uid2 = getMyUid();
-      const others = Object.entries(presence).filter(([k]) => k !== uid2).filter(([,v]) => Date.now() - (v.ts || 0) < 120000);
+      const others = Object.entries(presence)
+        .filter(([k]) => k !== uid2)
+        .filter(([,v]) => Date.now() - (v.ts || 0) < 120000);
       rdSetPresence(others);
     });
   }
 }
-
-function stopRdListener() {
-  if (_rdListener) {
-    try { db.ref('/rd0/' + currentRapsordId).off('value', _rdListener); } catch(e) {}
-    _rdListener = null;
-  }
-  try { db.ref('/rd0_presence/' + currentRapsordId).off(); } catch(e) {}
-  if (_rdPresenceRef) { try { _rdPresenceRef.remove(); } catch(e) {} _rdPresenceRef = null; }
-  _rdPendingData = null;
-  _rdIsSelfWrite = false;
-  _rdLastHash    = '';
-  rdSetLive(false);
-  document.getElementById('rdPendingBar')?.classList.remove('show');
-  document.getElementById('rdRefreshBadge')?.classList.remove('show');
-}
-
-function rdStartSync(id) { startRdListener(id); }
-function rdStopSync()    { stopRdListener();    }
-
-// ── rdApplyPending (CORRIGÉ : 1 Seul clic nécessaire) ────────────────────────
+// ── rdApplyPending (Corrige le double-clic) ──────────────────────────────
 async function rdApplyPending() {
   const btn = document.getElementById('rdRefreshBtn');
   if (btn) btn.classList.add('spinning');
 
-  // 1. Sauvegarder la référence des données EN PREMIER
+  // 1. Sauvegarder les données EN PREMIER dans une variable locale
   let freshData = _rdPendingData;
   
   // 2. Masquer la barre de notification
   rdDismissPending();
 
-  // 3. Fallback réseau si aucune donnée en mémoire
+  // 3. Secours réseau si la mémoire locale était vide
   if (!freshData && currentRapsordId) {
     try {
       const snap = await db.ref('/rd0/' + currentRapsordId).once('value');
@@ -2315,7 +2300,7 @@ async function rdApplyPending() {
     }
   }
 
-  // 4. Application directe à l'iframe
+  // 4. Application immédiate à l'iframe
   if (freshData) {
     _rdLastHash = hashRd(freshData);
     
@@ -2327,12 +2312,11 @@ async function rdApplyPending() {
       frame.contentWindow.postMessage({ type: 'rapsord_inject', data: cleanData }, '*');
     }
     rdUpdateBadges(cleanData);
-    showRdNotif('Modifications appliquées \u2713', 'ok', 3000);
+    showRdNotif('Modifications appliquées ✓', 'ok', 3000);
   }
 
   if (btn) btn.classList.remove('spinning');
 }
-
 // ── openRapsord ───────────────────────────────────────────────────────────────
 async function openRapsord(id, e) {
   if (e) { e.stopPropagation(); _rdFromSyn = false; }
