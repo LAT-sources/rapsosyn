@@ -2087,7 +2087,7 @@ function postAction(action) {
 <script>
 
 /* ═══════════════════════════════════════════════════
-   RAPSORD VIEWER — Alignement strict sur SYN
+   RAPSORD VIEWER — Correction définitive de la boucle
    ═══════════════════════════════════════════════════ */
 const RAPSORD_URL = 'https://cdn.jsdelivr.net/gh/LAT-sources/rapsosyn@main/rapsord_v2_improved.html';
 let currentRapsordId = null;
@@ -2099,17 +2099,15 @@ let _rdIsSelfWrite   = false;
 let _rdLastHash      = '';
 let _rdNotifTimer    = null;
 
-// Récupération constante de l'ID utilisateur
 function getMyUid() {
   return (currentUser?.uid || currentUser?.initiales || currentUser?.nom || 'me').toString();
 }
 
-// ── hashRd — ignore systématiquement _meta ──────────────────────────────────
+// ── hashRd ───────────────────────────────────────────────────────────────────
 function hashRd(d) {
   if (!d) return '';
-  const clean = { ...d };
-  delete clean._meta;
-  return JSON.stringify(clean);
+  // On conserve le timestamp dans le hash pour détecter les vraies sauvegardes
+  return JSON.stringify(d);
 }
 
 // ── Notif ────────────────────────────────────────────────────────────────────
@@ -2196,16 +2194,15 @@ function rdSetPresence(others) {
   }
 }
 
-// ── rdApplyPending (RÉSOLUT LE DOUBLE CLIC) ──────────────────────────────────
+// ── rdApplyPending ───────────────────────────────────────────────────────────
 async function rdApplyPending() {
   const btn = document.getElementById('rdRefreshBtn');
   if (btn) btn.classList.add('spinning');
 
-  // 1. Capture synchrone des données AVANT le reset de la barre
+  // 1. Extraire la donnée avant le dismiss
   let freshData = _rdPendingData;
   rdDismissPending();
 
-  // 2. Fallback réseau si la variable tampon était nulle
   if (!freshData && currentRapsordId) {
     try {
       const snap = await db.ref('/rd0/' + currentRapsordId).once('value');
@@ -2217,12 +2214,11 @@ async function rdApplyPending() {
     }
   }
 
-  // 3. Injection directe dans la frame
   if (freshData) {
     const cleanData = { ...freshData };
     delete cleanData._meta;
 
-    _rdLastHash = hashRd(cleanData);
+    _rdLastHash = hashRd(freshData);
 
     const frame = document.getElementById('rapsordFrame');
     if (frame?.contentWindow) {
@@ -2230,15 +2226,13 @@ async function rdApplyPending() {
     }
     rdUpdateBadges(cleanData);
     showRdNotif('Modifications appliquées ✓', 'ok', 3000);
-  } else {
-    showRdNotif('RD0 introuvable', 'err', 5000);
   }
 
   _rdPendingData = null;
   if (btn) btn.classList.remove('spinning');
 }
 
-// ── startRdListener (RÉSOLUT LA DOUBLE NOTIFICATION) ─────────────────────────
+// ── startRdListener ──────────────────────────────────────────────────────────
 function startRdListener(id) {
   stopRdListener();
   rdSetLive(true);
@@ -2250,7 +2244,11 @@ function startRdListener(id) {
     const myUid = getMyUid();
     const freshHash = hashRd(freshData);
 
-    // Initialisation au premier appel
+    // 1. Bloquer tout traitement si le contenu/timestamp est identique
+    if (freshHash === _rdLastHash) {
+      return;
+    }
+
     if (firstCall) {
       firstCall = false;
       _rdLastHash = freshHash;
@@ -2258,30 +2256,31 @@ function startRdListener(id) {
       return;
     }
 
-    // Ignorer si la sauvegarde vient de notre propre instance (drapeau ou _meta)
+    // 2. Bloquer immédiatement si c'est notre propre écriture
     if (_rdIsSelfWrite || freshData._meta?.updatedBy === myUid) {
       _rdIsSelfWrite = false;
       _rdLastHash = freshHash;
       return;
     }
 
-    // Afficher la notification uniquement si le hash est réellement différent
-    if (freshHash !== _rdLastHash) {
-      db.ref('/rd0_presence/' + id).once('value').then(pSnap => {
-        const presence = pSnap.val() || {};
-        const others = Object.entries(presence).filter(([k]) => k !== myUid);
-        const modUser = others.length > 0 ? (others[0][1]?.nom || '') : '';
-        
-        rdShowPendingBar(freshData, modUser);
-        rdUpdateBadges(freshData);
-      });
-    }
+    // 3. Mettre à jour le hash AVANT les opérations asynchrones
+    _rdLastHash = freshHash;
+
+    // 4. Afficher la barre de notification
+    db.ref('/rd0_presence/' + id).once('value').then(pSnap => {
+      const presence = pSnap.val() || {};
+      const others = Object.entries(presence).filter(([k]) => k !== myUid);
+      const modUser = others.length > 0 ? (others[0][1]?.nom || '') : '';
+      
+      rdShowPendingBar(freshData, modUser);
+      rdUpdateBadges(freshData);
+    });
   }, err => {
     rdSetLive(false);
     console.warn('RD listener error:', err);
   });
 
-  // Gestion de la présence
+  // Présence
   if (currentUser) {
     const uid = getMyUid();
     _rdPresenceRef = db.ref('/rd0_presence/' + id + '/' + uid);
@@ -2304,7 +2303,7 @@ function startRdListener(id) {
 
 function stopRdListener() {
   if (_rdListener) {
-    try { db.ref('/rd0/' + currentRapsordId).off('value', _rdListener); } catch(e) {}
+    try { db.ref('/rd0/' + currentRapsordId).off('value'); } catch(e) {}
     _rdListener = null;
   }
   try { db.ref('/rd0_presence/' + currentRapsordId).off(); } catch(e) {}
@@ -2446,11 +2445,10 @@ function rdLoadJSON() {
   inp.click();
 }
 
-// ── ÉCOUTEUR PRINCIPAL DE MESSAGES ───────────────────────────────────────────
+// ── Ecouteur de messages iframe ───────────────────────────────────────────────
 window.addEventListener('message', async (e) => {
   if (!e.data || typeof e.data !== 'object') return;
 
-  // Prise en charge des deux types de messages de sauvegarde
   if ((e.data.type === 'rapsord_save_data' || e.data.type === 'rapsord_save') && currentRapsordId) {
     const incomingData = e.data.data;
     if (!incomingData) return;
@@ -2461,21 +2459,18 @@ window.addEventListener('message', async (e) => {
       _meta: { updatedBy: myUid, ts: Date.now() } 
     };
 
-    const newHash = hashRd(payload);
+    // Marquage synchrone pour tuer l'événement en retour de Firebase
+    _rdIsSelfWrite = true;
+    _rdLastHash = hashRd(payload);
 
-    if (newHash !== _rdLastHash) {
-      _rdLastHash = newHash;
-      _rdIsSelfWrite = true;
-
-      try {
-        await db.ref('/rd0/' + currentRapsordId).set(payload);
-        rdSetLive(true);
-        rdUpdateBadges(payload);
-      } catch (err) {
-        _rdIsSelfWrite = false;
-        _rdLastHash = '';
-        console.error('Erreur sauvegarde RD0:', err);
-      }
+    try {
+      await db.ref('/rd0/' + currentRapsordId).set(payload);
+      rdSetLive(true);
+      rdUpdateBadges(payload);
+    } catch (err) {
+      _rdIsSelfWrite = false;
+      _rdLastHash = '';
+      console.error('Erreur sauvegarde RD0:', err);
     }
   }
 });
