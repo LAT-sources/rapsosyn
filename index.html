@@ -2099,16 +2099,30 @@ let _rdIsSelfWrite   = false;
 let _rdLastHash      = '';
 let _rdNotifTimer    = null;
 
+// Récupération constante de l'ID utilisateur
+function getMyUid() {
+  return (currentUser?.uid || currentUser?.initiales || currentUser?.nom || 'me').toString();
+}
+
+// ── hashRd — ignore systématiquement _meta ──────────────────────────────────
+function hashRd(d) {
+  if (!d) return '';
+  // On copie le d pour enlever _meta sans altérer l'original
+  const clean = { ...d };
+  delete clean._meta;
+  return JSON.stringify(clean);
+}
+
 // Écouteur de messages venant de la Frame (Iframe Rapsord)
 window.addEventListener('message', async (e) => {
   if (e.data?.type === 'rapsord_save_data' && currentRapsordId) {
-    const uid = currentUser?.uid || currentUser?.initiales || 'me';
+    const myUid = getMyUid();
     _rdIsSelfWrite = true;
     
-    // On attache l'identifiant de l'auteur aux données sauvegardées
+    // On isole les métadonnées pour ne pas polluer l'objet métier de l'iframe
     const payload = { 
       ...e.data.data, 
-      _updatedBy: uid 
+      _meta: { updatedBy: myUid, ts: Date.now() } 
     };
     
     _rdLastHash = hashRd(payload);
@@ -2120,13 +2134,7 @@ window.addEventListener('message', async (e) => {
   }
 });
 
-// ── hashRd — même idée que hashData ──────────────────────────────────────────
-function hashRd(d) {
-  if (!d) return '';
-  return JSON.stringify(d).length + '|' + (d.ref||'') + '|' + (d.avis||'') + '|' + (d.date_rd0||'');
-}
-
-// ── Notif — même API que showNotif ───────────────────────────────────────────
+// ── Notif ────────────────────────────────────────────────────────────────────
 function showRdNotif(txt, type, duration) {
   duration = (duration === undefined) ? 4000 : duration;
   const el  = document.getElementById('rdNotif');
@@ -2141,7 +2149,7 @@ function showRdNotif(txt, type, duration) {
 }
 function hideRdNotif() { document.getElementById('rdNotif')?.classList.remove('show'); }
 
-// ── Pending bar — même API que showPendingBar ────────────────────────────────
+// ── Pending bar ──────────────────────────────────────────────────────────────
 function rdShowPendingBar(data, modUser) {
   _rdPendingData = data;
   document.getElementById('rdRefreshBadge')?.classList.add('show');
@@ -2158,7 +2166,7 @@ function rdDismissPending() {
   document.getElementById('rdRefreshBadge')?.classList.remove('show');
 }
 
-// ── rdSetLive — même que setLiveDot ──────────────────────────────────────────
+// ── rdSetLive ────────────────────────────────────────────────────────────────
 function rdSetLive(ok) {
   const el = document.getElementById('rdLiveDot');
   const tx = document.getElementById('rdLiveLabel');
@@ -2167,7 +2175,7 @@ function rdSetLive(ok) {
   if (tx) tx.textContent = ok ? 'Connecté' : 'En attente';
 }
 
-// ── rdShowBadge ───────────────────────────────────────────────────────────────
+// ── rdShowBadge ──────────────────────────────────────────────────────────────
 function rdShowBadge(id, show) {
   const el = document.getElementById(id);
   if (el) el.style.display = show ? '' : 'none';
@@ -2188,7 +2196,7 @@ function rdUpdateBadges(data) {
   rdShowBadge('rd-badge-ok', avis === 'favorable' && !isStrictDef && !hasRes);
 }
 
-// ── rdSetPresence ─────────────────────────────────────────────────────────────
+// ── rdSetPresence ────────────────────────────────────────────────────────────
 function rdSetPresence(others) {
   const pill = document.getElementById('rd-presence');
   const txt  = document.getElementById('rd-presence-txt');
@@ -2197,13 +2205,12 @@ function rdSetPresence(others) {
     const noms = others.map(([,v]) => v.nom||'?').join(', ');
     pill.classList.add('show');
     txt.textContent = noms;
-    showRdNotif('\u270f\ufe0f ' + noms + ' édite aussi ce dossier', 'warn', 5000);
   } else {
     pill.classList.remove('show');
   }
 }
 
-// ── startRdListener — calque EXACT de startLiveListener ──────────────────────
+// ── startRdListener ──────────────────────────────────────────────────────────
 function startRdListener(id) {
   stopRdListener();
   rdSetLive(false);
@@ -2212,24 +2219,26 @@ function startRdListener(id) {
   _rdListener = db.ref('/rd0/' + id).on('value', snap => {
     rdSetLive(true);
     const freshData = snap.val() || {};
-    const myUid = currentUser?.uid || currentUser?.initiales || 'me';
+    const myUid = getMyUid();
+    const freshHash = hashRd(freshData);
 
     if (firstCall) {
       firstCall = false;
-      _rdLastHash = hashRd(freshData);
+      _rdLastHash = freshHash;
       rdUpdateBadges(freshData);
       return;
     }
 
-    // VERIFICATION STRICTE DE L'AUTEUR : Si la donnée vient de vous, ignorer
-    if (freshData._updatedBy === myUid || _rdIsSelfWrite) { 
-      _rdIsSelfWrite = false; 
-      _rdLastHash = hashRd(freshData);
-      return; 
+    // 1. SI C'EST NOTRE PROPRE ÉCRITURE (VIA _meta OU DRAPEAU) -> IGNORER
+    if (freshData._meta?.updatedBy === myUid || _rdIsSelfWrite) {
+      _rdIsSelfWrite = false;
+      _rdLastHash = freshHash;
+      return;
     }
 
-    const freshHash = hashRd(freshData);
+    // 2. SI LE CONTENU N'A PAS DÉJÀ ÉTÉ TRAITÉ
     if (freshHash !== _rdLastHash) {
+      _rdLastHash = freshHash;
       db.ref('/rd0_presence/' + id).once('value').then(pSnap => {
         const presence = pSnap.val() || {};
         const others = Object.entries(presence).filter(([k]) => k !== myUid);
@@ -2245,13 +2254,13 @@ function startRdListener(id) {
 
   // Présence
   if (currentUser) {
-    const uid = currentUser.uid || currentUser.initiales || 'user';
+    const uid = getMyUid();
     _rdPresenceRef = db.ref('/rd0_presence/' + id + '/' + uid);
     _rdPresenceRef.set({ nom: ((currentUser.prenom||'')+' '+(currentUser.nom||'')).trim() || currentUser.initiales || '?', ts: Date.now() });
     _rdPresenceRef.onDisconnect().remove();
     db.ref('/rd0_presence/' + id).on('value', snap => {
       const presence = snap.val() || {};
-      const uid2 = currentUser?.uid || currentUser?.initiales || 'me';
+      const uid2 = getMyUid();
       const others = Object.entries(presence).filter(([k]) => k !== uid2).filter(([,v]) => Date.now()-(v.ts||0)<120000);
       rdSetPresence(others);
     });
@@ -2273,11 +2282,10 @@ function stopRdListener() {
   document.getElementById('rdRefreshBadge')?.classList.remove('show');
 }
 
-// Alias vers startRdListener/stopRdListener
 function rdStartSync(id) { startRdListener(id); }
 function rdStopSync()    { stopRdListener();    }
 
-// ── rdApplyPending — même que applyPendingUpdate ─────────────────────────────
+// ── rdApplyPending ───────────────────────────────────────────────────────────
 async function rdApplyPending() {
   const btn = document.getElementById('rdRefreshBtn');
   if (btn) btn.classList.add('spinning');
@@ -2295,16 +2303,21 @@ async function rdApplyPending() {
   }
   if (freshData) {
     _rdLastHash = hashRd(freshData);
+    
+    // Nettoyage de _meta avant l'injection dans l'iframe
+    const cleanData = { ...freshData };
+    delete cleanData._meta;
+
     const frame = document.getElementById('rapsordFrame');
-    if (frame?.contentWindow) frame.contentWindow.postMessage({ type: 'rapsord_inject', data: freshData }, '*');
-    rdUpdateBadges(freshData);
+    if (frame?.contentWindow) frame.contentWindow.postMessage({ type: 'rapsord_inject', data: cleanData }, '*');
+    rdUpdateBadges(cleanData);
     showRdNotif('Modifications appliquées \u2713', 'ok', 3000);
   }
   _rdPendingData = null;
   if (btn) btn.classList.remove('spinning');
 }
 
-// ── openRapsord — calque EXACT de openSynthese ────────────────────────────────
+// ── openRapsord ───────────────────────────────────────────────────────────────
 async function openRapsord(id, e) {
   if (e) { e.stopPropagation(); _rdFromSyn = false; }
   const c = canevas.find(x => x.id === id);
@@ -2332,8 +2345,11 @@ async function openRapsord(id, e) {
   }
 
   let rdData = {};
-  try { const snap = await db.ref('/rd0/' + id).once('value'); rdData = snap.val() || {}; }
-  catch(e) { console.warn('RAPSORD: pas de données RD0'); }
+  try { 
+    const snap = await db.ref('/rd0/' + id).once('value'); 
+    rdData = snap.val() || {}; 
+    delete rdData._meta; // Nettoyage
+  } catch(e) { console.warn('RAPSORD: pas de données RD0'); }
 
   const u = currentUser ? { prenom: currentUser.prenom, nom: currentUser.nom, initiales: currentUser.initiales, role: currentUser.role } : {};
   const tag = 'scr'+'ipt';
@@ -2407,12 +2423,12 @@ function rdLoadJSON() {
     try {
       const data = JSON.parse(await f.text());
       if (currentRapsordId) {
-        const uid = currentUser?.uid || currentUser?.initiales || 'me';
-        const payload = { ...data, _updatedBy: uid };
+        const myUid = getMyUid();
+        const payload = { ...data, _meta: { updatedBy: myUid, ts: Date.now() } };
         _rdLastHash = hashRd(payload);
         _rdIsSelfWrite = true;
         await db.ref('/rd0/'+currentRapsordId).set(payload);
-        document.getElementById('rapsordFrame')?.contentWindow?.postMessage({ type:'rapsord_inject', data: payload }, '*');
+        document.getElementById('rapsordFrame')?.contentWindow?.postMessage({ type:'rapsord_inject', data }, '*');
         showRdNotif('JSON chargé et sauvegardé \u2713', 'ok', 3000);
       }
     } catch(err) { toast('JSON invalide : '+err.message, 'r'); }
