@@ -2135,7 +2135,6 @@ let _rdPendingData   = null;
 let _rdIsSelfWrite   = false;
 let _rdLastHash      = '';
 let _rdNotifTimer    = null;
-let _rdLastPresenceNames = '';
 
 // ── hashRd — même idée que hashData ──────────────────────────────────────────
 function hashRd(d) {
@@ -2207,6 +2206,7 @@ function rdUpdateBadges(data) {
 }
 
 // ── rdSetPresence ─────────────────────────────────────────────────────────────
+let _rdLastPresenceNames = null;
 function rdSetPresence(others) {
   const pill = document.getElementById('rd-presence');
   const txt  = document.getElementById('rd-presence-txt');
