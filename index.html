@@ -2086,42 +2086,6 @@ function postAction(action) {
 </script>
 <script>
 
-
-/* ═══════════════════════════════════════════════════
-   PWA – Service Worker + Sync intelligente
-   ═══════════════════════════════════════════════════ */
-
-/* ── Enregistrement du Service Worker ── */
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    try {
-      const reg = await navigator.serviceWorker.register('/sw.js');
-      console.log('[SW] Enregistré:', reg.scope);
-
-      // Mise à jour disponible → notifier l'utilisateur
-      reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-            showPwaToast('🔄 Mise à jour disponible — rechargez pour l\'appliquer', () => {
-              newWorker.postMessage({ type: 'sw_skip_waiting' });
-              window.location.reload();
-            });
-          }
-        });
-      });
-    } catch(e) {
-      console.warn('[SW] Échec enregistrement:', e);
-    }
-
-    // Écouter les messages du SW (sync trigger)
-    navigator.serviceWorker.addEventListener('message', event => {
-      if (event.data?.type === 'sw_sync_trigger') {
-        handleOnlineSync();
-      }
-    });
-  });
-}
 /* ═══════════════════════════════════════════════════
    RAPSORD VIEWER — calqué exactement sur SYN
    ═══════════════════════════════════════════════════ */
@@ -2425,6 +2389,41 @@ function rdLoadJSON() {
     } catch(err) { toast('JSON invalide : '+err.message, 'r'); }
   };
   inp.click();
+}
+/* ═══════════════════════════════════════════════════
+   PWA – Service Worker + Sync intelligente
+   ═══════════════════════════════════════════════════ */
+
+/* ── Enregistrement du Service Worker ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js');
+      console.log('[SW] Enregistré:', reg.scope);
+
+      // Mise à jour disponible → notifier l'utilisateur
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showPwaToast('🔄 Mise à jour disponible — rechargez pour l\'appliquer', () => {
+              newWorker.postMessage({ type: 'sw_skip_waiting' });
+              window.location.reload();
+            });
+          }
+        });
+      });
+    } catch(e) {
+      console.warn('[SW] Échec enregistrement:', e);
+    }
+
+    // Écouter les messages du SW (sync trigger)
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data?.type === 'sw_sync_trigger') {
+        handleOnlineSync();
+      }
+    });
+  });
 }
 
 /* ── Détection connexion/déconnexion ── */
