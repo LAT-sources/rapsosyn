@@ -1975,12 +1975,14 @@ if (e.data.type === 'rapsord_save') {
       .then(() => {
         rdSetLive(true);
         rdUpdateBadges(payload);
-        const idx = canevas.findIndex(x => String(x.id) === String(canId));
-        if (idx >= 0 && !canevas[idx].hasRd0) {
-          canevas[idx].hasRd0 = true;
-          saveToCloud();
-          renderCanevas();
-        }
+const idx = canevas.findIndex(x => String(x.id) === String(canId));
+if (idx >= 0 && !canevas[idx].hasRd0) {
+  canevas[idx].hasRd0 = true;
+  // Mise à jour ciblée : uniquement le booléen hasRd0
+  db.ref('/canevas/' + idx + '/hasRd0').set(true)
+    .catch(err => console.warn('hasRd0 update error:', err));
+  renderCanevas();
+}
       })
       .catch(err => {
         _rdLastHash = '';
@@ -2341,7 +2343,7 @@ async function openRapsord(id, e) {
   hide('scApp'); hide('scSynthese'); show('scRapsord');
 
   // Démarrer le listener — même délai que SYN (1200ms)
-  setTimeout(() => startRdListener(id), 1200);
+  startRdListener(id);   // immédiat, plus de délai
 }
 
 function openRapsordFromSynthese() { if (currentCanId) { _rdFromSyn=true; openRapsord(currentCanId); } }
