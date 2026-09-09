@@ -2135,7 +2135,7 @@ let _rdPendingData   = null;
 let _rdIsSelfWrite   = false;
 let _rdLastHash      = '';
 let _rdNotifTimer    = null;
-let _rdLastPresenceNames = null;
+
 
 // ── hashRd — même idée que hashData ──────────────────────────────────────────
 function hashRd(d) {
@@ -2207,16 +2207,23 @@ function rdUpdateBadges(data) {
 }
 
 // ── rdSetPresence ─────────────────────────────────────────────────────────────
+let _rdLastPresenceNames = null;
+
 function rdSetPresence(others) {
   const pill = document.getElementById('rd-presence');
   const txt  = document.getElementById('rd-presence-txt');
   if (!pill || !txt) return;
 
   const now = Date.now();
+  // Filtrer les présences expirées (plus de 120 s)
   const activeOthers = others.filter(([,v]) => now - (v.ts||0) < 120000);
 
+  // Construire la liste des noms actifs (triée pour comparaison stable)
+  const noms = activeOthers.map(([,v]) => v.nom || '?').sort();
+  const nomsStr = noms.join('|');
+
+  // Mise à jour de la pastille visuelle
   if (activeOthers.length > 0) {
-    const noms = activeOthers.map(([,v]) => v.nom || '?');
     const nomsHtml = activeOthers.map(([,v]) => {
       let name = v.nom || '?';
       if (v.typing && now - (v.typingTs||0) < 3000) {
@@ -2224,34 +2231,43 @@ function rdSetPresence(others) {
       }
       return name;
     }).join(', ');
-
     pill.classList.add('show');
     txt.innerHTML = nomsHtml;
-
-    // Comparer avec la liste précédente
-    if (_rdLastPresenceNames !== null) {
-      const prev = _rdLastPresenceNames;
-      const arrived = noms.filter(n => !prev.includes(n));
-      const left = prev.filter(n => !noms.includes(n));
-
-      if (arrived.length > 0) {
-        showRdNotif('✏️ ' + arrived.join(', ') + ' est connecté', 'warn', 4000);
-      }
-      if (left.length > 0) {
-        showRdNotif('🚪 ' + left.join(', ') + ' a quitté', 'warn', 4000);
-      }
-    }
-    _rdLastPresenceNames = noms;
   } else {
     pill.classList.remove('show');
     txt.innerHTML = '';
-    if (_rdLastPresenceNames !== null && _rdLastPresenceNames.length > 0) {
-      showRdNotif('🚪 Tous les autres utilisateurs ont quitté', 'warn', 4000);
-    }
-    _rdLastPresenceNames = null;
   }
-}
 
+  // Gestion des notifications d'arrivée / départ
+  if (_rdLastPresenceNames === null) {
+    // Première exécution : ne pas notifier
+    _rdLastPresenceNames = nomsStr;
+    return;
+  }
+
+  if (nomsStr === _rdLastPresenceNames) {
+    // Aucun changement dans la liste des présents
+    return;
+  }
+
+  const prevNoms = _rdLastPresenceNames.split('|').filter(Boolean);
+  const currentNoms = noms;
+
+  // Ceux qui sont arrivés
+  const arrived = currentNoms.filter(n => !prevNoms.includes(n));
+  // Ceux qui sont partis
+  const left = prevNoms.filter(n => !currentNoms.includes(n));
+
+  if (arrived.length > 0) {
+    showRdNotif('✏️ ' + arrived.join(', ') + ' est connecté', 'warn', 4000);
+  }
+  if (left.length > 0) {
+    showRdNotif('🚪 ' + left.join(', ') + ' a quitté', 'warn', 4000);
+  }
+
+  _rdLastPresenceNames = nomsStr;
+}
+   
 // ── startRdListener — calque EXACT de startLiveListener ──────────────────────
 function startRdListener(id) {
   stopRdListener();
