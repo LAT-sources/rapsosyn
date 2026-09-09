@@ -2111,7 +2111,8 @@ let _rdNotifTimer    = null;
 // ── hashRd — même idée que hashData ──────────────────────────────────────────
 function hashRd(d) {
   if (!d) return '';
-  return JSON.stringify(d).length + '|' + (d.ref||'') + '|' + (d.avis||'') + '|' + (d.date_rd0||'');
+  // Hash complet de l'objet : toute modification sera détectée
+  return JSON.stringify(d);
 }
 
 // ── Notif — même API que showNotif ───────────────────────────────────────────
