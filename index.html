@@ -2135,7 +2135,7 @@ let _rdPendingData   = null;
 let _rdIsSelfWrite   = false;
 let _rdLastHash      = '';
 let _rdNotifTimer    = null;
-let _rdLastPresenceNames = '';
+let _rdLastPresenceNames = null;
 
 // ── hashRd — même idée que hashData ──────────────────────────────────────────
 function hashRd(d) {
@@ -2217,7 +2217,6 @@ function rdSetPresence(others) {
 
   if (activeOthers.length > 0) {
     const noms = activeOthers.map(([,v]) => v.nom || '?');
-    const nomsStr = noms.join(', ');
     const nomsHtml = activeOthers.map(([,v]) => {
       let name = v.nom || '?';
       if (v.typing && now - (v.typingTs||0) < 3000) {
@@ -2225,18 +2224,31 @@ function rdSetPresence(others) {
       }
       return name;
     }).join(', ');
+
     pill.classList.add('show');
     txt.innerHTML = nomsHtml;
 
-    // Notification uniquement si la liste des présents change
-    if (nomsStr !== _rdLastPresenceNames) {
-      _rdLastPresenceNames = nomsStr;
-      showRdNotif('✏️ ' + nomsStr + ' est connecté', 'warn', 4000);
+    // Comparer avec la liste précédente
+    if (_rdLastPresenceNames !== null) {
+      const prev = _rdLastPresenceNames;
+      const arrived = noms.filter(n => !prev.includes(n));
+      const left = prev.filter(n => !noms.includes(n));
+
+      if (arrived.length > 0) {
+        showRdNotif('✏️ ' + arrived.join(', ') + ' est connecté', 'warn', 4000);
+      }
+      if (left.length > 0) {
+        showRdNotif('🚪 ' + left.join(', ') + ' a quitté', 'warn', 4000);
+      }
     }
+    _rdLastPresenceNames = noms;
   } else {
     pill.classList.remove('show');
     txt.innerHTML = '';
-    _rdLastPresenceNames = '';
+    if (_rdLastPresenceNames !== null && _rdLastPresenceNames.length > 0) {
+      showRdNotif('🚪 Tous les autres utilisateurs ont quitté', 'warn', 4000);
+    }
+    _rdLastPresenceNames = null;
   }
 }
 
