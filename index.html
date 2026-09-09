@@ -2438,11 +2438,16 @@ const typingScript = `
     }
   });
 
+  // ─── Normalisation des clés ───
+  function normalizeKey(text) {
+    return text.replace(/\\s+/g, ' ').trim();
+  }
+
   // ─── Synchronisation D ← DOM ───
   function syncFromDOM() {
     // Cases domaines contrôlés et missions complémentaires
     document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el => {
-      const key = el.textContent.trim();
+      const key = normalizeKey(el.textContent);
       const cb = el.querySelector('input[type="checkbox"]');
       if (key && cb) {
         if (!window.D.mc) window.D.mc = {};
@@ -2454,7 +2459,7 @@ const typingScript = `
     document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
       const cb = el.querySelector('input[type="checkbox"]');
       if (!cb) return;
-      const text = el.textContent;
+      const text = normalizeKey(el.textContent);
       if (!window.D.rd_req) window.D.rd_req = {};
       if (text.includes('RD1')) window.D.rd_req.rd1 = cb.checked;
       if (text.includes('RD2')) window.D.rd_req.rd2 = cb.checked;
@@ -2489,11 +2494,11 @@ const typingScript = `
     });
   }
 
-  // ─── Application de D vers le DOM (restauration) ───
+  // ─── Application D → DOM (restauration) ───
   function applyToDOM() {
     // Cases domaines contrôlés et missions complémentaires
     document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el => {
-      const key = el.textContent.trim();
+      const key = normalizeKey(el.textContent);
       const cb = el.querySelector('input[type="checkbox"]');
       if (key && cb && window.D.mc && window.D.mc[key] !== undefined) {
         cb.checked = window.D.mc[key];
@@ -2505,7 +2510,7 @@ const typingScript = `
     document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
       const cb = el.querySelector('input[type="checkbox"]');
       if (!cb) return;
-      const text = el.textContent;
+      const text = normalizeKey(el.textContent);
       let val;
       if (text.includes('RD1')) val = window.D.rd_req && window.D.rd_req.rd1;
       if (text.includes('RD2')) val = window.D.rd_req && window.D.rd_req.rd2;
@@ -2566,13 +2571,13 @@ const typingScript = `
     }
   });
 
-  // Restaurer l'état initial après un court délai (le temps que tout soit rendu)
+  // Restaurer l'état initial après un court délai
   setTimeout(applyToDOM, 500);
 
   window.addEventListener('beforeunload', () => sendTyping(false));
 })();
 <\/script>`;
-
+   
 // Insérer le script juste avant la fermeture de </body>
 templateHTML = templateHTML.replace('</body>', typingScript + '</body>');
 
