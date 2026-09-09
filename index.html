@@ -1958,10 +1958,13 @@ window.addEventListener('message', function(e) {
     updateSynCounters(e.data.data);
   }
 
-  if (e.data.type === 'rapsord_save') {
+if (e.data.type === 'rapsord_save') {
     const canId   = e.data.canId;
     const payload = e.data.data;
     if (canId === undefined || canId === null || !payload) return;
+
+    _rdIsSelfWrite = true;   // ← à ajouter, comme pour Synthèse
+
     db.ref('/rd0/' + canId).set(payload)
       .then(() => {
         _rdLastHash = hashRd(payload); // ← après écriture réussie, comme SYN
@@ -1976,6 +1979,7 @@ window.addEventListener('message', function(e) {
       })
       .catch(err => {
         _rdLastHash = '';
+        _rdIsSelfWrite = false;   // ← remise à zéro en cas d'échec
         rdSetLive(false);
         console.warn('RAPSORD save error:', err);
       });
