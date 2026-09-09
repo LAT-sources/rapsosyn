@@ -1957,16 +1957,19 @@ window.addEventListener('message', function(e) {
   if (e.data.type === 'rapso_inject_ack') {
     updateSynCounters(e.data.data);
   }
-
-  if (e.data.type === 'rapsord_save') {
+if (e.data.type === 'rapsord_save') {
     const canId   = e.data.canId;
     const payload = e.data.data;
     if (canId === undefined || canId === null || !payload) return;
+    _rdIsSelfWrite = true;
+    rdSetStatus('saving', 'Sauvegarde…');
     db.ref('/rd0/' + canId).set(payload)
       .then(() => {
-        _rdLastHash = hashRd(payload); // ← après écriture réussie, comme SYN
+        _rdLastHash = hashRd(payload);
         rdSetLive(true);
         rdUpdateBadges(payload);
+        rdSetStatus('saved', 'Sauvegardé');
+        setTimeout(() => rdSetStatus('idle', 'En attente'), 4000);
         const idx = canevas.findIndex(x => String(x.id) === String(canId));
         if (idx >= 0 && !canevas[idx].hasRd0) {
           canevas[idx].hasRd0 = true;
@@ -1975,11 +1978,13 @@ window.addEventListener('message', function(e) {
         }
       })
       .catch(err => {
+        _rdIsSelfWrite = false;
         _rdLastHash = '';
         rdSetLive(false);
+        rdSetStatus('error', 'Échec sauvegarde');
         console.warn('RAPSORD save error:', err);
       });
-  }
+}
 });
 
 /* MOT DE PASSE OUBLIÉ */
