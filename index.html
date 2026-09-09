@@ -2135,6 +2135,7 @@ let _rdPendingData   = null;
 let _rdIsSelfWrite   = false;
 let _rdLastHash      = '';
 let _rdNotifTimer    = null;
+let _rdLastPresenceNames = '';
 
 // ── hashRd — même idée que hashData ──────────────────────────────────────────
 function hashRd(d) {
@@ -2215,7 +2216,9 @@ function rdSetPresence(others) {
   const activeOthers = others.filter(([,v]) => now - (v.ts||0) < 120000);
 
   if (activeOthers.length > 0) {
-    const noms = activeOthers.map(([,v]) => {
+    const noms = activeOthers.map(([,v]) => v.nom || '?');
+    const nomsStr = noms.join(', ');
+    const nomsHtml = activeOthers.map(([,v]) => {
       let name = v.nom || '?';
       if (v.typing && now - (v.typingTs||0) < 3000) {
         name += ' <span class="typing-indicator">✍️<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span></span>';
@@ -2223,10 +2226,17 @@ function rdSetPresence(others) {
       return name;
     }).join(', ');
     pill.classList.add('show');
-    txt.innerHTML = noms;
+    txt.innerHTML = nomsHtml;
+
+    // Notification uniquement si la liste des présents change
+    if (nomsStr !== _rdLastPresenceNames) {
+      _rdLastPresenceNames = nomsStr;
+      showRdNotif('✏️ ' + nomsStr + ' est connecté', 'warn', 4000);
+    }
   } else {
     pill.classList.remove('show');
     txt.innerHTML = '';
+    _rdLastPresenceNames = '';
   }
 }
 
