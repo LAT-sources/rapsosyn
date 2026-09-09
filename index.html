@@ -1964,25 +1964,23 @@ if (e.data.type === 'rapsord_save') {
     if (canId === undefined || canId === null || !payload) return;
 
     const newHash = hashRd(payload);
-    if (newHash === _rdLastHash) {
-        // Aucun changement réel → on n'écrit pas et on n'affiche rien
-        return;
-    }
-    _rdLastHash = newHash;      // ← mise à jour immédiate
+    if (newHash === _rdLastHash) return;   // rien de neuf
+
+    _rdLastHash = newHash;
     _rdIsSelfWrite = true;
+    setTimeout(() => { _rdIsSelfWrite = false; }, 1000);   // sécurité anti-blocage
 
     db.ref('/rd0/' + canId).set(payload)
       .then(() => {
         rdSetLive(true);
         rdUpdateBadges(payload);
-const idx = canevas.findIndex(x => String(x.id) === String(canId));
-if (idx >= 0 && !canevas[idx].hasRd0) {
-  canevas[idx].hasRd0 = true;
-  // Mise à jour ciblée : uniquement le booléen hasRd0
-  db.ref('/canevas/' + idx + '/hasRd0').set(true)
-    .catch(err => console.warn('hasRd0 update error:', err));
-  renderCanevas();
-}
+        const idx = canevas.findIndex(x => String(x.id) === String(canId));
+        if (idx >= 0 && !canevas[idx].hasRd0) {
+          canevas[idx].hasRd0 = true;
+          db.ref('/canevas/' + idx + '/hasRd0').set(true)
+            .catch(err => console.warn('hasRd0 update error:', err));
+          renderCanevas();
+        }
       })
       .catch(err => {
         _rdLastHash = '';
