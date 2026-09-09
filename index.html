@@ -2133,7 +2133,7 @@ function rdShowPendingBar(data, modUser) {
   const usr = document.getElementById('rdPbUser');
   if (usr) usr.textContent = modUser ? modUser : '';
   document.getElementById('rdPendingBar')?.classList.add('show');
-  showRdNotif('\U0001f514 ' + (modUser||'Un autre utilisateur') + ' a modifié ce RD0', 'warn', 0);
+  // ✅ Notification toast supprimée – la barre suffit
 }
 function rdDismissPending() {
   _rdPendingData = null;
