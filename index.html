@@ -2371,6 +2371,49 @@ async function openRapsord(id, e) {
   const meta = '<' + tag + '>' + inject + '</' + tag + '>';
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', meta);
 
+  // ✅ Injection du script de détection de frappe
+  const typingScript = `
+  <script>
+  (function() {
+    let typing = false;
+    let typingTimer;
+
+    function sendTyping(state) {
+      try {
+        window.parent.postMessage({ type: 'rapsord_typing', typing: state }, '*');
+      } catch(e) {}
+    }
+
+    document.addEventListener('input', function(e) {
+      if (!typing) {
+        typing = true;
+        sendTyping(true);
+      }
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(function() {
+        typing = false;
+        sendTyping(false);
+      }, 2000); // arrêt après 2 s sans frappe
+    });
+
+    document.addEventListener('focus', function(e) {
+      if (e.target.matches('input, textarea, select')) {
+        if (!typing) {
+          typing = true;
+          sendTyping(true);
+        }
+      }
+    });
+
+    window.addEventListener('beforeunload', function() {
+      sendTyping(false);
+    });
+  })();
+  <\/script>`;
+
+  // Insérer le script juste avant la fermeture de </body>
+  templateHTML = templateHTML.replace('</body>', typingScript + '</body>');
+
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
   const frame = document.getElementById('rapsordFrame');
   if (frame.src && frame.src.startsWith('blob:')) URL.revokeObjectURL(frame.src);
@@ -2381,7 +2424,6 @@ async function openRapsord(id, e) {
   // Démarrer le listener immédiatement
   startRdListener(id);
 }
-
 function openRapsordFromSynthese() { if (currentCanId) { _rdFromSyn=true; openRapsord(currentCanId); } }
 
 function closeRapsord() {
