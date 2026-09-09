@@ -1977,10 +1977,11 @@ window.addEventListener('message', function(e) {
   }
 
 if (e.data.type === 'rapsord_save') {
-    console.log('Données RAPSORD reçues :', e.data.data);
     const canId   = e.data.canId;
     const payload = e.data.data;
     if (canId === undefined || canId === null || !payload) return;
+
+    console.log('Données RAPSORD reçues :', payload); // débogage
 
     const newHash = hashRd(payload);
     if (newHash === _rdLastHash) return;   // rien de neuf
@@ -2016,11 +2017,6 @@ if (e.data.type === 'rapsord_typing') {
     const uid = currentUser.uid || currentUser.initiales || 'user';
     const ref = db.ref('/rd0_presence/' + currentRapsordId + '/' + uid);
     ref.update({ typing: isTyping, typingTs: Date.now() });
-  if (e.data.type === 'rapsord_force_save') {
-  // Demande à l'iframe de sauvegarder ses données
-  const frame = document.getElementById('rapsordFrame');
-  if (frame && frame.contentWindow) {
-    frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*');
   }
 }
 });
@@ -2141,6 +2137,7 @@ let _rdPendingData   = null;
 let _rdIsSelfWrite   = false;
 let _rdLastHash      = '';
 let _rdNotifTimer    = null;
+let _rdLastPresenceNames = null; // pour notifier les arrivées/départs
 
 // ── hashRd — même idée que hashData ──────────────────────────────────────────
 function hashRd(d) {
@@ -2212,22 +2209,16 @@ function rdUpdateBadges(data) {
 }
 
 // ── rdSetPresence ─────────────────────────────────────────────────────────────
-let _rdLastPresenceNames = null;
 function rdSetPresence(others) {
   const pill = document.getElementById('rd-presence');
   const txt  = document.getElementById('rd-presence-txt');
   if (!pill || !txt) return;
 
   const now = Date.now();
-  // Filtrer les présences expirées (plus de 120 s)
   const activeOthers = others.filter(([,v]) => now - (v.ts||0) < 120000);
 
-  // Construire la liste des noms actifs (triée pour comparaison stable)
-  const noms = activeOthers.map(([,v]) => v.nom || '?').sort();
-  const nomsStr = noms.join('|');
-
-  // Mise à jour de la pastille visuelle
   if (activeOthers.length > 0) {
+    const noms = activeOthers.map(([,v]) => v.nom || '?');
     const nomsHtml = activeOthers.map(([,v]) => {
       let name = v.nom || '?';
       if (v.typing && now - (v.typingTs||0) < 3000) {
@@ -2237,39 +2228,31 @@ function rdSetPresence(others) {
     }).join(', ');
     pill.classList.add('show');
     txt.innerHTML = nomsHtml;
+
+    // Notification d'arrivée/départ
+    if (_rdLastPresenceNames === null) {
+      _rdLastPresenceNames = noms.join('|');
+      return;
+    }
+    const prevNoms = _rdLastPresenceNames.split('|').filter(Boolean);
+    const currentNoms = noms;
+    const arrived = currentNoms.filter(n => !prevNoms.includes(n));
+    const left = prevNoms.filter(n => !currentNoms.includes(n));
+    if (arrived.length > 0) {
+      showRdNotif('✏️ ' + arrived.join(', ') + ' est connecté', 'warn', 4000);
+    }
+    if (left.length > 0) {
+      showRdNotif('🚪 ' + left.join(', ') + ' a quitté', 'warn', 4000);
+    }
+    _rdLastPresenceNames = noms.join('|');
   } else {
     pill.classList.remove('show');
     txt.innerHTML = '';
+    if (_rdLastPresenceNames !== null && _rdLastPresenceNames.length > 0) {
+      showRdNotif('🚪 Tous les autres utilisateurs ont quitté', 'warn', 4000);
+    }
+    _rdLastPresenceNames = null;
   }
-
-  // Gestion des notifications d'arrivée / départ
-  if (_rdLastPresenceNames === null) {
-    // Première exécution : ne pas notifier
-    _rdLastPresenceNames = nomsStr;
-    return;
-  }
-
-  if (nomsStr === _rdLastPresenceNames) {
-    // Aucun changement dans la liste des présents
-    return;
-  }
-
-  const prevNoms = _rdLastPresenceNames.split('|').filter(Boolean);
-  const currentNoms = noms;
-
-  // Ceux qui sont arrivés
-  const arrived = currentNoms.filter(n => !prevNoms.includes(n));
-  // Ceux qui sont partis
-  const left = prevNoms.filter(n => !currentNoms.includes(n));
-
-  if (arrived.length > 0) {
-    showRdNotif('✏️ ' + arrived.join(', ') + ' est connecté', 'warn', 4000);
-  }
-  if (left.length > 0) {
-    showRdNotif('🚪 ' + left.join(', ') + ' a quitté', 'warn', 4000);
-  }
-
-  _rdLastPresenceNames = nomsStr;
 }
 
 // ── startRdListener — calque EXACT de startLiveListener ──────────────────────
@@ -2332,6 +2315,7 @@ function stopRdListener() {
   _rdPendingData = null;
   _rdIsSelfWrite = false;
   _rdLastHash    = '';
+  _rdLastPresenceNames = null;
   rdSetLive(false);
   document.getElementById('rdPendingBar')?.classList.remove('show');
   document.getElementById('rdRefreshBadge')?.classList.remove('show');
@@ -2413,66 +2397,65 @@ async function openRapsord(id, e) {
   const meta = '<' + tag + '>' + inject + '</' + tag + '>';
   templateHTML = templateHTML.replace('<!-- RAPSO_META -->', meta);
 
-  // ✅ Injection du script de détection de frappe
-// ✅ Injection du script de détection de frappe
-const typingScript = `
-<script>
-(function() {
-  let typing = false;
-  let typingTimer;
+  // ✅ Injection du script de détection de frappe + synchro checkbox/radio
+  const typingScript = `
+  <script>
+  (function() {
+    let typing = false;
+    let typingTimer;
 
-  function sendTyping(state) {
-    try {
-      window.parent.postMessage({ type: 'rapsord_typing', typing: state }, '*');
-    } catch(e) {}
-  }
-
-  // --- Détection de frappe (pour l'indicateur ✍️) ---
-  document.addEventListener('input', function(e) {
-    if (!typing) {
-      typing = true;
-      sendTyping(true);
+    function sendTyping(state) {
+      try {
+        window.parent.postMessage({ type: 'rapsord_typing', typing: state }, '*');
+      } catch(e) {}
     }
-    clearTimeout(typingTimer);
-    typingTimer = setTimeout(function() {
-      typing = false;
-      sendTyping(false);
-    }, 2000);
-  });
 
-  document.addEventListener('focus', function(e) {
-    if (e.target.matches('input, textarea, select')) {
+    // --- Détection de frappe (pour l'indicateur ✍️) ---
+    document.addEventListener('input', function(e) {
       if (!typing) {
         typing = true;
         sendTyping(true);
       }
-    }
-  });
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(function() {
+        typing = false;
+        sendTyping(false);
+      }, 2000); // arrêt après 2 s sans frappe
+    });
 
-  // --- Synchronisation des checkbox et radio ---
-  document.addEventListener('change', function(e) {
-    if (e.target.matches('input[type="checkbox"], input[type="radio"]')) {
-      // Redéclenche un 'input' pour les scripts existants
-      var evt = new Event('input', { bubbles: true });
-      e.target.dispatchEvent(evt);
+    document.addEventListener('focus', function(e) {
+      if (e.target.matches('input, textarea, select')) {
+        if (!typing) {
+          typing = true;
+          sendTyping(true);
+        }
+      }
+    });
 
-      // Force la sauvegarde après un court délai
-      setTimeout(function() {
-        try {
-          window.parent.postMessage({ type: 'rapsord_force_save' }, '*');
-        } catch(err) {}
-      }, 300);
-    }
-  });
+    // --- Synchronisation des checkbox et radio ---
+    document.addEventListener('change', function(e) {
+      if (e.target.matches('input[type="checkbox"], input[type="radio"]')) {
+        // Redéclenche un 'input' pour les scripts existants
+        var evt = new Event('input', { bubbles: true });
+        e.target.dispatchEvent(evt);
 
-  window.addEventListener('beforeunload', function() {
-    sendTyping(false);
-  });
-})();
-<\/script>`;
+        // Force la sauvegarde après un court délai
+        setTimeout(function() {
+          try {
+            window.parent.postMessage({ type: 'rapsord_force_save' }, '*');
+          } catch(err) {}
+        }, 300);
+      }
+    });
 
-// Insérer le script juste avant la fermeture de </body>
-templateHTML = templateHTML.replace('</body>', typingScript + '</body>');
+    window.addEventListener('beforeunload', function() {
+      sendTyping(false);
+    });
+  })();
+  <\/script>`;
+
+  // Insérer le script juste avant la fermeture de </body>
+  templateHTML = templateHTML.replace('</body>', typingScript + '</body>');
 
   const blob = new Blob([templateHTML], { type: 'text/html;charset=utf-8' });
   const frame = document.getElementById('rapsordFrame');
@@ -2484,6 +2467,7 @@ templateHTML = templateHTML.replace('</body>', typingScript + '</body>');
   // Démarrer le listener immédiatement
   startRdListener(id);
 }
+
 function openRapsordFromSynthese() { if (currentCanId) { _rdFromSyn=true; openRapsord(currentCanId); } }
 
 function closeRapsord() {
