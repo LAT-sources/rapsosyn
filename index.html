@@ -2009,21 +2009,12 @@ if (e.data.type === 'rapsord_save') {
 }
 
 // ─── Gestion des signaux de frappe (typing) ───
-// ─── Gestion des signaux de frappe (typing) ───
 if (e.data.type === 'rapsord_typing') {
   const isTyping = e.data.typing;
   if (currentRapsordId && currentUser) {
     const uid = currentUser.uid || currentUser.initiales || 'user';
     const ref = db.ref('/rd0_presence/' + currentRapsordId + '/' + uid);
     ref.update({ typing: isTyping, typingTs: Date.now() });
-  }
-}
-
-// ─── Ajout : forcer la sauvegarde pour checkbox/radio ───
-if (e.data.type === 'rapsord_force_save') {
-  const frame = document.getElementById('rapsordFrame');
-  if (frame && frame.contentWindow) {
-    frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*');
   }
 }
 });
@@ -2421,163 +2412,42 @@ async function openRapsord(id, e) {
 const typingScript = `
 <script>
 (function() {
-  // ─── Détection de frappe ───
   let typing = false;
   let typingTimer;
+
   function sendTyping(state) {
-    try { window.parent.postMessage({ type: 'rapsord_typing', typing: state }, '*'); } catch(e) {}
+    try {
+      window.parent.postMessage({ type: 'rapsord_typing', typing: state }, '*');
+    } catch(e) {}
   }
+
   document.addEventListener('input', function(e) {
-    if (!typing) { typing = true; sendTyping(true); }
+    if (!typing) {
+      typing = true;
+      sendTyping(true);
+    }
     clearTimeout(typingTimer);
-    typingTimer = setTimeout(() => { typing = false; sendTyping(false); }, 2000);
+    typingTimer = setTimeout(function() {
+      typing = false;
+      sendTyping(false);
+    }, 2000);
   });
+
   document.addEventListener('focus', function(e) {
     if (e.target.matches('input, textarea, select')) {
-      if (!typing) { typing = true; sendTyping(true); }
+      if (!typing) {
+        typing = true;
+        sendTyping(true);
+      }
     }
   });
 
-  // ─── Normalisation des clés ───
-  function normalizeKey(text) {
-    return text.replace(/\\s+/g, ' ').trim();
-  }
-
-  // ─── Synchronisation D ← DOM ───
-  function syncFromDOM() {
-    // Cases domaines contrôlés et missions complémentaires
-    document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el => {
-      const key = normalizeKey(el.textContent);
-      const cb = el.querySelector('input[type="checkbox"]');
-      if (key && cb) {
-        if (!window.D.mc) window.D.mc = {};
-        window.D.mc[key] = cb.checked;
-      }
-    });
-
-    // Cases rapports complémentaires requis
-    document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
-      const cb = el.querySelector('input[type="checkbox"]');
-      if (!cb) return;
-      const text = normalizeKey(el.textContent);
-      if (!window.D.rd_req) window.D.rd_req = {};
-      if (text.includes('RD1')) window.D.rd_req.rd1 = cb.checked;
-      if (text.includes('RD2')) window.D.rd_req.rd2 = cb.checked;
-      if (text.includes('RD3')) window.D.rd_req.rd3 = cb.checked;
-      if (text.includes('RD4')) window.D.rd_req.rd4 = cb.checked;
-      if (text.includes('RD5')) window.D.rd_req.rd5 = cb.checked;
-      if (text.includes('RD6')) window.D.rd_req.rd6 = cb.checked;
-    });
-
-    // Radios simples
-    const radioGroups = [
-      'conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
-      'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
-      'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'
-    ];
-    radioGroups.forEach(name => {
-      const checked = document.querySelector('input[name="' + name + '"]:checked');
-      if (checked) window.D[name] = checked.value;
-    });
-
-    // Avis principal
-    const avisChecked = document.querySelector('input[name="avis"]:checked');
-    if (avisChecked) window.D.avis = avisChecked.value;
-
-    // Postes contrôlés (PC)
-    document.querySelectorAll('.pc-radio').forEach(el => {
-      const input = el.querySelector('input[type="radio"]');
-      if (input && input.checked) {
-        if (!window.D.pc) window.D.pc = {};
-        window.D.pc[input.name] = input.value;
-      }
-    });
-  }
-
-  // ─── Application D → DOM (restauration) ───
-  function applyToDOM() {
-    // Cases domaines contrôlés et missions complémentaires
-    document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el => {
-      const key = normalizeKey(el.textContent);
-      const cb = el.querySelector('input[type="checkbox"]');
-      if (key && cb && window.D.mc && window.D.mc[key] !== undefined) {
-        cb.checked = window.D.mc[key];
-        el.classList.toggle('on', cb.checked);
-      }
-    });
-
-    // Cases rapports complémentaires requis
-    document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
-      const cb = el.querySelector('input[type="checkbox"]');
-      if (!cb) return;
-      const text = normalizeKey(el.textContent);
-      let val;
-      if (text.includes('RD1')) val = window.D.rd_req && window.D.rd_req.rd1;
-      if (text.includes('RD2')) val = window.D.rd_req && window.D.rd_req.rd2;
-      if (text.includes('RD3')) val = window.D.rd_req && window.D.rd_req.rd3;
-      if (text.includes('RD4')) val = window.D.rd_req && window.D.rd_req.rd4;
-      if (text.includes('RD5')) val = window.D.rd_req && window.D.rd_req.rd5;
-      if (text.includes('RD6')) val = window.D.rd_req && window.D.rd_req.rd6;
-      if (val !== undefined) {
-        cb.checked = val;
-        el.classList.toggle('on', val);
-      }
-    });
-
-    // Radios simples
-    const radioGroups = [
-      'conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
-      'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
-      'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'
-    ];
-    radioGroups.forEach(name => {
-      if (window.D[name]) {
-        const radio = document.querySelector('input[name="' + name + '"][value="' + window.D[name] + '"]');
-        if (radio) {
-          radio.checked = true;
-          radio.parentElement.classList.add('on');
-        }
-      }
-    });
-
-    // Avis principal
-    if (window.D.avis) {
-      const radio = document.querySelector('input[name="avis"][value="' + window.D.avis + '"]');
-      if (radio) {
-        radio.checked = true;
-        radio.parentElement.classList.add('on');
-      }
-    }
-
-    // Postes contrôlés
-    if (window.D.pc) {
-      Object.keys(window.D.pc).forEach(key => {
-        const radio = document.querySelector('input[name="' + key + '"][value="' + window.D.pc[key] + '"]');
-        if (radio) {
-          radio.checked = true;
-          radio.parentElement.className = 'pc-radio ' + window.D.pc[key] + ' on';
-        }
-      });
-    }
-  }
-
-  // Écouteur de changement → synchroniser D et sauvegarder
-  document.addEventListener('change', function(e) {
-    if (e.target.matches('input[type="checkbox"], input[type="radio"]')) {
-      syncFromDOM();
-      if (typeof window.save === 'function') window.save();
-      else if (typeof window.collect === 'function') window.collect();
-      if (typeof window.pushToParent === 'function') window.pushToParent();
-    }
+  window.addEventListener('beforeunload', function() {
+    sendTyping(false);
   });
-
-  // Restaurer l'état initial après un court délai
-  setTimeout(applyToDOM, 500);
-
-  window.addEventListener('beforeunload', () => sendTyping(false));
 })();
 <\/script>`;
-   
+
 // Insérer le script juste avant la fermeture de </body>
 templateHTML = templateHTML.replace('</body>', typingScript + '</body>');
 
