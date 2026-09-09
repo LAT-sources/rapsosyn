@@ -2421,56 +2421,74 @@ async function openRapsord(id, e) {
 const typingScript = `
 <script>
 (function() {
+  // ─── Détection de frappe ───
   let typing = false;
   let typingTimer;
-
   function sendTyping(state) {
-    try {
-      window.parent.postMessage({ type: 'rapsord_typing', typing: state }, '*');
-    } catch(e) {}
+    try { window.parent.postMessage({ type: 'rapsord_typing', typing: state }, '*'); } catch(e) {}
   }
-
-  // --- Détection de frappe (pour l'indicateur ✍️) ---
   document.addEventListener('input', function(e) {
-    if (!typing) {
-      typing = true;
-      sendTyping(true);
-    }
+    if (!typing) { typing = true; sendTyping(true); }
     clearTimeout(typingTimer);
-    typingTimer = setTimeout(function() {
-      typing = false;
-      sendTyping(false);
-    }, 2000);
+    typingTimer = setTimeout(() => { typing = false; sendTyping(false); }, 2000);
   });
-
   document.addEventListener('focus', function(e) {
     if (e.target.matches('input, textarea, select')) {
-      if (!typing) {
-        typing = true;
-        sendTyping(true);
-      }
+      if (!typing) { typing = true; sendTyping(true); }
     }
   });
 
-  // --- Synchronisation des checkbox et radio ---
+  // ─── Synchronisation des cases et radios ───
+  function syncCheckboxesAndRadios() {
+    // Checkboxes domaines contrôlés et missions complémentaires
+    document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el => {
+      const key = el.textContent.trim();
+      const cb = el.querySelector('input[type="checkbox"]');
+      if (key && cb) {
+        if (!window.D.mc) window.D.mc = {};
+        window.D.mc[key] = cb.checked;
+      }
+    });
+
+    // Checkboxes rapports complémentaires requis
+    document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
+      const cb = el.querySelector('input[type="checkbox"]');
+      if (!cb) return;
+      const text = el.textContent;
+      if (!window.D.rd_req) window.D.rd_req = {};
+      if (text.includes('RD1')) window.D.rd_req.rd1 = cb.checked;
+      if (text.includes('RD2')) window.D.rd_req.rd2 = cb.checked;
+      if (text.includes('RD3')) window.D.rd_req.rd3 = cb.checked;
+      if (text.includes('RD4')) window.D.rd_req.rd4 = cb.checked;
+      if (text.includes('RD5')) window.D.rd_req.rd5 = cb.checked;
+      if (text.includes('RD6')) window.D.rd_req.rd6 = cb.checked;
+    });
+
+    // Radios simples (OUI/NON, avis, etc.)
+    const radioGroups = ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
+                         'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
+                         'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'];
+    radioGroups.forEach(name => {
+      const checked = document.querySelector('input[name="' + name + '"]:checked');
+      if (checked) window.D[name] = checked.value;
+    });
+
+    // Avis principal
+    const avisChecked = document.querySelector('input[name="avis"]:checked');
+    if (avisChecked) window.D.avis = avisChecked.value;
+  }
+
   document.addEventListener('change', function(e) {
     if (e.target.matches('input[type="checkbox"], input[type="radio"]')) {
-      // Redéclenche un 'input' pour les scripts existants de RAPSORD
-      var evt = new Event('input', { bubbles: true });
-      e.target.dispatchEvent(evt);
-
-      // Force la sauvegarde après un court délai
-      setTimeout(function() {
-        try {
-          window.parent.postMessage({ type: 'rapsord_force_save' }, '*');
-        } catch(err) {}
-      }, 300);
+      syncCheckboxesAndRadios();
+      // Sauvegarde immédiate
+      if (typeof window.save === 'function') window.save();
+      else if (typeof window.collect === 'function') window.collect();
+      if (typeof window.pushToParent === 'function') window.pushToParent();
     }
   });
 
-  window.addEventListener('beforeunload', function() {
-    sendTyping(false);
-  });
+  window.addEventListener('beforeunload', () => sendTyping(false));
 })();
 <\/script>`;
 
