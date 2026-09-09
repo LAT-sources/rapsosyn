@@ -2009,12 +2009,21 @@ if (e.data.type === 'rapsord_save') {
 }
 
 // ─── Gestion des signaux de frappe (typing) ───
+// ─── Gestion des signaux de frappe (typing) ───
 if (e.data.type === 'rapsord_typing') {
   const isTyping = e.data.typing;
   if (currentRapsordId && currentUser) {
     const uid = currentUser.uid || currentUser.initiales || 'user';
     const ref = db.ref('/rd0_presence/' + currentRapsordId + '/' + uid);
     ref.update({ typing: isTyping, typingTs: Date.now() });
+  }
+}
+
+// ─── Ajout : forcer la sauvegarde pour checkbox/radio ───
+if (e.data.type === 'rapsord_force_save') {
+  const frame = document.getElementById('rapsordFrame');
+  if (frame && frame.contentWindow) {
+    frame.contentWindow.postMessage({ type: 'rapso_request_save' }, '*');
   }
 }
 });
@@ -2421,6 +2430,7 @@ const typingScript = `
     } catch(e) {}
   }
 
+  // --- Détection de frappe (pour l'indicateur ✍️) ---
   document.addEventListener('input', function(e) {
     if (!typing) {
       typing = true;
@@ -2439,6 +2449,22 @@ const typingScript = `
         typing = true;
         sendTyping(true);
       }
+    }
+  });
+
+  // --- Synchronisation des checkbox et radio ---
+  document.addEventListener('change', function(e) {
+    if (e.target.matches('input[type="checkbox"], input[type="radio"]')) {
+      // Redéclenche un 'input' pour les scripts existants de RAPSORD
+      var evt = new Event('input', { bubbles: true });
+      e.target.dispatchEvent(evt);
+
+      // Force la sauvegarde après un court délai
+      setTimeout(function() {
+        try {
+          window.parent.postMessage({ type: 'rapsord_force_save' }, '*');
+        } catch(err) {}
+      }, 300);
     }
   });
 
