@@ -1183,7 +1183,47 @@ const FIELDS=[
   'rd5_date','rd5_ing','rd5_desc','rd5_impact','rd5_conclu',
   'rd6_date','rd6_date_recep','rd6_date_service','rd6_res_detail','rd6_conclu','rd6_fait_a','rd6_fait_le',
 ];
+function () {
+  // --- Checkboxes missions complémentaires & domaines contrôlés ---
+  document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el => {
+    const key = el.textContent.trim();
+    const cb = el.querySelector('input[type="checkbox"]');
+    if (key && cb) {
+      if (!D.mc) D.mc = {};
+      D.mc[key] = cb.checked;
+    }
+  });
+
+  // --- Checkboxes rapports complémentaires requis ---
+  document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
+    const cb = el.querySelector('input[type="checkbox"]');
+    if (!cb) return;
+    const text = el.textContent;
+    if (text.includes('RD1') && cb.checked) D.rd_req = D.rd_req || {}; D.rd_req.rd1 = cb.checked;
+    // Répéter pour rd2, rd3, rd4, rd5, rd6
+  });
+
+  // --- Radios simples (OUI/NON, etc.) ---
+  const radioGroups = ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
+                       'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
+                       'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'];
+  radioGroups.forEach(name => {
+    const radios = document.querySelectorAll(`input[name="${name}"]`);
+    radios.forEach(r => {
+      if (r.checked) {
+        D[name] = r.value;
+      }
+    });
+  });
+
+  // --- Avis principal ---
+  const avisRadio = document.querySelector('input[name="avis"]:checked');
+  if (avisRadio) {
+    D.avis = avisRadio.value;
+  }
+}
 function collect(){
+  syncFromDOM();
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)D[id]=el.value;});
   // codes
   D.codes=[];
