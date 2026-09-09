@@ -574,6 +574,24 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 #rdActionMenu button:last-child{border-bottom:none;}
 #rdActionMenu button:hover{background:rgba(255,255,255,.09);color:white;}
 #rdActionMenu hr{border:none;border-top:1px solid rgba(255,255,255,.08);margin:2px 0;padding:0;}
+
+/* ─── INDICATEUR DE FRAPPE ─── */
+.typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  font-size: 0.75rem;
+}
+.typing-indicator .dot1, .typing-indicator .dot2, .typing-indicator .dot3 {
+  animation: typingBlink 1.2s infinite;
+  font-weight: bold;
+}
+.typing-indicator .dot2 { animation-delay: 0.2s; }
+.typing-indicator .dot3 { animation-delay: 0.4s; }
+@keyframes typingBlink {
+  0%, 60%, 100% { opacity: 0.2; }
+  30% { opacity: 1; }
+}
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -1989,6 +2007,16 @@ if (e.data.type === 'rapsord_save') {
         console.warn('RAPSORD save error:', err);
       });
 }
+
+// ─── Gestion des signaux de frappe (typing) ───
+if (e.data.type === 'rapsord_typing') {
+  const isTyping = e.data.typing;
+  if (currentRapsordId && currentUser) {
+    const uid = currentUser.uid || currentUser.initiales || 'user';
+    const ref = db.ref('/rd0_presence/' + currentRapsordId + '/' + uid);
+    ref.update({ typing: isTyping, typingTs: Date.now() });
+  }
+}
 });
 
 /* MOT DE PASSE OUBLIÉ */
@@ -2182,13 +2210,23 @@ function rdSetPresence(others) {
   const pill = document.getElementById('rd-presence');
   const txt  = document.getElementById('rd-presence-txt');
   if (!pill || !txt) return;
-  if (others.length > 0) {
-    const noms = others.map(([,v]) => v.nom||'?').join(', ');
+
+  const now = Date.now();
+  const activeOthers = others.filter(([,v]) => now - (v.ts||0) < 120000);
+
+  if (activeOthers.length > 0) {
+    const noms = activeOthers.map(([,v]) => {
+      let name = v.nom || '?';
+      if (v.typing && now - (v.typingTs||0) < 3000) {
+        name += ' <span class="typing-indicator">✍️<span class="dot1">.</span><span class="dot2">.</span><span class="dot3">.</span></span>';
+      }
+      return name;
+    }).join(', ');
     pill.classList.add('show');
-    txt.textContent = noms;
-    showRdNotif('\u270f\ufe0f ' + noms + ' édite aussi ce dossier', 'warn', 5000);
+    txt.innerHTML = noms;
   } else {
     pill.classList.remove('show');
+    txt.innerHTML = '';
   }
 }
 
@@ -2230,7 +2268,7 @@ function startRdListener(id) {
   if (currentUser) {
     const uid = currentUser.uid || currentUser.initiales || 'user';
     _rdPresenceRef = db.ref('/rd0_presence/' + id + '/' + uid);
-    _rdPresenceRef.set({ nom: ((currentUser.prenom||'')+' '+(currentUser.nom||'')).trim() || currentUser.initiales || '?', ts: Date.now() });
+    _rdPresenceRef.set({ nom: ((currentUser.prenom||'')+' '+(currentUser.nom||'')).trim() || currentUser.initiales || '?', ts: Date.now(), typing: false, typingTs: 0 });
     _rdPresenceRef.onDisconnect().remove();
     db.ref('/rd0_presence/' + id).on('value', snap => {
       const presence = snap.val() || {};
@@ -2340,8 +2378,8 @@ async function openRapsord(id, e) {
 
   hide('scApp'); hide('scSynthese'); show('scRapsord');
 
-  // Démarrer le listener — même délai que SYN (1200ms)
-  startRdListener(id);   // immédiat, plus de délai
+  // Démarrer le listener immédiatement
+  startRdListener(id);
 }
 
 function openRapsordFromSynthese() { if (currentCanId) { _rdFromSyn=true; openRapsord(currentCanId); } }
