@@ -2421,7 +2421,7 @@ async function openRapsord(id, e) {
 const typingScript = `
 <script>
 (function() {
-  // ─── Détection de frappe ───
+  // Détection de frappe (pour l'indicateur ✍️)
   let typing = false;
   let typingTimer;
   function sendTyping(state) {
@@ -2438,9 +2438,9 @@ const typingScript = `
     }
   });
 
-  // ─── Synchronisation des cases et radios ───
+  // ─── Synchronisation des cases et radios dans D ───
   function syncCheckboxesAndRadios() {
-    // Checkboxes domaines contrôlés et missions complémentaires
+    // Cases domaines contrôlés et missions complémentaires
     document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el => {
       const key = el.textContent.trim();
       const cb = el.querySelector('input[type="checkbox"]');
@@ -2450,7 +2450,7 @@ const typingScript = `
       }
     });
 
-    // Checkboxes rapports complémentaires requis
+    // Cases rapports complémentaires requis
     document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
       const cb = el.querySelector('input[type="checkbox"]');
       if (!cb) return;
@@ -2464,10 +2464,12 @@ const typingScript = `
       if (text.includes('RD6')) window.D.rd_req.rd6 = cb.checked;
     });
 
-    // Radios simples (OUI/NON, avis, etc.)
-    const radioGroups = ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
-                         'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
-                         'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'];
+    // Radios simples (tous les groupes OUI/NON, avis, etc.)
+    const radioGroups = [
+      'conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
+      'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
+      'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'
+    ];
     radioGroups.forEach(name => {
       const checked = document.querySelector('input[name="' + name + '"]:checked');
       if (checked) window.D[name] = checked.value;
@@ -2476,6 +2478,16 @@ const typingScript = `
     // Avis principal
     const avisChecked = document.querySelector('input[name="avis"]:checked');
     if (avisChecked) window.D.avis = avisChecked.value;
+
+    // Postes contrôlés (PC) — radios spécifiques
+    document.querySelectorAll('.pc-radio').forEach(el => {
+      const input = el.querySelector('input[type="radio"]');
+      if (input && input.checked) {
+        const name = input.name;
+        if (!window.D.pc) window.D.pc = {};
+        window.D.pc[name] = input.value;
+      }
+    });
   }
 
   document.addEventListener('change', function(e) {
