@@ -1963,11 +1963,16 @@ if (e.data.type === 'rapsord_save') {
     const payload = e.data.data;
     if (canId === undefined || canId === null || !payload) return;
 
-    _rdIsSelfWrite = true;   // ← à ajouter, comme pour Synthèse
+    const newHash = hashRd(payload);
+    if (newHash === _rdLastHash) {
+        // Aucun changement réel → on n'écrit pas et on n'affiche rien
+        return;
+    }
+    _rdLastHash = newHash;      // ← mise à jour immédiate
+    _rdIsSelfWrite = true;
 
     db.ref('/rd0/' + canId).set(payload)
       .then(() => {
-        _rdLastHash = hashRd(payload); // ← après écriture réussie, comme SYN
         rdSetLive(true);
         rdUpdateBadges(payload);
         const idx = canevas.findIndex(x => String(x.id) === String(canId));
@@ -1979,11 +1984,11 @@ if (e.data.type === 'rapsord_save') {
       })
       .catch(err => {
         _rdLastHash = '';
-        _rdIsSelfWrite = false;   // ← remise à zéro en cas d'échec
+        _rdIsSelfWrite = false;
         rdSetLive(false);
         console.warn('RAPSORD save error:', err);
       });
-  }
+}
 });
 
 /* MOT DE PASSE OUBLIÉ */
