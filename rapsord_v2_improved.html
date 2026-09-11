@@ -1079,7 +1079,15 @@ function nav(id){
 // ─── RADIO ────────────────────────────────────────────────────────────────────
 function setR(key,val,el){
   if(el){
-    document.querySelectorAll(`input[name="${el.querySelector('input').name}"]`).forEach(r=>r.parentElement.classList.remove('on'));
+    const input = el.querySelector('input');
+    if (input) {
+      const name = input.name;
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
+        r.parentElement.classList.remove('on');
+        r.checked = false;
+      });
+      input.checked = true;
+    }
     el.classList.add('on');
   }
   D[key]=val; save();
@@ -1185,7 +1193,44 @@ const FIELDS=[
 ];
 function collect(){
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)D[id]=el.value;});
-  // codes
+
+  // ─── Sync radios depuis le DOM (clé + valeur lues depuis l'attribut onclick) ───
+  document.querySelectorAll('.ro[onclick*="setR"]').forEach(el => {
+    const onclick = el.getAttribute('onclick') || '';
+    const m = onclick.match(/setR\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]/);
+    if (!m) return;
+    const name = m[1], val = m[2];
+    const input = el.querySelector('input[type="radio"]');
+    if (input && input.checked) D[name] = val;
+  });
+
+  // ─── Sync checkboxes domaines/missions ───
+  document.querySelectorAll('.mc[onclick*="togMC"]').forEach(el => {
+    const m = (el.getAttribute('onclick') || '').match(/togMC\(this,\s*['"]([^'"]+)['"]/);
+    if (!m) return;
+    const key = m[1];
+    const cb = el.querySelector('input[type="checkbox"]');
+    if (cb) { if (!D.mc) D.mc = {}; D.mc[key] = cb.checked; }
+  });
+
+  // ─── Sync checkboxes RD requis ───
+  document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
+    const m = (el.getAttribute('onclick') || '').match(/togRD\(this,\s*['"]([^'"]+)['"]/);
+    if (!m) return;
+    const key = m[1];
+    const cb = el.querySelector('input[type="checkbox"]');
+    if (cb) { if (!D.rd_req) D.rd_req = {}; D.rd_req[key] = cb.checked; }
+  });
+
+  // ─── Sync avis principal ───
+  document.querySelectorAll('input[name="avis"]').forEach(r => {
+    if (r.checked) {
+      const m = (r.parentElement.getAttribute('onclick') || '').match(/setAvis\(['"]([^'"]+)['"]/);
+      if (m) D.avis = m[1];
+    }
+  });
+
+  // ─── Codes ───
   D.codes=[];
   for(let i=1;i<=codeRows;i++){
     const el=document.getElementById('code_name_'+i);
@@ -1234,37 +1279,65 @@ function importJSON(){
 }
 function applyData(){
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el&&D[id]!==undefined)el.value=D[id];});
-  // radios
-  ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
-   'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
-   'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'].forEach(name=>{
-    if(D[name])document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
-      if(r.value===D[name])r.parentElement.classList.add('on');
-    });
+
+  // ─── Restaurer les radios : lit la valeur exacte depuis l'attribut onclick ───
+  document.querySelectorAll('.ro[onclick*="setR"]').forEach(el => {
+    const m = (el.getAttribute('onclick') || '').match(/setR\(['"]([^'"]+)['"],\s*['"]([^'"]+)['"]/);
+    if (!m) return;
+    const name = m[1], val = m[2];
+    const input = el.querySelector('input[type="radio"]');
+    if (!input) return;
+    const isOn = D[name] === val;
+    input.checked = isOn;
+    el.classList.toggle('on', isOn);
+  });
+
+  // ─── Restaurer avis principal ───
+  document.querySelectorAll('input[name="avis"]').forEach(r => {
+    const m = (r.parentElement.getAttribute('onclick') || '').match(/setAvis\(['"]([^'"]+)['"]/);
+    if (!m) return;
+    const val = m[1];
+    const isOn = D.avis === val;
+    r.checked = isOn;
+    r.parentElement.classList.toggle('on', isOn);
   });
   if(D.avis){
-    document.querySelectorAll('input[name="avis"]').forEach(r=>{
-      if(r.parentElement.textContent.trim().startsWith(D.avis)){r.parentElement.classList.add('on');}
-    });
     const w=document.getElementById('avis-wrap');
     if(w) w.className='avis-wrap '+(D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
   }
-  // checkboxes mc
-  if(D.mc)document.querySelectorAll('#dom-grid .mc,#miss-comp-grid .mc').forEach(el=>{
-    const key=el.textContent.trim();
-    if(D.mc[key]){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
+
+  // ─── Restaurer checkboxes domaines/missions ───
+  document.querySelectorAll('.mc[onclick*="togMC"]').forEach(el => {
+    const m = (el.getAttribute('onclick') || '').match(/togMC\(this,\s*['"]([^'"]+)['"]/);
+    if (!m) return;
+    const key = m[1];
+    const cb = el.querySelector('input[type="checkbox"]');
+    if (!cb) return;
+    const val = !!(D.mc && D.mc[key]);
+    cb.checked = val;
+    el.classList.toggle('on', val);
   });
-  // rd_req
-  if(D.rd_req)document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
-    if(el.textContent.includes('RD1')&&D.rd_req.rd1){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
-    if(el.textContent.includes('RD2')&&D.rd_req.rd2){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
+
+  // ─── Restaurer checkboxes RD requis (RD1 à RD6) ───
+  document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
+    const m = (el.getAttribute('onclick') || '').match(/togRD\(this,\s*['"]([^'"]+)['"]/);
+    if (!m) return;
+    const key = m[1];
+    const cb = el.querySelector('input[type="checkbox"]');
+    if (!cb) return;
+    const val = !!(D.rd_req && D.rd_req[key]);
+    cb.checked = val;
+    el.classList.toggle('on', val);
   });
-  // codes
+
+  // ─── Codes ───
   const cb=document.getElementById('codes-body');
   if(cb){cb.innerHTML='';codeRows=0;if(D.codes)(D.codes).forEach(row=>addCode(row));}
-  // pc
+
+  // ─── PC ───
   rebuildPC();
   updDash();
+
   const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Dossier chargé ✓';
 }
 function rebuildPC(){
