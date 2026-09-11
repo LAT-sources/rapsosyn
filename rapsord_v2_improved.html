@@ -1036,42 +1036,53 @@ function importJSON(){
   };inp.click();
 }
 function applyData(){
-  FIELDS.forEach(id=>{const el=document.getElementById(id);if(el&&D[id]!==undefined)el.value=D[id];});
-  RADIOS.forEach(name=>{
-    const stored = D[name] || '';
-    document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
-      r.checked = (r.value === stored);
-      r.parentElement.classList.toggle('on', r.checked);
+  try {
+    FIELDS.forEach(id=>{const el=document.getElementById(id);if(el&&D[id]!==undefined)el.value=D[id];});
+
+    RADIOS.forEach(name=>{
+      const stored = D[name] || '';
+      document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
+        r.checked = (r.value === stored);
+        if(r.parentElement) r.parentElement.classList.toggle('on', r.checked);
+      });
     });
-  });
-  // Avis — mise à jour couleur wrapper
-  const w = document.getElementById('avis-wrap');
-  if(w && D.avis){
-    w.className = 'avis-wrap ' +
-      (D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
+
+    const w = document.getElementById('avis-wrap');
+    if(w && D.avis){
+      w.className = 'avis-wrap ' +
+        (D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
+    }
+
+    const mcArr = Array.isArray(D.mc) ? D.mc : (D.mc ? Object.keys(D.mc).filter(k=>D.mc[k]) : []);
+    document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el=>{
+      const cb=el.querySelector('input[type=checkbox]'); if(!cb) return;
+      cb.checked = mcArr.includes(cb.value);
+      el.classList.toggle('on', cb.checked);
+    });
+
+    const rdArr = Array.isArray(D.rd_req) ? D.rd_req : (D.rd_req ? Object.keys(D.rd_req).filter(k=>D.rd_req[k]) : []);
+    document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
+      const cb=el.querySelector('input[type=checkbox]'); if(!cb) return;
+      cb.checked = rdArr.includes(cb.value);
+      el.classList.toggle('on', cb.checked);
+    });
+
+    updBadges();
+
+    const cbody=document.getElementById('codes-body');
+    if(cbody){ cbody.innerHTML=''; codeRows=0; if(D.codes) D.codes.forEach(row=>addCode(row)); }
+
+    const decBody = document.getElementById('pc-dec-body');
+    const biBody  = document.getElementById('pc-bi-body');
+    if(decBody) buildPC(PC_DEC,'pc-dec-body','dec');
+    if(biBody)  buildPC(PC_BI,'pc-bi-body','bi');
+
+    updDash();
+  } catch(err){
+    console.error('🔴 applyData error:', err.message);
+    console.error('🔴 stack:', err.stack);
+    throw err;
   }
-  // mc
-  const mcArr = Array.isArray(D.mc) ? D.mc : (D.mc ? Object.keys(D.mc).filter(k=>D.mc[k]) : []);
-  document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el=>{
-    const cb=el.querySelector('input[type=checkbox]'); if(!cb) return;
-    cb.checked = mcArr.includes(cb.value);
-    el.classList.toggle('on', cb.checked);
-  });
-  // rd_req
-  const rdArr = Array.isArray(D.rd_req) ? D.rd_req : (D.rd_req ? Object.keys(D.rd_req).filter(k=>D.rd_req[k]) : []);
-  document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
-    const cb=el.querySelector('input[type=checkbox]'); if(!cb) return;
-    cb.checked = rdArr.includes(cb.value);
-    el.classList.toggle('on', cb.checked);
-  });
-  updBadges();
-  // codes
-  const cb=document.getElementById('codes-body');
-  if(cb){cb.innerHTML='';codeRows=0;if(D.codes) D.codes.forEach(row=>addCode(row));}
-  // PC
-  buildPC(PC_DEC,'pc-dec-body','dec');
-  buildPC(PC_BI,'pc-bi-body','bi');
-  updDash();
 }
 
 // ─── NEW DOSSIER ─────────────────────────────────────────────────────────────
