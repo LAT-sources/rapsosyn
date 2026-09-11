@@ -8,30 +8,17 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-:root {
-  --blue: #1a56db; --blue-d: #1447c0; --blue-l: #e8f0fe; --blue-ll: #f0f5ff;
-  --g50: #f8fafc; --g100: #f1f5f9; --g200: #e2e8f0; --g300: #cbd5e1;
-  --g400: #94a3b8; --g500: #64748b; --g600: #475569; --g700: #334155;
-  --g800: #1e293b; --g900: #0f172a;
-  --green: #22c55e; --red: #ef4444; --gold: #f59e0b;
-  --font-inter: 'Inter', sans-serif;
-  --bleu: #1B5EA0;
-  --bleu-h: #0d3d6e;
-  --bleu-cl: #dce8f5;
-  --bleu-bg: #f0f5fb;
-  --gris: #5a5a5a;
-  --gris-cl: #f4f4f2;
-  --bord: #d0d0cc;
-  --bord2: #b0b0a8;
-  --rouge: #9b2626;
-  --vert: #2d6a10;
-  --orange: #8a5a00;
-  --fond: #EFEFED;
-  --blanc: #ffffff;
-  --txt: #1e1e1e;
-  --txt2: #555;
-  --r: 6px;
-  --font: 'Segoe UI', system-ui, sans-serif;
+:root{
+  --blue:#1a56db;--blue-d:#1447c0;--blue-l:#e8f0fe;--blue-ll:#f0f5ff;
+  --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g300:#cbd5e1;
+  --g400:#94a3b8;--g500:#64748b;--g600:#475569;--g700:#334155;
+  --g800:#1e293b;--g900:#0f172a;
+  --green:#22c55e;--red:#ef4444;--gold:#f59e0b;
+  --bleu:#1B5EA0;--bleu-h:#0d3d6e;--bleu-cl:#dce8f5;--bleu-bg:#f0f5fb;
+  --gris:#5a5a5a;--gris-cl:#f4f4f2;--bord:#d0d0cc;--bord2:#b0b0a8;
+  --rouge:#9b2626;--vert:#2d6a10;--orange:#8a5a00;
+  --fond:#EFEFED;--blanc:#fff;--txt:#1e1e1e;--txt2:#555;--r:6px;
+  --font:'Segoe UI',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--fond);color:var(--txt);font-size:13px;min-height:100vh}
@@ -78,17 +65,21 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--bleu);bo
 textarea{resize:vertical;min-height:68px;line-height:1.5}
 .hint{font-size:10.5px;color:var(--txt2);font-style:italic;margin-top:2px}
 
+/* ── RADIO / CHECK : le wrapper est un <label>, l'input est dedans ── */
 .rg{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
 .ro{display:flex;align-items:center;gap:5px;font-size:12.5px;cursor:pointer;padding:5px 10px;border:1px solid var(--bord);border-radius:5px;background:var(--blanc);transition:all .12s;user-select:none}
 .ro:hover{border-color:var(--bleu);background:var(--bleu-cl)}
+.ro input{accent-color:var(--bleu);width:13px;height:13px}
+/* Style natif via :has — pas besoin de JS */
+.ro:has(input:checked),
 .ro.on{background:var(--bleu-cl);border-color:var(--bleu);color:var(--bleu-h)}
-.ro input{accent-color:var(--bleu);width:13px;height:13px;pointer-events:none}
 
 .mg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .mc{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--bord);border-radius:5px;cursor:pointer;font-size:12.5px;transition:all .12s;user-select:none}
 .mc:hover{background:var(--bleu-cl);border-color:var(--bleu)}
+.mc input{accent-color:var(--bleu);width:13px;height:13px}
+.mc:has(input:checked),
 .mc.on{background:var(--bleu-cl);border-color:var(--bleu);color:var(--bleu-h)}
-.mc input{accent-color:var(--bleu);width:13px;height:13px;pointer-events:none}
 
 .tbl{width:100%;border-collapse:collapse}
 .tbl th{background:var(--bleu-cl);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--bleu-h);padding:7px 8px;text-align:left;border-bottom:1px solid var(--bord)}
@@ -101,8 +92,11 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 .add-btn:hover{background:var(--bleu-cl);border-color:var(--bleu);color:var(--bleu)}
 
 .avis-wrap{border:2px solid var(--bord);border-radius:6px;padding:12px}
+.avis-wrap:has(input[value="Favorable"]:checked),
 .avis-wrap.fav{border-color:var(--vert);background:#f0fae5}
+.avis-wrap:has(input[value="Favorable avec réserves"]:checked),
 .avis-wrap.res{border-color:var(--orange);background:#fff8e6}
+.avis-wrap:has(input[value="Défavorable"]:checked),
 .avis-wrap.def{border-color:var(--rouge);background:#fef0f0}
 
 .pc-tbl{width:100%;border-collapse:collapse;font-size:12px}
@@ -112,10 +106,13 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 .pc-tbl .lot{color:var(--txt2);font-style:italic;font-size:11px}
 .pc-check{display:flex;gap:12px;align-items:center}
 .pc-radio{display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:3px 8px;border:1px solid var(--bord);border-radius:4px}
+.pc-radio input{accent-color:var(--bleu)}
+.pc-radio.so:has(input:checked),
 .pc-radio.so.on{background:#e8e8e0;border-color:var(--gris)}
+.pc-radio.oui:has(input:checked),
 .pc-radio.oui.on{background:#d4edbc;border-color:var(--vert);color:var(--vert)}
+.pc-radio.non:has(input:checked),
 .pc-radio.non.on{background:#ffd9d9;border-color:var(--rouge);color:var(--rouge)}
-.pc-radio input{accent-color:var(--bleu);pointer-events:none}
 
 .dash-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .dcard{background:var(--blanc);border:1px solid var(--bord);border-radius:8px;padding:12px 16px}
@@ -151,22 +148,22 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 
 @media print{#side,#hdr,#rapsord-toolbar,#sbar-firebase{display:none!important}#main{max-width:100%;padding:8mm}}
 
-#rd-notif-banner {display: none; align-items: center; gap: 10px; padding: 7px 16px; font-size: 0.78rem; font-weight: 500; flex-shrink: 0; border-bottom: 1px solid transparent;}
-#rd-notif-banner.presence {display: flex; background: #fff8e6; border-color: #f59e0b; color: #92400e;}
-#rd-notif-banner.sync {display: flex; background: #eff6ff; border-color: #3b82f6; color: #1e40af;}
-#rd-notif-banner.saved {display: flex; background: #f0fdf4; border-color: #22c55e; color: #166534;}
-.rd-notif-icon { font-size: 1rem; flex-shrink: 0; }
-.rd-notif-txt  { flex: 1; }
-.rd-notif-action {padding: 3px 10px; border: 1px solid currentColor; background: none; color: inherit; font-family: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer; border-radius: 4px; flex-shrink: 0;}
-.rd-notif-action:hover { opacity: .7; }
-.rd-notif-close {background: none; border: none; cursor: pointer; color: inherit; opacity: .6; font-size: 1rem; flex-shrink: 0; padding: 0 2px;}
-.rd-notif-close:hover { opacity: 1; }
-.rd-presence-pill {display: none; align-items: center; gap: 5px; background: #fff8e6; border: 1px solid #f59e0b; padding: 3px 10px; font-size: 0.7rem; font-weight: 600; color: #92400e; flex-shrink: 0;}
-.rd-presence-pill.show { display: flex; }
-.rd-presence-dot {width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; animation: rdPulse .9s ease-in-out infinite;}
-@keyframes rdPulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-.tb-btn.sync-pending {background: #eff6ff; border-color: #3b82f6; color: #1e40af; animation: rdPulse 1.2s ease-in-out infinite;}
-.sync-label{font-size:0.72rem;color:var(--g500,#64748b);font-weight:500;white-space:nowrap;}
+#rd-notif-banner{display:none;align-items:center;gap:10px;padding:7px 16px;font-size:.78rem;font-weight:500;flex-shrink:0;border-bottom:1px solid transparent}
+#rd-notif-banner.presence{display:flex;background:#fff8e6;border-color:#f59e0b;color:#92400e}
+#rd-notif-banner.sync{display:flex;background:#eff6ff;border-color:#3b82f6;color:#1e40af}
+#rd-notif-banner.saved{display:flex;background:#f0fdf4;border-color:#22c55e;color:#166534}
+.rd-notif-icon{font-size:1rem;flex-shrink:0}
+.rd-notif-txt{flex:1}
+.rd-notif-action{padding:3px 10px;border:1px solid currentColor;background:none;color:inherit;font-family:inherit;font-size:.72rem;font-weight:600;cursor:pointer;border-radius:4px;flex-shrink:0}
+.rd-notif-action:hover{opacity:.7}
+.rd-notif-close{background:none;border:none;cursor:pointer;color:inherit;opacity:.6;font-size:1rem;flex-shrink:0;padding:0 2px}
+.rd-notif-close:hover{opacity:1}
+.rd-presence-pill{display:none;align-items:center;gap:5px;background:#fff8e6;border:1px solid #f59e0b;padding:3px 10px;font-size:.7rem;font-weight:600;color:#92400e;flex-shrink:0}
+.rd-presence-pill.show{display:flex}
+.rd-presence-dot{width:7px;height:7px;border-radius:50%;background:#f59e0b;animation:rdPulse .9s ease-in-out infinite}
+@keyframes rdPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.tb-btn.sync-pending{background:#eff6ff;border-color:#3b82f6;color:#1e40af;animation:rdPulse 1.2s ease-in-out infinite}
+.sync-label{font-size:.72rem;color:var(--g500,#64748b);font-weight:500;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -212,7 +209,7 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 
 <div id="rd-notif-banner">
   <span class="rd-notif-icon" id="rd-notif-icon">⚠️</span>
-  <span class="rd-notif-txt"  id="rd-notif-txt">—</span>
+  <span class="rd-notif-txt" id="rd-notif-txt">—</span>
   <button class="rd-notif-action" id="rd-notif-action" style="display:none" onclick="rdApplyPending()">Synchroniser</button>
   <button class="rd-notif-close" onclick="rdCloseNotif()">✕</button>
 </div>
@@ -334,15 +331,15 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Type de mission</label>
         <div class="rg">
-          <div class="ro" data-value="Conception" onclick="setR('conc',this)"><input type="radio" name="conc" value="Conception"> Conception</div>
-          <div class="ro" data-value="Conception + exécution" onclick="setR('conc',this)"><input type="radio" name="conc" value="Conception + exécution"> Conception + exécution</div>
+          <label class="ro"><input type="radio" name="conc" value="Conception"> Conception</label>
+          <label class="ro"><input type="radio" name="conc" value="Conception + exécution"> Conception + exécution</label>
         </div>
       </div>
       <div class="f">
         <label>Contrôle exercé depuis le début de l'opération</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('ctrl_dep',this)"><input type="radio" name="ctrl_dep" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('ctrl_dep',this)"><input type="radio" name="ctrl_dep" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="ctrl_dep" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="ctrl_dep" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Missions confiées (DB, F, Av…)</label><input type="text" id="missions" oninput="save()"></div>
@@ -350,12 +347,12 @@ if(window.parent && window.parent !== window){
     </div>
     <div class="ctitle" style="font-size:12px;margin-bottom:8px">Domaines contrôlés</div>
     <div class="mg" id="dom-grid">
-      <div class="mc" data-value="Sols/Fondations/Structures" onclick="togMC(this)"><input type="checkbox"> Sols/Fondations/Structures</div>
-      <div class="mc" data-value="Enveloppe : clos/couvert" onclick="togMC(this)"><input type="checkbox"> Enveloppe : clos/couvert</div>
-      <div class="mc" data-value="Étanchéité toitures" onclick="togMC(this)"><input type="checkbox"> Étanchéité toitures</div>
-      <div class="mc" data-value="Stabilité" onclick="togMC(this)"><input type="checkbox"> Stabilité</div>
-      <div class="mc" data-value="Étanchéité façades" onclick="togMC(this)"><input type="checkbox"> Étanchéité façades</div>
-      <div class="mc" data-value="Étanchéité sous-sols" onclick="togMC(this)"><input type="checkbox"> Étanchéité sous-sols</div>
+      <label class="mc"><input type="checkbox" value="Sols/Fondations/Structures"> Sols/Fondations/Structures</label>
+      <label class="mc"><input type="checkbox" value="Enveloppe : clos/couvert"> Enveloppe : clos/couvert</label>
+      <label class="mc"><input type="checkbox" value="Étanchéité toitures"> Étanchéité toitures</label>
+      <label class="mc"><input type="checkbox" value="Stabilité"> Stabilité</label>
+      <label class="mc"><input type="checkbox" value="Étanchéité façades"> Étanchéité façades</label>
+      <label class="mc"><input type="checkbox" value="Étanchéité sous-sols"> Étanchéité sous-sols</label>
     </div>
   </div>
 
@@ -393,16 +390,16 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Honoraires compris dans le montant des travaux ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('hon',this)"><input type="radio" name="hon" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('hon',this)"><input type="radio" name="hon" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="hon" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="hon" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Montant total des travaux HTA</label><input type="text" id="montant" placeholder="… HTA" oninput="save()"></div>
       <div class="f">
         <label>Équipements spéciaux ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('eqp',this)"><input type="radio" name="eqp" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('eqp',this)"><input type="radio" name="eqp" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="eqp" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="eqp" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Évaluation équipements spéciaux HTA</label><input type="text" id="montant_eqp" placeholder="… HTA" oninput="save()"></div>
@@ -427,8 +424,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Zone cyclonique</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('cycl',this)"><input type="radio" name="cycl" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('cycl',this)"><input type="radio" name="cycl" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="cycl" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="cycl" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Vitesse de vent (vb,0 en m/s)</label><input type="text" id="vent" value="24" oninput="save()"></div>
@@ -436,8 +433,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Charge de neige éventuelle</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('neige',this)"><input type="radio" name="neige" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('neige',this)"><input type="radio" name="neige" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="neige" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="neige" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Valeur neige (sk, kN/m²)</label><input type="text" id="neige_val" oninput="save()"></div>
@@ -454,8 +451,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Risque d'envahissement par hautes eaux (fleuve, nappe)</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('inond',this)"><input type="radio" name="inond" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('inond',this)"><input type="radio" name="inond" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="inond" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="inond" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Précision sur le risque eau</label><input type="text" id="inond_prec" placeholder="Information non communiquée" oninput="save()"></div>
@@ -470,16 +467,16 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Zone sismique</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('sism',this)"><input type="radio" name="sism" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('sism',this)"><input type="radio" name="sism" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="sism" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="sism" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Niveau de protection sismique</label><input type="text" id="sism_prec" placeholder="Sans objet" oninput="save()"></div>
       <div class="f">
         <label>Site en milieu agressif</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('agr',this)"><input type="radio" name="agr" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('agr',this)"><input type="radio" name="agr" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="agr" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="agr" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Nature de l'agressivité / protection</label><input type="text" id="agr_prec" placeholder="Néant à ce stade" oninput="save()"></div>
@@ -493,38 +490,38 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Bureau d'études de sol intervenu ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('be_sol_int',this)"><input type="radio" name="be_sol_int" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('be_sol_int',this)"><input type="radio" name="be_sol_int" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="be_sol_int" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="be_sol_int" value="NON"> NON</label>
         </div>
       </div>
       <div class="f">
         <label>Rapport géotechnique disponible ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('rgt',this)"><input type="radio" name="rgt" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('rgt',this)"><input type="radio" name="rgt" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="rgt" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="rgt" value="NON"> NON</label>
         </div>
       </div>
       <div class="f s2"><label>Références rapport géotechnique</label><input type="text" id="rgt_ref" placeholder="Étude non communiquée" oninput="save()"></div>
       <div class="f">
         <label>Investigations complémentaires nécessaires ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('inv_comp',this)"><input type="radio" name="inv_comp" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('inv_comp',this)"><input type="radio" name="inv_comp" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="inv_comp" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="inv_comp" value="NON"> NON</label>
         </div>
       </div>
       <div class="f s2"><label>Solution de fondation retenue</label><input type="text" id="fond_sol" placeholder="Selon les coupes, fondations superficielles de type radier." oninput="save()"></div>
       <div class="f">
         <label>Adéquation sol / système de fondation ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('adequ_fond',this)"><input type="radio" name="adequ_fond" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('adequ_fond',this)"><input type="radio" name="adequ_fond" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="adequ_fond" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="adequ_fond" value="NON"> NON</label>
         </div>
       </div>
       <div class="f">
         <label>Rapport RD1 renseigné ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('rd1_rens',this)"><input type="radio" name="rd1_rens" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('rd1_rens',this)"><input type="radio" name="rd1_rens" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="rd1_rens" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="rd1_rens" value="NON"> NON</label>
         </div>
       </div>
     </div>
@@ -552,8 +549,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Possibilité de remplacement facile ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('fac_remp',this)"><input type="radio" name="fac_remp" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('fac_remp',this)"><input type="radio" name="fac_remp" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="fac_remp" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="fac_remp" value="NON"> NON</label>
         </div>
       </div>
       <div class="f s2"><label>Précisions</label><textarea id="fac_prec" rows="2" oninput="save()"></textarea></div>
@@ -573,8 +570,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Procédé traditionnel ? (si NON → remplir RD2)</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('trad_h',this)"><input type="radio" name="trad_h" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('trad_h',this)"><input type="radio" name="trad_h" value="NON"> NON → RD2</div>
+          <label class="ro"><input type="radio" name="trad_h" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="trad_h" value="NON"> NON → RD2</label>
         </div>
       </div>
     </div>
@@ -585,8 +582,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Inondabilité (eaux de ruissellement, nappe)</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('inond_ss',this)"><input type="radio" name="inond_ss" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('inond_ss',this)"><input type="radio" name="inond_ss" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="inond_ss" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="inond_ss" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Précisions sur le risque</label><textarea id="inond_ss_prec" rows="2" oninput="save()"></textarea></div>
@@ -612,16 +609,16 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Charges réparties</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('dall_rep',this)"><input type="radio" name="dall_rep" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('dall_rep',this)"><input type="radio" name="dall_rep" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="dall_rep" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="dall_rep" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Valeur charges réparties</label><input type="text" id="dall_rep_val" placeholder="Sans objet" oninput="save()"></div>
       <div class="f">
         <label>Charges ponctuelles / roulantes</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('dall_ponc',this)"><input type="radio" name="dall_ponc" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('dall_ponc',this)"><input type="radio" name="dall_ponc" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="dall_ponc" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="dall_ponc" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Valeur charges ponctuelles</label><input type="text" id="dall_ponc_val" placeholder="Sans objet" oninput="save()"></div>
@@ -652,9 +649,9 @@ if(window.parent && window.parent !== window){
     </div>
     <div class="stitle" style="margin-top:12px">Missions complémentaires</div>
     <div class="mg" id="miss-comp-grid">
-      <div class="mc" data-value="Sismique" onclick="togMC(this)"><input type="checkbox"> Sismique</div>
-      <div class="mc" data-value="Sécurité Incendie" onclick="togMC(this)"><input type="checkbox"> Sécurité Incendie</div>
-      <div class="mc" data-value="Éléments d'équipement" onclick="togMC(this)"><input type="checkbox"> Éléments d'équipement</div>
+      <label class="mc"><input type="checkbox" value="Sismique"> Sismique</label>
+      <label class="mc"><input type="checkbox" value="Sécurité Incendie"> Sécurité Incendie</label>
+      <label class="mc"><input type="checkbox" value="Éléments d'équipement"> Éléments d'équipement</label>
     </div>
     <div class="f" style="margin-top:10px"><label>Autres missions complémentaires (préciser)</label><input type="text" id="miss_autres" placeholder="Sans objet" oninput="save()"></div>
   </div>
@@ -670,12 +667,12 @@ if(window.parent && window.parent !== window){
     </div>
     <div class="stitle">Rapports complémentaires nécessaires</div>
     <div class="mg" id="rd-req-grid">
-      <div class="mc" data-value="rd1" onclick="togRD(this)"><input type="checkbox"> RD1 — Fondations spéciales</div>
-      <div class="mc" data-value="rd2" onclick="togRD(this)"><input type="checkbox"> RD2 — Procédés non traditionnels</div>
-      <div class="mc" data-value="rd3" onclick="togRD(this)"><input type="checkbox"> RD3 — Rapport final étanchéité</div>
-      <div class="mc" data-value="rd4" onclick="togRD(this)"><input type="checkbox"> RD4 — Travaux sur existants</div>
-      <div class="mc" data-value="rd5" onclick="togRD(this)"><input type="checkbox"> RD5 — Modification du risque</div>
-      <div class="mc" data-value="rd6" onclick="togRD(this)"><input type="checkbox"> RD6 — Fin de travaux</div>
+      <label class="mc"><input type="checkbox" value="rd1"> RD1 — Fondations spéciales</label>
+      <label class="mc"><input type="checkbox" value="rd2"> RD2 — Procédés non traditionnels</label>
+      <label class="mc"><input type="checkbox" value="rd3"> RD3 — Rapport final étanchéité</label>
+      <label class="mc"><input type="checkbox" value="rd4"> RD4 — Travaux sur existants</label>
+      <label class="mc"><input type="checkbox" value="rd5"> RD5 — Modification du risque</label>
+      <label class="mc"><input type="checkbox" value="rd6"> RD6 — Fin de travaux</label>
     </div>
     <div class="f" style="margin-top:10px"><label>Autres rapports complémentaires (préciser)</label><input type="text" id="rd_autres" placeholder="Sans objet" oninput="save()"></div>
   </div>
@@ -684,9 +681,9 @@ if(window.parent && window.parent !== window){
     <div class="ctitle">Avis préalable</div>
     <div class="avis-wrap" id="avis-wrap">
       <div class="rg">
-        <div class="ro" data-value="Favorable" onclick="setAvis(this)"><input type="radio" name="avis" value="Favorable"> Avis préalable favorable</div>
-        <div class="ro" data-value="Favorable avec réserves" onclick="setAvis(this)"><input type="radio" name="avis" value="Favorable avec réserves"> Favorable avec réserves</div>
-        <div class="ro" data-value="Défavorable" onclick="setAvis(this)"><input type="radio" name="avis" value="Défavorable"> Défavorable</div>
+        <label class="ro"><input type="radio" name="avis" value="Favorable"> Avis préalable favorable</label>
+        <label class="ro"><input type="radio" name="avis" value="Favorable avec réserves"> Favorable avec réserves</label>
+        <label class="ro"><input type="radio" name="avis" value="Défavorable"> Défavorable</label>
       </div>
     </div>
     <div class="f" style="margin-top:10px">
@@ -700,8 +697,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Intervention services spécialisés prévue ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('spec',this)"><input type="radio" name="spec" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('spec',this)"><input type="radio" name="spec" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="spec" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="spec" value="NON"> NON</label>
         </div>
       </div>
       <div class="f"><label>Si oui, sur quelle partie</label><input type="text" id="spec_prec" placeholder="Sans objet" oninput="save()"></div>
@@ -710,8 +707,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Documents et avis à adresser ultérieurement ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('docs_ult',this)"><input type="radio" name="docs_ult" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('docs_ult',this)"><input type="radio" name="docs_ult" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="docs_ult" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="docs_ult" value="NON"> NON</label>
         </div>
       </div>
     </div>
@@ -797,9 +794,9 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Avis d'étanchéité</label>
         <div class="rg">
-          <div class="ro" data-value="Favorable" onclick="setR('rd3_avis',this)"><input type="radio" name="rd3_avis" value="Favorable"> Favorable</div>
-          <div class="ro" data-value="Favorable avec réserves" onclick="setR('rd3_avis',this)"><input type="radio" name="rd3_avis" value="Favorable avec réserves"> Favorable avec réserves</div>
-          <div class="ro" data-value="Défavorable" onclick="setR('rd3_avis',this)"><input type="radio" name="rd3_avis" value="Défavorable"> Défavorable</div>
+          <label class="ro"><input type="radio" name="rd3_avis" value="Favorable"> Favorable</label>
+          <label class="ro"><input type="radio" name="rd3_avis" value="Favorable avec réserves"> Favorable avec réserves</label>
+          <label class="ro"><input type="radio" name="rd3_avis" value="Défavorable"> Défavorable</label>
         </div>
       </div>
     </div>
@@ -819,8 +816,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Risques liés aux existants identifiés ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('rd4_risques',this)"><input type="radio" name="rd4_risques" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('rd4_risques',this)"><input type="radio" name="rd4_risques" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="rd4_risques" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="rd4_risques" value="NON"> NON</label>
         </div>
       </div>
     </div>
@@ -845,9 +842,9 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Nouvel avis préalable</label>
         <div class="rg">
-          <div class="ro" data-value="Favorable" onclick="setR('rd5_avis',this)"><input type="radio" name="rd5_avis" value="Favorable"> Favorable</div>
-          <div class="ro" data-value="Favorable avec réserves" onclick="setR('rd5_avis',this)"><input type="radio" name="rd5_avis" value="Favorable avec réserves"> Favorable avec réserves</div>
-          <div class="ro" data-value="Défavorable" onclick="setR('rd5_avis',this)"><input type="radio" name="rd5_avis" value="Défavorable"> Défavorable</div>
+          <label class="ro"><input type="radio" name="rd5_avis" value="Favorable"> Favorable</label>
+          <label class="ro"><input type="radio" name="rd5_avis" value="Favorable avec réserves"> Favorable avec réserves</label>
+          <label class="ro"><input type="radio" name="rd5_avis" value="Défavorable"> Défavorable</label>
         </div>
       </div>
     </div>
@@ -867,8 +864,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Travaux achevés ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('rd6_acheve',this)"><input type="radio" name="rd6_acheve" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('rd6_acheve',this)"><input type="radio" name="rd6_acheve" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="rd6_acheve" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="rd6_acheve" value="NON"> NON</label>
         </div>
       </div>
     </div>
@@ -879,16 +876,16 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Réserves émises lors de la réception ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('rd6_res_emis',this)"><input type="radio" name="rd6_res_emis" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('rd6_res_emis',this)"><input type="radio" name="rd6_res_emis" value="NON"> NON</div>
+          <label class="ro"><input type="radio" name="rd6_res_emis" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="rd6_res_emis" value="NON"> NON</label>
         </div>
       </div>
       <div class="f">
         <label>Réserves levées ?</label>
         <div class="rg">
-          <div class="ro" data-value="OUI" onclick="setR('rd6_res_lev',this)"><input type="radio" name="rd6_res_lev" value="OUI"> OUI</div>
-          <div class="ro" data-value="NON" onclick="setR('rd6_res_lev',this)"><input type="radio" name="rd6_res_lev" value="NON"> NON</div>
-          <div class="ro" data-value="Partiellement" onclick="setR('rd6_res_lev',this)"><input type="radio" name="rd6_res_lev" value="Partiellement"> Partiellement</div>
+          <label class="ro"><input type="radio" name="rd6_res_lev" value="OUI"> OUI</label>
+          <label class="ro"><input type="radio" name="rd6_res_lev" value="NON"> NON</label>
+          <label class="ro"><input type="radio" name="rd6_res_lev" value="Partiellement"> Partiellement</label>
         </div>
       </div>
     </div>
@@ -900,9 +897,9 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Avis de fin de travaux</label>
         <div class="rg">
-          <div class="ro" data-value="Favorable" onclick="setR('rd6_avis',this)"><input type="radio" name="rd6_avis" value="Favorable"> Favorable</div>
-          <div class="ro" data-value="Favorable avec réserves" onclick="setR('rd6_avis',this)"><input type="radio" name="rd6_avis" value="Favorable avec réserves"> Favorable avec réserves</div>
-          <div class="ro" data-value="Défavorable" onclick="setR('rd6_avis',this)"><input type="radio" name="rd6_avis" value="Défavorable"> Défavorable</div>
+          <label class="ro"><input type="radio" name="rd6_avis" value="Favorable"> Favorable</label>
+          <label class="ro"><input type="radio" name="rd6_avis" value="Favorable avec réserves"> Favorable avec réserves</label>
+          <label class="ro"><input type="radio" name="rd6_avis" value="Défavorable"> Défavorable</label>
         </div>
       </div>
     </div>
@@ -958,11 +955,10 @@ if(window.parent && window.parent !== window){
 </div>
 
 <script>
-// ─── DATA ──────────────────────────────────────────────────────────────────────
-let D = {dom:{},mc:{},rd_req:{},pc:{}};
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+let D = {mc:{},rd_req:{},pc:{}};
 let codeRows = 0;
 
-// ─── PC DATA ─────────────────────────────────────────────────────────────────
 const PC_DEC = [
   {lot:'Terrassement',ouvrage:'Terrassements'},
   {lot:'Terrassement',ouvrage:'Remblais'},
@@ -1006,7 +1002,15 @@ const PC_BI = [
   {lot:'Équipements divers',ouvrage:'Équipements liés à une activité'},
 ];
 
-// ─── NAV ──────────────────────────────────────────────────────────────────────
+// ─── Noms des groupes radio (utilisés par collect/applyData) ────────────────
+const RADIO_GROUPS = [
+  'conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int',
+  'rgt','inv_comp','adequ_fond','rd1_rens','fac_remp','trad_h','inond_ss',
+  'dall_rep','dall_ponc','spec','docs_ult','avis',
+  'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'
+];
+
+// ─── NAV ─────────────────────────────────────────────────────────────────────
 function nav(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.s-item').forEach(n=>n.classList.remove('on'));
@@ -1014,59 +1018,6 @@ function nav(id){
   document.querySelectorAll('.s-item').forEach(n=>{
     if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"))n.classList.add('on');
   });
-}
-
-// ─── RADIO ────────────────────────────────────────────────────────────────────
-// el = wrapper .ro cliqué. On lit sa data-value.
-function setR(name, el){
-  const inputs = document.querySelectorAll(`input[name="${name}"]`);
-  inputs.forEach(r => r.parentElement.classList.remove('on'));
-  const input = el.querySelector('input[type=radio]');
-  if(input) input.checked = true;
-  el.classList.add('on');
-  D[name] = el.dataset.value;
-  save();
-}
-
-// ─── MISSION CHECKBOXES ───────────────────────────────────────────────────────
-// el = wrapper .mc cliqué. On toggle l'input manuellement.
-function togMC(el){
-  const input = el.querySelector('input[type=checkbox]');
-  if(!input) return;
-  input.checked = !input.checked;
-  el.classList.toggle('on', input.checked);
-  if(!D.mc) D.mc = {};
-  D.mc[el.dataset.value] = input.checked;
-  save();
-}
-
-// ─── RD REQUIRED ─────────────────────────────────────────────────────────────
-function togRD(el){
-  const input = el.querySelector('input[type=checkbox]');
-  if(!input) return;
-  input.checked = !input.checked;
-  el.classList.toggle('on', input.checked);
-  if(!D.rd_req) D.rd_req = {};
-  D.rd_req[el.dataset.value] = input.checked;
-  updBadges();
-  save();
-}
-function updBadges(){
-  ['rd1','rd2','rd3','rd4','rd5','rd6'].forEach(r=>{
-    const req = D.rd_req && D.rd_req[r];
-    const b = document.getElementById('b-'+r);
-    if(b){ b.textContent = req?'Requis':'N/A'; b.className = 's-badge' + (req?' req':''); }
-    const s = document.getElementById('s-'+r);
-    if(s){ s.textContent = req?'Requis':'Non requis'; s.className = 'badge' + (req?' req':''); }
-  });
-}
-
-// ─── AVIS ────────────────────────────────────────────────────────────────────
-function setAvis(el){
-  setR('avis', el);
-  const w = document.getElementById('avis-wrap');
-  const v = el.dataset.value;
-  w.className = 'avis-wrap ' + (v === 'Favorable' ? 'fav' : v.includes('réserves') ? 'res' : 'def');
 }
 
 // ─── CODES TABLE ─────────────────────────────────────────────────────────────
@@ -1081,39 +1032,29 @@ function addCode(vals){
   tbody.appendChild(tr);
 }
 
-// ─── PC TABLE ─────────────────────────────────────────────────────────────────
+// ─── PC TABLE ────────────────────────────────────────────────────────────────
 function buildPC(items, bodyId, prefix){
   const tbody=document.getElementById(bodyId);
+  tbody.innerHTML='';
   items.forEach((item,i)=>{
     const key=`${prefix}_${i}`;
-    const cur=D.pc && D.pc[key] || 'SO';
+    const cur=(D.pc && D.pc[key]) || 'SO';
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td class="lot">${item.lot}</td>
       <td>${item.ouvrage||'—'}</td>
       <td>
         <div class="pc-check">
-          <div class="pc-radio so ${cur==='SO'?'on':''}" data-value="SO" onclick="setPC('${key}',this)"><input type="radio" name="${key}" value="SO" ${cur==='SO'?'checked':''}> Sans objet</div>
-          <div class="pc-radio oui ${cur==='OUI'?'on':''}" data-value="OUI" onclick="setPC('${key}',this)"><input type="radio" name="${key}" value="OUI" ${cur==='OUI'?'checked':''}> Contrôlé OUI</div>
-          <div class="pc-radio non ${cur==='NON'?'on':''}" data-value="NON" onclick="setPC('${key}',this)"><input type="radio" name="${key}" value="NON" ${cur==='NON'?'checked':''}> NON</div>
+          <label class="pc-radio so"><input type="radio" name="${key}" value="SO" ${cur==='SO'?'checked':''}> Sans objet</label>
+          <label class="pc-radio oui"><input type="radio" name="${key}" value="OUI" ${cur==='OUI'?'checked':''}> Contrôlé OUI</label>
+          <label class="pc-radio non"><input type="radio" name="${key}" value="NON" ${cur==='NON'?'checked':''}> NON</label>
         </div>
       </td>`;
     tbody.appendChild(tr);
   });
 }
-function setPC(key, el){
-  document.querySelectorAll(`input[name="${key}"]`).forEach(r=>{
-    r.parentElement.classList.remove('on');
-  });
-  const input = el.querySelector('input[type=radio]');
-  if(input) input.checked = true;
-  el.classList.add('on');
-  if(!D.pc) D.pc = {};
-  D.pc[key] = el.dataset.value;
-  save();
-}
 
-// ─── SAVE / COLLECT ──────────────────────────────────────────────────────────
+// ─── SAVE / COLLECT ─────────────────────────────────────────────────────────
 const FIELDS=[
   'ref','dossier','date_rd0','version','ing_doss','ing_chan','op_titre',
   'moa','op_ref','op_desc','contractant','sig_moa','missions','date_debut',
@@ -1137,54 +1078,39 @@ const FIELDS=[
   'rd5_date','rd5_ing','rd5_desc','rd5_impact','rd5_conclu',
   'rd6_date','rd6_date_recep','rd6_date_service','rd6_res_detail','rd6_conclu','rd6_fait_a','rd6_fait_le',
 ];
+
 function collect(){
-  // Champs texte / date / textarea
+  // 1) Champs simples
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)D[id]=el.value;});
 
-  // Radios : on lit la data-value du parent .ro pour chaque input coché
-  ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
-   'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
-   'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'].forEach(name=>{
-    const checked=document.querySelector(`input[name="${name}"]:checked`);
-    if(checked && checked.parentElement && checked.parentElement.dataset.value){
-      D[name]=checked.parentElement.dataset.value;
-    }
+  // 2) Radios — lecture DOM
+  RADIO_GROUPS.forEach(name=>{
+    const c = document.querySelector(`input[name="${name}"]:checked`);
+    D[name] = c ? c.value : '';
   });
 
-  // Avis
-  const avisChecked=document.querySelector('input[name="avis"]:checked');
-  if(avisChecked && avisChecked.parentElement && avisChecked.parentElement.dataset.value){
-    D.avis=avisChecked.parentElement.dataset.value;
-  }
+  // 3) Checkboxes "mc" (domaines + missions complémentaires)
+  D.mc = {};
+  document.querySelectorAll('#dom-grid .mc input[type=checkbox], #miss-comp-grid .mc input[type=checkbox]')
+    .forEach(cb => { D.mc[cb.value] = cb.checked; });
 
-  // Checkboxes mc — lues depuis le DOM
-  if(!D.mc) D.mc={};
-  document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el=>{
-    const cb=el.querySelector('input[type=checkbox]');
-    if(cb && el.dataset.value) D.mc[el.dataset.value]=cb.checked;
-  });
+  // 4) Checkboxes "rd_req"
+  D.rd_req = {};
+  document.querySelectorAll('#rd-req-grid .mc input[type=checkbox]')
+    .forEach(cb => { D.rd_req[cb.value] = cb.checked; });
 
-  // RD requis
-  if(!D.rd_req) D.rd_req={};
-  document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
-    const cb=el.querySelector('input[type=checkbox]');
-    if(cb && el.dataset.value) D.rd_req[el.dataset.value]=cb.checked;
-  });
-
-  // PC
-  if(!D.pc) D.pc={};
+  // 5) PC
+  D.pc = {};
   ['dec','bi'].forEach(prefix=>{
     const items = prefix==='dec' ? PC_DEC : PC_BI;
     items.forEach((_,i)=>{
       const key=`${prefix}_${i}`;
-      const checked=document.querySelector(`input[name="${key}"]:checked`);
-      if(checked && checked.parentElement && checked.parentElement.dataset.value){
-        D.pc[key]=checked.parentElement.dataset.value;
-      }
+      const c = document.querySelector(`input[name="${key}"]:checked`);
+      D.pc[key] = c ? c.value : 'SO';
     });
   });
 
-  // Codes
+  // 6) Codes
   D.codes=[];
   for(let i=1;i<=codeRows;i++){
     const el=document.getElementById('code_name_'+i);
@@ -1196,12 +1122,20 @@ function collect(){
     D.codes.push(row);
   }
 }
+
+// Petit tracker pour ne pas spammer sync à chaque collect
+let _saveTimer = null;
 function save(){
-  collect();
-  updDash();
-  _dirty = true;
-  setSyncStatus('syncing', 'Modification…');
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(()=>{
+    collect();
+    updDash();
+    updBadges();
+    _dirty = true;
+    setSyncStatus('syncing', 'Modification…');
+  }, 30);
 }
+
 function updDash(){
   const safe = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
   safe('d-ref',  D.ref||'—');
@@ -1209,10 +1143,26 @@ function updDash(){
   safe('d-date', D.date_rd0?new Date(D.date_rd0).toLocaleDateString('fr-FR'):'—');
   safe('hdr-proj', D.op_titre||D.ref||'RAPSORD RD0');
   safe('hdr-ref',  D.ref||D.dossier||'—');
-  updBadges();
+}
+function updBadges(){
+  ['rd1','rd2','rd3','rd4','rd5','rd6'].forEach(r=>{
+    const req = D.rd_req && D.rd_req[r];
+    const b = document.getElementById('b-'+r);
+    if(b){ b.textContent = req?'Requis':'N/A'; b.className = 's-badge' + (req?' req':''); }
+    const s = document.getElementById('s-'+r);
+    if(s){ s.textContent = req?'Requis':'Non requis'; s.className = 'badge' + (req?' req':''); }
+  });
 }
 
-// ─── EXPORT / IMPORT JSON ─────────────────────────────────────────────────────
+// ─── DELEGATED LISTENER : tout radio/checkbox → save() ──────────────────────
+document.addEventListener('change', function(e){
+  if(e.target.matches('input[type=radio], input[type=checkbox]')){
+    // Cas spécial : avis-wrap → la classe fav/res/def est gérée par :has() en CSS
+    save();
+  }
+});
+
+// ─── EXPORT / IMPORT JSON ────────────────────────────────────────────────────
 function exportJSON(){
   collect();
   const name=(D.ref||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
@@ -1232,107 +1182,58 @@ function importJSON(){
   };inp.click();
 }
 function applyData(){
-  // Champs texte
+  // 1) Champs simples
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el&&D[id]!==undefined)el.value=D[id];});
 
-  // Radios — on matche sur la data-value du parent .ro
-  ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
-   'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
-   'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'].forEach(name=>{
-    const stored = D[name];
-    if(!stored) return;
+  // 2) Radios
+  RADIO_GROUPS.forEach(name=>{
+    const stored = D[name] || '';
     document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
-      r.checked = false;
-      if(r.parentElement) r.parentElement.classList.remove('on');
+      r.checked = (r.value === stored);
     });
-    for(const r of document.querySelectorAll(`input[name="${name}"]`)){
-      if(r.parentElement && r.parentElement.dataset.value === stored){
-        r.checked = true;
-        r.parentElement.classList.add('on');
-        break;
-      }
-    }
   });
 
-  // Avis
-  if(D.avis){
-    document.querySelectorAll('input[name="avis"]').forEach(r=>{
-      r.checked=false;
-      if(r.parentElement) r.parentElement.classList.remove('on');
-    });
-    for(const r of document.querySelectorAll('input[name="avis"]')){
-      if(r.parentElement && r.parentElement.dataset.value === D.avis){
-        r.checked=true;
-        r.parentElement.classList.add('on');
-        break;
-      }
-    }
-    const w=document.getElementById('avis-wrap');
-    if(w) w.className='avis-wrap '+(D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
-  }
+  // 3) Checkboxes mc
+  document.querySelectorAll('#dom-grid .mc input[type=checkbox], #miss-comp-grid .mc input[type=checkbox]')
+    .forEach(cb => { cb.checked = !!(D.mc && D.mc[cb.value]); });
 
-  // Checkboxes mc
-  document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el=>{
-    const cb=el.querySelector('input[type=checkbox]');
-    if(!cb) return;
-    const checked = !!(D.mc && D.mc[el.dataset.value]);
-    cb.checked = checked;
-    el.classList.toggle('on', checked);
-  });
+  // 4) Checkboxes rd_req
+  document.querySelectorAll('#rd-req-grid .mc input[type=checkbox]')
+    .forEach(cb => { cb.checked = !!(D.rd_req && D.rd_req[cb.value]); });
 
-  // RD requis
-  document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
-    const cb=el.querySelector('input[type=checkbox]');
-    if(!cb) return;
-    const checked = !!(D.rd_req && D.rd_req[el.dataset.value]);
-    cb.checked = checked;
-    el.classList.toggle('on', checked);
-  });
-  updBadges();
-
-  // Codes
+  // 5) Codes
   const cb=document.getElementById('codes-body');
   if(cb){cb.innerHTML='';codeRows=0;if(D.codes) D.codes.forEach(row=>addCode(row));}
 
-  // PC
-  rebuildPC();
-  updDash();
-  const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Dossier chargé ✓';
-}
-function rebuildPC(){
-  document.getElementById('pc-dec-body').innerHTML='';
-  document.getElementById('pc-bi-body').innerHTML='';
+  // 6) PC
   buildPC(PC_DEC,'pc-dec-body','dec');
   buildPC(PC_BI,'pc-bi-body','bi');
+
+  updDash();
+  updBadges();
+  const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Dossier chargé ✓';
 }
 
-// ─── NEW DOSSIER ──────────────────────────────────────────────────────────────
+// ─── NEW DOSSIER ─────────────────────────────────────────────────────────────
 function newDossier(){
   if(!confirm('Effacer toutes les données du dossier actuel ?'))return;
-  D={dom:{},mc:{},rd_req:{},pc:{}};
+  D={mc:{},rd_req:{},pc:{}};
   document.querySelectorAll('input[type=text],input[type=date],input[type=number],textarea').forEach(e=>e.value='');
   document.querySelectorAll('select').forEach(e=>e.selectedIndex=0);
   document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(e=>e.checked=false);
-  document.querySelectorAll('.ro,.mc').forEach(e=>e.classList.remove('on'));
   const cb=document.getElementById('codes-body');if(cb)cb.innerHTML='';codeRows=0;
-  rebuildPC();updDash();
+  buildPC(PC_DEC,'pc-dec-body','dec');
+  buildPC(PC_BI,'pc-bi-body','bi');
+  updDash();updBadges();
   const mo=document.getElementById('mover');if(mo)mo.classList.remove('on');
   nav('dash');
   const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Nouveau dossier créé';
 }
 
-// ─── GENERATE WORD ───────────────────────────────────────────────────────────
-function genDocx(){
-  collect();
-  const ref=D.ref||'dossier';
-  alert(`Pour générer le document Word "${ref}_RD0.docx" :\n\n1. Exportez le JSON (bouton Export JSON)\n2. Envoyez le JSON à votre administrateur pour génération automatique du .docx\n\nLa génération Word complète nécessite un serveur Python/Node (disponible sur demande).`);
-}
-
-// ─── MODAL ────────────────────────────────────────────────────────────────────
-function openMdlg(){document.getElementById('mover').classList.add('on');}
+// ─── MODAL ───────────────────────────────────────────────────────────────────
 function closeMdlg(e){if(!e||e.target.id==='mover')document.getElementById('mover').classList.remove('on');}
 
-// ─── CANEVAS (localStorage) ──────────────────────────────────────────────────
+// ─── CANEVAS ─────────────────────────────────────────────────────────────────
 function loadCanevasList(){
   try{ return JSON.parse(localStorage.getItem('rapsord_canevas')||'[]'); }
   catch(e){ return []; }
@@ -1355,7 +1256,7 @@ function saveToCanevas(){
   if(idx>=0) list[idx]=entry; else list.unshift(entry);
   saveCanevasList(list);
   renderCanevas();
-  document.getElementById('sbar-hint').textContent='Dossier sauvegardé dans les canevas ✓';
+  const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Dossier sauvegardé dans les canevas ✓';
 }
 function renderCanevas(filter){
   const list = loadCanevasList();
@@ -1389,7 +1290,7 @@ function loadFromCanevas(idx){
   D=JSON.parse(JSON.stringify(list[idx].data));
   applyData();
   nav('dash');
-  document.getElementById('sbar-hint').textContent='Dossier « '+list[idx].ref+' » chargé ✓';
+  const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Dossier « '+list[idx].ref+' » chargé ✓';
 }
 function delFromCanevas(idx){
   if(!confirm('Supprimer ce dossier des canevas ?'))return;
@@ -1420,7 +1321,6 @@ function setSyncStatus(state, label){
   dot.className = 'sync-dot' + (state ? ' '+state : '');
   lbl.textContent = label;
 }
-
 function pushToParent(){
   if(!window.parent || window.parent === window) return;
   const canId = _canId;
@@ -1430,40 +1330,33 @@ function pushToParent(){
     window.parent.postMessage({ type:'rapsord_save', canId, data:D }, '*');
     setSyncStatus('saved', 'Sauvegardé ✓');
     _dirty = false;
-  } catch(e) {
-    setSyncStatus('error', 'Erreur sync');
-  }
+  } catch(e) { setSyncStatus('error', 'Erreur sync'); }
 }
-
 setInterval(pushToParent, 4000);
 window.addEventListener('beforeunload', pushToParent);
 
-// ─── BANDEAU NOTIFICATION ────────────────────────────────────────────────────
+// ─── NOTIF ───────────────────────────────────────────────────────────────────
 function rdShowNotif(type, icon, txt, showAction) {
-  const b  = document.getElementById('rd-notif-banner');
+  const b = document.getElementById('rd-notif-banner');
   const ic = document.getElementById('rd-notif-icon');
   const tx = document.getElementById('rd-notif-txt');
   const ac = document.getElementById('rd-notif-action');
   if(!b) return;
-  b.style.display    = 'flex';
+  b.style.display='flex';
   b.style.background = type==='presence'?'#fff8e6':type==='sync'?'#eff6ff':'#f0fdf4';
   b.style.borderColor= type==='presence'?'#f59e0b':type==='sync'?'#3b82f6':'#22c55e';
   b.style.color      = type==='presence'?'#92400e':type==='sync'?'#1e40af':'#166534';
   if(ic) ic.textContent = icon;
   if(tx) tx.textContent = txt;
   if(ac) ac.style.display = showAction ? '' : 'none';
-  _updateAppHeight();
   if(type==='saved') setTimeout(rdCloseNotif, 3000);
 }
 function rdCloseNotif() {
   const b = document.getElementById('rd-notif-banner');
-  if(b) { b.style.display='none'; _updateAppHeight(); }
+  if(b) b.style.display='none';
 }
-function _updateAppHeight() {}
-window.addEventListener('resize', _updateAppHeight);
 
 let _pendingData = null;
-
 function rdApplyPending() {
   if(!_pendingData) return;
   D = _pendingData; _pendingData = null;
@@ -1475,14 +1368,10 @@ function rdApplyPending() {
   _dirty = false;
 }
 
-// ─── LISTENER messages du parent ─────────────────────────────────────────────
+// ─── MESSAGES DU PARENT ──────────────────────────────────────────────────────
 window.addEventListener('message', function(e) {
   if(!e.data) return;
-
-  if(e.data.type === 'rapso_request_save') {
-    collect(); pushToParent();
-  }
-
+  if(e.data.type === 'rapso_request_save') { collect(); pushToParent(); }
   if(e.data.type === 'rapsord_inject') {
     try {
       const d = e.data.data;
@@ -1495,7 +1384,6 @@ window.addEventListener('message', function(e) {
       }
     } catch(err) { console.warn('rapsord_inject error:', err); }
   }
-
   if(e.data.type === 'rapsord_presence') {
     const others = e.data.others || [];
     const pill  = document.getElementById('rd-presence-pill');
@@ -1510,12 +1398,10 @@ window.addEventListener('message', function(e) {
       if(pill) pill.classList.remove('show');
     }
   }
-
   if(e.data.type === 'rapsord_connected') {
     setSyncStatus('saved', 'Connecté ✓');
     if(e.data.canId !== undefined) _canId = e.data.canId;
   }
-
   if(e.data.type === 'rapsord_generate_docx') {
     collect();
     const ref = (D.ref||D.dossier||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
@@ -1530,8 +1416,9 @@ window.addEventListener('message', function(e) {
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 addCode(); addCode();
-rebuildPC();
-updDash();
+buildPC(PC_DEC,'pc-dec-body','dec');
+buildPC(PC_BI,'pc-bi-body','bi');
+updDash(); updBadges();
 renderCanevas();
 
 (function(){
@@ -1564,11 +1451,8 @@ renderCanevas();
 
   setTimeout(()=>{
     applyData();
-    if(_canId !== null){
-      setSyncStatus('saved', 'Connecté ✓');
-    } else {
-      setSyncStatus('', 'Mode local');
-    }
+    if(_canId !== null) setSyncStatus('saved', 'Connecté ✓');
+    else setSyncStatus('', 'Mode local');
     _dirty = false;
   }, 0);
 
