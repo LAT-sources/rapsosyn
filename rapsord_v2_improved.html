@@ -233,6 +233,13 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 .pc-radio input {
   pointer-events: none !important;
 }
+
+/* FIX : le clic traverse toujours l'input et arrive au parent */
+.mc input,
+.ro input,
+.pc-radio input {
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -1033,6 +1040,9 @@ if(window.parent && window.parent !== window){
 </div>
 
 <script>
+
+window.addEventListener('click', function(e){ window.event = e; }, true);
+  
 // ─── DATA ──────────────────────────────────────────────────────────────────────
 let D = {dom:{},mc:{},rd_req:{},pc:{}};
 let codeRows = 0;
@@ -1103,23 +1113,23 @@ function setR(key,val,el){
 // ─── MISSION CHECKBOXES ───────────────────────────────────────────────────────
 function togMC(el,key){
   const cb=el.querySelector('input');
-  // Si le clic vient de l'input lui-même, le navigateur a DÉJÀ basculé l'état → ne pas re-basculer
-  const fromInput = (typeof event !== 'undefined' && event && event.target === cb);
-  if (!fromInput) cb.checked = !cb.checked;
-  el.classList.toggle('on', cb.checked);
-  if(!D.mc)D.mc={}; D.mc[key]=cb.checked;
-  save();
+  const tgt = window.event && window.event.target;
+  if (tgt !== cb) cb.checked = !cb.checked;   // ne re-toggle pas si clic sur la case
+  el.classList.toggle('on',cb.checked);
+  if(!D.mc)D.mc={};D.mc[key]=cb.checked; save();
 }
 
 // ─── RD REQUIRED ─────────────────────────────────────────────────────────────
+
 function togRD(el,id){
   const cb=el.querySelector('input');
-  const fromInput = (typeof event !== 'undefined' && event && event.target === cb);
-  if (!fromInput) cb.checked = !cb.checked;
-  el.classList.toggle('on', cb.checked);
-  if(!D.rd_req)D.rd_req={}; D.rd_req[id]=cb.checked;
+  const tgt = window.event && window.event.target;
+  if (tgt !== cb) cb.checked = !cb.checked;
+  el.classList.toggle('on',cb.checked);
+  if(!D.rd_req)D.rd_req={};D.rd_req[id]=cb.checked;
   updBadges(); save();
 }
+  
 function updBadges(){
   ['rd1','rd2','rd3','rd4','rd5','rd6'].forEach(r=>{
     const req=D.rd_req&&D.rd_req[r];
