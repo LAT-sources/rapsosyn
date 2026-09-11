@@ -15,7 +15,6 @@
   --g800: #1e293b; --g900: #0f172a;
   --green: #22c55e; --red: #ef4444; --gold: #f59e0b;
   --font-inter: 'Inter', sans-serif;
-  /* RAPSORD vars */
   --bleu: #1B5EA0;
   --bleu-h: #0d3d6e;
   --bleu-cl: #dce8f5;
@@ -37,7 +36,6 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--fond);color:var(--txt);font-size:13px;min-height:100vh}
 
-/* ── HEADER ── */
 #hdr{background:var(--bleu-h);color:#fff;display:flex;align-items:center;height:48px;padding:0 20px;gap:14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
 .hdr-logo{font-size:20px;font-weight:700;letter-spacing:2px;color:#fff}
 .hdr-sep{width:1px;height:24px;background:rgba(255,255,255,.25)}
@@ -47,13 +45,10 @@ body{font-family:var(--font);background:var(--fond);color:var(--txt);font-size:1
 .hdr-btn:hover{background:rgba(255,255,255,.22)}
 .hdr-btn.accent{background:var(--bleu);border-color:var(--bleu)}
 
-/* ── LAYOUT ── */
 html,body{height:100%;display:flex;flex-direction:column;overflow:hidden;}
 #app{display:flex;flex:1;overflow:hidden;min-height:0;}
-/* En mode iframe, #app prend tout */
 body.iframe-mode #app{height:100vh;flex:none;}
 
-/* ── SIDEBAR ── */
 #side{width:210px;flex-shrink:0;background:var(--blanc);border-right:1px solid var(--bord);overflow-y:auto;display:flex;flex-direction:column}
 .s-section{padding:10px 14px 3px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--txt2);margin-top:6px}
 .s-item{padding:7px 14px 7px 18px;font-size:12.5px;color:var(--txt);cursor:pointer;border-left:3px solid transparent;display:flex;align-items:center;justify-content:space-between;transition:all .12s}
@@ -63,19 +58,15 @@ body.iframe-mode #app{height:100vh;flex:none;}
 .s-badge.ok{background:#d4edbc;color:var(--vert)}
 .s-badge.req{background:#ffd9d9;color:var(--rouge)}
 
-/* ── MAIN ── */
 #main{flex:1;overflow-y:auto;padding:20px 28px 60px;max-width:920px}
 .panel{display:none}.panel.on{display:block}
 
-/* ── TITLES ── */
 .ptitle{font-size:17px;font-weight:600;color:var(--bleu-h);border-bottom:2px solid var(--bleu);padding-bottom:7px;margin-bottom:18px}
 .stitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--bleu-h);background:var(--bleu-cl);padding:5px 10px;border-radius:4px;margin:18px 0 10px}
 
-/* ── CARD ── */
 .card{background:var(--blanc);border:1px solid var(--bord);border-radius:8px;padding:14px 18px;margin-bottom:14px}
 .ctitle{font-size:13px;font-weight:600;color:var(--bleu-h);margin-bottom:12px}
 
-/* ── FORM ── */
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
 .fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px 16px}
 .fg1{display:grid;grid-template-columns:1fr;gap:10px}
@@ -87,21 +78,18 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--bleu);bo
 textarea{resize:vertical;min-height:68px;line-height:1.5}
 .hint{font-size:10.5px;color:var(--txt2);font-style:italic;margin-top:2px}
 
-/* ── RADIO / CHECK ── */
 .rg{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
 .ro{display:flex;align-items:center;gap:5px;font-size:12.5px;cursor:pointer;padding:5px 10px;border:1px solid var(--bord);border-radius:5px;background:var(--blanc);transition:all .12s;user-select:none}
 .ro:hover{border-color:var(--bleu);background:var(--bleu-cl)}
 .ro.on{background:var(--bleu-cl);border-color:var(--bleu);color:var(--bleu-h)}
-.ro input{accent-color:var(--bleu);width:13px;height:13px}
+.ro input{accent-color:var(--bleu);width:13px;height:13px;pointer-events:none}
 
-/* ── CHECKBOX MISSION ── */
 .mg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .mc{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--bord);border-radius:5px;cursor:pointer;font-size:12.5px;transition:all .12s;user-select:none}
 .mc:hover{background:var(--bleu-cl);border-color:var(--bleu)}
 .mc.on{background:var(--bleu-cl);border-color:var(--bleu);color:var(--bleu-h)}
-.mc input{accent-color:var(--bleu);width:13px;height:13px}
+.mc input{accent-color:var(--bleu);width:13px;height:13px;pointer-events:none}
 
-/* ── TABLE ── */
 .tbl{width:100%;border-collapse:collapse}
 .tbl th{background:var(--bleu-cl);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--bleu-h);padding:7px 8px;text-align:left;border-bottom:1px solid var(--bord)}
 .tbl td{padding:4px 5px;border-bottom:1px solid var(--gris-cl)}
@@ -112,13 +100,11 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 .add-btn{margin-top:6px;background:none;border:1px dashed var(--bord2);border-radius:5px;padding:6px;font-size:12px;color:var(--txt2);cursor:pointer;width:100%;font-family:var(--font)}
 .add-btn:hover{background:var(--bleu-cl);border-color:var(--bleu);color:var(--bleu)}
 
-/* ── AVIS ── */
 .avis-wrap{border:2px solid var(--bord);border-radius:6px;padding:12px}
 .avis-wrap.fav{border-color:var(--vert);background:#f0fae5}
 .avis-wrap.res{border-color:var(--orange);background:#fff8e6}
 .avis-wrap.def{border-color:var(--rouge);background:#fef0f0}
 
-/* ── PC TABLE ── */
 .pc-tbl{width:100%;border-collapse:collapse;font-size:12px}
 .pc-tbl th{background:var(--bleu-h);color:#fff;padding:6px 8px;font-size:11px;text-align:left}
 .pc-tbl td{padding:5px 8px;border-bottom:1px solid var(--gris-cl);vertical-align:middle}
@@ -129,9 +115,8 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 .pc-radio.so.on{background:#e8e8e0;border-color:var(--gris)}
 .pc-radio.oui.on{background:#d4edbc;border-color:var(--vert);color:var(--vert)}
 .pc-radio.non.on{background:#ffd9d9;border-color:var(--rouge);color:var(--rouge)}
-.pc-radio input{accent-color:var(--bleu)}
+.pc-radio input{accent-color:var(--bleu);pointer-events:none}
 
-/* ── DASHBOARD ── */
 .dash-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .dcard{background:var(--blanc);border:1px solid var(--bord);border-radius:8px;padding:12px 16px}
 .dcard .num{font-size:22px;font-weight:600;color:var(--bleu-h)}
@@ -146,14 +131,12 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 .open-btn{background:none;border:1px solid var(--bord);padding:3px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:var(--font)}
 .open-btn:hover{background:var(--bleu-cl);border-color:var(--bleu)}
 
-/* ── SAVE BAR ── */
 #sbar{position:fixed;bottom:0;left:210px;right:0;background:var(--bleu-h);color:#fff;padding:8px 28px;display:flex;align-items:center;gap:12px;z-index:50}
 #sbar .hint2{font-size:11px;opacity:.7;flex:1}
 #sbar button{padding:6px 14px;border-radius:5px;font-size:12px;cursor:pointer;font-family:var(--font);border:1px solid rgba(255,255,255,.3);color:#fff;background:rgba(255,255,255,.1)}
 #sbar button:hover{background:rgba(255,255,255,.2)}
 #sbar button.prim{background:#2d8a40;border-color:#2d8a40}
 
-/* ── MODAL ── */
 #mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
 #mover.on{display:flex}
 #mdlg{background:var(--blanc);border-radius:10px;padding:22px;width:480px;max-height:82vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.2)}
@@ -168,67 +151,31 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 
 @media print{#side,#hdr,#rapsord-toolbar,#sbar-firebase{display:none!important}#main{max-width:100%;padding:8mm}}
 
-/* ── Bandeau présence / notification ── */
-#rd-notif-banner {
-  display: none; align-items: center; gap: 10px;
-  padding: 7px 16px; font-size: 0.78rem; font-weight: 500;
-  flex-shrink: 0; border-bottom: 1px solid transparent;
-}
-#rd-notif-banner.presence {
-  display: flex;
-  background: #fff8e6; border-color: #f59e0b; color: #92400e;
-}
-#rd-notif-banner.sync {
-  display: flex;
-  background: #eff6ff; border-color: #3b82f6; color: #1e40af;
-}
-#rd-notif-banner.saved {
-  display: flex;
-  background: #f0fdf4; border-color: #22c55e; color: #166534;
-}
+#rd-notif-banner {display: none; align-items: center; gap: 10px; padding: 7px 16px; font-size: 0.78rem; font-weight: 500; flex-shrink: 0; border-bottom: 1px solid transparent;}
+#rd-notif-banner.presence {display: flex; background: #fff8e6; border-color: #f59e0b; color: #92400e;}
+#rd-notif-banner.sync {display: flex; background: #eff6ff; border-color: #3b82f6; color: #1e40af;}
+#rd-notif-banner.saved {display: flex; background: #f0fdf4; border-color: #22c55e; color: #166534;}
 .rd-notif-icon { font-size: 1rem; flex-shrink: 0; }
 .rd-notif-txt  { flex: 1; }
-.rd-notif-action {
-  padding: 3px 10px; border: 1px solid currentColor; background: none;
-  color: inherit; font-family: inherit; font-size: 0.72rem;
-  font-weight: 600; cursor: pointer; border-radius: 4px; flex-shrink: 0;
-}
+.rd-notif-action {padding: 3px 10px; border: 1px solid currentColor; background: none; color: inherit; font-family: inherit; font-size: 0.72rem; font-weight: 600; cursor: pointer; border-radius: 4px; flex-shrink: 0;}
 .rd-notif-action:hover { opacity: .7; }
-.rd-notif-close {
-  background: none; border: none; cursor: pointer;
-  color: inherit; opacity: .6; font-size: 1rem; flex-shrink: 0; padding: 0 2px;
-}
+.rd-notif-close {background: none; border: none; cursor: pointer; color: inherit; opacity: .6; font-size: 1rem; flex-shrink: 0; padding: 0 2px;}
 .rd-notif-close:hover { opacity: 1; }
-/* Pill présence dans toolbar */
-.rd-presence-pill {
-  display: none; align-items: center; gap: 5px;
-  background: #fff8e6; border: 1px solid #f59e0b;
-  padding: 3px 10px; font-size: 0.7rem; font-weight: 600; color: #92400e;
-  flex-shrink: 0;
-}
+.rd-presence-pill {display: none; align-items: center; gap: 5px; background: #fff8e6; border: 1px solid #f59e0b; padding: 3px 10px; font-size: 0.7rem; font-weight: 600; color: #92400e; flex-shrink: 0;}
 .rd-presence-pill.show { display: flex; }
-.rd-presence-dot {
-  width: 7px; height: 7px; border-radius: 50%; background: #f59e0b;
-  animation: rdPulse .9s ease-in-out infinite;
-}
+.rd-presence-dot {width: 7px; height: 7px; border-radius: 50%; background: #f59e0b; animation: rdPulse .9s ease-in-out infinite;}
 @keyframes rdPulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-/* Bouton Synchroniser */
-.tb-btn.sync-pending {
-  background: #eff6ff; border-color: #3b82f6; color: #1e40af;
-  animation: rdPulse 1.2s ease-in-out infinite;
-}
+.tb-btn.sync-pending {background: #eff6ff; border-color: #3b82f6; color: #1e40af; animation: rdPulse 1.2s ease-in-out infinite;}
 .sync-label{font-size:0.72rem;color:var(--g500,#64748b);font-weight:500;white-space:nowrap;}
 </style>
 </head>
 <body>
 
-<!-- HEADER — même structure que canevas_temp.html -->
 <div class="syn-header" id="rapsord-header">
   <div class="rd-title" id="hdr-proj">RAPSORD RD0</div>
   <div class="rd-ref" id="hdr-ref">—</div>
 </div>
 
-<!-- TOOLBAR — même structure que canevas_temp.html -->
 <div class="toolbar" id="rapsord-toolbar">
   <button class="tb-btn" onclick="nav('dash')" title="Tableau de bord">🏠</button>
   <div class="tb-sep2"></div>
@@ -242,12 +189,10 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
   <div class="tb-sep2"></div>
   <button class="tb-btn" onclick="nav('pc')">PC</button>
   <div style="flex:1;"></div>
-  <!-- Pill présence -->
   <div class="rd-presence-pill" id="rd-presence-pill">
     <span class="rd-presence-dot"></span>
     <span id="rd-presence-names">1 autre éditeur</span>
   </div>
-  <!-- Bouton Synchroniser -->
   <button class="tb-btn" id="rd-sync-btn" onclick="rdApplyPending()" style="display:none;">🔄 Synchroniser</button>
   <div class="tb-sep2"></div>
   <span class="sync-dot" id="sync-dot"></span>
@@ -265,7 +210,6 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
   </div>
 </div>
 
-<!-- BANDEAU NOTIFICATION (présence + sync) -->
 <div id="rd-notif-banner">
   <span class="rd-notif-icon" id="rd-notif-icon">⚠️</span>
   <span class="rd-notif-txt"  id="rd-notif-txt">—</span>
@@ -274,7 +218,6 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 </div>
 
 <script>
-// Masquer header/toolbar si en mode iframe (index.html gère son propre ruban)
 if(window.parent && window.parent !== window){
   document.getElementById('rapsord-header').style.display='none';
   document.getElementById('rapsord-toolbar').style.display='none';
@@ -338,7 +281,7 @@ if(window.parent && window.parent !== window){
   </div>
 </div>
 
-<!-- ── IDENTIFICATION (PAGE DE GARDE) ── -->
+<!-- ── IDENTIFICATION ── -->
 <div class="panel" id="panel-id">
   <div class="ptitle">Page de garde — Identification du dossier</div>
   <div class="hint" style="margin-bottom:12px">SQ-04_MOD_LUX_01 V2 — Ces données apparaissent sur la page de garde du rapport Word.</div>
@@ -391,15 +334,15 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Type de mission</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="conc" value="Conception" onchange="setR('conc',this)"> Conception</label>
-          <label class="ro"><input type="radio" name="conc" value="Conception + exécution" onchange="setR('conc',this)"> Conception + exécution</label>
+          <div class="ro" data-value="Conception" onclick="setR('conc',this)"><input type="radio" name="conc" value="Conception"> Conception</div>
+          <div class="ro" data-value="Conception + exécution" onclick="setR('conc',this)"><input type="radio" name="conc" value="Conception + exécution"> Conception + exécution</div>
         </div>
       </div>
       <div class="f">
         <label>Contrôle exercé depuis le début de l'opération</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="ctrl_dep" value="OUI" onchange="setR('ctrl_dep',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="ctrl_dep" value="NON" onchange="setR('ctrl_dep',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('ctrl_dep',this)"><input type="radio" name="ctrl_dep" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('ctrl_dep',this)"><input type="radio" name="ctrl_dep" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Missions confiées (DB, F, Av…)</label><input type="text" id="missions" oninput="save()"></div>
@@ -407,12 +350,12 @@ if(window.parent && window.parent !== window){
     </div>
     <div class="ctitle" style="font-size:12px;margin-bottom:8px">Domaines contrôlés</div>
     <div class="mg" id="dom-grid">
-      <label class="mc"><input type="checkbox" value="Sols/Fondations/Structures" onchange="togMC(this)"> Sols/Fondations/Structures</label>
-      <label class="mc"><input type="checkbox" value="Enveloppe : clos/couvert" onchange="togMC(this)"> Enveloppe : clos/couvert</label>
-      <label class="mc"><input type="checkbox" value="Étanchéité toitures" onchange="togMC(this)"> Étanchéité toitures</label>
-      <label class="mc"><input type="checkbox" value="Stabilité" onchange="togMC(this)"> Stabilité</label>
-      <label class="mc"><input type="checkbox" value="Étanchéité façades" onchange="togMC(this)"> Étanchéité façades</label>
-      <label class="mc"><input type="checkbox" value="Étanchéité sous-sols" onchange="togMC(this)"> Étanchéité sous-sols</label>
+      <div class="mc" data-value="Sols/Fondations/Structures" onclick="togMC(this)"><input type="checkbox"> Sols/Fondations/Structures</div>
+      <div class="mc" data-value="Enveloppe : clos/couvert" onclick="togMC(this)"><input type="checkbox"> Enveloppe : clos/couvert</div>
+      <div class="mc" data-value="Étanchéité toitures" onclick="togMC(this)"><input type="checkbox"> Étanchéité toitures</div>
+      <div class="mc" data-value="Stabilité" onclick="togMC(this)"><input type="checkbox"> Stabilité</div>
+      <div class="mc" data-value="Étanchéité façades" onclick="togMC(this)"><input type="checkbox"> Étanchéité façades</div>
+      <div class="mc" data-value="Étanchéité sous-sols" onclick="togMC(this)"><input type="checkbox"> Étanchéité sous-sols</div>
     </div>
   </div>
 
@@ -450,16 +393,16 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Honoraires compris dans le montant des travaux ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="hon" value="OUI" onchange="setR('hon',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="hon" value="NON" onchange="setR('hon',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('hon',this)"><input type="radio" name="hon" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('hon',this)"><input type="radio" name="hon" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Montant total des travaux HTA</label><input type="text" id="montant" placeholder="… HTA" oninput="save()"></div>
       <div class="f">
         <label>Équipements spéciaux ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="eqp" value="OUI" onchange="setR('eqp',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="eqp" value="NON" onchange="setR('eqp',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('eqp',this)"><input type="radio" name="eqp" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('eqp',this)"><input type="radio" name="eqp" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Évaluation équipements spéciaux HTA</label><input type="text" id="montant_eqp" placeholder="… HTA" oninput="save()"></div>
@@ -475,7 +418,7 @@ if(window.parent && window.parent !== window){
   </div>
 </div>
 
-<!-- ── TITRE II — SITE ── -->
+<!-- ── TITRE II ── -->
 <div class="panel" id="panel-t2">
   <div class="ptitle">Titre II — Description du site</div>
   <div class="card">
@@ -484,8 +427,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Zone cyclonique</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="cycl" value="OUI" onchange="setR('cycl',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="cycl" value="NON" onchange="setR('cycl',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('cycl',this)"><input type="radio" name="cycl" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('cycl',this)"><input type="radio" name="cycl" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Vitesse de vent (vb,0 en m/s)</label><input type="text" id="vent" value="24" oninput="save()"></div>
@@ -493,8 +436,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Charge de neige éventuelle</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="neige" value="OUI" onchange="setR('neige',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="neige" value="NON" onchange="setR('neige',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('neige',this)"><input type="radio" name="neige" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('neige',this)"><input type="radio" name="neige" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Valeur neige (sk, kN/m²)</label><input type="text" id="neige_val" oninput="save()"></div>
@@ -511,8 +454,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Risque d'envahissement par hautes eaux (fleuve, nappe)</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="inond" value="OUI" onchange="setR('inond',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="inond" value="NON" onchange="setR('inond',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('inond',this)"><input type="radio" name="inond" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('inond',this)"><input type="radio" name="inond" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Précision sur le risque eau</label><input type="text" id="inond_prec" placeholder="Information non communiquée" oninput="save()"></div>
@@ -527,16 +470,16 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Zone sismique</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="sism" value="OUI" onchange="setR('sism',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="sism" value="NON" onchange="setR('sism',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('sism',this)"><input type="radio" name="sism" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('sism',this)"><input type="radio" name="sism" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Niveau de protection sismique</label><input type="text" id="sism_prec" placeholder="Sans objet" oninput="save()"></div>
       <div class="f">
         <label>Site en milieu agressif</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="agr" value="OUI" onchange="setR('agr',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="agr" value="NON" onchange="setR('agr',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('agr',this)"><input type="radio" name="agr" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('agr',this)"><input type="radio" name="agr" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Nature de l'agressivité / protection</label><input type="text" id="agr_prec" placeholder="Néant à ce stade" oninput="save()"></div>
@@ -550,45 +493,45 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Bureau d'études de sol intervenu ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="be_sol_int" value="OUI" onchange="setR('be_sol_int',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="be_sol_int" value="NON" onchange="setR('be_sol_int',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('be_sol_int',this)"><input type="radio" name="be_sol_int" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('be_sol_int',this)"><input type="radio" name="be_sol_int" value="NON"> NON</div>
         </div>
       </div>
       <div class="f">
         <label>Rapport géotechnique disponible ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="rgt" value="OUI" onchange="setR('rgt',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="rgt" value="NON" onchange="setR('rgt',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('rgt',this)"><input type="radio" name="rgt" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('rgt',this)"><input type="radio" name="rgt" value="NON"> NON</div>
         </div>
       </div>
       <div class="f s2"><label>Références rapport géotechnique</label><input type="text" id="rgt_ref" placeholder="Étude non communiquée" oninput="save()"></div>
       <div class="f">
         <label>Investigations complémentaires nécessaires ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="inv_comp" value="OUI" onchange="setR('inv_comp',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="inv_comp" value="NON" onchange="setR('inv_comp',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('inv_comp',this)"><input type="radio" name="inv_comp" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('inv_comp',this)"><input type="radio" name="inv_comp" value="NON"> NON</div>
         </div>
       </div>
       <div class="f s2"><label>Solution de fondation retenue</label><input type="text" id="fond_sol" placeholder="Selon les coupes, fondations superficielles de type radier." oninput="save()"></div>
       <div class="f">
         <label>Adéquation sol / système de fondation ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="adequ_fond" value="OUI" onchange="setR('adequ_fond',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="adequ_fond" value="NON" onchange="setR('adequ_fond',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('adequ_fond',this)"><input type="radio" name="adequ_fond" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('adequ_fond',this)"><input type="radio" name="adequ_fond" value="NON"> NON</div>
         </div>
       </div>
       <div class="f">
         <label>Rapport RD1 renseigné ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="rd1_rens" value="OUI" onchange="setR('rd1_rens',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="rd1_rens" value="NON" onchange="setR('rd1_rens',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('rd1_rens',this)"><input type="radio" name="rd1_rens" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('rd1_rens',this)"><input type="radio" name="rd1_rens" value="NON"> NON</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── TITRE III — STRUCTURES ── -->
+<!-- ── TITRE III ── -->
 <div class="panel" id="panel-t3">
   <div class="ptitle">Titre III — Description des ouvrages</div>
 
@@ -609,8 +552,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Possibilité de remplacement facile ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="fac_remp" value="OUI" onchange="setR('fac_remp',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="fac_remp" value="NON" onchange="setR('fac_remp',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('fac_remp',this)"><input type="radio" name="fac_remp" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('fac_remp',this)"><input type="radio" name="fac_remp" value="NON"> NON</div>
         </div>
       </div>
       <div class="f s2"><label>Précisions</label><textarea id="fac_prec" rows="2" oninput="save()"></textarea></div>
@@ -630,8 +573,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Procédé traditionnel ? (si NON → remplir RD2)</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="trad_h" value="OUI" onchange="setR('trad_h',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="trad_h" value="NON" onchange="setR('trad_h',this)"> NON → RD2</label>
+          <div class="ro" data-value="OUI" onclick="setR('trad_h',this)"><input type="radio" name="trad_h" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('trad_h',this)"><input type="radio" name="trad_h" value="NON"> NON → RD2</div>
         </div>
       </div>
     </div>
@@ -642,8 +585,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Inondabilité (eaux de ruissellement, nappe)</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="inond_ss" value="OUI" onchange="setR('inond_ss',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="inond_ss" value="NON" onchange="setR('inond_ss',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('inond_ss',this)"><input type="radio" name="inond_ss" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('inond_ss',this)"><input type="radio" name="inond_ss" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Précisions sur le risque</label><textarea id="inond_ss_prec" rows="2" oninput="save()"></textarea></div>
@@ -669,16 +612,16 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Charges réparties</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="dall_rep" value="OUI" onchange="setR('dall_rep',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="dall_rep" value="NON" onchange="setR('dall_rep',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('dall_rep',this)"><input type="radio" name="dall_rep" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('dall_rep',this)"><input type="radio" name="dall_rep" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Valeur charges réparties</label><input type="text" id="dall_rep_val" placeholder="Sans objet" oninput="save()"></div>
       <div class="f">
         <label>Charges ponctuelles / roulantes</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="dall_ponc" value="OUI" onchange="setR('dall_ponc',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="dall_ponc" value="NON" onchange="setR('dall_ponc',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('dall_ponc',this)"><input type="radio" name="dall_ponc" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('dall_ponc',this)"><input type="radio" name="dall_ponc" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Valeur charges ponctuelles</label><input type="text" id="dall_ponc_val" placeholder="Sans objet" oninput="save()"></div>
@@ -692,7 +635,7 @@ if(window.parent && window.parent !== window){
   </div>
 </div>
 
-<!-- ── TITRE IV — RISQUES ── -->
+<!-- ── TITRE IV ── -->
 <div class="panel" id="panel-t4">
   <div class="ptitle">Titre IV — Risques aggravants</div>
   <div class="card">
@@ -709,15 +652,15 @@ if(window.parent && window.parent !== window){
     </div>
     <div class="stitle" style="margin-top:12px">Missions complémentaires</div>
     <div class="mg" id="miss-comp-grid">
-      <label class="mc"><input type="checkbox" value="Sismique" onchange="togMC(this)"> Sismique</label>
-      <label class="mc"><input type="checkbox" value="Sécurité Incendie" onchange="togMC(this)"> Sécurité Incendie</label>
-      <label class="mc"><input type="checkbox" value="Éléments d'équipement" onchange="togMC(this)"> Éléments d'équipement</label>
+      <div class="mc" data-value="Sismique" onclick="togMC(this)"><input type="checkbox"> Sismique</div>
+      <div class="mc" data-value="Sécurité Incendie" onclick="togMC(this)"><input type="checkbox"> Sécurité Incendie</div>
+      <div class="mc" data-value="Éléments d'équipement" onclick="togMC(this)"><input type="checkbox"> Éléments d'équipement</div>
     </div>
     <div class="f" style="margin-top:10px"><label>Autres missions complémentaires (préciser)</label><input type="text" id="miss_autres" placeholder="Sans objet" oninput="save()"></div>
   </div>
 </div>
 
-<!-- ── TITRE V — CONCLUSIONS ── -->
+<!-- ── TITRE V ── -->
 <div class="panel" id="panel-t5">
   <div class="ptitle">Titre V — Conclusions</div>
   <div class="card">
@@ -727,12 +670,12 @@ if(window.parent && window.parent !== window){
     </div>
     <div class="stitle">Rapports complémentaires nécessaires</div>
     <div class="mg" id="rd-req-grid">
-      <label class="mc"><input type="checkbox" value="rd1" onchange="togRD(this)"> RD1 — Fondations spéciales</label>
-      <label class="mc"><input type="checkbox" value="rd2" onchange="togRD(this)"> RD2 — Procédés non traditionnels</label>
-      <label class="mc"><input type="checkbox" value="rd3" onchange="togRD(this)"> RD3 — Rapport final étanchéité</label>
-      <label class="mc"><input type="checkbox" value="rd4" onchange="togRD(this)"> RD4 — Travaux sur existants</label>
-      <label class="mc"><input type="checkbox" value="rd5" onchange="togRD(this)"> RD5 — Modification du risque</label>
-      <label class="mc"><input type="checkbox" value="rd6" onchange="togRD(this)"> RD6 — Fin de travaux</label>
+      <div class="mc" data-value="rd1" onclick="togRD(this)"><input type="checkbox"> RD1 — Fondations spéciales</div>
+      <div class="mc" data-value="rd2" onclick="togRD(this)"><input type="checkbox"> RD2 — Procédés non traditionnels</div>
+      <div class="mc" data-value="rd3" onclick="togRD(this)"><input type="checkbox"> RD3 — Rapport final étanchéité</div>
+      <div class="mc" data-value="rd4" onclick="togRD(this)"><input type="checkbox"> RD4 — Travaux sur existants</div>
+      <div class="mc" data-value="rd5" onclick="togRD(this)"><input type="checkbox"> RD5 — Modification du risque</div>
+      <div class="mc" data-value="rd6" onclick="togRD(this)"><input type="checkbox"> RD6 — Fin de travaux</div>
     </div>
     <div class="f" style="margin-top:10px"><label>Autres rapports complémentaires (préciser)</label><input type="text" id="rd_autres" placeholder="Sans objet" oninput="save()"></div>
   </div>
@@ -741,9 +684,9 @@ if(window.parent && window.parent !== window){
     <div class="ctitle">Avis préalable</div>
     <div class="avis-wrap" id="avis-wrap">
       <div class="rg">
-        <label class="ro"><input type="radio" name="avis" value="Favorable" onchange="setAvis(this)"> Avis préalable favorable</label>
-        <label class="ro"><input type="radio" name="avis" value="Favorable avec réserves" onchange="setAvis(this)"> Favorable avec réserves</label>
-        <label class="ro"><input type="radio" name="avis" value="Défavorable" onchange="setAvis(this)"> Défavorable</label>
+        <div class="ro" data-value="Favorable" onclick="setAvis(this)"><input type="radio" name="avis" value="Favorable"> Avis préalable favorable</div>
+        <div class="ro" data-value="Favorable avec réserves" onclick="setAvis(this)"><input type="radio" name="avis" value="Favorable avec réserves"> Favorable avec réserves</div>
+        <div class="ro" data-value="Défavorable" onclick="setAvis(this)"><input type="radio" name="avis" value="Défavorable"> Défavorable</div>
       </div>
     </div>
     <div class="f" style="margin-top:10px">
@@ -757,8 +700,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Intervention services spécialisés prévue ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="spec" value="OUI" onchange="setR('spec',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="spec" value="NON" onchange="setR('spec',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('spec',this)"><input type="radio" name="spec" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('spec',this)"><input type="radio" name="spec" value="NON"> NON</div>
         </div>
       </div>
       <div class="f"><label>Si oui, sur quelle partie</label><input type="text" id="spec_prec" placeholder="Sans objet" oninput="save()"></div>
@@ -767,8 +710,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Documents et avis à adresser ultérieurement ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="docs_ult" value="OUI" onchange="setR('docs_ult',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="docs_ult" value="NON" onchange="setR('docs_ult',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('docs_ult',this)"><input type="radio" name="docs_ult" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('docs_ult',this)"><input type="radio" name="docs_ult" value="NON"> NON</div>
         </div>
       </div>
     </div>
@@ -819,7 +762,7 @@ if(window.parent && window.parent !== window){
   </div>
 </div>
 
-<!-- ── PC — POSTES CONTRÔLÉS ── -->
+<!-- ── PC ── -->
 <div class="panel" id="panel-pc">
   <div class="ptitle">Annexe PC — Liste des postes contrôlés</div>
   <div class="hint" style="margin-bottom:14px">SQ-04_MOD_LUX_10-V2 — Nota : La liste ci-dessous est extraite des corps d'état contrôlés selon le code civil Luxembourgeois.</div>
@@ -840,7 +783,6 @@ if(window.parent && window.parent !== window){
   </div>
 </div>
 
-
 <!-- ── RD3 ── -->
 <div class="panel" id="panel-rd3">
   <div class="ptitle">RD3 — Rapport final étanchéité</div>
@@ -855,9 +797,9 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Avis d'étanchéité</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="rd3_avis" value="Favorable" onchange="setR('rd3_avis',this)"> Favorable</label>
-          <label class="ro"><input type="radio" name="rd3_avis" value="Favorable avec réserves" onchange="setR('rd3_avis',this)"> Favorable avec réserves</label>
-          <label class="ro"><input type="radio" name="rd3_avis" value="Défavorable" onchange="setR('rd3_avis',this)"> Défavorable</label>
+          <div class="ro" data-value="Favorable" onclick="setR('rd3_avis',this)"><input type="radio" name="rd3_avis" value="Favorable"> Favorable</div>
+          <div class="ro" data-value="Favorable avec réserves" onclick="setR('rd3_avis',this)"><input type="radio" name="rd3_avis" value="Favorable avec réserves"> Favorable avec réserves</div>
+          <div class="ro" data-value="Défavorable" onclick="setR('rd3_avis',this)"><input type="radio" name="rd3_avis" value="Défavorable"> Défavorable</div>
         </div>
       </div>
     </div>
@@ -877,8 +819,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Risques liés aux existants identifiés ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="rd4_risques" value="OUI" onchange="setR('rd4_risques',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="rd4_risques" value="NON" onchange="setR('rd4_risques',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('rd4_risques',this)"><input type="radio" name="rd4_risques" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('rd4_risques',this)"><input type="radio" name="rd4_risques" value="NON"> NON</div>
         </div>
       </div>
     </div>
@@ -903,9 +845,9 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Nouvel avis préalable</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="rd5_avis" value="Favorable" onchange="setR('rd5_avis',this)"> Favorable</label>
-          <label class="ro"><input type="radio" name="rd5_avis" value="Favorable avec réserves" onchange="setR('rd5_avis',this)"> Favorable avec réserves</label>
-          <label class="ro"><input type="radio" name="rd5_avis" value="Défavorable" onchange="setR('rd5_avis',this)"> Défavorable</label>
+          <div class="ro" data-value="Favorable" onclick="setR('rd5_avis',this)"><input type="radio" name="rd5_avis" value="Favorable"> Favorable</div>
+          <div class="ro" data-value="Favorable avec réserves" onclick="setR('rd5_avis',this)"><input type="radio" name="rd5_avis" value="Favorable avec réserves"> Favorable avec réserves</div>
+          <div class="ro" data-value="Défavorable" onclick="setR('rd5_avis',this)"><input type="radio" name="rd5_avis" value="Défavorable"> Défavorable</div>
         </div>
       </div>
     </div>
@@ -913,7 +855,7 @@ if(window.parent && window.parent !== window){
   </div>
 </div>
 
-<!-- ── RD6 — FIN DE TRAVAUX ── -->
+<!-- ── RD6 ── -->
 <div class="panel" id="panel-rd6">
   <div class="ptitle">RD6 — Fin de travaux (Quitus)</div>
   <div class="card">
@@ -925,8 +867,8 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Travaux achevés ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="rd6_acheve" value="OUI" onchange="setR('rd6_acheve',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="rd6_acheve" value="NON" onchange="setR('rd6_acheve',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('rd6_acheve',this)"><input type="radio" name="rd6_acheve" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('rd6_acheve',this)"><input type="radio" name="rd6_acheve" value="NON"> NON</div>
         </div>
       </div>
     </div>
@@ -937,16 +879,16 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Réserves émises lors de la réception ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="rd6_res_emis" value="OUI" onchange="setR('rd6_res_emis',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="rd6_res_emis" value="NON" onchange="setR('rd6_res_emis',this)"> NON</label>
+          <div class="ro" data-value="OUI" onclick="setR('rd6_res_emis',this)"><input type="radio" name="rd6_res_emis" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('rd6_res_emis',this)"><input type="radio" name="rd6_res_emis" value="NON"> NON</div>
         </div>
       </div>
       <div class="f">
         <label>Réserves levées ?</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="rd6_res_lev" value="OUI" onchange="setR('rd6_res_lev',this)"> OUI</label>
-          <label class="ro"><input type="radio" name="rd6_res_lev" value="NON" onchange="setR('rd6_res_lev',this)"> NON</label>
-          <label class="ro"><input type="radio" name="rd6_res_lev" value="Partiellement" onchange="setR('rd6_res_lev',this)"> Partiellement</label>
+          <div class="ro" data-value="OUI" onclick="setR('rd6_res_lev',this)"><input type="radio" name="rd6_res_lev" value="OUI"> OUI</div>
+          <div class="ro" data-value="NON" onclick="setR('rd6_res_lev',this)"><input type="radio" name="rd6_res_lev" value="NON"> NON</div>
+          <div class="ro" data-value="Partiellement" onclick="setR('rd6_res_lev',this)"><input type="radio" name="rd6_res_lev" value="Partiellement"> Partiellement</div>
         </div>
       </div>
     </div>
@@ -958,9 +900,9 @@ if(window.parent && window.parent !== window){
       <div class="f">
         <label>Avis de fin de travaux</label>
         <div class="rg">
-          <label class="ro"><input type="radio" name="rd6_avis" value="Favorable" onchange="setR('rd6_avis',this)"> Favorable</label>
-          <label class="ro"><input type="radio" name="rd6_avis" value="Favorable avec réserves" onchange="setR('rd6_avis',this)"> Favorable avec réserves</label>
-          <label class="ro"><input type="radio" name="rd6_avis" value="Défavorable" onchange="setR('rd6_avis',this)"> Défavorable</label>
+          <div class="ro" data-value="Favorable" onclick="setR('rd6_avis',this)"><input type="radio" name="rd6_avis" value="Favorable"> Favorable</div>
+          <div class="ro" data-value="Favorable avec réserves" onclick="setR('rd6_avis',this)"><input type="radio" name="rd6_avis" value="Favorable avec réserves"> Favorable avec réserves</div>
+          <div class="ro" data-value="Défavorable" onclick="setR('rd6_avis',this)"><input type="radio" name="rd6_avis" value="Défavorable"> Défavorable</div>
         </div>
       </div>
     </div>
@@ -1001,8 +943,6 @@ if(window.parent && window.parent !== window){
 
 </div><!-- #main -->
 </div><!-- #app -->
-
-<!-- sbar supprimé — toolbar en haut -->
 
 <div id="mover" onclick="closeMdlg(event)">
   <div id="mdlg">
@@ -1077,51 +1017,56 @@ function nav(id){
 }
 
 // ─── RADIO ────────────────────────────────────────────────────────────────────
-function setR(key, input){
-  document.querySelectorAll(`input[name="${key}"]`)
-    .forEach(r => r.parentElement.classList.remove('on'));
-  input.parentElement.classList.add('on');
-  D[key] = input.value;
+// el = wrapper .ro cliqué. On lit sa data-value.
+function setR(name, el){
+  const inputs = document.querySelectorAll(`input[name="${name}"]`);
+  inputs.forEach(r => r.parentElement.classList.remove('on'));
+  const input = el.querySelector('input[type=radio]');
+  if(input) input.checked = true;
+  el.classList.add('on');
+  D[name] = el.dataset.value;
   save();
 }
 
 // ─── MISSION CHECKBOXES ───────────────────────────────────────────────────────
-function togMC(input){
-  input.closest('.mc').classList.toggle('on', input.checked);
+// el = wrapper .mc cliqué. On toggle l'input manuellement.
+function togMC(el){
+  const input = el.querySelector('input[type=checkbox]');
+  if(!input) return;
+  input.checked = !input.checked;
+  el.classList.toggle('on', input.checked);
   if(!D.mc) D.mc = {};
-  D.mc[input.value] = input.checked;
+  D.mc[el.dataset.value] = input.checked;
   save();
 }
 
 // ─── RD REQUIRED ─────────────────────────────────────────────────────────────
-function togRD(input){
-  input.closest('.mc').classList.toggle('on', input.checked);
+function togRD(el){
+  const input = el.querySelector('input[type=checkbox]');
+  if(!input) return;
+  input.checked = !input.checked;
+  el.classList.toggle('on', input.checked);
   if(!D.rd_req) D.rd_req = {};
-  D.rd_req[input.value] = input.checked;
+  D.rd_req[el.dataset.value] = input.checked;
   updBadges();
   save();
 }
 function updBadges(){
   ['rd1','rd2','rd3','rd4','rd5','rd6'].forEach(r=>{
-    const req=D.rd_req&&D.rd_req[r];
-    const b=document.getElementById('b-'+r);
-    if(b){b.textContent=req?'Requis':'N/A';b.className='s-badge'+(req?' req':'');}
-    const s=document.getElementById('s-'+r);
-    if(s){s.textContent=req?'Requis':'Non requis';s.className='badge'+(req?' req':'');}
+    const req = D.rd_req && D.rd_req[r];
+    const b = document.getElementById('b-'+r);
+    if(b){ b.textContent = req?'Requis':'N/A'; b.className = 's-badge' + (req?' req':''); }
+    const s = document.getElementById('s-'+r);
+    if(s){ s.textContent = req?'Requis':'Non requis'; s.className = 'badge' + (req?' req':''); }
   });
 }
 
 // ─── AVIS ────────────────────────────────────────────────────────────────────
-function setAvis(input){
-  document.querySelectorAll('input[name="avis"]')
-    .forEach(r => r.parentElement.classList.remove('on'));
-  input.parentElement.classList.add('on');
-  D.avis = input.value;
+function setAvis(el){
+  setR('avis', el);
   const w = document.getElementById('avis-wrap');
-  w.className = 'avis-wrap ' +
-    (input.value === 'Favorable' ? 'fav'
-     : input.value.includes('réserves') ? 'res' : 'def');
-  save();
+  const v = el.dataset.value;
+  w.className = 'avis-wrap ' + (v === 'Favorable' ? 'fav' : v.includes('réserves') ? 'res' : 'def');
 }
 
 // ─── CODES TABLE ─────────────────────────────────────────────────────────────
@@ -1141,28 +1086,30 @@ function buildPC(items, bodyId, prefix){
   const tbody=document.getElementById(bodyId);
   items.forEach((item,i)=>{
     const key=`${prefix}_${i}`;
-    const cur=D.pc&&D.pc[key]||'SO';
+    const cur=D.pc && D.pc[key] || 'SO';
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td class="lot">${item.lot}</td>
       <td>${item.ouvrage||'—'}</td>
       <td>
         <div class="pc-check">
-          <label class="pc-radio so ${cur==='SO'?'on':''}"><input type="radio" name="${key}" value="SO" ${cur==='SO'?'checked':''} onchange="setPC('${key}',this)"> Sans objet</label>
-          <label class="pc-radio oui ${cur==='OUI'?'on':''}"><input type="radio" name="${key}" value="OUI" ${cur==='OUI'?'checked':''} onchange="setPC('${key}',this)"> Contrôlé OUI</label>
-          <label class="pc-radio non ${cur==='NON'?'on':''}"><input type="radio" name="${key}" value="NON" ${cur==='NON'?'checked':''} onchange="setPC('${key}',this)"> NON</label>
+          <div class="pc-radio so ${cur==='SO'?'on':''}" data-value="SO" onclick="setPC('${key}',this)"><input type="radio" name="${key}" value="SO" ${cur==='SO'?'checked':''}> Sans objet</div>
+          <div class="pc-radio oui ${cur==='OUI'?'on':''}" data-value="OUI" onclick="setPC('${key}',this)"><input type="radio" name="${key}" value="OUI" ${cur==='OUI'?'checked':''}> Contrôlé OUI</div>
+          <div class="pc-radio non ${cur==='NON'?'on':''}" data-value="NON" onclick="setPC('${key}',this)"><input type="radio" name="${key}" value="NON" ${cur==='NON'?'checked':''}> NON</div>
         </div>
       </td>`;
     tbody.appendChild(tr);
   });
 }
-function setPC(key, input){
+function setPC(key, el){
   document.querySelectorAll(`input[name="${key}"]`).forEach(r=>{
-    r.parentElement.className = 'pc-radio ' + r.parentElement.classList[1];
+    r.parentElement.classList.remove('on');
   });
-  input.parentElement.classList.add('on');
+  const input = el.querySelector('input[type=radio]');
+  if(input) input.checked = true;
+  el.classList.add('on');
   if(!D.pc) D.pc = {};
-  D.pc[key] = input.value;
+  D.pc[key] = el.dataset.value;
   save();
 }
 
@@ -1194,28 +1141,34 @@ function collect(){
   // Champs texte / date / textarea
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)D[id]=el.value;});
 
-  // Radios → clé = name, valeur = input.value (issu de l'attribut value)
+  // Radios : on lit la data-value du parent .ro pour chaque input coché
   ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
    'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
    'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'].forEach(name=>{
     const checked=document.querySelector(`input[name="${name}"]:checked`);
-    if(checked) D[name]=checked.value;
+    if(checked && checked.parentElement && checked.parentElement.dataset.value){
+      D[name]=checked.parentElement.dataset.value;
+    }
   });
 
   // Avis
   const avisChecked=document.querySelector('input[name="avis"]:checked');
-  if(avisChecked) D.avis=avisChecked.value;
+  if(avisChecked && avisChecked.parentElement && avisChecked.parentElement.dataset.value){
+    D.avis=avisChecked.parentElement.dataset.value;
+  }
 
-  // Checkboxes missions (mc) — utiliser input.value
+  // Checkboxes mc — lues depuis le DOM
   if(!D.mc) D.mc={};
-  document.querySelectorAll('#dom-grid .mc input[type=checkbox], #miss-comp-grid .mc input[type=checkbox]').forEach(cb=>{
-    if(cb.value) D.mc[cb.value]=cb.checked;
+  document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el=>{
+    const cb=el.querySelector('input[type=checkbox]');
+    if(cb && el.dataset.value) D.mc[el.dataset.value]=cb.checked;
   });
 
-  // RD requis (rd_req)
+  // RD requis
   if(!D.rd_req) D.rd_req={};
-  document.querySelectorAll('#rd-req-grid .mc input[type=checkbox]').forEach(cb=>{
-    if(cb.value) D.rd_req[cb.value]=cb.checked;
+  document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
+    const cb=el.querySelector('input[type=checkbox]');
+    if(cb && el.dataset.value) D.rd_req[el.dataset.value]=cb.checked;
   });
 
   // PC
@@ -1225,7 +1178,9 @@ function collect(){
     items.forEach((_,i)=>{
       const key=`${prefix}_${i}`;
       const checked=document.querySelector(`input[name="${key}"]:checked`);
-      if(checked) D.pc[key]=checked.value;
+      if(checked && checked.parentElement && checked.parentElement.dataset.value){
+        D.pc[key]=checked.parentElement.dataset.value;
+      }
     });
   });
 
@@ -1280,49 +1235,60 @@ function applyData(){
   // Champs texte
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el&&D[id]!==undefined)el.value=D[id];});
 
-  // Radios — cocher + ajouter classe .on
+  // Radios — on matche sur la data-value du parent .ro
   ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
    'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
    'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'].forEach(name=>{
     const stored = D[name];
     if(!stored) return;
     document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
-      r.parentElement.classList.remove('on');
       r.checked = false;
+      if(r.parentElement) r.parentElement.classList.remove('on');
     });
-    const target = document.querySelector(`input[name="${name}"][value="${CSS.escape(stored)}"]`);
-    if(target){ target.checked=true; target.parentElement.classList.add('on'); }
+    for(const r of document.querySelectorAll(`input[name="${name}"]`)){
+      if(r.parentElement && r.parentElement.dataset.value === stored){
+        r.checked = true;
+        r.parentElement.classList.add('on');
+        break;
+      }
+    }
   });
 
   // Avis
   if(D.avis){
     document.querySelectorAll('input[name="avis"]').forEach(r=>{
-      r.parentElement.classList.remove('on'); r.checked=false;
+      r.checked=false;
+      if(r.parentElement) r.parentElement.classList.remove('on');
     });
-    const target=document.querySelector(`input[name="avis"][value="${CSS.escape(D.avis)}"]`);
-    if(target){ target.checked=true; target.parentElement.classList.add('on'); }
+    for(const r of document.querySelectorAll('input[name="avis"]')){
+      if(r.parentElement && r.parentElement.dataset.value === D.avis){
+        r.checked=true;
+        r.parentElement.classList.add('on');
+        break;
+      }
+    }
     const w=document.getElementById('avis-wrap');
     if(w) w.className='avis-wrap '+(D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
   }
 
   // Checkboxes mc
-  if(D.mc){
-    document.querySelectorAll('#dom-grid .mc input[type=checkbox], #miss-comp-grid .mc input[type=checkbox]').forEach(cb=>{
-      const checked = !!D.mc[cb.value];
-      cb.checked = checked;
-      cb.closest('.mc').classList.toggle('on', checked);
-    });
-  }
+  document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el=>{
+    const cb=el.querySelector('input[type=checkbox]');
+    if(!cb) return;
+    const checked = !!(D.mc && D.mc[el.dataset.value]);
+    cb.checked = checked;
+    el.classList.toggle('on', checked);
+  });
 
   // RD requis
-  if(D.rd_req){
-    document.querySelectorAll('#rd-req-grid .mc input[type=checkbox]').forEach(cb=>{
-      const checked = !!D.rd_req[cb.value];
-      cb.checked = checked;
-      cb.closest('.mc').classList.toggle('on', checked);
-    });
-    updBadges();
-  }
+  document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
+    const cb=el.querySelector('input[type=checkbox]');
+    if(!cb) return;
+    const checked = !!(D.rd_req && D.rd_req[el.dataset.value]);
+    cb.checked = checked;
+    el.classList.toggle('on', checked);
+  });
+  updBadges();
 
   // Codes
   const cb=document.getElementById('codes-body');
@@ -1355,7 +1321,7 @@ function newDossier(){
   const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Nouveau dossier créé';
 }
 
-// ─── GENERATE WORD (instruction only) ────────────────────────────────────────
+// ─── GENERATE WORD ───────────────────────────────────────────────────────────
 function genDocx(){
   collect();
   const ref=D.ref||'dossier';
@@ -1378,7 +1344,6 @@ function saveToCanevas(){
   collect();
   if(!D.ref && !D.op_titre){ alert('Saisissez au moins une référence ou un titre avant de sauvegarder.'); return; }
   const list = loadCanevasList();
-  const key = D.ref || D.op_titre;
   const idx = list.findIndex(c=>c.ref===D.ref && D.ref);
   const entry = {
     ref: D.ref||'—',
@@ -1437,14 +1402,14 @@ function filterCanevas(){
   renderCanevas(document.getElementById('cav-search').value);
 }
 
-// ─── MENU DROPDOWN (clone canevas_temp) ──────────────────────────────────────
+// ─── MENU DROPDOWN ───────────────────────────────────────────────────────────
 function toggleRdMenu(){document.getElementById('rdActionMenu').classList.toggle('show');}
 function closeRdMenu(){const m=document.getElementById('rdActionMenu');if(m)m.classList.remove('show');}
 document.addEventListener('click',function(e){
   if(!e.target.closest('#rdMenuBtn')&&!e.target.closest('#rdActionMenu'))closeRdMenu();
 });
 
-// ─── FIREBASE — même pattern exact que canevas_temp.html ─────────────────────
+// ─── FIREBASE ────────────────────────────────────────────────────────────────
 let _dirty = false;
 let _canId = null;
 
@@ -1457,7 +1422,6 @@ function setSyncStatus(state, label){
 }
 
 function pushToParent(){
-  // Exactement comme canevas_temp : window.CANEVAS_ID -> ici window.RAPSORD_CAN_ID
   if(!window.parent || window.parent === window) return;
   const canId = _canId;
   if(canId === undefined || canId === null) return;
@@ -1471,7 +1435,6 @@ function pushToParent(){
   }
 }
 
-// Auto-save toutes les 4s — identique canevas_temp
 setInterval(pushToParent, 4000);
 window.addEventListener('beforeunload', pushToParent);
 
@@ -1496,12 +1459,9 @@ function rdCloseNotif() {
   const b = document.getElementById('rd-notif-banner');
   if(b) { b.style.display='none'; _updateAppHeight(); }
 }
-function _updateAppHeight() {
-  // Rien — la hauteur est gérée par CSS flex
-}
+function _updateAppHeight() {}
 window.addEventListener('resize', _updateAppHeight);
 
-// Données Firebase en attente d'application
 let _pendingData = null;
 
 function rdApplyPending() {
@@ -1515,16 +1475,14 @@ function rdApplyPending() {
   _dirty = false;
 }
 
-// ─── LISTENER messages du parent (index.html) ─────────────────────────────────
+// ─── LISTENER messages du parent ─────────────────────────────────────────────
 window.addEventListener('message', function(e) {
   if(!e.data) return;
 
-  // Sauvegarde forcée (fermeture, bouton parent)
   if(e.data.type === 'rapso_request_save') {
     collect(); pushToParent();
   }
 
-  // Nouvelles données Firebase dispo (sync temps réel)
   if(e.data.type === 'rapsord_inject') {
     try {
       const d = e.data.data;
@@ -1538,7 +1496,6 @@ window.addEventListener('message', function(e) {
     } catch(err) { console.warn('rapsord_inject error:', err); }
   }
 
-  // Présence — autre(s) utilisateur(s) en train d'éditer
   if(e.data.type === 'rapsord_presence') {
     const others = e.data.others || [];
     const pill  = document.getElementById('rd-presence-pill');
@@ -1554,13 +1511,11 @@ window.addEventListener('message', function(e) {
     }
   }
 
-  // Confirmation connexion Firebase
   if(e.data.type === 'rapsord_connected') {
     setSyncStatus('saved', 'Connecté ✓');
     if(e.data.canId !== undefined) _canId = e.data.canId;
   }
 
-  // Export JSON → génération Word
   if(e.data.type === 'rapsord_generate_docx') {
     collect();
     const ref = (D.ref||D.dossier||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
@@ -1573,25 +1528,20 @@ window.addEventListener('message', function(e) {
   }
 });
 
-// ─── INIT — même pattern que canevas_temp ────────────────────────────────────
+// ─── INIT ────────────────────────────────────────────────────────────────────
 addCode(); addCode();
 rebuildPC();
 updDash();
 renderCanevas();
 
-// Chargement initial depuis window.RAPSORD_DATA (injecté par index.html)
-// Identique à : if(window.RAPSO_SYNTH_DATA){ ... } dans canevas_temp
 (function(){
   _canId = (typeof window.RAPSORD_CAN_ID !== 'undefined') ? window.RAPSORD_CAN_ID : null;
 
-  // En mode iframe (index.html), masquer le header/toolbar interne
-  // car index.html fournit déjà sa propre topbar
   if (_canId !== null) {
     const hdr = document.getElementById('rapsord-header');
     const tlb = document.getElementById('rapsord-toolbar');
     if (hdr) hdr.style.display = 'none';
     if (tlb) tlb.style.display = 'none';
-    // Recalculer la hauteur de #app sans les barres internes
     const app = document.getElementById('app');
     if (app) app.style.height = '100vh';
   }
@@ -1605,7 +1555,6 @@ renderCanevas();
     }catch(e){ console.warn('RAPSORD_DATA parse error:', e); }
   }
 
-  // Pré-remplir depuis métadonnées canevas si vides
   if(typeof window.RAPSORD_CAN_NOM !== 'undefined' && window.RAPSORD_CAN_NOM && !D.op_titre)
     D.op_titre = window.RAPSORD_CAN_NOM;
   if(typeof window.RAPSORD_CHRONO !== 'undefined' && window.RAPSORD_CHRONO && !D.dossier)
