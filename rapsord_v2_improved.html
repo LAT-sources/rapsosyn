@@ -4,30 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAPSORD — Socotec Luxembourg</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-:root {
-  --blue:#1a56db;--blue-d:#1447c0;--blue-l:#e8f0fe;--blue-ll:#f0f5ff;
-  --g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--g300:#cbd5e1;--g400:#94a3b8;--g500:#64748b;--g600:#475569;--g700:#334155;--g800:#1e293b;--g900:#0f172a;
-  --green:#22c55e;--red:#ef4444;--gold:#f59e0b;
-  --bleu:#1B5EA0;--bleu-h:#0d3d6e;--bleu-cl:#dce8f5;--bleu-bg:#f0f5fb;
-  --gris:#5a5a5a;--gris-cl:#f4f4f2;--bord:#d0d0cc;--bord2:#b0b0a8;
-  --rouge:#9b2626;--vert:#2d6a10;--orange:#8a5a00;
-  --fond:#EFEFED;--blanc:#fff;--txt:#1e1e1e;--txt2:#555;--r:6px;
-  --font:'Segoe UI',system-ui,sans-serif;
-}
+:root{--bleu:#1B5EA0;--bleu-h:#0d3d6e;--bleu-cl:#dce8f5;--bleu-bg:#f0f5fb;--gris:#5a5a5a;--gris-cl:#f4f4f2;--bord:#d0d0cc;--bord2:#b0b0a8;--rouge:#9b2626;--vert:#2d6a10;--orange:#8a5a00;--fond:#EFEFED;--blanc:#fff;--txt:#1e1e1e;--txt2:#555;--font:'Segoe UI',system-ui,sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font);background:var(--fond);color:var(--txt);font-size:13px;min-height:100vh}
-#hdr{background:var(--bleu-h);color:#fff;display:flex;align-items:center;height:48px;padding:0 20px;gap:14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-.hdr-proj{font-size:12px;opacity:.75}
-.hdr-space{flex:1}
-html,body{height:100%;display:flex;flex-direction:column;overflow:hidden;}
-#app{display:flex;flex:1;overflow:hidden;min-height:0;}
-body.iframe-mode #app{height:100vh;flex:none;}
+body{font-family:var(--font);background:var(--fond);color:var(--txt);font-size:13px}
+html,body{height:100%;display:flex;flex-direction:column;overflow:hidden}
+#app{display:flex;flex:1;overflow:hidden;min-height:0}
+body.iframe-mode #app{height:100vh;flex:none}
 #side{width:210px;flex-shrink:0;background:var(--blanc);border-right:1px solid var(--bord);overflow-y:auto;display:flex;flex-direction:column}
 .s-section{padding:10px 14px 3px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--txt2);margin-top:6px}
-.s-item{padding:7px 14px 7px 18px;font-size:12.5px;color:var(--txt);cursor:pointer;border-left:3px solid transparent;display:flex;align-items:center;justify-content:space-between;transition:all .12s}
+.s-item{padding:7px 14px 7px 18px;font-size:12.5px;cursor:pointer;border-left:3px solid transparent;display:flex;align-items:center;justify-content:space-between}
 .s-item:hover{background:var(--bleu-cl)}
 .s-item.on{background:var(--bleu-cl);border-left-color:var(--bleu);color:var(--bleu-h);font-weight:500}
 .s-badge{font-size:10px;padding:1px 7px;border-radius:10px;background:var(--bord);color:var(--gris)}
@@ -35,7 +21,7 @@ body.iframe-mode #app{height:100vh;flex:none;}
 #main{flex:1;overflow-y:auto;padding:20px 28px 60px;max-width:920px}
 .panel{display:none}.panel.on{display:block}
 .ptitle{font-size:17px;font-weight:600;color:var(--bleu-h);border-bottom:2px solid var(--bleu);padding-bottom:7px;margin-bottom:18px}
-.stitle{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--bleu-h);background:var(--bleu-cl);padding:5px 10px;border-radius:4px;margin:18px 0 10px}
+.stitle{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--bleu-h);background:var(--bleu-cl);padding:5px 10px;border-radius:4px;margin:18px 0 10px}
 .card{background:var(--blanc);border:1px solid var(--bord);border-radius:8px;padding:14px 18px;margin-bottom:14px}
 .ctitle{font-size:13px;font-weight:600;color:var(--bleu-h);margin-bottom:12px}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
@@ -44,28 +30,30 @@ body.iframe-mode #app{height:100vh;flex:none;}
 .f{display:flex;flex-direction:column;gap:3px}
 .f.s2{grid-column:span 2}.f.s3{grid-column:span 3}
 label{font-size:11px;color:var(--txt2);font-weight:500}
-input[type=text],input[type=date],input[type=number],select,textarea{border:1px solid var(--bord);border-radius:5px;padding:6px 9px;font-size:12.5px;font-family:var(--font);background:var(--blanc);color:var(--txt);width:100%;transition:border-color .12s}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--bleu);box-shadow:0 0 0 2px var(--bleu-cl)}
+input[type=text],input[type=date],input[type=number],textarea{border:1px solid var(--bord);border-radius:5px;padding:6px 9px;font-size:12.5px;font-family:var(--font);background:var(--blanc);width:100%}
+input:focus,textarea:focus{outline:none;border-color:var(--bleu);box-shadow:0 0 0 2px var(--bleu-cl)}
 textarea{resize:vertical;min-height:68px;line-height:1.5}
 .hint{font-size:10.5px;color:var(--txt2);font-style:italic;margin-top:2px}
+/* ══ RADIOS ET CHECKBOX : LE POINT CRUCIAL ══ */
+/* L'input a pointer-events:none → seul le wrapper reçoit le clic.
+   Résultat : clic sur case OU texte = même code, une seule fois. */
 .rg{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
-.ro{display:flex;align-items:center;gap:5px;font-size:12.5px;cursor:pointer;padding:5px 10px;border:1px solid var(--bord);border-radius:5px;background:var(--blanc);transition:all .12s;user-select:none}
+.ro{display:flex;align-items:center;gap:5px;font-size:12.5px;cursor:pointer;padding:5px 10px;border:1px solid var(--bord);border-radius:5px;background:var(--blanc);user-select:none}
 .ro:hover{border-color:var(--bleu);background:var(--bleu-cl)}
 .ro.on{background:var(--bleu-cl);border-color:var(--bleu);color:var(--bleu-h)}
-.ro input{accent-color:var(--bleu);width:13px;height:13px}
+.ro input{accent-color:var(--bleu);width:13px;height:13px;pointer-events:none}
 .mg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.mc{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--bord);border-radius:5px;cursor:pointer;font-size:12.5px;transition:all .12s;user-select:none}
+.mc{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--bord);border-radius:5px;cursor:pointer;font-size:12.5px;user-select:none}
 .mc:hover{background:var(--bleu-cl);border-color:var(--bleu)}
 .mc.on{background:var(--bleu-cl);border-color:var(--bleu);color:var(--bleu-h)}
-.mc input{accent-color:var(--bleu);width:13px;height:13px}
+.mc input{accent-color:var(--bleu);width:13px;height:13px;pointer-events:none}
 .tbl{width:100%;border-collapse:collapse}
-.tbl th{background:var(--bleu-cl);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--bleu-h);padding:7px 8px;text-align:left;border-bottom:1px solid var(--bord)}
+.tbl th{background:var(--bleu-cl);font-size:11px;font-weight:600;color:var(--bleu-h);padding:7px 8px;text-align:left;border-bottom:1px solid var(--bord)}
 .tbl td{padding:4px 5px;border-bottom:1px solid var(--gris-cl)}
-.tbl input,.tbl select{border:none;background:transparent;padding:4px 6px;font-size:12.5px;width:100%;font-family:var(--font)}
-.tbl input:focus{background:var(--bleu-cl);border-radius:3px;outline:none}
-.tbl tr:last-child td{border-bottom:none}
+.tbl input{border:none;background:transparent;padding:4px 6px;font-size:12.5px;width:100%;font-family:var(--font)}
+.tbl input:focus{background:var(--bleu-cl);outline:none}
 .add-btn{margin-top:6px;background:none;border:1px dashed var(--bord2);border-radius:5px;padding:6px;font-size:12px;color:var(--txt2);cursor:pointer;width:100%;font-family:var(--font)}
-.add-btn:hover{background:var(--bleu-cl);border-color:var(--bleu);color:var(--bleu)}
+.add-btn:hover{background:var(--bleu-cl);border-color:var(--bleu)}
 .avis-wrap{border:2px solid var(--bord);border-radius:6px;padding:12px}
 .avis-wrap.fav{border-color:var(--vert);background:#f0fae5}
 .avis-wrap.res{border-color:var(--orange);background:#fff8e6}
@@ -73,99 +61,63 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 .pc-tbl{width:100%;border-collapse:collapse;font-size:12px}
 .pc-tbl th{background:var(--bleu-h);color:#fff;padding:6px 8px;font-size:11px;text-align:left}
 .pc-tbl td{padding:5px 8px;border-bottom:1px solid var(--gris-cl);vertical-align:middle}
-.pc-tbl tr:hover td{background:var(--bleu-bg)}
 .pc-tbl .lot{color:var(--txt2);font-style:italic;font-size:11px}
 .pc-check{display:flex;gap:12px;align-items:center}
 .pc-radio{display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;padding:3px 8px;border:1px solid var(--bord);border-radius:4px}
+.pc-radio input{accent-color:var(--bleu);pointer-events:none}
 .pc-radio.so.on{background:#e8e8e0;border-color:var(--gris)}
 .pc-radio.oui.on{background:#d4edbc;border-color:var(--vert);color:var(--vert)}
 .pc-radio.non.on{background:#ffd9d9;border-color:var(--rouge);color:var(--rouge)}
-.pc-radio input{accent-color:var(--bleu)}
 .dash-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .dcard{background:var(--blanc);border:1px solid var(--bord);border-radius:8px;padding:12px 16px}
 .dcard .num{font-size:22px;font-weight:600;color:var(--bleu-h)}
-.dcard .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--txt2);margin-top:2px}
+.dcard .lbl{font-size:10px;text-transform:uppercase;color:var(--txt2);margin-top:2px}
 .status-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--gris-cl);font-size:12.5px}
-.status-row:last-child{border-bottom:none}
 .status-row .name{flex:1}
 .badge{font-size:11px;padding:2px 8px;border-radius:9px;background:var(--gris-cl);color:var(--gris)}
 .badge.req{background:#ffd9d9;color:var(--rouge)}
 .badge.enc{background:#dce8f5;color:var(--bleu)}
 .open-btn{background:none;border:1px solid var(--bord);padding:3px 10px;border-radius:5px;font-size:11px;cursor:pointer;font-family:var(--font)}
-.open-btn:hover{background:var(--bleu-cl);border-color:var(--bleu)}
+.open-btn:hover{background:var(--bleu-cl)}
 #mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
 #mover.on{display:flex}
-#mdlg{background:var(--blanc);border-radius:10px;padding:22px;width:480px;max-height:82vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.2)}
-#mdlg h3{font-size:15px;font-weight:600;margin-bottom:14px;color:var(--bleu-h)}
+#mdlg{background:var(--blanc);border-radius:10px;padding:22px;width:480px}
+#mdlg h3{margin-bottom:14px;color:var(--bleu-h)}
 .mact{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
-.mact button{padding:7px 16px;border-radius:5px;font-size:12.5px;cursor:pointer;font-family:var(--font);border:1px solid var(--bord)}
-.mdlg-btn{width:100%;margin-bottom:8px;padding:9px;border:1px solid var(--bord);border-radius:6px;cursor:pointer;font-size:12.5px;text-align:left;background:var(--blanc);font-family:var(--font)}
-.mdlg-btn:hover{background:var(--bleu-cl);border-color:var(--bleu)}
+.mact button,.mdlg-btn{padding:7px 16px;border-radius:5px;font-size:12.5px;cursor:pointer;font-family:var(--font);border:1px solid var(--bord)}
+.mdlg-btn{width:100%;margin-bottom:8px;text-align:left;background:var(--blanc)}
+.mdlg-btn:hover{background:var(--bleu-cl)}
 .mdlg-btn.danger{border-color:var(--rouge);color:var(--rouge)}
-@media print{#side,#hdr,#rapsord-toolbar,#sbar-firebase{display:none!important}#main{max-width:100%;padding:8mm}}
-#rd-notif-banner{display:none;align-items:center;gap:10px;padding:7px 16px;font-size:.78rem;font-weight:500;flex-shrink:0;border-bottom:1px solid transparent}
-.rd-notif-icon{font-size:1rem;flex-shrink:0}
-.rd-notif-txt{flex:1}
-.rd-notif-action{padding:3px 10px;border:1px solid currentColor;background:none;color:inherit;font-family:inherit;font-size:.72rem;font-weight:600;cursor:pointer;border-radius:4px;flex-shrink:0}
-.rd-notif-close{background:none;border:none;cursor:pointer;color:inherit;opacity:.6;font-size:1rem;flex-shrink:0;padding:0 2px}
-.rd-presence-pill{display:none;align-items:center;gap:5px;background:#fff8e6;border:1px solid #f59e0b;padding:3px 10px;font-size:.7rem;font-weight:600;color:#92400e;flex-shrink:0}
-.rd-presence-pill.show{display:flex}
-.rd-presence-dot{width:7px;height:7px;border-radius:50%;background:#f59e0b;animation:rdPulse .9s ease-in-out infinite}
-@keyframes rdPulse{0%,100%{opacity:1}50%{opacity:.3}}
-.tb-btn.sync-pending{background:#eff6ff;border-color:#3b82f6;color:#1e40af;animation:rdPulse 1.2s ease-in-out infinite}
-.sync-label{font-size:.72rem;color:#64748b;font-weight:500;white-space:nowrap}
+@media print{#side,#rapsord-toolbar{display:none!important}#main{max-width:100%;padding:8mm}}
+#rd-notif-banner{display:none;align-items:center;gap:10px;padding:7px 16px;font-size:.78rem;flex-shrink:0}
 </style>
 </head>
 <body>
 
-<div class="syn-header" id="rapsord-header">
-  <div class="rd-title" id="hdr-proj">RAPSORD RD0</div>
-  <div class="rd-ref" id="hdr-ref">—</div>
-</div>
-
 <div class="toolbar" id="rapsord-toolbar">
-  <button class="tb-btn" onclick="nav('dash')" title="Tableau de bord">🏠</button>
-  <div class="tb-sep2"></div>
-  <button class="tb-btn" onclick="nav('id')">Page de garde</button>
-  <button class="tb-btn" onclick="nav('t1')">Titre I</button>
-  <button class="tb-btn" onclick="nav('t2')">Titre II</button>
-  <button class="tb-btn" onclick="nav('t3')">Titre III</button>
-  <button class="tb-btn" onclick="nav('t4')">Titre IV</button>
-  <button class="tb-btn" onclick="nav('t5')">Titre V</button>
-  <button class="tb-btn" onclick="nav('sig')">Signature</button>
-  <div class="tb-sep2"></div>
-  <button class="tb-btn" onclick="nav('pc')">PC</button>
-  <div style="flex:1;"></div>
-  <div class="rd-presence-pill" id="rd-presence-pill"><span class="rd-presence-dot"></span><span id="rd-presence-names">1 autre éditeur</span></div>
-  <button class="tb-btn" id="rd-sync-btn" onclick="rdApplyPending()" style="display:none;">🔄 Synchroniser</button>
-  <div class="tb-sep2"></div>
-  <span class="sync-dot" id="sync-dot"></span>
-  <span class="sync-label" id="sync-label">Non connecté</span>
-  <div class="tb-sep2"></div>
-  <div class="actions-dropdown">
-    <button class="tb-btn" id="rdMenuBtn" onclick="toggleRdMenu()">☰ MENU ▾</button>
-    <div class="actions-menu" id="rdActionMenu">
-      <button onclick="collect();pushToParent();closeRdMenu()">☁ Enregistrer Firebase</button>
-      <button onclick="importJSON();closeRdMenu()">⤒ Charger JSON local</button>
-      <button onclick="exportJSON();closeRdMenu()">⤓ JSON local</button>
-      <button onclick="window.parent&&window.parent.postMessage({type:'rapsord_generate_docx'},'*');closeRdMenu()">📄 Télécharger Word</button>
-      <button onclick="window.print();closeRdMenu()">⎙ Imprimer</button>
-    </div>
-  </div>
+  <button onclick="nav('dash')">🏠</button>
+  <button onclick="nav('id')">Page de garde</button>
+  <button onclick="nav('t1')">Titre I</button>
+  <button onclick="nav('t2')">Titre II</button>
+  <button onclick="nav('t3')">Titre III</button>
+  <button onclick="nav('t4')">Titre IV</button>
+  <button onclick="nav('t5')">Titre V</button>
+  <button onclick="nav('sig')">Signature</button>
+  <button onclick="nav('pc')">PC</button>
+  <button onclick="nav('rd1')">RD1</button>
+  <button onclick="nav('rd2')">RD2</button>
+  <button onclick="nav('rd3')">RD3</button>
+  <button onclick="nav('rd4')">RD4</button>
+  <button onclick="nav('rd5')">RD5</button>
+  <button onclick="nav('rd6')">RD6</button>
+  <button onclick="nav('canevas')">Canevas</button>
 </div>
 
-<div id="rd-notif-banner">
-  <span class="rd-notif-icon" id="rd-notif-icon">⚠️</span>
-  <span class="rd-notif-txt" id="rd-notif-txt">—</span>
-  <button class="rd-notif-action" id="rd-notif-action" style="display:none" onclick="rdApplyPending()">Synchroniser</button>
-  <button class="rd-notif-close" onclick="rdCloseNotif()">✕</button>
-</div>
+<div id="rd-notif-banner"><span id="rd-notif-txt"></span></div>
 
 <script>
 if(window.parent && window.parent !== window){
-  document.getElementById('rapsord-header').style.display='none';
   document.getElementById('rapsord-toolbar').style.display='none';
-  document.getElementById('rd-notif-banner').style.display='none';
   document.body.classList.add('iframe-mode');
 }
 </script>
@@ -174,7 +126,7 @@ if(window.parent && window.parent !== window){
 <div id="side">
   <div class="s-section">Navigation</div>
   <div class="s-item on" onclick="nav('dash')">Tableau de bord</div>
-  <div class="s-section">RD0 — Rapport principal</div>
+  <div class="s-section">RD0</div>
   <div class="s-item" onclick="nav('id')">Identification</div>
   <div class="s-item" onclick="nav('t1')">Titre I — Opération</div>
   <div class="s-item" onclick="nav('t2')">Titre II — Site</div>
@@ -182,83 +134,68 @@ if(window.parent && window.parent !== window){
   <div class="s-item" onclick="nav('t4')">Titre IV — Risques</div>
   <div class="s-item" onclick="nav('t5')">Titre V — Conclusions</div>
   <div class="s-item" onclick="nav('sig')">Signature</div>
-  <div class="s-section">Rapports complémentaires</div>
-  <div class="s-item" onclick="nav('rd1')">RD1 — Fondations sp. <span class="s-badge" id="b-rd1">—</span></div>
-  <div class="s-item" onclick="nav('rd2')">RD2 — Procédés <span class="s-badge" id="b-rd2">—</span></div>
-  <div class="s-item" onclick="nav('rd3')">RD3 — Étanchéité finale <span class="s-badge" id="b-rd3">—</span></div>
-  <div class="s-item" onclick="nav('rd4')">RD4 — Travaux sur existants <span class="s-badge" id="b-rd4">—</span></div>
-  <div class="s-item" onclick="nav('rd5')">RD5 — Modif. risque <span class="s-badge" id="b-rd5">—</span></div>
-  <div class="s-item" onclick="nav('rd6')">RD6 — Fin de travaux <span class="s-badge" id="b-rd6">—</span></div>
+  <div class="s-section">Complémentaires</div>
+  <div class="s-item" onclick="nav('rd1')">RD1 <span class="s-badge" id="b-rd1">—</span></div>
+  <div class="s-item" onclick="nav('rd2')">RD2 <span class="s-badge" id="b-rd2">—</span></div>
+  <div class="s-item" onclick="nav('rd3')">RD3 <span class="s-badge" id="b-rd3">—</span></div>
+  <div class="s-item" onclick="nav('rd4')">RD4 <span class="s-badge" id="b-rd4">—</span></div>
+  <div class="s-item" onclick="nav('rd5')">RD5 <span class="s-badge" id="b-rd5">—</span></div>
+  <div class="s-item" onclick="nav('rd6')">RD6 <span class="s-badge" id="b-rd6">—</span></div>
   <div class="s-section">Annexes</div>
   <div class="s-item" onclick="nav('pc')">PC — Postes contrôlés</div>
-  <div class="s-item" onclick="nav('canevas')">📁 Gestion des canevas</div>
-  <div style="flex:1"></div>
-  <div style="padding:10px 14px;border-top:1px solid var(--bord)">
-    <div style="font-size:10px;color:var(--txt2);text-align:center">Socotec Luxembourg<br>SQ-04_MOD_LUX_01 V2</div>
-  </div>
+  <div class="s-item" onclick="nav('canevas')">📁 Canevas</div>
 </div>
 
 <div id="main">
 
 <div class="panel on" id="panel-dash">
-  <div class="ptitle">Tableau de bord — Gestion du dossier</div>
+  <div class="ptitle">Tableau de bord</div>
   <div class="dash-row">
-    <div class="dcard"><div class="num" id="d-ref" style="font-size:15px;padding-top:4px">—</div><div class="lbl">Référence</div></div>
-    <div class="dcard"><div class="num" id="d-op" style="font-size:14px;padding-top:4px">—</div><div class="lbl">Opération</div></div>
+    <div class="dcard"><div class="num" id="d-ref" style="font-size:15px">—</div><div class="lbl">Référence</div></div>
+    <div class="dcard"><div class="num" id="d-op" style="font-size:14px">—</div><div class="lbl">Opération</div></div>
     <div class="dcard"><div class="num" id="d-date">—</div><div class="lbl">Date RD0</div></div>
   </div>
   <div class="card">
     <div class="ctitle">État des documents</div>
-    <div class="status-row"><div class="name">RD0 — Définition des risques</div><div class="badge enc" id="s-rd0">En cours</div><button class="open-btn" onclick="nav('id')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD1 — Fondations spéciales</div><div class="badge" id="s-rd1">Non requis</div><button class="open-btn" onclick="nav('rd1')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD2 — Procédés non traditionnels</div><div class="badge" id="s-rd2">Non requis</div><button class="open-btn" onclick="nav('rd2')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD3 — Rapport final étanchéité</div><div class="badge" id="s-rd3">Non requis</div><button class="open-btn" onclick="nav('rd3')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD4 — Travaux sur existants</div><div class="badge" id="s-rd4">Non requis</div><button class="open-btn" onclick="nav('rd4')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD5 — Modification majeure du risque</div><div class="badge" id="s-rd5">Non requis</div><button class="open-btn" onclick="nav('rd5')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">RD6 — Fin de travaux (Quitus)</div><div class="badge" id="s-rd6">Non requis</div><button class="open-btn" onclick="nav('rd6')">Ouvrir</button></div>
-    <div class="status-row"><div class="name">PC — Liste des postes contrôlés</div><div class="badge">Disponible</div><button class="open-btn" onclick="nav('pc')">Ouvrir</button></div>
+    <div class="status-row"><div class="name">RD1</div><div class="badge" id="s-rd1">Non requis</div><button class="open-btn" onclick="nav('rd1')">Ouvrir</button></div>
+    <div class="status-row"><div class="name">RD2</div><div class="badge" id="s-rd2">Non requis</div><button class="open-btn" onclick="nav('rd2')">Ouvrir</button></div>
+    <div class="status-row"><div class="name">RD3</div><div class="badge" id="s-rd3">Non requis</div><button class="open-btn" onclick="nav('rd3')">Ouvrir</button></div>
+    <div class="status-row"><div class="name">RD4</div><div class="badge" id="s-rd4">Non requis</div><button class="open-btn" onclick="nav('rd4')">Ouvrir</button></div>
+    <div class="status-row"><div class="name">RD5</div><div class="badge" id="s-rd5">Non requis</div><button class="open-btn" onclick="nav('rd5')">Ouvrir</button></div>
+    <div class="status-row"><div class="name">RD6</div><div class="badge" id="s-rd6">Non requis</div><button class="open-btn" onclick="nav('rd6')">Ouvrir</button></div>
   </div>
 </div>
 
 <div class="panel" id="panel-id">
-  <div class="ptitle">Page de garde — Identification du dossier</div>
+  <div class="ptitle">Identification</div>
   <div class="card">
-    <div class="ctitle">Références Socotec</div>
     <div class="fg">
       <div class="f"><label>Référence</label><input type="text" id="ref" oninput="save()"></div>
-      <div class="f"><label>N° dossier interne</label><input type="text" id="dossier" oninput="save()"></div>
-      <div class="f"><label>Date de rédaction du RD0</label><input type="date" id="date_rd0" oninput="save()"></div>
+      <div class="f"><label>N° dossier</label><input type="text" id="dossier" oninput="save()"></div>
+      <div class="f"><label>Date RD0</label><input type="date" id="date_rd0" oninput="save()"></div>
       <div class="f"><label>Version</label><input type="text" id="version" value="1" oninput="save()"></div>
+      <div class="f"><label>Ingénieur dossier</label><input type="text" id="ing_doss" oninput="save()"></div>
+      <div class="f"><label>Ingénieur chantier</label><input type="text" id="ing_chan" oninput="save()"></div>
+      <div class="f s2"><label>Intitulé opération</label><input type="text" id="op_titre" oninput="save()"></div>
     </div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Ingénieurs chargés du contrôle</div>
-    <div class="fg">
-      <div class="f"><label>Sur dossier</label><input type="text" id="ing_doss" oninput="save()"></div>
-      <div class="f"><label>Sur chantier</label><input type="text" id="ing_chan" oninput="save()"></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Nom de l'opération</div>
-    <div class="fg1"><div class="f"><label>Intitulé complet</label><input type="text" id="op_titre" oninput="save()"></div></div>
   </div>
 </div>
 
 <div class="panel" id="panel-t1">
   <div class="ptitle">Titre I — Opération &amp; Intervenants</div>
   <div class="card">
-    <div class="ctitle">Maître de l'ouvrage &amp; Opération</div>
+    <div class="ctitle">MOA &amp; Opération</div>
     <div class="fg">
-      <div class="f s2"><label>Maître de l'ouvrage</label><textarea id="moa" rows="2" oninput="save()"></textarea></div>
-      <div class="f s2"><label>Références et adresse</label><textarea id="op_ref" rows="2" oninput="save()"></textarea></div>
-      <div class="f s2"><label>Descriptif de l'opération</label><input type="text" id="op_desc" oninput="save()"></div>
-      <div class="f s2"><label>Contractant du bureau de contrôle</label><textarea id="contractant" rows="2" oninput="save()"></textarea></div>
+      <div class="f s2"><label>Maître d'ouvrage</label><textarea id="moa" rows="2" oninput="save()"></textarea></div>
+      <div class="f s2"><label>Références opération</label><textarea id="op_ref" rows="2" oninput="save()"></textarea></div>
+      <div class="f s2"><label>Descriptif</label><input type="text" id="op_desc" oninput="save()"></div>
+      <div class="f s2"><label>Contractant BC</label><textarea id="contractant" rows="2" oninput="save()"></textarea></div>
       <div class="f"><label>Signataire MOA</label><input type="text" id="sig_moa" oninput="save()"></div>
     </div>
   </div>
   <div class="card">
     <div class="ctitle">Contrôle exercé</div>
-    <div class="fg" style="margin-bottom:12px">
+    <div class="fg">
       <div class="f">
         <label>Type de mission</label>
         <div class="rg">
@@ -267,16 +204,16 @@ if(window.parent && window.parent !== window){
         </div>
       </div>
       <div class="f">
-        <label>Contrôle depuis le début ?</label>
+        <label>Contrôle depuis début ?</label>
         <div class="rg">
           <label class="ro"><input type="radio" name="ctrl_dep" value="OUI" onchange="setR('ctrl_dep',this)"> OUI</label>
           <label class="ro"><input type="radio" name="ctrl_dep" value="NON" onchange="setR('ctrl_dep',this)"> NON</label>
         </div>
       </div>
       <div class="f"><label>Missions confiées</label><input type="text" id="missions" oninput="save()"></div>
-      <div class="f"><label>Date début intervention</label><input type="date" id="date_debut" oninput="save()"></div>
+      <div class="f"><label>Date début</label><input type="date" id="date_debut" oninput="save()"></div>
     </div>
-    <div class="ctitle" style="font-size:12px;margin-bottom:8px">Domaines contrôlés</div>
+    <div class="ctitle" style="font-size:12px;margin:12px 0 8px">Domaines contrôlés</div>
     <div class="mg" id="dom-grid">
       <label class="mc"><input type="checkbox" value="Sols/Fondations/Structures" onchange="togMC(this)"> Sols/Fondations/Structures</label>
       <label class="mc"><input type="checkbox" value="Enveloppe : clos/couvert" onchange="togMC(this)"> Enveloppe : clos/couvert</label>
@@ -287,28 +224,25 @@ if(window.parent && window.parent !== window){
     </div>
   </div>
   <div class="card">
-    <div class="ctitle">Participants à la construction</div>
+    <div class="ctitle">Participants</div>
     <div class="fg">
-      <div class="f s2"><label>Architecte / MOE (conception)</label><textarea id="archi_conc" rows="2" oninput="save()"></textarea></div>
-      <div class="f s2"><label>Architecte / MOE (exécution)</label><textarea id="archi_exec" rows="2" oninput="save()"></textarea></div>
-      <div class="f"><label>BE Sols / Géotechnicien</label><textarea id="be_sol" rows="2" oninput="save()"></textarea></div>
+      <div class="f s2"><label>Architecte conception</label><textarea id="archi_conc" rows="2" oninput="save()"></textarea></div>
+      <div class="f s2"><label>Architecte exécution</label><textarea id="archi_exec" rows="2" oninput="save()"></textarea></div>
+      <div class="f"><label>BE Sols</label><textarea id="be_sol" rows="2" oninput="save()"></textarea></div>
       <div class="f"><label>BE Structures</label><textarea id="be_struct" rows="2" oninput="save()"></textarea></div>
       <div class="f s2"><label>Autres</label><textarea id="be_autres" rows="2" oninput="save()"></textarea></div>
-      <div class="f s2"><label>Entreprise(s) gros-œuvre</label><textarea id="gros_oeuvre" rows="2" oninput="save()"></textarea></div>
+      <div class="f s2"><label>Gros-œuvre</label><textarea id="gros_oeuvre" rows="2" oninput="save()"></textarea></div>
     </div>
   </div>
   <div class="card">
     <div class="ctitle">Codes normatifs</div>
-    <table class="tbl" id="codes-tbl">
-      <thead><tr><th style="width:80px">Ouvrage</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
-      <tbody id="codes-body"></tbody>
-    </table>
-    <button class="add-btn" onclick="addCode()">+ Ajouter un ouvrage</button>
-    <div class="f" style="margin-top:10px"><label>Commentaires</label><textarea id="codes_comm" rows="3" oninput="save()"></textarea></div>
+    <table class="tbl"><thead><tr><th>Ouvrage</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead><tbody id="codes-body"></tbody></table>
+    <button class="add-btn" onclick="addCode()">+ Ajouter</button>
+    <div class="f" style="margin-top:10px"><label>Commentaires codes</label><textarea id="codes_comm" rows="2" oninput="save()"></textarea></div>
   </div>
   <div class="card">
-    <div class="ctitle">Description du bâtiment</div>
-    <div class="f"><textarea id="bat_desc" rows="8" oninput="save()"></textarea></div>
+    <div class="ctitle">Description bâtiment</div>
+    <div class="f"><textarea id="bat_desc" rows="6" oninput="save()"></textarea></div>
   </div>
   <div class="card">
     <div class="ctitle">Coût &amp; Délais</div>
@@ -320,7 +254,7 @@ if(window.parent && window.parent !== window){
           <label class="ro"><input type="radio" name="hon" value="NON" onchange="setR('hon',this)"> NON</label>
         </div>
       </div>
-      <div class="f"><label>Montant total HTA</label><input type="text" id="montant" oninput="save()"></div>
+      <div class="f"><label>Montant HTA</label><input type="text" id="montant" oninput="save()"></div>
       <div class="f">
         <label>Équipements spéciaux ?</label>
         <div class="rg">
@@ -328,18 +262,18 @@ if(window.parent && window.parent !== window){
           <label class="ro"><input type="radio" name="eqp" value="NON" onchange="setR('eqp',this)"> NON</label>
         </div>
       </div>
-      <div class="f"><label>Montant équipements HTA</label><input type="text" id="montant_eqp" oninput="save()"></div>
+      <div class="f"><label>Montant équipements</label><input type="text" id="montant_eqp" oninput="save()"></div>
       <div class="f s2"><label>Nature équipements</label><input type="text" id="nature_eqp" oninput="save()"></div>
       <div class="f"><label>Début travaux</label><input type="text" id="date_trav" oninput="save()"></div>
-      <div class="f"><label>1re visite BC</label><input type="date" id="date_visite1" oninput="save()"></div>
-      <div class="f"><label>Réception envisagée</label><input type="text" id="date_recep" oninput="save()"></div>
+      <div class="f"><label>1re visite</label><input type="date" id="date_visite1" oninput="save()"></div>
+      <div class="f"><label>Réception prévue</label><input type="text" id="date_recep" oninput="save()"></div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Commentaires intervenants</label><textarea id="comm_interv" rows="3" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Commentaires intervenants</label><textarea id="comm_interv" rows="2" oninput="save()"></textarea></div>
   </div>
 </div>
 
 <div class="panel" id="panel-t2">
-  <div class="ptitle">Titre II — Description du site</div>
+  <div class="ptitle">Titre II — Site</div>
   <div class="card">
     <div class="fg3">
       <div class="f"><label>Altitude</label><input type="text" id="altitude" oninput="save()"></div>
@@ -350,7 +284,7 @@ if(window.parent && window.parent !== window){
           <label class="ro"><input type="radio" name="cycl" value="NON" onchange="setR('cycl',this)"> NON</label>
         </div>
       </div>
-      <div class="f"><label>Vitesse vent vb,0</label><input type="text" id="vent" value="24" oninput="save()"></div>
+      <div class="f"><label>Vent vb,0</label><input type="text" id="vent" value="24" oninput="save()"></div>
       <div class="f"><label>Catégorie terrain</label><input type="text" id="cat_terrain" value="II" oninput="save()"></div>
       <div class="f">
         <label>Charge neige</label>
@@ -362,23 +296,23 @@ if(window.parent && window.parent !== window){
       <div class="f"><label>Valeur sk</label><input type="text" id="neige_val" oninput="save()"></div>
     </div>
     <div class="fg" style="margin-top:10px">
-      <div class="f"><label>Réglementation vent</label><input type="text" id="reg_vent" value="EN 1991-1-4 + AN-LU 2011" oninput="save()"></div>
-      <div class="f"><label>Réglementation neige</label><input type="text" id="reg_neige" value="EN 1991-1-3 + AN-LU 2011" oninput="save()"></div>
+      <div class="f"><label>Réglementation vent</label><input type="text" id="reg_vent" value="EN 1991-1-4 + AN-LU" oninput="save()"></div>
+      <div class="f"><label>Réglementation neige</label><input type="text" id="reg_neige" value="EN 1991-1-3 + AN-LU" oninput="save()"></div>
     </div>
   </div>
   <div class="card">
     <div class="ctitle">Risques eau</div>
     <div class="fg">
       <div class="f">
-        <label>Risque hautes eaux ?</label>
+        <label>Hautes eaux ?</label>
         <div class="rg">
           <label class="ro"><input type="radio" name="inond" value="OUI" onchange="setR('inond',this)"> OUI</label>
           <label class="ro"><input type="radio" name="inond" value="NON" onchange="setR('inond',this)"> NON</label>
         </div>
       </div>
       <div class="f"><label>Précision</label><input type="text" id="inond_prec" oninput="save()"></div>
-      <div class="f"><label>Niveau nappe / RDC</label><input type="text" id="nappe_rc" oninput="save()"></div>
-      <div class="f"><label>Niveau nappe / SS</label><input type="text" id="nappe_ss" oninput="save()"></div>
+      <div class="f"><label>Nappe / RDC</label><input type="text" id="nappe_rc" oninput="save()"></div>
+      <div class="f"><label>Nappe / SS</label><input type="text" id="nappe_ss" oninput="save()"></div>
     </div>
   </div>
   <div class="card">
@@ -391,7 +325,7 @@ if(window.parent && window.parent !== window){
           <label class="ro"><input type="radio" name="sism" value="NON" onchange="setR('sism',this)"> NON</label>
         </div>
       </div>
-      <div class="f"><label>Niveau protection</label><input type="text" id="sism_prec" oninput="save()"></div>
+      <div class="f"><label>Niveau</label><input type="text" id="sism_prec" oninput="save()"></div>
       <div class="f">
         <label>Milieu agressif ?</label>
         <div class="rg">
@@ -399,30 +333,30 @@ if(window.parent && window.parent !== window){
           <label class="ro"><input type="radio" name="agr" value="NON" onchange="setR('agr',this)"> NON</label>
         </div>
       </div>
-      <div class="f"><label>Nature agressivité</label><input type="text" id="agr_prec" oninput="save()"></div>
+      <div class="f"><label>Nature</label><input type="text" id="agr_prec" oninput="save()"></div>
     </div>
   </div>
   <div class="card">
     <div class="ctitle">Géologie — Fondations</div>
     <div class="fg">
-      <div class="f s2"><label>Nature sol d'assise</label><input type="text" id="sol_assise" oninput="save()"></div>
+      <div class="f s2"><label>Sol d'assise</label><input type="text" id="sol_assise" oninput="save()"></div>
       <div class="f">
-        <label>BE sol intervenu ?</label>
+        <label>BE sol ?</label>
         <div class="rg">
           <label class="ro"><input type="radio" name="be_sol_int" value="OUI" onchange="setR('be_sol_int',this)"> OUI</label>
           <label class="ro"><input type="radio" name="be_sol_int" value="NON" onchange="setR('be_sol_int',this)"> NON</label>
         </div>
       </div>
       <div class="f">
-        <label>Rapport géotech dispo ?</label>
+        <label>Rapport géotech ?</label>
         <div class="rg">
           <label class="ro"><input type="radio" name="rgt" value="OUI" onchange="setR('rgt',this)"> OUI</label>
           <label class="ro"><input type="radio" name="rgt" value="NON" onchange="setR('rgt',this)"> NON</label>
         </div>
       </div>
-      <div class="f s2"><label>Références rapport</label><input type="text" id="rgt_ref" oninput="save()"></div>
+      <div class="f s2"><label>Réf rapport</label><input type="text" id="rgt_ref" oninput="save()"></div>
       <div class="f">
-        <label>Investigations compl. ?</label>
+        <label>Investigations ?</label>
         <div class="rg">
           <label class="ro"><input type="radio" name="inv_comp" value="OUI" onchange="setR('inv_comp',this)"> OUI</label>
           <label class="ro"><input type="radio" name="inv_comp" value="NON" onchange="setR('inv_comp',this)"> NON</label>
@@ -430,7 +364,7 @@ if(window.parent && window.parent !== window){
       </div>
       <div class="f s2"><label>Solution fondation</label><input type="text" id="fond_sol" oninput="save()"></div>
       <div class="f">
-        <label>Adéquation sol/fondation ?</label>
+        <label>Adéquation ?</label>
         <div class="rg">
           <label class="ro"><input type="radio" name="adequ_fond" value="OUI" onchange="setR('adequ_fond',this)"> OUI</label>
           <label class="ro"><input type="radio" name="adequ_fond" value="NON" onchange="setR('adequ_fond',this)"> NON</label>
@@ -448,15 +382,15 @@ if(window.parent && window.parent !== window){
 </div>
 
 <div class="panel" id="panel-t3">
-  <div class="ptitle">Titre III — Description des ouvrages</div>
-  <div class="card"><div class="ctitle">Structures verticales</div><div class="f"><textarea id="struct_vert" rows="4" oninput="save()"></textarea></div></div>
+  <div class="ptitle">Titre III — Structures</div>
+  <div class="card"><div class="ctitle">Structures verticales</div><div class="f"><textarea id="struct_vert" rows="3" oninput="save()"></textarea></div></div>
   <div class="card"><div class="ctitle">Façades lourdes</div><div class="f"><textarea id="fac_lourde" rows="3" oninput="save()"></textarea></div></div>
   <div class="card">
     <div class="ctitle">Façades légères</div>
     <div class="fg">
       <div class="f"><label>Ossature</label><textarea id="fac_oss" rows="2" oninput="save()"></textarea></div>
       <div class="f"><label>Remplissage</label><textarea id="fac_rmp" rows="2" oninput="save()"></textarea></div>
-      <div class="f"><label>Surface (m²)</label><input type="text" id="fac_surf" oninput="save()"></div>
+      <div class="f"><label>Surface m²</label><input type="text" id="fac_surf" oninput="save()"></div>
       <div class="f">
         <label>Remplacement facile ?</label>
         <div class="rg">
@@ -467,8 +401,8 @@ if(window.parent && window.parent !== window){
       <div class="f s2"><label>Précisions</label><textarea id="fac_prec" rows="2" oninput="save()"></textarea></div>
     </div>
   </div>
-  <div class="card"><div class="ctitle">Planchers</div><div class="f"><textarea id="planchers" rows="4" oninput="save()"></textarea></div></div>
-  <div class="card"><div class="ctitle">Éléments porteurs toiture</div><div class="f"><textarea id="toiture" rows="3" oninput="save()"></textarea></div></div>
+  <div class="card"><div class="ctitle">Planchers</div><div class="f"><textarea id="planchers" rows="3" oninput="save()"></textarea></div></div>
+  <div class="card"><div class="ctitle">Toiture</div><div class="f"><textarea id="toiture" rows="3" oninput="save()"></textarea></div></div>
   <div class="card">
     <div class="ctitle">Efforts horizontaux</div>
     <div class="f">
@@ -495,7 +429,7 @@ if(window.parent && window.parent !== window){
     </div>
   </div>
   <div class="card"><div class="ctitle">Imperméabilisation façades</div><div class="f"><textarea id="imp_fac" rows="2" oninput="save()"></textarea></div></div>
-  <div class="card"><div class="ctitle">Étanchéité toitures-terrasses</div><div class="f"><textarea id="etan_toit" rows="4" oninput="save()"></textarea></div></div>
+  <div class="card"><div class="ctitle">Étanchéité toitures-terrasses</div><div class="f"><textarea id="etan_toit" rows="3" oninput="save()"></textarea></div></div>
   <div class="card"><div class="ctitle">Couvertures</div><div class="f"><textarea id="couvert" rows="2" oninput="save()"></textarea></div></div>
   <div class="card">
     <div class="ctitle">Dallages</div>
@@ -516,19 +450,19 @@ if(window.parent && window.parent !== window){
         </div>
       </div>
       <div class="f"><label>Valeur</label><input type="text" id="dall_ponc_val" oninput="save()"></div>
-      <div class="f"><label>Tassement limite</label><input type="text" id="tassement" oninput="save()"></div>
-      <div class="f"><label>Nature revêtement</label><input type="text" id="dall_rev" oninput="save()"></div>
+      <div class="f"><label>Tassement</label><input type="text" id="tassement" oninput="save()"></div>
+      <div class="f"><label>Revêtement</label><input type="text" id="dall_rev" oninput="save()"></div>
     </div>
   </div>
-  <div class="card"><div class="ctitle">Carrelages</div><div class="f"><textarea id="carrelage" rows="3" oninput="save()"></textarea></div></div>
+  <div class="card"><div class="ctitle">Carrelages</div><div class="f"><textarea id="carrelage" rows="2" oninput="save()"></textarea></div></div>
 </div>
 
 <div class="panel" id="panel-t4">
-  <div class="ptitle">Titre IV — Risques aggravants</div>
-  <div class="card"><div class="ctitle">A. Points d'attention</div><div class="f"><textarea id="points_att" rows="8" oninput="save()"></textarea></div></div>
-  <div class="card"><div class="ctitle">B. Risques prioritaires</div><div class="f"><textarea id="risques_prio" rows="8" oninput="save()"></textarea></div></div>
+  <div class="ptitle">Titre IV — Risques</div>
+  <div class="card"><div class="ctitle">A. Points d'attention</div><div class="f"><textarea id="points_att" rows="6" oninput="save()"></textarea></div></div>
+  <div class="card"><div class="ctitle">B. Risques prioritaires</div><div class="f"><textarea id="risques_prio" rows="6" oninput="save()"></textarea></div></div>
   <div class="card">
-    <div class="fg"><div class="f"><label>Réglementation technique</label><textarea id="reg_tech" rows="2" oninput="save()"></textarea></div></div>
+    <div class="f"><label>Réglementation technique</label><textarea id="reg_tech" rows="2" oninput="save()"></textarea></div>
     <div class="stitle" style="margin-top:12px">Missions complémentaires</div>
     <div class="mg" id="miss-comp-grid">
       <label class="mc"><input type="checkbox" value="Sismique" onchange="togMC(this)"> Sismique</label>
@@ -548,12 +482,12 @@ if(window.parent && window.parent !== window){
     </div>
     <div class="stitle">Rapports complémentaires</div>
     <div class="mg" id="rd-req-grid">
-      <label class="mc"><input type="checkbox" value="rd1" onchange="togRD(this)"> RD1 — Fondations spéciales</label>
-      <label class="mc"><input type="checkbox" value="rd2" onchange="togRD(this)"> RD2 — Procédés non traditionnels</label>
-      <label class="mc"><input type="checkbox" value="rd3" onchange="togRD(this)"> RD3 — Rapport final étanchéité</label>
-      <label class="mc"><input type="checkbox" value="rd4" onchange="togRD(this)"> RD4 — Travaux sur existants</label>
-      <label class="mc"><input type="checkbox" value="rd5" onchange="togRD(this)"> RD5 — Modification du risque</label>
-      <label class="mc"><input type="checkbox" value="rd6" onchange="togRD(this)"> RD6 — Fin de travaux</label>
+      <label class="mc"><input type="checkbox" value="rd1" onchange="togRD(this)"> RD1</label>
+      <label class="mc"><input type="checkbox" value="rd2" onchange="togRD(this)"> RD2</label>
+      <label class="mc"><input type="checkbox" value="rd3" onchange="togRD(this)"> RD3</label>
+      <label class="mc"><input type="checkbox" value="rd4" onchange="togRD(this)"> RD4</label>
+      <label class="mc"><input type="checkbox" value="rd5" onchange="togRD(this)"> RD5</label>
+      <label class="mc"><input type="checkbox" value="rd6" onchange="togRD(this)"> RD6</label>
     </div>
     <div class="f" style="margin-top:10px"><label>Autres rapports</label><input type="text" id="rd_autres" oninput="save()"></div>
   </div>
@@ -566,7 +500,7 @@ if(window.parent && window.parent !== window){
         <label class="ro"><input type="radio" name="avis" value="Défavorable" onchange="setAvis(this)"> Défavorable</label>
       </div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Précisions / réserves</label><textarea id="avis_prec" rows="3" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Précisions</label><textarea id="avis_prec" rows="3" oninput="save()"></textarea></div>
   </div>
   <div class="card">
     <div class="fg">
@@ -577,9 +511,9 @@ if(window.parent && window.parent !== window){
           <label class="ro"><input type="radio" name="spec" value="NON" onchange="setR('spec',this)"> NON</label>
         </div>
       </div>
-      <div class="f"><label>Sur quelle partie</label><input type="text" id="spec_prec" oninput="save()"></div>
-      <div class="f s2"><label>Visites de chantier prévues</label><input type="text" id="nb_visites" oninput="save()"></div>
-      <div class="f"><label>Dont sols/structures</label><input type="text" id="nb_visites_sol" oninput="save()"></div>
+      <div class="f"><label>Sur partie</label><input type="text" id="spec_prec" oninput="save()"></div>
+      <div class="f s2"><label>Visites prévues</label><input type="text" id="nb_visites" oninput="save()"></div>
+      <div class="f"><label>Sols/structures</label><input type="text" id="nb_visites_sol" oninput="save()"></div>
       <div class="f">
         <label>Documents ultérieurs ?</label>
         <div class="rg">
@@ -592,20 +526,15 @@ if(window.parent && window.parent !== window){
 </div>
 
 <div class="panel" id="panel-sig">
-  <div class="ptitle">Signature &amp; Destinataires</div>
+  <div class="ptitle">Signature</div>
   <div class="card">
     <div class="fg">
       <div class="f"><label>Fait à</label><input type="text" id="fait_a" value="Livange" oninput="save()"></div>
       <div class="f"><label>Le</label><input type="date" id="fait_le" oninput="save()"></div>
       <div class="f s2"><label>Signature ingénieur</label><input type="text" id="sig_ing" oninput="save()"></div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Destinataires</div>
-    <div class="fg">
       <div class="f"><label>MOA délégué</label><input type="text" id="dest_moa" oninput="save()"></div>
       <div class="f"><label>Assureur</label><input type="text" id="dest_ass" value="/" oninput="save()"></div>
-      <div class="f"><label>Autre</label><input type="text" id="dest_autre" value="/" oninput="save()"></div>
+      <div class="f s2"><label>Autre</label><input type="text" id="dest_autre" value="/" oninput="save()"></div>
     </div>
   </div>
 </div>
@@ -615,32 +544,20 @@ if(window.parent && window.parent !== window){
   <div class="card">
     <div class="fg">
       <div class="f"><label>Type</label><input type="text" id="rd1_type" oninput="save()"></div>
-      <div class="f"><label>Nb éléments</label><input type="number" id="rd1_nb" oninput="save()"></div>
-      <div class="f"><label>Diamètre (m)</label><input type="text" id="rd1_diam" oninput="save()"></div>
-      <div class="f"><label>Profondeur (m)</label><input type="text" id="rd1_prof" oninput="save()"></div>
+      <div class="f"><label>Nb</label><input type="number" id="rd1_nb" oninput="save()"></div>
+      <div class="f"><label>Diamètre</label><input type="text" id="rd1_diam" oninput="save()"></div>
+      <div class="f"><label>Profondeur</label><input type="text" id="rd1_prof" oninput="save()"></div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Adéquation sol/fondations</label><textarea id="rd1_adequ" rows="4" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD1</label><textarea id="rd1_conclu" rows="4" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Adéquation</label><textarea id="rd1_adequ" rows="3" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Conclusion</label><textarea id="rd1_conclu" rows="3" oninput="save()"></textarea></div>
   </div>
 </div>
 
 <div class="panel" id="panel-rd2">
   <div class="ptitle">RD2 — Procédés non traditionnels</div>
   <div class="card">
-    <div class="f"><label>Description</label><textarea id="rd2_desc" rows="5" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD2</label><textarea id="rd2_conclu" rows="4" oninput="save()"></textarea></div>
-  </div>
-</div>
-
-<div class="panel" id="panel-pc">
-  <div class="ptitle">Annexe PC — Postes contrôlés</div>
-  <div class="card">
-    <div class="ctitle">OUVRAGES GARANTIE DÉCENNALE</div>
-    <table class="pc-tbl"><thead><tr><th style="width:120px">Lot</th><th>Ouvrage</th><th style="width:200px">Statut</th></tr></thead><tbody id="pc-dec-body"></tbody></table>
-  </div>
-  <div class="card">
-    <div class="ctitle">OUVRAGES GARANTIE BIENNALE</div>
-    <table class="pc-tbl"><thead><tr><th style="width:120px">Lot</th><th>Ouvrage</th><th style="width:200px">Statut</th></tr></thead><tbody id="pc-bi-body"></tbody></table>
+    <div class="f"><label>Description</label><textarea id="rd2_desc" rows="4" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Conclusion</label><textarea id="rd2_conclu" rows="3" oninput="save()"></textarea></div>
   </div>
 </div>
 
@@ -648,29 +565,27 @@ if(window.parent && window.parent !== window){
   <div class="ptitle">RD3 — Étanchéité finale</div>
   <div class="card">
     <div class="fg">
-      <div class="f"><label>Date dernière visite</label><input type="date" id="rd3_date_recep" oninput="save()"></div>
-      <div class="f"><label>Ingénieur présent</label><input type="text" id="rd3_ing" oninput="save()"></div>
+      <div class="f"><label>Date visite</label><input type="date" id="rd3_date_recep" oninput="save()"></div>
+      <div class="f"><label>Ingénieur</label><input type="text" id="rd3_ing" oninput="save()"></div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Ouvrages contrôlés</label><textarea id="rd3_ouvrages" rows="4" oninput="save()"></textarea></div>
-    <div class="fg" style="margin-top:10px">
-      <div class="f">
-        <label>Avis étanchéité</label>
-        <div class="rg">
-          <label class="ro"><input type="radio" name="rd3_avis" value="Favorable" onchange="setR('rd3_avis',this)"> Favorable</label>
-          <label class="ro"><input type="radio" name="rd3_avis" value="Favorable avec réserves" onchange="setR('rd3_avis',this)"> Favorable avec réserves</label>
-          <label class="ro"><input type="radio" name="rd3_avis" value="Défavorable" onchange="setR('rd3_avis',this)"> Défavorable</label>
-        </div>
+    <div class="f" style="margin-top:10px"><label>Ouvrages</label><textarea id="rd3_ouvrages" rows="3" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px">
+      <label>Avis</label>
+      <div class="rg">
+        <label class="ro"><input type="radio" name="rd3_avis" value="Favorable" onchange="setR('rd3_avis',this)"> Favorable</label>
+        <label class="ro"><input type="radio" name="rd3_avis" value="Favorable avec réserves" onchange="setR('rd3_avis',this)"> Favorable avec réserves</label>
+        <label class="ro"><input type="radio" name="rd3_avis" value="Défavorable" onchange="setR('rd3_avis',this)"> Défavorable</label>
       </div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Réserves</label><textarea id="rd3_reserves" rows="4" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD3</label><textarea id="rd3_conclu" rows="4" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Réserves</label><textarea id="rd3_reserves" rows="3" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Conclusion</label><textarea id="rd3_conclu" rows="3" oninput="save()"></textarea></div>
   </div>
 </div>
 
 <div class="panel" id="panel-rd4">
   <div class="ptitle">RD4 — Travaux sur existants</div>
   <div class="card">
-    <div class="f"><label>Nature travaux</label><textarea id="rd4_nature" rows="4" oninput="save()"></textarea></div>
+    <div class="f"><label>Nature</label><textarea id="rd4_nature" rows="3" oninput="save()"></textarea></div>
     <div class="fg" style="margin-top:10px">
       <div class="f"><label>Date début</label><input type="date" id="rd4_date" oninput="save()"></div>
       <div class="f">
@@ -681,43 +596,40 @@ if(window.parent && window.parent !== window){
         </div>
       </div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Description risques</label><textarea id="rd4_risq_desc" rows="4" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Mesures préconisées</label><textarea id="rd4_mesures" rows="3" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD4</label><textarea id="rd4_conclu" rows="4" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Description risques</label><textarea id="rd4_risq_desc" rows="3" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Mesures</label><textarea id="rd4_mesures" rows="3" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Conclusion</label><textarea id="rd4_conclu" rows="3" oninput="save()"></textarea></div>
   </div>
 </div>
 
 <div class="panel" id="panel-rd5">
-  <div class="ptitle">RD5 — Modification du risque</div>
+  <div class="ptitle">RD5 — Modification risque</div>
   <div class="card">
     <div class="fg">
       <div class="f"><label>Date constat</label><input type="date" id="rd5_date" oninput="save()"></div>
       <div class="f"><label>Ingénieur</label><input type="text" id="rd5_ing" oninput="save()"></div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Description modification</label><textarea id="rd5_desc" rows="5" oninput="save()"></textarea></div>
-    <div class="f" style="margin-top:10px"><label>Impact ouvrages</label><textarea id="rd5_impact" rows="4" oninput="save()"></textarea></div>
-    <div class="fg" style="margin-top:10px">
-      <div class="f">
-        <label>Nouvel avis</label>
-        <div class="rg">
-          <label class="ro"><input type="radio" name="rd5_avis" value="Favorable" onchange="setR('rd5_avis',this)"> Favorable</label>
-          <label class="ro"><input type="radio" name="rd5_avis" value="Favorable avec réserves" onchange="setR('rd5_avis',this)"> Favorable avec réserves</label>
-          <label class="ro"><input type="radio" name="rd5_avis" value="Défavorable" onchange="setR('rd5_avis',this)"> Défavorable</label>
-        </div>
+    <div class="f" style="margin-top:10px"><label>Description</label><textarea id="rd5_desc" rows="4" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Impact</label><textarea id="rd5_impact" rows="3" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px">
+      <label>Nouvel avis</label>
+      <div class="rg">
+        <label class="ro"><input type="radio" name="rd5_avis" value="Favorable" onchange="setR('rd5_avis',this)"> Favorable</label>
+        <label class="ro"><input type="radio" name="rd5_avis" value="Favorable avec réserves" onchange="setR('rd5_avis',this)"> Favorable avec réserves</label>
+        <label class="ro"><input type="radio" name="rd5_avis" value="Défavorable" onchange="setR('rd5_avis',this)"> Défavorable</label>
       </div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD5</label><textarea id="rd5_conclu" rows="4" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Conclusion</label><textarea id="rd5_conclu" rows="3" oninput="save()"></textarea></div>
   </div>
 </div>
 
 <div class="panel" id="panel-rd6">
-  <div class="ptitle">RD6 — Fin de travaux (Quitus)</div>
+  <div class="ptitle">RD6 — Fin de travaux</div>
   <div class="card">
-    <div class="ctitle">Réception</div>
     <div class="fg">
-      <div class="f"><label>Date rédaction RD6</label><input type="date" id="rd6_date" oninput="save()"></div>
+      <div class="f"><label>Date RD6</label><input type="date" id="rd6_date" oninput="save()"></div>
       <div class="f"><label>Date réception</label><input type="date" id="rd6_date_recep" oninput="save()"></div>
-      <div class="f"><label>Date mise en service</label><input type="date" id="rd6_date_service" oninput="save()"></div>
+      <div class="f"><label>Mise en service</label><input type="date" id="rd6_date_service" oninput="save()"></div>
       <div class="f">
         <label>Travaux achevés ?</label>
         <div class="rg">
@@ -725,11 +637,6 @@ if(window.parent && window.parent !== window){
           <label class="ro"><input type="radio" name="rd6_acheve" value="NON" onchange="setR('rd6_acheve',this)"> NON</label>
         </div>
       </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Levée des réserves</div>
-    <div class="fg">
       <div class="f">
         <label>Réserves émises ?</label>
         <div class="rg">
@@ -742,25 +649,20 @@ if(window.parent && window.parent !== window){
         <div class="rg">
           <label class="ro"><input type="radio" name="rd6_res_lev" value="OUI" onchange="setR('rd6_res_lev',this)"> OUI</label>
           <label class="ro"><input type="radio" name="rd6_res_lev" value="NON" onchange="setR('rd6_res_lev',this)"> NON</label>
-          <label class="ro"><input type="radio" name="rd6_res_lev" value="Partiellement" onchange="setR('rd6_res_lev',this)"> Partiellement</label>
+          <label class="ro"><input type="radio" name="rd6_res_lev" value="Partiellement" onchange="setR('rd6_res_lev',this)"> Partiel</label>
         </div>
       </div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Détail réserves</label><textarea id="rd6_res_detail" rows="4" oninput="save()"></textarea></div>
-  </div>
-  <div class="card">
-    <div class="ctitle">Avis final</div>
-    <div class="fg">
-      <div class="f">
-        <label>Avis fin de travaux</label>
-        <div class="rg">
-          <label class="ro"><input type="radio" name="rd6_avis" value="Favorable" onchange="setR('rd6_avis',this)"> Favorable</label>
-          <label class="ro"><input type="radio" name="rd6_avis" value="Favorable avec réserves" onchange="setR('rd6_avis',this)"> Favorable avec réserves</label>
-          <label class="ro"><input type="radio" name="rd6_avis" value="Défavorable" onchange="setR('rd6_avis',this)"> Défavorable</label>
-        </div>
+    <div class="f" style="margin-top:10px"><label>Détail réserves</label><textarea id="rd6_res_detail" rows="3" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px">
+      <label>Avis final</label>
+      <div class="rg">
+        <label class="ro"><input type="radio" name="rd6_avis" value="Favorable" onchange="setR('rd6_avis',this)"> Favorable</label>
+        <label class="ro"><input type="radio" name="rd6_avis" value="Favorable avec réserves" onchange="setR('rd6_avis',this)"> Favorable avec réserves</label>
+        <label class="ro"><input type="radio" name="rd6_avis" value="Défavorable" onchange="setR('rd6_avis',this)"> Défavorable</label>
       </div>
     </div>
-    <div class="f" style="margin-top:10px"><label>Conclusion RD6 — Quitus</label><textarea id="rd6_conclu" rows="6" oninput="save()"></textarea></div>
+    <div class="f" style="margin-top:10px"><label>Conclusion Quitus</label><textarea id="rd6_conclu" rows="4" oninput="save()"></textarea></div>
     <div class="fg" style="margin-top:10px">
       <div class="f"><label>Fait à</label><input type="text" id="rd6_fait_a" value="Livange" oninput="save()"></div>
       <div class="f"><label>Le</label><input type="date" id="rd6_fait_le" oninput="save()"></div>
@@ -768,26 +670,26 @@ if(window.parent && window.parent !== window){
   </div>
 </div>
 
+<div class="panel" id="panel-pc">
+  <div class="ptitle">PC — Postes contrôlés</div>
+  <div class="card">
+    <div class="ctitle">GARANTIE DÉCENNALE</div>
+    <table class="pc-tbl"><thead><tr><th>Lot</th><th>Ouvrage</th><th>Statut</th></tr></thead><tbody id="pc-dec-body"></tbody></table>
+  </div>
+  <div class="card">
+    <div class="ctitle">GARANTIE BIENNALE</div>
+    <table class="pc-tbl"><thead><tr><th>Lot</th><th>Ouvrage</th><th>Statut</th></tr></thead><tbody id="pc-bi-body"></tbody></table>
+  </div>
+</div>
+
 <div class="panel" id="panel-canevas">
-  <div class="ptitle">📁 Gestion des canevas</div>
+  <div class="ptitle">📁 Canevas</div>
   <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
-    <button class="open-btn" style="padding:6px 14px;font-size:12px" onclick="newDossier()">+ Nouveau dossier</button>
-    <button class="open-btn" style="padding:6px 14px;font-size:12px" onclick="importJSON()">📂 Charger JSON</button>
-    <button class="open-btn" style="padding:6px 14px;font-size:12px" onclick="exportJSON()">💾 Exporter JSON</button>
-    <input type="text" id="cav-search" placeholder="Rechercher…" oninput="filterCanevas()" style="flex:1;min-width:200px;border:1px solid var(--bord);border-radius:5px;padding:5px 10px;font-size:12px">
+    <button class="open-btn" onclick="newDossier()">+ Nouveau</button>
+    <button class="open-btn" onclick="importJSON()">📂 Charger JSON</button>
+    <button class="open-btn" onclick="exportJSON()">💾 Exporter JSON</button>
   </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <table style="width:100%;border-collapse:collapse;font-size:12.5px">
-      <thead><tr style="background:var(--bleu-cl)">
-        <th style="padding:8px 12px;text-align:left;font-size:11px">Référence</th>
-        <th style="padding:8px 12px;text-align:left;font-size:11px">Opération</th>
-        <th style="padding:8px 12px;text-align:left;font-size:11px">Date RD0</th>
-        <th style="padding:8px 12px;text-align:left;font-size:11px">Actions</th>
-      </tr></thead>
-      <tbody id="canevas-body"></tbody>
-    </table>
-    <div id="canevas-empty" style="padding:24px;text-align:center;color:var(--txt2);font-size:12px;display:none">Aucun dossier enregistré.</div>
-  </div>
+  <div class="card" style="padding:0"><table style="width:100%;border-collapse:collapse"><tbody id="canevas-body"></tbody></table></div>
 </div>
 
 </div>
@@ -795,8 +697,8 @@ if(window.parent && window.parent !== window){
 
 <div id="mover" onclick="closeMdlg(event)">
   <div id="mdlg">
-    <h3>Gestion du dossier</h3>
-    <button class="mdlg-btn" onclick="saveToCanevas();closeMdlg()">📁 Sauvegarder dans les canevas</button>
+    <h3>Gestion dossier</h3>
+    <button class="mdlg-btn" onclick="saveToCanevas();closeMdlg()">📁 Sauvegarder canevas</button>
     <button class="mdlg-btn" onclick="exportJSON();closeMdlg()">💾 Télécharger JSON</button>
     <button class="mdlg-btn" onclick="importJSON();closeMdlg()">📂 Charger JSON</button>
     <button class="mdlg-btn danger" onclick="newDossier()">🗑 Nouveau dossier</button>
@@ -805,55 +707,85 @@ if(window.parent && window.parent !== window){
 </div>
 
 <script>
-// ─── DATA ─────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════════════════════
 let D = {mc:[], rd_req:[], pc:{}};
 let codeRows = 0;
 
 const PC_DEC = [
   {lot:'Terrassement',ouvrage:'Terrassements'},{lot:'Terrassement',ouvrage:'Remblais'},
-  {lot:'Gros œuvre',ouvrage:'Installation de chantier'},{lot:'Gros œuvre',ouvrage:'Blindages'},
-  {lot:'Gros œuvre',ouvrage:'Canalisation sous le bâtiment'},{lot:'Gros œuvre',ouvrage:'Canalisations enterrées'},
+  {lot:'Gros œuvre',ouvrage:'Installation chantier'},{lot:'Gros œuvre',ouvrage:'Blindages'},
+  {lot:'Gros œuvre',ouvrage:'Canalisation bâtiment'},{lot:'Gros œuvre',ouvrage:'Canalisations enterrées'},
   {lot:'Gros œuvre',ouvrage:'Béton, BA, maçonneries'},{lot:'Gros œuvre',ouvrage:'Étanchéité sous-sols'},
   {lot:'Gros œuvre',ouvrage:'VRD'},{lot:'Charpente métallique',ouvrage:''},{lot:'Charpente bois',ouvrage:''},
-  {lot:'Couverture',ouvrage:'Couverture, ferblanterie'},{lot:'Couverture',ouvrage:'Bardage'},
-  {lot:'Étanchéité',ouvrage:'Terrasses et toiture'},{lot:'Façades',ouvrage:'Enduits de façade'},
-  {lot:'Façades',ouvrage:'Modénatures'},{lot:'Façades',ouvrage:'Béton préfabriqué'},{lot:'Façades',ouvrage:'Pierre agrafée'},
-  {lot:'Serrurerie',ouvrage:'Ferronnerie'},{lot:'Serrurerie',ouvrage:'Garde-corps'},
+  {lot:'Couverture',ouvrage:'Couverture'},{lot:'Couverture',ouvrage:'Bardage'},{lot:'Étanchéité',ouvrage:'Terrasses'},
+  {lot:'Façades',ouvrage:'Enduits'},{lot:'Façades',ouvrage:'Modénatures'},{lot:'Façades',ouvrage:'Béton préfabriqué'},
+  {lot:'Façades',ouvrage:'Pierre agrafée'},{lot:'Serrurerie',ouvrage:'Ferronnerie'},{lot:'Serrurerie',ouvrage:'Garde-corps'},
   {lot:'Menuiseries ext.',ouvrage:'Châssis, vitrages'},{lot:'Menuiseries ext.',ouvrage:'Murs rideaux'},
   {lot:'Menuiseries ext.',ouvrage:'VEC, VEA'},{lot:'Chapes',ouvrage:''},{lot:'Plâtrerie',ouvrage:'Plafonnages'},
   {lot:'Revêtements sols',ouvrage:'Carrelages'},{lot:'Inst. techniques',ouvrage:'Canalisations encastrées'},
-  {lot:'Menuiseries int.',ouvrage:'Portes intérieures fixes'},{lot:'Divers',ouvrage:'Ascenseurs'},
-  {lot:'Autres',ouvrage:'Piscines, réservoirs'}
+  {lot:'Menuiseries int.',ouvrage:'Portes fixes'},{lot:'Divers',ouvrage:'Ascenseurs'},{lot:'Autres',ouvrage:'Piscines'}
 ];
 const PC_BI = [
   {lot:'Menuiseries int.',ouvrage:'Parties mobiles'},{lot:'Plâtrerie',ouvrage:'Faux plafonds démontables'},
   {lot:'Plâtrerie',ouvrage:'Cloisons amovibles'},{lot:'Faux planchers',ouvrage:''},
   {lot:'Revêtements muraux',ouvrage:''},{lot:'Revêtements sol',ouvrage:'Revêtements souples/durs'},
-  {lot:'Inst. techniques',ouvrage:'Canalisations, radiateurs'},{lot:'Équipements',ouvrage:'Équipements liés à activité'}
+  {lot:'Inst. techniques',ouvrage:'Canalisations, radiateurs'},{lot:'Équipements',ouvrage:'Équipements activité'}
 ];
 
-// ─── NAV ─────────────────────────────────────────────────────────────────────
+const FIELDS = [
+  'ref','dossier','date_rd0','version','ing_doss','ing_chan','op_titre','moa','op_ref','op_desc',
+  'contractant','sig_moa','missions','date_debut','archi_conc','archi_exec','be_sol','be_struct',
+  'be_autres','gros_oeuvre','bat_desc','codes_comm','montant','montant_eqp','nature_eqp','date_trav',
+  'date_visite1','date_recep','comm_interv','altitude','vent','cat_terrain','neige_val','reg_vent',
+  'reg_neige','inond_prec','nappe_rc','nappe_ss','sism_prec','agr_prec','sol_assise','rgt_ref','fond_sol',
+  'struct_vert','fac_lourde','fac_oss','fac_rmp','fac_surf','fac_prec','planchers','toiture',
+  'inond_ss_prec','etan_vert','etan_horiz','imp_fac','etan_toit','couvert','dall_rep_val','dall_ponc_val',
+  'tassement','dall_rev','carrelage','points_att','risques_prio','reg_tech','miss_autres','nb_pages',
+  'nb_ann','rd_autres','avis_prec','spec_prec','nb_visites','nb_visites_sol','fait_a','fait_le','sig_ing',
+  'dest_moa','dest_ass','dest_autre','rd1_type','rd1_nb','rd1_diam','rd1_prof','rd1_adequ','rd1_conclu',
+  'rd2_desc','rd2_conclu','rd3_date_recep','rd3_ing','rd3_ouvrages','rd3_reserves','rd3_conclu',
+  'rd4_nature','rd4_date','rd4_risq_desc','rd4_mesures','rd4_conclu','rd5_date','rd5_ing','rd5_desc',
+  'rd5_impact','rd5_conclu','rd6_date','rd6_date_recep','rd6_date_service','rd6_res_detail','rd6_conclu',
+  'rd6_fait_a','rd6_fait_le'
+];
+
+const RADIOS = ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt',
+  'inv_comp','adequ_fond','rd1_rens','fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec',
+  'docs_ult','avis','rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════════════════════════════
 function nav(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.s-item').forEach(n=>n.classList.remove('on'));
-  document.getElementById('panel-'+id).classList.add('on');
+  const p = document.getElementById('panel-'+id);
+  if(p) p.classList.add('on');
   document.querySelectorAll('.s-item').forEach(n=>{
-    if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"))n.classList.add('on');
+    const oc = n.getAttribute('onclick')||'';
+    if(oc.includes("'"+id+"'")) n.classList.add('on');
   });
 }
 
-// ─── RADIO — onchange sur l'input (jamais onclick sur le label !) ────────────
-function setR(key, input){
-  document.querySelectorAll(`input[name="${key}"]`)
-    .forEach(r => r.parentElement.classList.remove('on'));
-  input.parentElement.classList.add('on');
-  D[key] = input.value;
+// ═══════════════════════════════════════════════════════════════════════════
+// RADIOS — onchange sur l'input (l'input a pointer-events:none)
+// ═══════════════════════════════════════════════════════════════════════════
+function setR(name, input){
+  document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
+    if(r.parentElement) r.parentElement.classList.remove('on');
+  });
+  if(input.parentElement) input.parentElement.classList.add('on');
+  D[name] = input.value;
   save();
 }
 
-// ─── CHECKBOXES MC ───────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// CHECKBOXES — onchange sur l'input (l'input a pointer-events:none)
+// ═══════════════════════════════════════════════════════════════════════════
 function togMC(input){
-  input.parentElement.classList.toggle('on', input.checked);
+  if(input.parentElement) input.parentElement.classList.toggle('on', input.checked);
   if(!Array.isArray(D.mc)) D.mc = [];
   const i = D.mc.indexOf(input.value);
   if(input.checked){ if(i<0) D.mc.push(input.value); }
@@ -861,317 +793,353 @@ function togMC(input){
   save();
 }
 
-// ─── RD REQUIS ───────────────────────────────────────────────────────────────
 function togRD(input){
-  input.parentElement.classList.toggle('on', input.checked);
+  if(input.parentElement) input.parentElement.classList.toggle('on', input.checked);
   if(!Array.isArray(D.rd_req)) D.rd_req = [];
   const i = D.rd_req.indexOf(input.value);
   if(input.checked){ if(i<0) D.rd_req.push(input.value); }
   else { if(i>=0) D.rd_req.splice(i,1); }
-  updBadges(); save();
+  updBadges();
+  save();
 }
+
 function updBadges(){
   const arr = Array.isArray(D.rd_req) ? D.rd_req
     : (D.rd_req ? Object.keys(D.rd_req).filter(k=>D.rd_req[k]) : []);
   ['rd1','rd2','rd3','rd4','rd5','rd6'].forEach(r=>{
     const req = arr.includes(r);
-    const b=document.getElementById('b-'+r); if(b) b.textContent=req?'Requis':'N/A';
-    const s=document.getElementById('s-'+r); if(s) s.textContent=req?'Requis':'Non requis';
+    const b = document.getElementById('b-'+r);
+    if(b){ b.textContent = req ? 'Requis' : 'N/A'; b.className = 's-badge' + (req ? ' req' : ''); }
+    const s = document.getElementById('s-'+r);
+    if(s){ s.textContent = req ? 'Requis' : 'Non requis'; s.className = 'badge' + (req ? ' req' : ''); }
   });
 }
 
-// ─── AVIS ────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// AVIS
+// ═══════════════════════════════════════════════════════════════════════════
 function setAvis(input){
-  document.querySelectorAll('input[name="avis"]')
-    .forEach(r => r.parentElement.classList.remove('on'));
-  input.parentElement.classList.add('on');
+  document.querySelectorAll('input[name="avis"]').forEach(r=>{
+    if(r.parentElement) r.parentElement.classList.remove('on');
+  });
+  if(input.parentElement) input.parentElement.classList.add('on');
   D.avis = input.value;
   const w = document.getElementById('avis-wrap');
-  if(w) w.className = 'avis-wrap ' +
-    (input.value === 'Favorable' ? 'fav'
-     : input.value.includes('réserves') ? 'res' : 'def');
+  if(w) w.className = 'avis-wrap ' + (
+    input.value === 'Favorable' ? 'fav'
+    : input.value.includes('réserves') ? 'res' : 'def'
+  );
   save();
 }
 
-// ─── CODES ───────────────────────────────────────────────────────────────────
-function addCode(vals){
-  codeRows++;
-  const n=codeRows;
-  const tbody=document.getElementById('codes-body');
-  const tr=document.createElement('tr');
-  const cols=['1','2','3','4','5','6','7','8','9','10'];
-  tr.innerHTML=`<td><input type="text" id="code_name_${n}" value="${vals&&vals.name||'Ouvrage '+n}" oninput="save()"></td>`+
-    cols.map(c=>`<td><input type="text" id="code_${n}_${c}" value="${vals&&vals[c]||'.'}" oninput="save()" style="text-align:center"></td>`).join('');
-  tbody.appendChild(tr);
-}
-
-// ─── PC ──────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// PC
+// ═══════════════════════════════════════════════════════════════════════════
 function buildPC(items, bodyId, prefix){
-  const tbody=document.getElementById(bodyId);
-  tbody.innerHTML='';
+  const tbody = document.getElementById(bodyId);
+  if(!tbody) return;
+  tbody.innerHTML = '';
   items.forEach((item,i)=>{
-    const key=`${prefix}_${i}`;
-    const cur=(D.pc && D.pc[key])||'SO';
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
+    const key = `${prefix}_${i}`;
+    const cur = (D.pc && D.pc[key]) || 'SO';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
       <td class="lot">${item.lot}</td>
       <td>${item.ouvrage||'—'}</td>
       <td>
         <div class="pc-check">
           <label class="pc-radio so ${cur==='SO'?'on':''}"><input type="radio" name="${key}" value="SO" ${cur==='SO'?'checked':''} onchange="setPC('${key}',this)"> Sans objet</label>
-          <label class="pc-radio oui ${cur==='OUI'?'on':''}"><input type="radio" name="${key}" value="OUI" ${cur==='OUI'?'checked':''} onchange="setPC('${key}',this)"> Contrôlé OUI</label>
+          <label class="pc-radio oui ${cur==='OUI'?'on':''}"><input type="radio" name="${key}" value="OUI" ${cur==='OUI'?'checked':''} onchange="setPC('${key}',this)"> Contrôlé</label>
           <label class="pc-radio non ${cur==='NON'?'on':''}"><input type="radio" name="${key}" value="NON" ${cur==='NON'?'checked':''} onchange="setPC('${key}',this)"> NON</label>
         </div>
       </td>`;
     tbody.appendChild(tr);
   });
 }
+
 function setPC(key, input){
-  document.querySelectorAll(`input[name="${key}"]`)
-    .forEach(r => r.parentElement.classList.remove('on'));
-  input.parentElement.classList.add('on');
+  document.querySelectorAll(`input[name="${key}"]`).forEach(r=>{
+    if(r.parentElement){
+      const cls = Array.from(r.parentElement.classList).find(c=>['so','oui','non'].includes(c)) || '';
+      r.parentElement.className = 'pc-radio ' + cls;
+    }
+  });
+  if(input.parentElement) input.parentElement.classList.add('on');
   if(!D.pc) D.pc = {};
   D.pc[key] = input.value;
   save();
 }
 
-// ─── FIELDS ──────────────────────────────────────────────────────────────────
-const FIELDS = [
-  'ref','dossier','date_rd0','version','ing_doss','ing_chan','op_titre',
-  'moa','op_ref','op_desc','contractant','sig_moa','missions','date_debut',
-  'archi_conc','archi_exec','be_sol','be_struct','be_autres','gros_oeuvre',
-  'bat_desc','codes_comm','montant','montant_eqp','nature_eqp','date_trav',
-  'date_visite1','date_recep','comm_interv',
-  'altitude','vent','cat_terrain','neige_val','reg_vent','reg_neige',
-  'inond_prec','nappe_rc','nappe_ss','sism_prec','agr_prec',
-  'sol_assise','rgt_ref','fond_sol',
-  'struct_vert','fac_lourde','fac_oss','fac_rmp','fac_surf','fac_prec',
-  'planchers','toiture','inond_ss_prec','etan_vert','etan_horiz',
-  'imp_fac','etan_toit','couvert',
-  'dall_rep_val','dall_ponc_val','tassement','dall_rev','carrelage',
-  'points_att','risques_prio','reg_tech','miss_autres',
-  'nb_pages','nb_ann','rd_autres','avis_prec','spec_prec','nb_visites','nb_visites_sol',
-  'fait_a','fait_le','sig_ing','dest_moa','dest_ass','dest_autre',
-  'rd1_type','rd1_nb','rd1_diam','rd1_prof','rd1_adequ','rd1_conclu',
-  'rd2_desc','rd2_conclu',
-  'rd3_date_recep','rd3_ing','rd3_ouvrages','rd3_reserves','rd3_conclu',
-  'rd4_nature','rd4_date','rd4_risq_desc','rd4_mesures','rd4_conclu',
-  'rd5_date','rd5_ing','rd5_desc','rd5_impact','rd5_conclu',
-  'rd6_date','rd6_date_recep','rd6_date_service','rd6_res_detail','rd6_conclu','rd6_fait_a','rd6_fait_le'
-];
-const RADIOS = ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr',
-  'be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens','fac_remp','trad_h',
-  'inond_ss','dall_rep','dall_ponc','spec','docs_ult','avis',
-  'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'];
+// ═══════════════════════════════════════════════════════════════════════════
+// CODES
+// ═══════════════════════════════════════════════════════════════════════════
+function addCode(vals){
+  codeRows++;
+  const n = codeRows;
+  const tbody = document.getElementById('codes-body');
+  if(!tbody) return;
+  const tr = document.createElement('tr');
+  const cols = ['1','2','3','4','5','6','7','8','9','10'];
+  tr.innerHTML = `<td><input type="text" id="code_name_${n}" value="${vals&&vals.name||'Ouvrage '+n}" oninput="save()"></td>` +
+    cols.map(c=>`<td><input type="text" id="code_${n}_${c}" value="${vals&&vals[c]||'.'}" oninput="save()" style="text-align:center"></td>`).join('');
+  tbody.appendChild(tr);
+}
 
-// ─── COLLECT ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// COLLECT — lit tout le DOM et met dans D
+// ═══════════════════════════════════════════════════════════════════════════
 function collect(){
-  FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)D[id]=el.value;});
+  // Champs texte/date/textarea
+  FIELDS.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) D[id] = el.value;
+  });
+
+  // Radios — on lit :checked et on prend sa .value
   RADIOS.forEach(name=>{
     const c = document.querySelector(`input[name="${name}"]:checked`);
     D[name] = c ? c.value : '';
   });
-  // mc (tableau)
+
+  // Checkboxes mc → TABLEAU
   D.mc = [];
   document.querySelectorAll('#dom-grid .mc input[type=checkbox]:checked, #miss-comp-grid .mc input[type=checkbox]:checked')
     .forEach(cb => D.mc.push(cb.value));
-  // rd_req (tableau)
+
+  // Checkboxes rd_req → TABLEAU
   D.rd_req = [];
   document.querySelectorAll('#rd-req-grid .mc input[type=checkbox]:checked')
     .forEach(cb => D.rd_req.push(cb.value));
+
   // PC
   D.pc = {};
   ['dec','bi'].forEach(prefix=>{
     const items = prefix==='dec' ? PC_DEC : PC_BI;
     items.forEach((_,i)=>{
-      const key=`${prefix}_${i}`;
+      const key = `${prefix}_${i}`;
       const c = document.querySelector(`input[name="${key}"]:checked`);
       D.pc[key] = c ? c.value : 'SO';
     });
   });
-  // codes
-  D.codes=[];
+
+  // Codes
+  D.codes = [];
   for(let i=1;i<=codeRows;i++){
-    const el=document.getElementById('code_name_'+i);
+    const el = document.getElementById('code_name_'+i);
     if(!el) continue;
-    const row={name:el.value};
+    const row = {name: el.value};
     ['1','2','3','4','5','6','7','8','9','10'].forEach(c=>{
-      const ce=document.getElementById('code_'+i+'_'+c); if(ce) row[c]=ce.value;
+      const ce = document.getElementById('code_'+i+'_'+c);
+      if(ce) row[c] = ce.value;
     });
     D.codes.push(row);
   }
 }
 
 function save(){
-  collect(); updDash(); _dirty = true;
+  collect();
+  updDash();
+  _dirty = true;
   setSyncStatus('syncing', 'Modification…');
 }
+
 function updDash(){
   const s = (id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   s('d-ref', D.ref||'—');
   s('d-op', D.op_titre||D.op_desc||'—');
-  s('d-date', D.date_rd0?new Date(D.date_rd0).toLocaleDateString('fr-FR'):'—');
-  s('hdr-proj', D.op_titre||D.ref||'RAPSORD RD0');
-  s('hdr-ref', D.ref||D.dossier||'—');
+  s('d-date', D.date_rd0 ? new Date(D.date_rd0).toLocaleDateString('fr-FR') : '—');
   updBadges();
 }
 
-// ─── EXPORT / IMPORT ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// IMPORT / EXPORT JSON
+// ═══════════════════════════════════════════════════════════════════════════
 function exportJSON(){
   collect();
-  const name=(D.ref||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
-  const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='RAPSORD_'+name+'.json';a.click();
+  const name = (D.ref||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
+  const blob = new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'RAPSORD_'+name+'.json';
+  a.click();
 }
+
 function importJSON(){
-  const inp=document.createElement('input');inp.type='file';inp.accept='.json';
-  inp.onchange=e=>{
-    const f=e.target.files[0];if(!f)return;
-    const r=new FileReader();
-    r.onload=ev=>{
-      try{D=JSON.parse(ev.target.result);applyData();alert('Chargé.');}
-      catch(err){alert('Erreur JSON: '+err.message);}
-    };r.readAsText(f);
-  };inp.click();
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.json';
+  inp.onchange = e => {
+    const f = e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      try {
+        D = JSON.parse(ev.target.result);
+        applyData();
+        alert('Dossier chargé ✓');
+      } catch(err){
+        alert('Erreur : ' + err.message);
+      }
+    };
+    r.readAsText(f);
+  };
+  inp.click();
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// APPLY — met D dans le DOM
+// ═══════════════════════════════════════════════════════════════════════════
 function applyData(){
-  try {
-    FIELDS.forEach(id=>{const el=document.getElementById(id);if(el&&D[id]!==undefined)el.value=D[id];});
+  // 1. Champs texte
+  FIELDS.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el && D[id] !== undefined) el.value = D[id];
+  });
 
-    RADIOS.forEach(name=>{
-      const stored = D[name] || '';
-      document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
-        r.checked = (r.value === stored);
-        if(r.parentElement) r.parentElement.classList.toggle('on', r.checked);
-      });
+  // 2. Radios
+  RADIOS.forEach(name=>{
+    const stored = D[name] || '';
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
+      r.checked = (r.value === stored);
+      if(r.parentElement) r.parentElement.classList.toggle('on', r.checked);
     });
+  });
 
-    const w = document.getElementById('avis-wrap');
-    if(w && D.avis){
-      w.className = 'avis-wrap ' +
-        (D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
-    }
-
-    const mcArr = Array.isArray(D.mc) ? D.mc : (D.mc ? Object.keys(D.mc).filter(k=>D.mc[k]) : []);
-    document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el=>{
-      const cb=el.querySelector('input[type=checkbox]'); if(!cb) return;
-      cb.checked = mcArr.includes(cb.value);
-      el.classList.toggle('on', cb.checked);
-    });
-
-    const rdArr = Array.isArray(D.rd_req) ? D.rd_req : (D.rd_req ? Object.keys(D.rd_req).filter(k=>D.rd_req[k]) : []);
-    document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
-      const cb=el.querySelector('input[type=checkbox]'); if(!cb) return;
-      cb.checked = rdArr.includes(cb.value);
-      el.classList.toggle('on', cb.checked);
-    });
-
-    updBadges();
-
-    const cbody=document.getElementById('codes-body');
-    if(cbody){ cbody.innerHTML=''; codeRows=0; if(D.codes) D.codes.forEach(row=>addCode(row)); }
-
-    const decBody = document.getElementById('pc-dec-body');
-    const biBody  = document.getElementById('pc-bi-body');
-    if(decBody) buildPC(PC_DEC,'pc-dec-body','dec');
-    if(biBody)  buildPC(PC_BI,'pc-bi-body','bi');
-
-    updDash();
-  } catch(err){
-    console.error('🔴 applyData error:', err.message);
-    console.error('🔴 stack:', err.stack);
-    throw err;
+  // 3. Avis — couleur wrapper
+  const w = document.getElementById('avis-wrap');
+  if(w && D.avis){
+    w.className = 'avis-wrap ' + (
+      D.avis === 'Favorable' ? 'fav'
+      : D.avis.includes('réserves') ? 'res' : 'def'
+    );
   }
+
+  // 4. Checkboxes mc — accepte tableau OU objet
+  const mcArr = Array.isArray(D.mc) ? D.mc
+    : (D.mc ? Object.keys(D.mc).filter(k=>D.mc[k]) : []);
+  document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el=>{
+    const cb = el.querySelector('input[type=checkbox]');
+    if(!cb) return;
+    cb.checked = mcArr.includes(cb.value);
+    el.classList.toggle('on', cb.checked);
+  });
+
+  // 5. Checkboxes rd_req
+  const rdArr = Array.isArray(D.rd_req) ? D.rd_req
+    : (D.rd_req ? Object.keys(D.rd_req).filter(k=>D.rd_req[k]) : []);
+  document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
+    const cb = el.querySelector('input[type=checkbox]');
+    if(!cb) return;
+    cb.checked = rdArr.includes(cb.value);
+    el.classList.toggle('on', cb.checked);
+  });
+  updBadges();
+
+  // 6. Codes
+  const cbody = document.getElementById('codes-body');
+  if(cbody){ cbody.innerHTML=''; codeRows=0; if(D.codes) D.codes.forEach(row=>addCode(row)); }
+
+  // 7. PC
+  buildPC(PC_DEC,'pc-dec-body','dec');
+  buildPC(PC_BI,'pc-bi-body','bi');
+
+  // 8. Dashboard
+  updDash();
 }
 
-// ─── NEW DOSSIER ─────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// NOUVEAU DOSSIER
+// ═══════════════════════════════════════════════════════════════════════════
 function newDossier(){
-  if(!confirm('Effacer toutes les données ?'))return;
+  if(!confirm('Effacer toutes les données ?')) return;
   D = {mc:[], rd_req:[], pc:{}};
   document.querySelectorAll('input[type=text],input[type=date],input[type=number],textarea').forEach(e=>e.value='');
   document.querySelectorAll('input[type=radio],input[type=checkbox]').forEach(e=>e.checked=false);
   document.querySelectorAll('.ro,.mc').forEach(e=>e.classList.remove('on'));
-  const cb=document.getElementById('codes-body'); if(cb)cb.innerHTML=''; codeRows=0;
+  const cbody = document.getElementById('codes-body'); if(cbody) cbody.innerHTML=''; codeRows=0;
   buildPC(PC_DEC,'pc-dec-body','dec');
   buildPC(PC_BI,'pc-bi-body','bi');
   updDash();
-  document.getElementById('mover').classList.remove('on');
+  const m = document.getElementById('mover'); if(m) m.classList.remove('on');
   nav('dash');
 }
 
-// ─── MODAL ───────────────────────────────────────────────────────────────────
-function closeMdlg(e){ if(!e || e.target.id==='mover') document.getElementById('mover').classList.remove('on'); }
+// ═══════════════════════════════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════════════════════════════
+function closeMdlg(e){ if(!e || e.target.id==='mover'){const m=document.getElementById('mover'); if(m) m.classList.remove('on');} }
 
-// ─── CANEVAS ─────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// CANEVAS
+// ═══════════════════════════════════════════════════════════════════════════
 function loadCanevasList(){
-  try{ return JSON.parse(localStorage.getItem('rapsord_canevas')||'[]'); }catch(e){ return []; }
+  try { return JSON.parse(localStorage.getItem('rapsord_canevas')||'[]'); }
+  catch(e){ return []; }
 }
 function saveCanevasList(list){
-  try{ localStorage.setItem('rapsord_canevas', JSON.stringify(list)); }catch(e){}
+  try { localStorage.setItem('rapsord_canevas', JSON.stringify(list)); } catch(e){}
 }
 function saveToCanevas(){
   collect();
   if(!D.ref && !D.op_titre){ alert('Saisir au moins une référence.'); return; }
   const list = loadCanevasList();
   const idx = list.findIndex(c=>c.ref===D.ref && D.ref);
-  const entry = { ref: D.ref||'—', op: D.op_titre||D.op_desc||'—', date: D.date_rd0||'',
-    saved: new Date().toLocaleString('fr-FR'), data: JSON.parse(JSON.stringify(D)) };
-  if(idx>=0) list[idx]=entry; else list.unshift(entry);
-  saveCanevasList(list); renderCanevas();
+  const entry = {
+    ref: D.ref||'—', op: D.op_titre||D.op_desc||'—', date: D.date_rd0||'',
+    saved: new Date().toLocaleString('fr-FR'),
+    data: JSON.parse(JSON.stringify(D))
+  };
+  if(idx>=0) list[idx] = entry; else list.unshift(entry);
+  saveCanevasList(list);
+  renderCanevas();
 }
-function renderCanevas(filter){
+function renderCanevas(){
   const list = loadCanevasList();
-  const q = (filter||'').toLowerCase();
-  const filtered = q ? list.filter(c=>(c.ref+c.op).toLowerCase().includes(q)) : list;
   const body = document.getElementById('canevas-body');
-  const empty = document.getElementById('canevas-empty');
   if(!body) return;
-  body.innerHTML='';
-  if(filtered.length===0){ empty.style.display='block'; return; }
-  empty.style.display='none';
-  filtered.forEach((c,i)=>{
-    const tr=document.createElement('tr');
-    tr.style.cssText='border-bottom:1px solid var(--gris-cl)';
-    tr.innerHTML=`
-      <td style="padding:8px 12px;font-weight:500;color:var(--bleu-h)">${c.ref}</td>
-      <td style="padding:8px 12px;font-size:12px">${c.op}</td>
+  body.innerHTML = '';
+  if(list.length === 0){
+    body.innerHTML = '<tr><td style="padding:20px;text-align:center;color:#888">Aucun dossier enregistré</td></tr>';
+    return;
+  }
+  list.forEach((c,i)=>{
+    const tr = document.createElement('tr');
+    tr.style.cssText = 'border-bottom:1px solid #eee';
+    tr.innerHTML = `
+      <td style="padding:8px 12px;font-weight:500">${c.ref}</td>
+      <td style="padding:8px 12px">${c.op}</td>
       <td style="padding:8px 12px;font-size:11px">${c.date?new Date(c.date).toLocaleDateString('fr-FR'):c.saved}</td>
       <td style="padding:4px 8px">
-        <button class="open-btn" style="margin-right:4px" onclick="loadFromCanevas(${i})">Ouvrir</button>
+        <button class="open-btn" onclick="loadFromCanevas(${i})">Ouvrir</button>
         <button class="open-btn" onclick="delFromCanevas(${i})">✕</button>
       </td>`;
     body.appendChild(tr);
   });
 }
 function loadFromCanevas(idx){
-  const list=loadCanevasList(); if(!list[idx])return;
-  D=JSON.parse(JSON.stringify(list[idx].data));
-  applyData(); nav('dash');
+  const list = loadCanevasList();
+  if(!list[idx]) return;
+  D = JSON.parse(JSON.stringify(list[idx].data));
+  applyData();
+  nav('dash');
 }
 function delFromCanevas(idx){
-  if(!confirm('Supprimer ?'))return;
-  const list=loadCanevasList(); list.splice(idx,1);
-  saveCanevasList(list); renderCanevas();
+  if(!confirm('Supprimer ?')) return;
+  const list = loadCanevasList();
+  list.splice(idx,1);
+  saveCanevasList(list);
+  renderCanevas();
 }
-function filterCanevas(){ renderCanevas(document.getElementById('cav-search').value); }
 
-// ─── MENU ────────────────────────────────────────────────────────────────────
-function toggleRdMenu(){document.getElementById('rdActionMenu').classList.toggle('show');}
-function closeRdMenu(){document.getElementById('rdActionMenu').classList.remove('show');}
-document.addEventListener('click',function(e){
-  if(!e.target.closest('#rdMenuBtn')&&!e.target.closest('#rdActionMenu'))closeRdMenu();
-});
-
-// ─── FIREBASE SYNC ───────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// FIREBASE SYNC — via postMessage au parent
+// ═══════════════════════════════════════════════════════════════════════════
 let _dirty = false;
 let _canId = null;
 
 function setSyncStatus(state, label){
-  const dot=document.getElementById('sync-dot'),lbl=document.getElementById('sync-label');
-  if(!dot||!lbl) return;
-  dot.className='sync-dot'+(state?' '+state:''); lbl.textContent=label;
+  const lbl = document.getElementById('sync-label');
+  if(lbl) lbl.textContent = label;
 }
+
 function pushToParent(){
   if(!window.parent || window.parent === window) return;
   const canId = _canId;
@@ -1181,70 +1149,52 @@ function pushToParent(){
     window.parent.postMessage({ type:'rapsord_save', canId, data:D }, '*');
     setSyncStatus('saved', 'Sauvegardé ✓');
     _dirty = false;
-  } catch(e) { setSyncStatus('error', 'Erreur sync'); }
+  } catch(e) {
+    setSyncStatus('error', 'Erreur sync');
+  }
 }
+
 setInterval(pushToParent, 4000);
 window.addEventListener('beforeunload', pushToParent);
 
-// ─── NOTIF ───────────────────────────────────────────────────────────────────
-function rdShowNotif(type, icon, txt, showAction){
-  const b=document.getElementById('rd-notif-banner');
-  const ic=document.getElementById('rd-notif-icon');
-  const tx=document.getElementById('rd-notif-txt');
-  const ac=document.getElementById('rd-notif-action');
-  if(!b) return;
-  b.style.display='flex';
-  b.style.background = type==='presence'?'#fff8e6':type==='sync'?'#eff6ff':'#f0fdf4';
-  b.style.borderColor= type==='presence'?'#f59e0b':type==='sync'?'#3b82f6':'#22c55e';
-  b.style.color      = type==='presence'?'#92400e':type==='sync'?'#1e40af':'#166534';
-  if(ic) ic.textContent = icon;
-  if(tx) tx.textContent = txt;
-  if(ac) ac.style.display = showAction ? '' : 'none';
-  if(type==='saved') setTimeout(rdCloseNotif, 3000);
-}
-function rdCloseNotif(){const b=document.getElementById('rd-notif-banner');if(b)b.style.display='none';}
-
-let _pendingData = null;
-function rdApplyPending(){
-  if(!_pendingData) return;
-  D = _pendingData; _pendingData = null;
-  applyData();
-  const btn=document.getElementById('rd-sync-btn');
-  if(btn){btn.style.display='none';btn.classList.remove('sync-pending');}
-  rdShowNotif('saved','✅','Données synchronisées');
-  setSyncStatus('saved','Synchronisé ✓');
-}
-
-// ─── MESSAGES DU PARENT ──────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// MESSAGES DU PARENT
+// ═══════════════════════════════════════════════════════════════════════════
 window.addEventListener('message', function(e){
   if(!e.data) return;
+
   if(e.data.type === 'rapso_request_save'){ collect(); pushToParent(); }
+
   if(e.data.type === 'rapsord_inject'){
-    try{
+    try {
       const d = e.data.data;
       if(d && typeof d === 'object'){
-        _pendingData = d;
-        const btn=document.getElementById('rd-sync-btn');
-        if(btn){btn.style.display='';btn.classList.add('sync-pending');}
-        rdShowNotif('sync','🔄','Nouvelles données — cliquez sur Synchroniser',true);
-        setSyncStatus('syncing','Mise à jour dispo');
+        D = d;
+        applyData();
+        const b = document.getElementById('rd-notif-banner');
+        if(b){ b.style.display='flex'; b.textContent='🔄 Nouvelles données reçues'; setTimeout(()=>b.style.display='none',3000); }
       }
-    }catch(err){ console.warn(err); }
+    } catch(err){ console.warn(err); }
   }
+
   if(e.data.type === 'rapsord_presence'){
     const others = e.data.others || [];
-    const pill = document.getElementById('rd-presence-pill');
-    const names = document.getElementById('rd-presence-names');
-    if(others.length > 0){
-      const noms = others.map(u=>u.nom||'?').join(', ');
-      if(pill) pill.classList.add('show');
-      if(names) names.textContent = noms + (others.length>1?' éditent':' édite') + ' aussi';
-    } else { if(pill) pill.classList.remove('show'); }
+    const b = document.getElementById('rd-notif-banner');
+    if(b){
+      if(others.length > 0){
+        const noms = others.map(u=>u.nom||'?').join(', ');
+        b.style.display='flex';
+        b.textContent = '✏️ ' + noms + (others.length>1?' éditent':' édite') + ' aussi';
+        setTimeout(()=>b.style.display='none',5000);
+      }
+    }
   }
+
   if(e.data.type === 'rapsord_connected'){
     setSyncStatus('saved', 'Connecté ✓');
     if(e.data.canId !== undefined) _canId = e.data.canId;
   }
+
   if(e.data.type === 'rapsord_generate_docx'){
     collect();
     const ref = (D.ref||D.dossier||'dossier').replace(/[^a-zA-Z0-9\-_]/g,'_');
@@ -1256,7 +1206,9 @@ window.addEventListener('message', function(e){
   }
 });
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════
 addCode(); addCode();
 buildPC(PC_DEC,'pc-dec-body','dec');
 buildPC(PC_BI,'pc-bi-body','bi');
@@ -1265,34 +1217,34 @@ renderCanevas();
 
 (function(){
   _canId = (typeof window.RAPSORD_CAN_ID !== 'undefined') ? window.RAPSORD_CAN_ID : null;
+
   if(_canId !== null){
-    const hdr=document.getElementById('rapsord-header');
-    const tlb=document.getElementById('rapsord-toolbar');
-    if(hdr) hdr.style.display='none';
-    if(tlb) tlb.style.display='none';
-    const app=document.getElementById('app');
-    if(app) app.style.height='100vh';
+    const tlb = document.getElementById('rapsord-toolbar');
+    if(tlb) tlb.style.display = 'none';
+    const app = document.getElementById('app');
+    if(app) app.style.height = '100vh';
   }
+
   if(typeof window.RAPSORD_DATA !== 'undefined' && window.RAPSORD_DATA){
-    try{
+    try {
       const parsed = JSON.parse(window.RAPSORD_DATA);
       if(parsed && typeof parsed === 'object' && Object.keys(parsed).length > 0) D = parsed;
-    }catch(e){ console.warn('RAPSORD_DATA parse error:', e); }
+    } catch(e){ console.warn('RAPSORD_DATA parse error:', e); }
   }
+
   if(typeof window.RAPSORD_CAN_NOM !== 'undefined' && window.RAPSORD_CAN_NOM && !D.op_titre) D.op_titre = window.RAPSORD_CAN_NOM;
   if(typeof window.RAPSORD_CHRONO !== 'undefined' && window.RAPSORD_CHRONO && !D.dossier) D.dossier = window.RAPSORD_CHRONO;
   if(typeof window.RAPSORD_CLIENT !== 'undefined' && window.RAPSORD_CLIENT && !D.moa) D.moa = window.RAPSORD_CLIENT;
 
   setTimeout(()=>{
     applyData();
-    if(_canId !== null) setSyncStatus('saved','Connecté ✓');
-    else setSyncStatus('','Mode local');
+    if(_canId !== null) setSyncStatus('saved', 'Connecté ✓');
+    else setSyncStatus('', 'Mode local');
     _dirty = false;
   }, 0);
 
   if(typeof window.RAPSORD_READONLY !== 'undefined' && window.RAPSORD_READONLY){
-    document.querySelectorAll('input,select,textarea').forEach(el=>el.disabled=true);
-    setSyncStatus('','🔒 Lecture seule');
+    document.querySelectorAll('input,select,textarea').forEach(el=>el.disabled = true);
   }
 })();
 </script>
