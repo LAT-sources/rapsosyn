@@ -1796,6 +1796,108 @@ renderCanevas();
   setTimeout(() => { if (typeof window.applyData === 'function') window.applyData(); }, 150);
 
 })();
+<style>
+/* Empêche le double-toggle des cases .mc : les clics sur la case
+   passent au div parent qui gère tout seul */
+.mc > input[type="checkbox"] { pointer-events: none; }
+</style>
+<script>
+(function(){
+  'use strict';
+
+  // ─── Restauration fiable des radios (via l'onclick du label) ───
+  const _applyData = window.applyData;
+  window.applyData = function(){
+    if (_applyData) _applyData.apply(this, arguments);
+    const D = window.D || {};
+
+    // 1) Radios standards : on lit la valeur dans l'attribut onclick
+    document.querySelectorAll('label.ro').forEach(lab => {
+      const input = lab.querySelector('input[type="radio"]');
+      if (!input) return;
+      const oc = lab.getAttribute('onclick') || '';
+
+      // setR('clé','valeur',this)
+      let m = oc.match(/setR\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]/);
+      let match = false;
+      if (m) match = (D[m[1]] === m[2]);
+
+      // setAvis('valeur',this)
+      if (!m) {
+        m = oc.match(/setAvis\(\s*['"]([^'"]+)['"]/);
+        if (m) match = (D.avis === m[1]);
+      }
+
+      input.checked = match;
+      lab.classList.toggle('on', match);
+    });
+
+    // 2) Avis : recolorer le cadre
+    if (D.avis) {
+      const w = document.getElementById('avis-wrap');
+      if (w) w.className = 'avis-wrap ' + (
+        D.avis === 'Favorable' ? 'fav'
+        : D.avis.indexOf('réserves') !== -1 ? 'res' : 'def');
+    }
+
+    // 3) Cases à cocher : garantir la cohérence (par position dans le DOM)
+    document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach((el, i) => {
+      const cb = el.querySelector('input[type="checkbox"]');
+      if (!cb) return;
+      const oc = el.getAttribute('onclick') || '';
+      const m = oc.match(/togMC\(\s*this\s*,\s*['"]([^'"]+)['"]/);
+      if (!m) return;
+      const val = !!(D.mc && D.mc[m[1]]);
+      cb.checked = val;
+      el.classList.toggle('on', val);
+    });
+    document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
+      const cb = el.querySelector('input[type="checkbox"]');
+      if (!cb) return;
+      const oc = el.getAttribute('onclick') || '';
+      const m = oc.match(/togRD\(\s*this\s*,\s*['"]([^'"]+)['"]/);
+      if (!m) return;
+      const val = !!(D.rd_req && D.rd_req[m[1]]);
+      cb.checked = val;
+      el.classList.toggle('on', val);
+    });
+  };
+
+  // ─── Collecte fiable : lire l'état réel du DOM avant toute sauvegarde ───
+  const _collect = window.collect;
+  window.collect = function(){
+    if (_collect) _collect.apply(this, arguments);
+    const D = window.D || (window.D = {});
+
+    // Cases
+    document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el => {
+      const cb = el.querySelector('input[type="checkbox"]');
+      const oc = el.getAttribute('onclick') || '';
+      const m = oc.match(/togMC\(\s*this\s*,\s*['"]([^'"]+)['"]/);
+      if (cb && m) { if (!D.mc) D.mc = {}; D.mc[m[1]] = cb.checked; }
+    });
+    document.querySelectorAll('#rd-req-grid .mc').forEach(el => {
+      const cb = el.querySelector('input[type="checkbox"]');
+      const oc = el.getAttribute('onclick') || '';
+      const m = oc.match(/togRD\(\s*this\s*,\s*['"]([^'"]+)['"]/);
+      if (cb && m) { if (!D.rd_req) D.rd_req = {}; D.rd_req[m[1]] = cb.checked; }
+    });
+
+    // Radios
+    document.querySelectorAll('label.ro').forEach(lab => {
+      const input = lab.querySelector('input[type="radio"]');
+      if (!input || !input.checked) return;
+      const oc = lab.getAttribute('onclick') || '';
+      let m = oc.match(/setR\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]/);
+      if (m) { D[m[1]] = m[2]; return; }
+      m = oc.match(/setAvis\(\s*['"]([^'"]+)['"]/);
+      if (m) { D.avis = m[1]; }
+    });
+  };
+
+  // Restauration initiale
+  setTimeout(() => { if (window.applyData) window.applyData(); }, 300);
+})();
 </script>
 </body>
 </html>
