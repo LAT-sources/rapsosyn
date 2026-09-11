@@ -218,6 +218,13 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
   animation: rdPulse 1.2s ease-in-out infinite;
 }
 .sync-label{font-size:0.72rem;color:var(--g500,#64748b);font-weight:500;white-space:nowrap;}
+  
+/* ── FIX : clics directs sur checkbox/radio (évite le double-toggle) ── */
+.mc input,
+.ro input,
+.pc-radio input {
+  pointer-events: none;
+}  
 </style>
 </head>
 <body>
