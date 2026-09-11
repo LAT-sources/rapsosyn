@@ -1634,6 +1634,168 @@ renderCanevas();
     setSyncStatus('', '🔒 Lecture seule');
   }
 })();
+  <script>
+/* ═══════ PATCH — Synchronisation fiable des cases et radios ═══════ */
+(function(){
+  'use strict';
+
+  // ── 1. Retirer les onclick des labels (évite le double-toggle) ──
+  document.querySelectorAll('.mc, label.ro, label.pc-radio').forEach(el => {
+    el.dataset.rdOnclick = el.getAttribute('onclick') || '';
+    el.removeAttribute('onclick');
+  });
+
+  const D_ = () => window.D || (window.D = {});
+  const safeSave = () => { if (typeof window.save === 'function') window.save(); };
+  const safeUpd  = () => { if (typeof window.updBadges === 'function') window.updBadges(); };
+
+  function parseMC(el){
+    const m = (el.dataset.rdOnclick||'').match(/togMC\(\s*this\s*,\s*['"]([^'"]+)['"]/);
+    return m ? m[1] : null;
+  }
+  function parseRD(el){
+    const m = (el.dataset.rdOnclick||'').match(/togRD\(\s*this\s*,\s*['"]([^'"]+)['"]/);
+    return m ? m[1] : null;
+  }
+  function parseR(el){
+    const m = (el.dataset.rdOnclick||'').match(/setR\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]/);
+    return m ? {key:m[1], val:m[2]} : null;
+  }
+  function parseAvis(el){
+    const m = (el.dataset.rdOnclick||'').match(/setAvis\(\s*['"]([^'"]+)['"]/);
+    return m ? m[1] : null;
+  }
+  function parsePC(el){
+    const m = (el.dataset.rdOnclick||'').match(/setPC\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]/);
+    return m ? {key:m[1], val:m[2]} : null;
+  }
+
+  function applyAvisWrapClass(val){
+    const w = document.getElementById('avis-wrap');
+    if (!w || !val) return;
+    w.className = 'avis-wrap ' + (val === 'Favorable' ? 'fav'
+      : val.indexOf('réserves') !== -1 ? 'res' : 'def');
+  }
+
+  function refreshRadioGroup(name){
+    document.querySelectorAll('input[name="'+name+'"]').forEach(r => {
+      const lab = r.closest('label.ro');
+      if (lab) lab.classList.toggle('on', r.checked);
+    });
+  }
+  function refreshPCRadioGroup(name){
+    document.querySelectorAll('input[name="'+name+'"]').forEach(r => {
+      const lab = r.closest('label.pc-radio');
+      if (!lab) return;
+      const stateCls = ['so','oui','non'].find(c => lab.classList.contains(c)) || 'so';
+      lab.className = 'pc-radio ' + stateCls + (r.checked ? ' on' : '');
+    });
+  }
+
+  // ── 2. Écouteur universel : toute modif => D + save() ──
+  document.addEventListener('change', function(e){
+    const t = e.target;
+    if (!t || !t.matches) return;
+
+    if (t.matches('input[type="checkbox"]')) {
+      const mc = t.closest('.mc');
+      if (!mc) return;
+      mc.classList.toggle('on', t.checked);
+      const kMC = parseMC(mc);
+      const kRD = parseRD(mc);
+      if (kMC) { const D=D_(); if(!D.mc) D.mc={}; D.mc[kMC] = t.checked; }
+      if (kRD) { const D=D_(); if(!D.rd_req) D.rd_req={}; D.rd_req[kRD] = t.checked; safeUpd(); }
+      safeSave();
+      return;
+    }
+
+    if (t.matches('input[type="radio"]')) {
+      const lab = t.closest('label.ro');
+      if (lab) {
+        const p = parseR(lab); const a = parseAvis(lab);
+        refreshRadioGroup(t.name);
+        if (p) { const D=D_(); D[p.key] = p.val; }
+        if (a) { const D=D_(); D.avis = a; applyAvisWrapClass(a); }
+        safeSave();
+        return;
+      }
+      const labPC = t.closest('label.pc-radio');
+      if (labPC) {
+        const p = parsePC(labPC);
+        refreshPCRadioGroup(t.name);
+        if (p) { const D=D_(); if(!D.pc) D.pc={}; D.pc[p.key] = p.val; }
+        safeSave();
+      }
+    }
+  }, true);
+
+  // ── 3. Filet de sécurité : collect() relit le DOM ──
+  const _origCollect = window.collect;
+  window.collect = function(){
+    const D = D_();
+    document.querySelectorAll('.mc input[type="checkbox"]').forEach(cb => {
+      const mc = cb.closest('.mc'); if (!mc) return;
+      const kMC = parseMC(mc); if (kMC) { if(!D.mc) D.mc={}; D.mc[kMC] = cb.checked; return; }
+      const kRD = parseRD(mc); if (kRD) { if(!D.rd_req) D.rd_req={}; D.rd_req[kRD] = cb.checked; }
+    });
+    document.querySelectorAll('label.ro input[type="radio"]').forEach(r => {
+      if (!r.checked) return;
+      const lab = r.closest('label.ro'); if (!lab) return;
+      const p = parseR(lab); if (p) { D[p.key] = p.val; return; }
+      const a = parseAvis(lab); if (a) { D.avis = a; }
+    });
+    document.querySelectorAll('label.pc-radio input[type="radio"]').forEach(r => {
+      if (!r.checked) return;
+      const lab = r.closest('label.pc-radio'); if (!lab) return;
+      const p = parsePC(lab); if (p) { if(!D.pc) D.pc={}; D.pc[p.key] = p.val; }
+    });
+    if (_origCollect) return _origCollect.apply(this, arguments);
+  };
+
+  // ── 4. applyData() restaure TOUT correctement ──
+  const _origApplyData = window.applyData;
+  window.applyData = function(){
+    if (_origApplyData) _origApplyData.apply(this, arguments);
+    const D = window.D || {};
+
+    document.querySelectorAll('.mc').forEach(el => {
+      const cb = el.querySelector('input[type="checkbox"]'); if (!cb) return;
+      const kMC = parseMC(el); const kRD = parseRD(el);
+      let val = false;
+      if (kMC) val = !!(D.mc && D.mc[kMC]);
+      else if (kRD) val = !!(D.rd_req && D.rd_req[kRD]);
+      cb.checked = val;
+      el.classList.toggle('on', val);
+    });
+
+    document.querySelectorAll('label.ro').forEach(el => {
+      const input = el.querySelector('input[type="radio"]'); if (!input) return;
+      const p = parseR(el); const a = parseAvis(el);
+      let isOn = false;
+      if (p) isOn = (D[p.key] === p.val);
+      else if (a) isOn = (D.avis === a);
+      input.checked = isOn;
+      el.classList.toggle('on', isOn);
+    });
+
+    document.querySelectorAll('label.pc-radio').forEach(el => {
+      const input = el.querySelector('input[type="radio"]'); if (!input) return;
+      const p = parsePC(el);
+      let isOn = false;
+      if (p) isOn = !!(D.pc && D.pc[p.key] === p.val);
+      input.checked = isOn;
+      const stateCls = ['so','oui','non'].find(c => el.classList.contains(c)) || 'so';
+      el.className = 'pc-radio ' + stateCls + (isOn ? ' on' : '');
+    });
+
+    applyAvisWrapClass(D.avis);
+  };
+
+  // ── 5. Restauration initiale (le setTimeout(0) du script principal
+  //      peut avoir lieu avant que notre patch soit totalement prêt) ──
+  setTimeout(() => { if (typeof window.applyData === 'function') window.applyData(); }, 150);
+
+})();
 </script>
 </body>
 </html>
