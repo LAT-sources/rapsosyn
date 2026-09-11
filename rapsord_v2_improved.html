@@ -1184,8 +1184,56 @@ const FIELDS=[
   'rd6_date','rd6_date_recep','rd6_date_service','rd6_res_detail','rd6_conclu','rd6_fait_a','rd6_fait_le',
 ];
 function collect(){
+  // Champs texte / date / textarea
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)D[id]=el.value;});
-  // codes
+
+  // Radios → stockés dans D directement (clé = name)
+  ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
+   'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
+   'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'].forEach(name=>{
+    const checked=document.querySelector(`input[name="${name}"]:checked`);
+    if(checked) D[name]=checked.value;
+  });
+
+  // Avis
+  const avisChecked=document.querySelector('input[name="avis"]:checked');
+  if(avisChecked) D.avis=avisChecked.value;
+
+  // Checkboxes missions (mc)
+  if(!D.mc) D.mc={};
+  document.querySelectorAll('#dom-grid .mc').forEach(el=>{
+    const key=el.textContent.trim().replace(/\s+/g,' ');
+    const cb=el.querySelector('input[type=checkbox]');
+    if(cb) D.mc[key]=cb.checked;
+  });
+  document.querySelectorAll('#miss-comp-grid .mc').forEach(el=>{
+    const key=el.textContent.trim().replace(/\s+/g,' ');
+    const cb=el.querySelector('input[type=checkbox]');
+    if(cb) D.mc[key]=cb.checked;
+  });
+
+  // RD requis (rd_req)
+  if(!D.rd_req) D.rd_req={};
+  document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
+    const cb=el.querySelector('input[type=checkbox]');
+    if(!cb) return;
+    ['rd1','rd2','rd3','rd4','rd5','rd6'].forEach(r=>{
+      if(el.textContent.includes(r.toUpperCase())) D.rd_req[r]=cb.checked;
+    });
+  });
+
+  // PC
+  if(!D.pc) D.pc={};
+  ['dec','bi'].forEach(prefix=>{
+    const items = prefix==='dec' ? PC_DEC : PC_BI;
+    items.forEach((_,i)=>{
+      const key=`${prefix}_${i}`;
+      const checked=document.querySelector(`input[name="${key}"]:checked`);
+      if(checked) D.pc[key]=checked.value;
+    });
+  });
+
+  // Codes
   D.codes=[];
   for(let i=1;i<=codeRows;i++){
     const el=document.getElementById('code_name_'+i);
@@ -1233,36 +1281,65 @@ function importJSON(){
   };inp.click();
 }
 function applyData(){
+  // Champs texte
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el&&D[id]!==undefined)el.value=D[id];});
-  // radios
+
+  // Radios — cocher + ajouter classe .on
   ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
    'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
    'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'].forEach(name=>{
-    if(D[name])document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
-      if(r.value===D[name])r.parentElement.classList.add('on');
+    const stored = D[name];
+    if(!stored) return;
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
+      r.parentElement.classList.remove('on');
+      r.checked = false;
     });
+    const target = document.querySelector(`input[name="${name}"][value="${stored}"]`);
+    if(target){ target.checked=true; target.parentElement.classList.add('on'); }
   });
+
+  // Avis
   if(D.avis){
     document.querySelectorAll('input[name="avis"]').forEach(r=>{
-      if(r.parentElement.textContent.trim().startsWith(D.avis)){r.parentElement.classList.add('on');}
+      r.parentElement.classList.remove('on'); r.checked=false;
     });
+    const target=document.querySelector(`input[name="avis"][value="${D.avis}"]`);
+    if(target){ target.checked=true; target.parentElement.classList.add('on'); }
     const w=document.getElementById('avis-wrap');
     if(w) w.className='avis-wrap '+(D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
   }
-  // checkboxes mc
-  if(D.mc)document.querySelectorAll('#dom-grid .mc,#miss-comp-grid .mc').forEach(el=>{
-    const key=el.textContent.trim();
-    if(D.mc[key]){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
-  });
-  // rd_req
-  if(D.rd_req)document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
-    if(el.textContent.includes('RD1')&&D.rd_req.rd1){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
-    if(el.textContent.includes('RD2')&&D.rd_req.rd2){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
-  });
-  // codes
+
+  // Checkboxes mc
+  if(D.mc){
+    document.querySelectorAll('#dom-grid .mc, #miss-comp-grid .mc').forEach(el=>{
+      const key=el.textContent.trim().replace(/\s+/g,' ');
+      const cb=el.querySelector('input[type=checkbox]');
+      const checked=!!D.mc[key];
+      if(cb) cb.checked=checked;
+      el.classList.toggle('on', checked);
+    });
+  }
+
+  // RD requis
+  if(D.rd_req){
+    document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
+      const cb=el.querySelector('input[type=checkbox]');
+      if(!cb) return;
+      let checked=false;
+      ['rd1','rd2','rd3','rd4','rd5','rd6'].forEach(r=>{
+        if(el.textContent.includes(r.toUpperCase()) && D.rd_req[r]) checked=true;
+      });
+      cb.checked=checked;
+      el.classList.toggle('on', checked);
+    });
+    updBadges();
+  }
+
+  // Codes
   const cb=document.getElementById('codes-body');
-  if(cb){cb.innerHTML='';codeRows=0;if(D.codes)(D.codes).forEach(row=>addCode(row));}
-  // pc
+  if(cb){cb.innerHTML='';codeRows=0;if(D.codes) D.codes.forEach(row=>addCode(row));}
+
+  // PC
   rebuildPC();
   updDash();
   const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Dossier chargé ✓';
