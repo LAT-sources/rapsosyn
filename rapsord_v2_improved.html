@@ -225,6 +225,14 @@ textarea{resize:vertical;min-height:68px;line-height:1.5}
 .pc-radio input {
   pointer-events: none;
 }  
+
+/* Force les clics à toujours atteindre le parent (label/div),
+   ce qui évite toute interférence résiduelle du navigateur */
+.mc input,
+.ro input,
+.pc-radio input {
+  pointer-events: none !important;
+}
 </style>
 </head>
 <body>
@@ -1094,16 +1102,22 @@ function setR(key,val,el){
 
 // ─── MISSION CHECKBOXES ───────────────────────────────────────────────────────
 function togMC(el,key){
-  const cb=el.querySelector('input');cb.checked=!cb.checked;
-  el.classList.toggle('on',cb.checked);
-  if(!D.mc)D.mc={};D.mc[key]=cb.checked; save();
+  const cb=el.querySelector('input');
+  // Si le clic vient de l'input lui-même, le navigateur a DÉJÀ basculé l'état → ne pas re-basculer
+  const fromInput = (typeof event !== 'undefined' && event && event.target === cb);
+  if (!fromInput) cb.checked = !cb.checked;
+  el.classList.toggle('on', cb.checked);
+  if(!D.mc)D.mc={}; D.mc[key]=cb.checked;
+  save();
 }
 
 // ─── RD REQUIRED ─────────────────────────────────────────────────────────────
 function togRD(el,id){
-  const cb=el.querySelector('input');cb.checked=!cb.checked;
-  el.classList.toggle('on',cb.checked);
-  if(!D.rd_req)D.rd_req={};D.rd_req[id]=cb.checked;
+  const cb=el.querySelector('input');
+  const fromInput = (typeof event !== 'undefined' && event && event.target === cb);
+  if (!fromInput) cb.checked = !cb.checked;
+  el.classList.toggle('on', cb.checked);
+  if(!D.rd_req)D.rd_req={}; D.rd_req[id]=cb.checked;
   updBadges(); save();
 }
 function updBadges(){
