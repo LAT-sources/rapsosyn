@@ -1976,42 +1976,22 @@ window.addEventListener('message', function(e) {
     updateSynCounters(e.data.data);
   }
 
-// Sanitiser les clés Firebase : remplace . # $ / [ ] par _
-function sanitizeKey(k) {
-  return String(k).replace(/[.#$\/\[\]]/g, '_');
-}
-function sanitizeForFirebase(obj) {
-  if (obj === null || obj === undefined) return obj;
-  if (Array.isArray(obj)) return obj.map(sanitizeForFirebase);
-  if (typeof obj === 'object') {
-    const out = {};
-    for (const [k, v] of Object.entries(obj)) {
-      out[sanitizeKey(k)] = sanitizeForFirebase(v);
-    }
-    return out;
-  }
-  return obj;
-}
-
 if (e.data.type === 'rapsord_save') {
     const canId   = e.data.canId;
     const payload = e.data.data;
     if (canId === undefined || canId === null || !payload) return;
 
-    // Sanitiser les clés Firebase (interdit: . # $ / [ ])
-    const sanitized = sanitizeForFirebase(payload);
-
-    const newHash = hashRd(sanitized);
-    if (newHash === _rdLastHash) return;
+    const newHash = hashRd(payload);
+    if (newHash === _rdLastHash) return;   // rien de neuf
 
     _rdLastHash = newHash;
     _rdIsSelfWrite = true;
-    setTimeout(() => { _rdIsSelfWrite = false; }, 1000);
+    setTimeout(() => { _rdIsSelfWrite = false; }, 1000);   // sécurité anti-blocage
 
-    db.ref('/rd0/' + canId).set(sanitized)
+    db.ref('/rd0/' + canId).set(payload)
       .then(() => {
         rdSetLive(true);
-        rdUpdateBadges(sanitized);
+        rdUpdateBadges(payload);
         const idx = canevas.findIndex(x => String(x.id) === String(canId));
         if (idx >= 0 && !canevas[idx].hasRd0) {
           canevas[idx].hasRd0 = true;
@@ -2147,6 +2127,7 @@ function postAction(action) {
    RAPSORD VIEWER — calqué exactement sur SYN
    ═══════════════════════════════════════════════════ */
 const RAPSORD_URL = 'https://cdn.jsdelivr.net/gh/LAT-sources/rapsosyn@main/rapsord_v2_improved.html';
+const RAPSORD_FALLBACK = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/main/rapsord_v2_improved.html';
 let currentRapsordId = null;
 let _rdFromSyn       = false;
 let _rdListener      = null;
