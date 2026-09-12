@@ -1976,22 +1976,42 @@ window.addEventListener('message', function(e) {
     updateSynCounters(e.data.data);
   }
 
+// Sanitiser les clés Firebase : remplace . # $ / [ ] par _
+function sanitizeKey(k) {
+  return String(k).replace(/[.#$\/\[\]]/g, '_');
+}
+function sanitizeForFirebase(obj) {
+  if (obj === null || obj === undefined) return obj;
+  if (Array.isArray(obj)) return obj.map(sanitizeForFirebase);
+  if (typeof obj === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(obj)) {
+      out[sanitizeKey(k)] = sanitizeForFirebase(v);
+    }
+    return out;
+  }
+  return obj;
+}
+
 if (e.data.type === 'rapsord_save') {
     const canId   = e.data.canId;
     const payload = e.data.data;
     if (canId === undefined || canId === null || !payload) return;
 
-    const newHash = hashRd(payload);
-    if (newHash === _rdLastHash) return;   // rien de neuf
+    // Sanitiser les clés Firebase (interdit: . # $ / [ ])
+    const sanitized = sanitizeForFirebase(payload);
+
+    const newHash = hashRd(sanitized);
+    if (newHash === _rdLastHash) return;
 
     _rdLastHash = newHash;
     _rdIsSelfWrite = true;
-    setTimeout(() => { _rdIsSelfWrite = false; }, 1000);   // sécurité anti-blocage
+    setTimeout(() => { _rdIsSelfWrite = false; }, 1000);
 
-    db.ref('/rd0/' + canId).set(payload)
+    db.ref('/rd0/' + canId).set(sanitized)
       .then(() => {
         rdSetLive(true);
-        rdUpdateBadges(payload);
+        rdUpdateBadges(sanitized);
         const idx = canevas.findIndex(x => String(x.id) === String(canId));
         if (idx >= 0 && !canevas[idx].hasRd0) {
           canevas[idx].hasRd0 = true;
