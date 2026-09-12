@@ -1089,8 +1089,7 @@ function setR(key,val,el){
 function togMC(el,key){
   const cb=el.querySelector('input');cb.checked=!cb.checked;
   el.classList.toggle('on',cb.checked);
-  const safeKey=key.replace(/[.#$\/\[\]]/g,'_');
-  if(!D.mc)D.mc={};D.mc[safeKey]=cb.checked; save();
+  if(!D.mc)D.mc={};D.mc[key]=cb.checked; save();
 }
 
 // ─── RD REQUIRED ─────────────────────────────────────────────────────────────
@@ -1250,14 +1249,10 @@ function applyData(){
     const w=document.getElementById('avis-wrap');
     if(w) w.className='avis-wrap '+(D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
   }
-  // checkboxes mc — clés sanitisées (même sanitisation que togMC/collect)
+  // checkboxes mc
   if(D.mc)document.querySelectorAll('#dom-grid .mc,#miss-comp-grid .mc').forEach(el=>{
-    const raw=el.textContent.trim().replace(/\s+/g,' ');
-    const key=raw.replace(/[.#$\/\[\]]/g,'_');
-    const checked=!!(D.mc[key]||D.mc[raw]); // compatibilité anciens dossiers
-    const cb=el.querySelector('input');
-    if(cb) cb.checked=checked;
-    el.classList.toggle('on',checked);
+    const key=el.textContent.trim();
+    if(D.mc[key]){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
   });
   // rd_req
   if(D.rd_req)document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
@@ -1273,8 +1268,8 @@ function applyData(){
   const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Dossier chargé ✓';
 }
 function rebuildPC(){
-  document.getElementById('pc-dec-body').innerHTML='';
-  document.getElementById('pc-bi-body').innerHTML='';
+  const pdec=document.getElementById('pc-dec-body');if(pdec)pdec.innerHTML='';
+  const pbi=document.getElementById('pc-bi-body');if(pbi)pbi.innerHTML='';
   buildPC(PC_DEC,'pc-dec-body','dec');
   buildPC(PC_BI,'pc-bi-body','bi');
 }
@@ -1328,7 +1323,7 @@ function saveToCanevas(){
   if(idx>=0) list[idx]=entry; else list.unshift(entry);
   saveCanevasList(list);
   renderCanevas();
-  document.getElementById('sbar-hint').textContent='Dossier sauvegardé dans les canevas ✓';
+  (function(){const _e=document.getElementById('sbar-hint');if(_e)_e.textContent='Dossier sauvegardé dans les canevas ✓';})()
 }
 function renderCanevas(filter){
   const list = loadCanevasList();
@@ -1362,7 +1357,7 @@ function loadFromCanevas(idx){
   D=JSON.parse(JSON.stringify(list[idx].data));
   applyData();
   nav('dash');
-  document.getElementById('sbar-hint').textContent='Dossier « '+list[idx].ref+' » chargé ✓';
+  (function(){const _e=document.getElementById('sbar-hint');if(_e)_e.textContent='Dossier « '+list[idx].ref+' » chargé ✓';})()
 }
 function delFromCanevas(idx){
   if(!confirm('Supprimer ce dossier des canevas ?'))return;
