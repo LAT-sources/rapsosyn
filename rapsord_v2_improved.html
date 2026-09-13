@@ -1089,7 +1089,8 @@ function setR(key,val,el){
 function togMC(el,key){
   const cb=el.querySelector('input');cb.checked=!cb.checked;
   el.classList.toggle('on',cb.checked);
-  if(!D.mc)D.mc={};D.mc[key]=cb.checked; save();
+  const safeKey=key.replace(/[.#$\/\[\]]/g,'_');
+  if(!D.mc)D.mc={};D.mc[safeKey]=cb.checked; save();
 }
 
 // ─── RD REQUIRED ─────────────────────────────────────────────────────────────
@@ -1185,11 +1186,45 @@ const FIELDS=[
 ];
 function collect(){
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el)D[id]=el.value;});
-  // codes
+  // Radios
+  ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
+   'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
+   'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'].forEach(name=>{
+    const r=document.querySelector(`input[name="${name}"]:checked`);
+    if(r) D[name]=r.value;
+  });
+  // Avis
+  const av=document.querySelector('input[name="avis"]:checked');
+  if(av) D.avis=av.value;
+  // Checkboxes mc — clés sanitisées (Firebase interdit / . # $ [ ])
+  if(!D.mc)D.mc={};
+  document.querySelectorAll('#dom-grid .mc,#miss-comp-grid .mc').forEach(el=>{
+    const key=el.textContent.trim().replace(/\s+/g,' ').replace(/[.#$\/\[\]]/g,'_');
+    const cb=el.querySelector('input[type=checkbox]');
+    if(cb)D.mc[key]=cb.checked;
+  });
+  // RD requis
+  if(!D.rd_req)D.rd_req={};
+  document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
+    const cb=el.querySelector('input[type=checkbox]');if(!cb)return;
+    ['rd1','rd2','rd3','rd4','rd5','rd6'].forEach(r=>{
+      if(el.textContent.includes(r.toUpperCase()))D.rd_req[r]=cb.checked;
+    });
+  });
+  // PC
+  if(!D.pc)D.pc={};
+  ['dec','bi'].forEach(prefix=>{
+    const items=prefix==='dec'?PC_DEC:PC_BI;
+    items.forEach((_,i)=>{
+      const key=`${prefix}_${i}`;
+      const r=document.querySelector(`input[name="${key}"]:checked`);
+      if(r)D.pc[key]=r.value;
+    });
+  });
+  // Codes
   D.codes=[];
   for(let i=1;i<=codeRows;i++){
-    const el=document.getElementById('code_name_'+i);
-    if(!el)continue;
+    const el=document.getElementById('code_name_'+i);if(!el)continue;
     const row={name:el.value};
     ['1','2','3','4','5','6','7','8','9','10'].forEach(c=>{
       const ce=document.getElementById('code_'+i+'_'+c);if(ce)row[c]=ce.value;
@@ -1234,44 +1269,56 @@ function importJSON(){
 }
 function applyData(){
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el&&D[id]!==undefined)el.value=D[id];});
-  // radios
+  // Radios — cocher + classe .on
   ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
    'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
    'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'].forEach(name=>{
-    if(D[name])document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
-      if(r.value===D[name])r.parentElement.classList.add('on');
+    const stored=D[name]; if(!stored)return;
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
+      r.checked=false; r.parentElement.classList.remove('on');
     });
+    const t=document.querySelector(`input[name="${name}"][value="${stored}"]`);
+    if(t){t.checked=true;t.parentElement.classList.add('on');}
   });
+  // Avis
   if(D.avis){
-    document.querySelectorAll('input[name="avis"]').forEach(r=>{
-      if(r.parentElement.textContent.trim().startsWith(D.avis)){r.parentElement.classList.add('on');}
-    });
+    document.querySelectorAll('input[name="avis"]').forEach(r=>{r.checked=false;r.parentElement.classList.remove('on');});
+    const t=document.querySelector(`input[name="avis"][value="${D.avis}"]`);
+    if(t){t.checked=true;t.parentElement.classList.add('on');}
     const w=document.getElementById('avis-wrap');
-    if(w) w.className='avis-wrap '+(D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
+    if(w)w.className='avis-wrap '+(D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
   }
-  // checkboxes mc
+  // Checkboxes mc — clés sanitisées (compatibilité anciens / et nouveaux _)
   if(D.mc)document.querySelectorAll('#dom-grid .mc,#miss-comp-grid .mc').forEach(el=>{
-    const key=el.textContent.trim();
-    if(D.mc[key]){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
+    const raw=el.textContent.trim().replace(/\s+/g,' ');
+    const safe=raw.replace(/[.#$\/\[\]]/g,'_');
+    const checked=!!(D.mc[safe]||D.mc[raw]);
+    const cb=el.querySelector('input[type=checkbox]');
+    if(cb)cb.checked=checked;
+    el.classList.toggle('on',checked);
   });
-  // rd_req
+  // RD requis
   if(D.rd_req)document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
-    if(el.textContent.includes('RD1')&&D.rd_req.rd1){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
-    if(el.textContent.includes('RD2')&&D.rd_req.rd2){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
+    const cb=el.querySelector('input[type=checkbox]');if(!cb)return;
+    let checked=false;
+    ['rd1','rd2','rd3','rd4','rd5','rd6'].forEach(r=>{
+      if(el.textContent.includes(r.toUpperCase())&&D.rd_req[r])checked=true;
+    });
+    cb.checked=checked;el.classList.toggle('on',checked);
   });
-  // codes
+  // Codes
   const cb=document.getElementById('codes-body');
-  if(cb){cb.innerHTML='';codeRows=0;if(D.codes)(D.codes).forEach(row=>addCode(row));}
-  // pc
+  if(cb){cb.innerHTML='';codeRows=0;if(D.codes)D.codes.forEach(row=>addCode(row));}
+  // PC
   rebuildPC();
   updDash();
   const sh=document.getElementById('sbar-hint');if(sh)sh.textContent='Dossier chargé ✓';
 }
 function rebuildPC(){
-  const pdec=document.getElementById('pc-dec-body');if(pdec)pdec.innerHTML='';
-  const pbi=document.getElementById('pc-bi-body');if(pbi)pbi.innerHTML='';
-  buildPC(PC_DEC,'pc-dec-body','dec');
-  buildPC(PC_BI,'pc-bi-body','bi');
+  const dec=document.getElementById('pc-dec-body');
+  const bi=document.getElementById('pc-bi-body');
+  if(dec){dec.innerHTML='';buildPC(PC_DEC,'pc-dec-body','dec');}
+  if(bi) {bi.innerHTML=''; buildPC(PC_BI,'pc-bi-body','bi');}
 }
 
 // ─── NEW DOSSIER ──────────────────────────────────────────────────────────────
@@ -1323,7 +1370,7 @@ function saveToCanevas(){
   if(idx>=0) list[idx]=entry; else list.unshift(entry);
   saveCanevasList(list);
   renderCanevas();
-  (function(){const _e=document.getElementById('sbar-hint');if(_e)_e.textContent='Dossier sauvegardé dans les canevas ✓';})()
+  document.getElementById('sbar-hint')&&(document.getElementById('sbar-hint').textContent='Dossier sauvegardé dans les canevas ✓');
 }
 function renderCanevas(filter){
   const list = loadCanevasList();
@@ -1357,7 +1404,7 @@ function loadFromCanevas(idx){
   D=JSON.parse(JSON.stringify(list[idx].data));
   applyData();
   nav('dash');
-  (function(){const _e=document.getElementById('sbar-hint');if(_e)_e.textContent='Dossier « '+list[idx].ref+' » chargé ✓';})()
+  document.getElementById('sbar-hint')&&(document.getElementById('sbar-hint').textContent='Dossier « '+list[idx].ref+' » chargé ✓');
 }
 function delFromCanevas(idx){
   if(!confirm('Supprimer ce dossier des canevas ?'))return;
