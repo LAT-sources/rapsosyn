@@ -1907,6 +1907,18 @@ function stopLiveListener() {
 }
 
 /* MESSAGE HANDLER */
+function sanitizeForFirebase(obj){
+  if(obj===null||obj===undefined)return obj;
+  if(Array.isArray(obj))return obj.map(sanitizeForFirebase);
+  if(typeof obj==='object'){
+    const out={};
+    for(const[k,v]of Object.entries(obj)){
+      out[String(k).replace(/[.#$\/\[\]]/g,'_')]=sanitizeForFirebase(v);
+    }
+    return out;
+  }
+  return obj;
+}
 window.addEventListener('message', function(e) {
   if (!e.data || typeof e.data !== 'object') return;
 
@@ -1988,7 +2000,7 @@ if (e.data.type === 'rapsord_save') {
     _rdIsSelfWrite = true;
     setTimeout(() => { _rdIsSelfWrite = false; }, 1000);   // sécurité anti-blocage
 
-    db.ref('/rd0/' + canId).set(payload)
+    db.ref('/rd0/' + canId).set(sanitizeForFirebase(payload))
       .then(() => {
         rdSetLive(true);
         rdUpdateBadges(payload);
@@ -2127,7 +2139,6 @@ function postAction(action) {
    RAPSORD VIEWER — calqué exactement sur SYN
    ═══════════════════════════════════════════════════ */
 const RAPSORD_URL = 'https://cdn.jsdelivr.net/gh/LAT-sources/rapsosyn@main/rapsord_v2_improved.html';
-const RAPSORD_FALLBACK = 'https://raw.githubusercontent.com/LAT-sources/rapsosyn/main/rapsord_v2_improved.html';
 let currentRapsordId = null;
 let _rdFromSyn       = false;
 let _rdListener      = null;
