@@ -1234,30 +1234,44 @@ function importJSON(){
 }
 function applyData(){
   FIELDS.forEach(id=>{const el=document.getElementById(id);if(el&&D[id]!==undefined)el.value=D[id];});
-  // radios
+  // radios — cocher + classe .on
   ['conc','ctrl_dep','hon','eqp','cycl','neige','inond','sism','agr','be_sol_int','rgt','inv_comp','adequ_fond','rd1_rens',
    'fac_remp','trad_h','inond_ss','dall_rep','dall_ponc','spec','docs_ult',
    'rd3_avis','rd4_risques','rd5_avis','rd6_acheve','rd6_res_emis','rd6_res_lev','rd6_avis'].forEach(name=>{
-    if(D[name])document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
-      if(r.value===D[name])r.parentElement.classList.add('on');
+    const stored=D[name]; if(!stored) return;
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r=>{
+      r.checked=false; r.parentElement.classList.remove('on');
     });
+    const t=document.querySelector(`input[name="${name}"][value="${stored}"]`);
+    if(t){t.checked=true; t.parentElement.classList.add('on');}
   });
+  // Avis
   if(D.avis){
     document.querySelectorAll('input[name="avis"]').forEach(r=>{
-      if(r.parentElement.textContent.trim().startsWith(D.avis)){r.parentElement.classList.add('on');}
+      r.checked=false; r.parentElement.classList.remove('on');
     });
+    const t=document.querySelector(`input[name="avis"][value="${D.avis}"]`);
+    if(t){t.checked=true; t.parentElement.classList.add('on');}
     const w=document.getElementById('avis-wrap');
     if(w) w.className='avis-wrap '+(D.avis==='Favorable'?'fav':D.avis.includes('réserves')?'res':'def');
   }
-  // checkboxes mc
+  // Checkboxes mc — clés sanitisées (Firebase: / → _) avec fallback brut
   if(D.mc)document.querySelectorAll('#dom-grid .mc,#miss-comp-grid .mc').forEach(el=>{
-    const key=el.textContent.trim();
-    if(D.mc[key]){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
+    const raw=el.textContent.trim().replace(/\s+/g,' ');
+    const safe=raw.replace(/[.#$\/\[\]]/g,'_');
+    const checked=!!(D.mc[safe]||D.mc[raw]);
+    const cb=el.querySelector('input[type=checkbox]');
+    if(cb) cb.checked=checked;
+    el.classList.toggle('on',checked);
   });
-  // rd_req
+  // rd_req — tous RD1-RD6
   if(D.rd_req)document.querySelectorAll('#rd-req-grid .mc').forEach(el=>{
-    if(el.textContent.includes('RD1')&&D.rd_req.rd1){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
-    if(el.textContent.includes('RD2')&&D.rd_req.rd2){el.classList.add('on');const cb=el.querySelector('input');if(cb)cb.checked=true;}
+    const cb=el.querySelector('input[type=checkbox]');if(!cb)return;
+    let checked=false;
+    ['rd1','rd2','rd3','rd4','rd5','rd6'].forEach(r=>{
+      if(el.textContent.toLowerCase().includes(r)&&D.rd_req[r])checked=true;
+    });
+    cb.checked=checked; el.classList.toggle('on',checked);
   });
   // codes
   const cb=document.getElementById('codes-body');
@@ -1390,10 +1404,10 @@ function setSyncStatus(state, label){
 }
 
 function pushToParent(){
+  // Exactement comme canevas_temp : window.CANEVAS_ID -> ici window.RAPSORD_CAN_ID
   if(!window.parent || window.parent === window) return;
   const canId = _canId;
   if(canId === undefined || canId === null) return;
-  if(!_dirty) return;  // ← NE PAS envoyer si rien n'a changé
   collect();
   try {
     window.parent.postMessage({ type:'rapsord_save', canId, data:D }, '*');
@@ -1404,8 +1418,8 @@ function pushToParent(){
   }
 }
 
-// Auto-save toutes les 30s seulement si modifié (_dirty)
-setInterval(pushToParent, 30000);
+// Auto-save toutes les 4s — identique canevas_temp
+setInterval(pushToParent, 4000);
 window.addEventListener('beforeunload', pushToParent);
 
 // ─── BANDEAU NOTIFICATION ────────────────────────────────────────────────────
