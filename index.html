@@ -6,13 +6,13 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="RAPSOACC">
+<meta name="apple-mobile-web-app-title" content="RAPSOSYN">
 <meta name="theme-color" content="#1a56db">
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231a56db'/%3E%3Ccircle cx='16' cy='16' r='12' fill='%233b82f6'/%3E%3Cpath d='M8 16a8 8 0 1 1 16 0' stroke='white' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='16' cy='16' r='3.2' fill='white'/%3E%3C/svg%3E">
 <link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231a56db'/%3E%3Ccircle cx='16' cy='16' r='12' fill='%233b82f6'/%3E%3Cpath d='M8 16a8 8 0 1 1 16 0' stroke='white' stroke-width='2.5' stroke-linecap='round' fill='none'/%3E%3Ccircle cx='16' cy='16' r='3.2' fill='white'/%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="/icon-192.png">
-<title>RAPSOACC – Portail de gestion</title>
+<title>RAPSOSYN – Portail de gestion</title>
 <style>
 /* ══════════════════════════════════════════════════════
    STYLES (inchangés)
@@ -558,6 +558,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -573,18 +574,18 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
           <circle cx="14" cy="14" r="3" fill="white"/>
         </svg>
       </div>
-      <div class="ll-brand">RAPSO<span>ACC</span></div>
+      <div class="ll-brand">RAPSO<span>SYN</span></div>
     </div>
     <div class="ll-tag" style="position:relative;z-index:1">
-      <h2>Attestations<br>d'accessibilité</h2>
-      <p>Gestion collaborative des dossiers d'accessibilité, des avis et des rapports.</p>
+      <h2>Plateforme de suivi<br>des avis</h2>
+      <p>Gestion collaborative des canevas, intervenants et rapports de synthèse.</p>
     </div>
-    <div class="ll-version" style="position:relative;z-index:1">v1.0 — SOCOTEC Luxembourg</div>
+    <div class="ll-version" style="position:relative;z-index:1">v2.0 — AML Luxembourg</div>
   </div>
   <div class="login-right">
     <div class="login-card">
       <div class="lc-title">Bienvenue !</div>
-      <div class="lc-sub">Connectez-vous avec vos identifiants pour accéder à vos dossiers.</div>
+      <div class="lc-sub">Connectez-vous avec vos identifiants pour accéder à vos projets.</div>
       <div class="login-err" id="loginErr">Identifiants incorrects.</div>
       <div class="lf-group">
         <label class="lf-label">Email</label>
@@ -614,7 +615,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <div class="sb-logo-icon">
         <svg width="20" height="20" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="12" fill="rgba(255,255,255,.15)"/><path d="M7 14a7 7 0 1 1 14 0" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="14" cy="14" r="2.5" fill="white"/></svg>
       </div>
-      <div class="sb-logo-text">RAPSO<span>ACC</span></div>
+      <div class="sb-logo-text">RAPSO<span>SYN</span></div>
     </div>
     <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -624,7 +625,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <div class="nav-label">Principal</div>
       <button class="nav-item active" data-page="canevas" onclick="showPage('canevas',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <span>Mes dossiers</span>
+        <span>Mes canevas</span>
       </button>
       <button class="nav-item" data-page="archive" onclick="showPage('archive',this)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
@@ -649,11 +650,11 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   <div class="app-main">
     <div class="page" id="pageCanevas">
       <div class="topbar">
-        <div class="tb-title">Dossiers &nbsp;<span class="count-badge" id="canevasCount">0</span></div>
+        <div class="tb-title">Canevas &nbsp;<span class="count-badge" id="canevasCount">0</span></div>
         <div class="tb-actions">
           <button class="btn btn-ghost btn-sm" onclick="openModalCanevas('create')">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Nouveau dossier
+            Nouveau canevas
           </button>
         </div>
       </div>
@@ -662,8 +663,8 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
           Favoris
         </button>
-        <input class="fb-input" id="fNom"    placeholder="Affaire…"  oninput="renderCanevas()">
-        <input class="fb-input" id="fChrono" placeholder="Dossier SOCOTEC…"      oninput="renderCanevas()" style="width:130px">
+        <input class="fb-input" id="fNom"    placeholder="Nom du projet…"  oninput="renderCanevas()">
+        <input class="fb-input" id="fChrono" placeholder="Référence…"      oninput="renderCanevas()" style="width:130px">
         <input class="fb-input" id="fClient" placeholder="Client…"          oninput="renderCanevas()" style="width:105px">
         <input class="fb-input" id="fVille"  placeholder="Ville…"           oninput="renderCanevas()" style="width:90px">
         <select class="fb-select" id="fStatut" onchange="renderCanevas()">
@@ -679,8 +680,8 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
           <thead>
             <tr>
               <th></th>
-              <th onclick="sortCan('nom')">Affaire ↕</th>
-              <th onclick="sortCan('chrono')">Dossier ↕</th>
+              <th onclick="sortCan('nom')">Nom du projet ↕</th>
+              <th onclick="sortCan('chrono')">Référence ↕</th>
               <th onclick="sortCan('client')">Client ↕</th>
               <th onclick="sortCan('ville')">Ville ↕</th>
               <th onclick="sortCan('statut')">Statut ↕</th>
@@ -705,10 +706,10 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       </div>
       <div class="archive-info">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Les dossiers archivés sont en lecture seule. Vous pouvez les consulter ou les désarchiver.
+        Les canevas archivés sont en lecture seule. Vous pouvez les consulter ou les désarchiver.
       </div>
       <div class="filterbar">
-        <input class="fb-input" id="afNom" placeholder="Affaire…" oninput="renderArchive()">
+        <input class="fb-input" id="afNom" placeholder="Nom du projet…" oninput="renderArchive()">
         <input class="fb-input" id="afClient" placeholder="Client…" oninput="renderArchive()" style="width:110px">
         <input class="fb-input" id="afVille"  placeholder="Ville…"  oninput="renderArchive()" style="width:90px">
         <input class="fb-input" id="afPilote" placeholder="Pilote…" oninput="renderArchive()" style="width:90px">
@@ -718,8 +719,8 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
           <thead>
             <tr>
               <th></th>
-              <th>Affaire</th>
-              <th>Dossier</th>
+              <th>Nom du projet</th>
+              <th>Référence</th>
               <th>Client</th>
               <th>Ville</th>
               <th>Archivé le</th>
@@ -791,13 +792,15 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <div class="actions-dropdown">
       <button class="syn-refresh" onclick="toggleActionsMenu(event)">☰ <span class="syn-menu-label">MENU ▾</span></button>
       <div class="actions-menu" id="actionsMenu">
-        <button onclick="postAction('savejson'); closeActionsMenu();">💾 Enregistrer en local (JSON)</button>
-        <button onclick="postAction('openjson'); closeActionsMenu();">📂 Ouvrir un dossier local (JSON)</button>
-        <button onclick="postAction('pdf'); closeActionsMenu();">🖨 Imprimer le PDF</button>
-        <button onclick="postAction('excel'); closeActionsMenu();">📊 Télécharger l'Excel</button>
-        <button onclick="postAction('points'); closeActionsMenu();">🏷 Ajouter des points</button>
-        <button onclick="postAction('info'); closeActionsMenu();">📝 Données générales</button>
-        <button onclick="postAction('reset'); closeActionsMenu();">↺ Réinitialiser le dossier</button>
+        <button onclick="postAction('actualiser'); closeActionsMenu();">⟳ Mettre à jour</button>
+        <button onclick="postAction('import'); closeActionsMenu();">↺ Rénitialiser le canevas</button>
+        <button onclick="postAction('migration'); closeActionsMenu();">⇄ Migration</button>
+        <button onclick="postAction('exportJSON'); closeActionsMenu();">⤓ Enregistrer en local</button>
+        <button onclick="postAction('loadJSON'); closeActionsMenu();">⤒ Ouvrir un dossier local</button>
+        <button onclick="postAction('stats'); closeActionsMenu();">◔ Statistiques</button>
+        <button onclick="postAction('print'); closeActionsMenu();">⎙ Imprimer le pdf</button>
+        <button onclick="postAction('exportExcel'); closeActionsMenu();">⌗ Télécharger l'excel</button>
+        <button onclick="postAction('toggleColumns'); closeActionsMenu();">☷ Gérer les colonnes</button>
       </div>
     </div>
   </div>  
@@ -805,7 +808,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
     <span class="pb-icon">🔔</span>
     <div class="pb-meta">
       <div class="pb-title" id="pbTitle">Modifications disponibles</div>
-      <div class="pb-detail" id="pbDetail">Un autre utilisateur a modifié ce dossier</div>
+      <div class="pb-detail" id="pbDetail">Un autre utilisateur a modifié ce canevas</div>
     </div>
     <span class="pb-user" id="pbUser"></span>
     <button class="pb-apply" onclick="applyPendingUpdate()">⬇ Appliquer</button>
@@ -824,13 +827,18 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   <div class="modal">
     <div class="m-hdr">
       <div class="m-icon blue"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      <div class="m-title" id="mdCanTitle">Nouveau dossier</div>
+      <div class="m-title" id="mdCanTitle">Nouveau canevas</div>
       <button class="m-close" onclick="closeModal('mdCanevas')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="m-body">
-      <div class="mf-row"><label>Affaire <span class="req">*</span></label><input class="mf-input" id="mNom" placeholder="ex: Résidence Les Tilleuls – bâtiment A"></div>
+      <!-- Zone de drop pour fichier Excel (création uniquement) -->
+      <div id="canevasDropZone" style="display:none; border:2px dashed var(--g300); border-radius:12px; padding:20px; text-align:center; margin-bottom:12px; cursor:pointer; background:var(--g50);">
+        <div style="font-size:0.85rem; color:var(--g500);">📂 Glissez un fichier .xlsx/.xls ici pour pré-remplir le projet</div>
+        <input type="file" id="canevasFileInput" accept=".xlsx,.xlsm,.xls" style="display:none" onchange="handleCanevasFileSelect(this)">
+      </div>
+      <div class="mf-row"><label>Nom du projet <span class="req">*</span></label><input class="mf-input" id="mNom" placeholder="ex: LUXEMBOURG – Complexe sportif…"></div>
       <div class="mf-grid">
-        <div class="mf-row"><label>Dossier SOCOTEC <span class="req">*</span></label><input class="mf-input" id="mChrono" placeholder="ex: 2026-0456"></div>
+        <div class="mf-row"><label>Référence / Chronorapso <span class="req">*</span></label><input class="mf-input" id="mChrono" placeholder="ex: 2507JB000000021/1"></div>
         <div class="mf-row"><label>Ville</label><input class="mf-input" id="mVille" placeholder="ex: Luxembourg"></div>
       </div>
       <div class="mf-grid">
@@ -864,10 +872,10 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
   <div class="modal sm">
     <div class="m-hdr">
       <div class="m-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div>
-      <div class="m-title">Archiver ce dossier ?</div>
+      <div class="m-title">Archiver ce canevas ?</div>
       <button class="m-close" onclick="closeModal('mdArchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="m-body"><p class="confirm-text" id="archiveText">Ce dossier sera déplacé dans les archives.</p></div>
+    <div class="m-body"><p class="confirm-text" id="archiveText">Ce canevas sera déplacé dans les archives.</p></div>
     <div class="m-foot">
       <button class="btn btn-ghost" onclick="closeModal('mdArchive')">Annuler</button>
       <button class="btn btn-danger" id="archiveOk">Archiver</button>
@@ -883,13 +891,13 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <button class="m-close" onclick="closeModal('mdDeleteCan')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="m-body">
-      <p class="confirm-text" id="deleteCanText">Ce dossier sera supprimé définitivement.</p>
+      <p class="confirm-text" id="deleteCanText">Ce canevas sera supprimé définitivement.</p>
       <div style="background:#fef2f2;border:1px solid #fecaca;padding:10px 14px;margin-top:12px;font-size:0.78rem;color:#991b1b;line-height:1.5;">
         ⚠️ <strong>Action irréversible.</strong> Toutes les données (avis, réponses, historique) seront perdues définitivement. Cette action ne peut pas être annulée.
       </div>
       <div style="margin-top:14px;">
-        <label style="font-size:0.75rem;font-weight:600;color:var(--g600);display:block;margin-bottom:5px;">Confirmez en tapant le nom du dossier :</label>
-        <input id="deleteCanConfirmInput" type="text" placeholder="Nom du dossier..." style="width:100%;border:1px solid var(--g300);padding:7px 10px;font-family:var(--font);font-size:0.8rem;outline:none;">
+        <label style="font-size:0.75rem;font-weight:600;color:var(--g600);display:block;margin-bottom:5px;">Confirmez en tapant le nom du canevas :</label>
+        <input id="deleteCanConfirmInput" type="text" placeholder="Nom du canevas..." style="width:100%;border:1px solid var(--g300);padding:7px 10px;font-family:var(--font);font-size:0.8rem;outline:none;">
         <div id="deleteCanError" style="color:#b91c1c;font-size:0.72rem;margin-top:4px;display:none;">Le nom ne correspond pas.</div>
       </div>
     </div>
@@ -907,7 +915,7 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
       <div class="m-title">Désarchiver ?</div>
       <button class="m-close" onclick="closeModal('mdDesarchive')"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="m-body"><p class="confirm-text">Ce dossier sera restauré dans la liste des dossiers actifs.</p></div>
+    <div class="m-body"><p class="confirm-text">Ce canevas sera restauré dans la liste des canevas actifs.</p></div>
     <div class="m-foot">
       <button class="btn btn-ghost" onclick="closeModal('mdDesarchive')">Annuler</button>
       <button class="btn btn-success" id="desarchiveOk">Restaurer</button>
@@ -1009,20 +1017,18 @@ td:first-child{text-align:center;}td:last-child{text-align:center;}
    SCRIPT COMPLET – CORRIGÉ + GLISSER‑DÉPOSER CRÉATION
    ════════════════════════════════════════════════════════ */
 const firebaseConfig = {
-  apiKey: "AIzaSyAj_qfWmkJgOKeGdF8aKf7Zt-OFcgPq1kI",
-  authDomain: "rapsoacc.firebaseapp.com",
-  databaseURL: "https://rapsoacc-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "rapsoacc",
-  storageBucket: "rapsoacc.firebasestorage.app",
-  messagingSenderId: "435827857270",
-  appId: "1:435827857270:web:35c537741238f192f18c57"
+  apiKey: "AIzaSyDQzVQ2iwrBz9iMbOibU1nGDniDey6hmO4",
+  authDomain: "rapsosyn.firebaseapp.com",
+  databaseURL: "https://rapsosyn-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "rapsosyn",
+  storageBucket: "rapsosyn.appspot.com",
+  messagingSenderId: "351086396148",
+  appId: "1:351086396148:web:d3070d8e5bee2efb4294a1"
 };
 firebase.initializeApp(firebaseConfig);
 var db = firebase.database();
 var auth = firebase.auth();
 
-/* Projet Firebase propre à RAPSOACC (indépendant de RAPSOSYN) : comptes sous /users, dossiers sous /dossiers. */
-const DB_DOSSIERS = 'dossiers';
 let currentUser = null;
 let editingCanId = null;
 let editingUserId = null;
@@ -1078,8 +1084,8 @@ function fromUserList(val) {
 function toUsersArray(map) { return Object.values(map || {}); }
 async function loadFromCloud() {
   try {
-    const [snapD, snapU] = await Promise.all([db.ref(DB_DOSSIERS).once('value'), db.ref('/users').once('value')]);
-    const record = { canevas: snapD.val(), users: snapU.val() };
+    const snapshot = await db.ref('/').once('value');
+    const record = snapshot.val() || {};
     const toArray = (val) => {
       if (!val) return [];
       if (Array.isArray(val)) return val;
@@ -1094,22 +1100,22 @@ async function loadFromCloud() {
     return true;
   } catch (err) {
     console.warn('Mode hors ligne');
-    canevas = JSON.parse(localStorage.getItem('racc_dossiers') || '[]');
-    users   = JSON.parse(localStorage.getItem('racc_users') || '[]');
+    canevas = JSON.parse(localStorage.getItem('rs_canevas') || '[]');
+    users   = JSON.parse(localStorage.getItem('rs_users') || '[]');
     isOnline = false;
     return false;
   }
 }
 async function saveToCloud() {
-  localStorage.setItem('racc_dossiers', JSON.stringify(canevas));
+  localStorage.setItem('rs_canevas', JSON.stringify(canevas));
   const usersObj = {};
   users.forEach(u => { if (u.uid) usersObj[u.uid] = u; });
-  localStorage.setItem('racc_users', JSON.stringify(users));
+  localStorage.setItem('rs_users', JSON.stringify(users));
   try {
     if (Object.keys(usersObj).length > 0) {
-      await db.ref('/').update({ [DB_DOSSIERS]: canevas, users: usersObj });
+      await db.ref('/').update({ canevas, users: usersObj });
     } else {
-      await db.ref('/').update({ [DB_DOSSIERS]: canevas });
+      await db.ref('/').update({ canevas });
     }
     isOnline = true;
   } catch (err) {
@@ -1125,16 +1131,7 @@ function doLogin() {
   const pwd = gv('lPwd');
   document.getElementById('loginErr').style.display = 'none';
   auth.signInWithEmailAndPassword(email, pwd)
-    .then(cred => db.ref('/users/' + cred.user.uid).once('value').then(snap => {
-      if (snap.val()) return snap;
-      // premier démarrage : aucun profil dans la base -> le premier compte créé dans Firebase Authentication devient administrateur
-      return db.ref('/users').limitToFirst(1).once('value').then(all => {
-        if (all.exists()) return snap;
-        const em = (cred.user.email || email); const nm = em.split('@')[0];
-        const prof = { uid: cred.user.uid, prenom: nm, nom: 'Admin', email: em, role: 'admin', initiales: nm.slice(0, 2).toUpperCase(), color: '#1a56db', actif: true, favs: [] };
-        return db.ref('/users/' + cred.user.uid).set(prof).then(() => db.ref('/users/' + cred.user.uid).once('value'));
-      });
-    }))
+    .then(cred => db.ref('/users/' + cred.user.uid).once('value'))
     .then(snap => {
       const uProfile = snap.val();
       if (!uProfile) throw new Error('Profil utilisateur introuvable');
@@ -1344,11 +1341,76 @@ function toggleStar(id, e) {
   renderCanevas();
 }
 
+// ─── Glisser‑déposer création canevas ───
+function setupCanevasDrop() {
+  const dropZone = document.getElementById('canevasDropZone');
+  if (!dropZone) return;
+  dropZone.addEventListener('click', () => document.getElementById('canevasFileInput').click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor = 'var(--blue)'; });
+  dropZone.addEventListener('dragleave', () => dropZone.style.borderColor = '');
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.style.borderColor = '';
+    const file = e.dataTransfer.files[0];
+    if (file) processCanevasFile(file);
+  });
+}
+function handleCanevasFileSelect(input) {
+  if (input.files[0]) processCanevasFile(input.files[0]);
+}
+function processCanevasFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array', cellDates: true });
+      const sheetName = wb.SheetNames[0];
+      const ws = wb.Sheets[sheetName];
+      const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      const baseName = file.name.replace(/\.(xlsx|xlsm|xls)$/i, '');
+      document.getElementById('mNom').value = baseName;
+      document.getElementById('mChrono').value = baseName;
+      const src = [];
+      for (let i = 1; i < Math.min(raw.length, 500); i++) {
+        const row = raw[i];
+        if (!row || row.every(c => c === '')) continue;
+        const nv = String(row[1] || '').trim();
+        const obs = String(row[7] || '');
+        const suivi = (obs.includes("Rappel de l'observation précédente") || obs.includes("Rappel de l’observation précédente")) ? 'Oui' : '';
+        src.push({
+          num: nv,
+          ref: String(row[0] || '').trim(),
+          date: normalizeDate(row[2]),
+          inter: String(row[3] || '').trim(),
+          disp: String(row[4] || '').trim(),
+          avis: String(row[5] || '').trim(),
+          desc: String(row[6] || '').trim(),
+          obs: obs,
+          docs: cleanDocs(String(row[8] || '').trim()),
+          suivi: suivi,
+          repK: '',
+          repL: '',
+          lots: '',
+          rd6: nv.includes('/RD6')
+        });
+      }
+      pendingImportData = { v2: src, v1: [] };
+      toast('Fichier chargé, données prêtes pour le canevas.', 'b');
+    } catch (err) {
+      toast('Erreur lecture fichier : ' + err.message, 'r');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+function normalizeDate(d) { if(d instanceof Date) return d.toISOString().slice(0,10); if(!d) return ''; let t=String(d).trim().replace(/[-.]/g,'/'); let p=t.split('/'); if(p.length>=3){ let dd=+p[0],mm=+p[1],yy=+p[2]; if(yy<100)yy+=2000; if(!isNaN(dd)&&!isNaN(mm)&&!isNaN(yy)) return `${yy}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`; } let pd=new Date(t); return !isNaN(pd.getTime())?pd.toISOString().slice(0,10):''; }
+function cleanDocs(v) { if(!v)return'';let c=v.replace(/},{/g,'}\n{'); ['[','{','"ref"',':','null',',','"name"','.pdf',']','}'].forEach(m=>c=c.replace(new RegExp(m.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g'),'')); c=c.replace(/"/g,''); return c.split('\n').map(l=>l.trim()&&!l.startsWith('.')?'.'+l.trim():l.trim()).join('\n'); }
+
 function openModalCanevas(mode, id = null, e = null) {
   if (e) e.stopPropagation();
   editingCanId = id;
   pendingImportData = null;
-  document.getElementById('mdCanTitle').textContent = mode === 'create' ? 'Nouveau dossier' : 'Modifier le dossier';
+  document.getElementById('mdCanTitle').textContent = mode === 'create' ? 'Nouveau canevas' : 'Modifier le canevas';
+  const dropZone = document.getElementById('canevasDropZone');
+  if (dropZone) dropZone.style.display = mode === 'create' ? '' : 'none';
   const pilSel = document.getElementById('mPilote');
   const intSel = document.getElementById('mIntervenants');
   pilSel.innerHTML = users.filter(u => u.actif !== false).map(u => `<option value="${u.initiales}">${u.initiales} – ${u.prenom} ${u.nom}</option>`).join('');
@@ -1374,18 +1436,22 @@ function openModalCanevas(mode, id = null, e = null) {
 function saveCanevas() {
   const nom = gv('mNom').trim();
   const chrono = gv('mChrono').trim();
-  if (!nom || !chrono) { toast('Affaire et Dossier SOCOTEC requis','r'); return; }
+  if (!nom || !chrono) { toast('Nom et Référence requis','r'); return; }
   const sel = document.getElementById('mIntervenants');
   const intervenants = [...sel.options].filter(o => o.selected).map(o => o.value);
   if (editingCanId) {
     const c = canevas.find(x => x.id === editingCanId);
     Object.assign(c, { nom, chrono, ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes') });
-    toast('Dossier modifié','g');
+    toast('Canevas modifié','g');
   } else {
     const newCan = { id: nextCanId++, nom, chrono, nomimp: '', ville: gv('mVille'), client: gv('mClient'), statut: gv('mStatut'), pilote: gv('mPilote'), intervenants, notes: gv('mNotes'), fav: false, archived: false, archivedDate: null, synthData: null };
-    newCan.nomimp = nom;
+    if (pendingImportData) {
+      newCan.synthData = pendingImportData;
+      newCan.nomimp = nom;
+      pendingImportData = null;
+    }
     canevas.unshift(newCan);
-    toast('Dossier créé ✓','g');
+    toast('Canevas créé ✓','g');
   }
   saveToCloud(); closeModal('mdCanevas'); renderCanevas();
 }
@@ -1396,7 +1462,7 @@ function confirmArchive(id, e) {
   document.getElementById('archiveOk').onclick = () => {
     c.archived = true; c.archivedDate = new Date().toISOString().slice(0,10);
     saveToCloud(); closeModal('mdArchive'); renderCanevas(); renderArchive();
-    toast('Dossier archivé','b');
+    toast('Canevas archivé','b');
   };
   document.getElementById('mdArchive').classList.add('open');
 }
@@ -1446,7 +1512,7 @@ function confirmDesarchive(id, e) {
     const c = canevas.find(x => x.id === id);
     c.archived = false; c.archivedDate = null;
     saveToCloud(); closeModal('mdDesarchive'); renderArchive(); renderCanevas();
-    toast('Dossier restauré','g');
+    toast('Canevas restauré','g');
   };
   document.getElementById('mdDesarchive').classList.add('open');
 }
@@ -1460,7 +1526,7 @@ function confirmDeleteCan(id, e) {
 
   // Remplir le modal
   document.getElementById('deleteCanText').innerHTML =
-    `Le dossier <strong>« ${esc(nomCanevas.slice(0,70))} »</strong> sera supprimé <strong style="color:#b91c1c">définitivement</strong>.<br>
+    `Le canevas <strong>« ${esc(nomCanevas.slice(0,70))} »</strong> sera supprimé <strong style="color:#b91c1c">définitivement</strong>.<br>
      <span style="font-size:0.76rem;color:var(--g500);margin-top:4px;display:block">
        ${esc(c.chrono||'—')} · ${esc(c.client||'—')} · ${esc(c.ville||'—')}
        ${isArchived ? ' · <em>Archivé</em>' : ''}
@@ -1501,7 +1567,7 @@ function confirmDeleteCan(id, e) {
       // 4. Rafraîchir les deux vues
       renderCanevas();
       renderArchive();
-      toast(`🗑 Dossier « ${nomCanevas.slice(0,40)} » supprimé définitivement`, 'r', 5000);
+      toast(`🗑 Canevas « ${nomCanevas.slice(0,40)} » supprimé définitivement`, 'r', 5000);
     } catch(err) {
       // En cas d'erreur cloud : remettre le canevas localement
       toast('Erreur Firebase — suppression annulée', 'r');
@@ -1516,9 +1582,9 @@ function confirmDeleteCan(id, e) {
 
 function exportArchive() {
   const rows = canevas.filter(c => c.archived);
-  const lines = ['Affaire;Dossier;Client;Ville;Pilote;Archivé le', ...rows.map(c => [c.nom,c.chrono,c.client,c.ville,c.pilote,c.archivedDate||''].join(';'))];
+  const lines = ['Nom;Référence;Client;Ville;Pilote;Archivé le', ...rows.map(c => [c.nom,c.chrono,c.client,c.ville,c.pilote,c.archivedDate||''].join(';'))];
   const blob = new Blob(['\uFEFF' + lines.join('\n')], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'archives_rapsoacc.csv'; a.click();
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'archives_rapsosyn.csv'; a.click();
   toast('Export CSV téléchargé','g');
 }
 
@@ -1532,17 +1598,14 @@ async function openSynthese(id) {
   document.getElementById('synRoleChip').textContent = c.archived ? '🔒 Archivé – lecture seule' : '✏️ Édition';
   let templateHTML;
   try {
-    const response = await fetch('app.html?ts=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+    const response = await fetch('canevas_temp.html?ts=' + Date.now(), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
     templateHTML = await response.text();
-  } catch(err) { toast('Impossible de charger app.html','r'); return; }
-  const synthData = (c.synthData && c.synthData.json) ? c.synthData : { v: 3, json: '' };
+  } catch(err) { toast('Impossible de charger le template canevas_temp.html','r'); return; }
+  const synthData = (c.synthData && (c.synthData.v2 || c.synthData.v1)) ? c.synthData : { v2: [], v1: [] };
   const affaireValue = c.nomimp || c.nom || '';
   const metaScript = `<script>
-    window.RAPSO_BASE       = ${JSON.stringify(location.href.replace(/[?#].*$/, '').replace(/[^/]*$/, ''))};
     window.RAPSO_AFFAIRE    = ${JSON.stringify(affaireValue)};
     window.RAPSO_DOSSIER    = ${JSON.stringify(c.chrono)};
-    window.RAPSO_CLIENT     = ${JSON.stringify(c.client || '')};
-    window.RAPSO_VILLE      = ${JSON.stringify(c.ville || '')};
     window.CANEVAS_ID       = ${JSON.stringify(c.id)};
     window.CANEVAS_READONLY = ${JSON.stringify(!!c.archived)};
     window.RAPSO_SYNTH_DATA = ${JSON.stringify(JSON.stringify(synthData))};
@@ -1599,18 +1662,15 @@ function saveFromSynthese() {
 /* SYNC LIVE */
 let _notifTimer = null, _pendingData = null, _liveListener = null, _isSelfWrite = false, _lastLocalHash = '';
 function hashData(d) {
-  if (!d || !d.json) return '';
-  let h = 2166136261; const t = d.json;
-  for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619); }
-  return t.length + ':' + (h >>> 0).toString(16);
+  if (!d) return '';
+  const rowSig = r => [r.id||'', r.suivi||'', r.rd6?'1':'0', r.repK||'', r.repL||'', r.lots||'', r.num||''].join('|');
+  return JSON.stringify({
+    v2: (d.v2||[]).length, v1: (d.v1||[]).length,
+    sV2: (d.v2||[]).map(rowSig).join('§'),
+    sV1: (d.v1||[]).map(rowSig).join('§'),
+    hl: (d.historique||[]).length
+  });
 }
-function parseSynth(d) { try { return (d && d.json) ? JSON.parse(d.json) : { nodes: {}, points: [], info: {} }; } catch (e) { return { nodes: {}, points: [], info: {} }; } }
-function countAvis(d) {
-  const nodes = parseSynth(d).nodes || {}; const c = { F: 0, D: 0, SO: 0 };
-  Object.keys(nodes).forEach(k => { const a = nodes[k] && nodes[k].avis; if (c[a] != null) c[a]++; });
-  return { r: c.F, nr: c.D, so: c.SO, tot: c.F + c.D + c.SO, pts: (parseSynth(d).points || []).length };
-}
-
 function showNotif(txt, type = 'ok', duration = 3500) {
   const el = document.getElementById('synNotif');
   const ico = document.getElementById('synNotifIcon');
@@ -1638,22 +1698,27 @@ function setLiveDot(connected) {
   tx.textContent = connected ? 'Connecté' : 'Hors ligne';
 }
 function updateSynCounters(data) {
-  if (!data) return; const c = countAvis(data);
-  document.getElementById('sc_oui').textContent = 'R ' + c.r;
-  document.getElementById('sc_par').textContent = 'SO ' + c.so;
-  document.getElementById('sc_non').textContent = 'NR ' + c.nr;
-  document.getElementById('sc_tot').textContent = '/ ' + c.tot + ' avis';
+  if (!data) return;
+  const all = [...(data.v2||[]), ...(data.v1||[])];
+  const lev = all.filter(r => r.suivi === 'Oui').length;
+  const par = all.filter(r => r.suivi === 'Par').length;
+  const non = all.filter(r => r.suivi === 'Non').length;
+  document.getElementById('sc_oui').textContent = '✅ ' + lev;
+  document.getElementById('sc_par').textContent = '⚠️ ' + par;
+  document.getElementById('sc_non').textContent = '❌ ' + non;
+  document.getElementById('sc_tot').textContent = '/ ' + all.length;
 }
 function showPendingBar(freshCan) {
   _pendingData = freshCan;
   const badge = document.getElementById('refreshBadge');
   if (badge) badge.classList.add('show');
-  const freshData = freshCan.synthData || { v: 3, json: '' };
-  const fc = countAvis(freshData);
+  const freshData = freshCan.synthData || { v2: [], v1: [] };
+  const all = [...(freshData.v2||[]), ...(freshData.v1||[])];
+  const lev = all.filter(r => r.suivi === 'Oui').length, non = all.filter(r => r.suivi === 'Non').length;
   const pilote = users.find(u => u.initiales === freshCan.pilote);
   const modUser = pilote ? pilote.prenom + ' ' + pilote.nom : freshCan.pilote || '?';
-  document.getElementById('pbTitle').textContent = '🔔 Modifications disponibles sur ce dossier';
-  document.getElementById('pbDetail').textContent = `${fc.tot} avis · ${fc.r} R · ${fc.nr} NR · ${fc.so} SO · ${fc.pts} point(s)`;
+  document.getElementById('pbTitle').textContent = '🔔 Modifications disponibles sur ce canevas';
+  document.getElementById('pbDetail').textContent = `${all.length} avis au total · ${lev} levé(s) · ${non} maintenu(s)`;
   document.getElementById('pbUser').textContent = '✏️ ' + modUser;
   document.getElementById('synPendingBar').classList.add('show');
   setSynStatus('saving', 'Mise à jour dispo.');
@@ -1673,14 +1738,14 @@ async function applyPendingUpdate() {
   let freshCan = _pendingData;
   if (!freshCan && currentCanId) {
     try {
-      const snap = await db.ref(DB_DOSSIERS).once('value');
+      const snap = await db.ref('/canevas').once('value');
       const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
       const arr = toArray(snap.val());
       freshCan = arr.find(x => String(x.id) === String(currentCanId));
     } catch(e) { setSynStatus('error', 'Erreur réseau'); showNotif('Impossible de récupérer les données.','err',5000); btn.classList.remove('spinning'); return; }
   }
   if (freshCan) {
-    const newData = freshCan.synthData || { v: 3, json: '' };
+    const newData = freshCan.synthData || { v2: [], v1: [] };
     const idx = canevas.findIndex(x => String(x.id) === String(currentCanId));
     if (idx >= 0) canevas[idx] = freshCan;
     _lastLocalHash = hashData(newData);
@@ -1691,9 +1756,9 @@ async function applyPendingUpdate() {
       );
       updateSynCounters(newData);
       setSynStatus('saved', 'À jour'); showNotif('Modifications appliquées ✓','ok',3000);
-    } catch(e) { await openSynthese(currentCanId); setSynStatus('saved', 'Rechargé'); showNotif('Dossier rechargé ✓','ok',3000); }
+    } catch(e) { await openSynthese(currentCanId); setSynStatus('saved', 'Rechargé'); showNotif('Canevas rechargé ✓','ok',3000); }
     setTimeout(() => setSynStatus('idle', 'En attente'), 4500);
-  } else { setSynStatus('error', 'Introuvable'); showNotif('Dossier introuvable sur Firebase.','err',5000); }
+  } else { setSynStatus('error', 'Introuvable'); showNotif('Canevas introuvable sur Firebase.','err',5000); }
   btn.classList.remove('spinning');
   _pendingData = null;
 }
@@ -1701,7 +1766,7 @@ function startLiveListener(canId) {
   stopLiveListener();
   setLiveDot(true);
   let firstCall = true;
-  _liveListener = db.ref(DB_DOSSIERS).on('value', snapshot => {
+  _liveListener = db.ref('/canevas').on('value', snapshot => {
     setLiveDot(true);
     if (firstCall) { firstCall = false; return; }
     if (_isSelfWrite) { _isSelfWrite = false; return; }
@@ -1709,7 +1774,7 @@ function startLiveListener(canId) {
     const freshCanevas = toArray(snapshot.val());
     const fresh = freshCanevas.find(x => String(x.id) === String(canId));
     if (!fresh) return;
-    const freshData = fresh.synthData || { v: 3, json: '' };
+    const freshData = fresh.synthData || { v2: [], v1: [] };
     const freshHash = hashData(freshData);
     const localCan = canevas.find(x => String(x.id) === String(canId));
     const localHash = hashData(localCan?.synthData);
@@ -1724,7 +1789,7 @@ function startLiveListener(canId) {
   });
 }
 function stopLiveListener() {
-  if (_liveListener) { db.ref(DB_DOSSIERS).off('value', _liveListener); _liveListener = null; }
+  if (_liveListener) { db.ref('/canevas').off('value', _liveListener); _liveListener = null; }
   setLiveDot(false);
   _pendingData = null;
   document.getElementById('synPendingBar')?.classList.remove('show');
@@ -1775,6 +1840,7 @@ window.addEventListener('message', function(e) {
       const newHash = hashData(incomingData);
       if (newHash !== _lastLocalHash) {
         c.synthData = incomingData;
+        if(Array.isArray(incomingData.historique)) c.historique = incomingData.historique;
         _lastLocalHash = newHash;
         setSynStatus('saving', 'Sauvegarde…');
         updateSynCounters(incomingData);
@@ -1851,6 +1917,7 @@ function sendResetEmail() {
 /* INIT */
 window.addEventListener('load', async () => {
   await loadFromCloud();
+  setupCanevasDrop();
   auth.onAuthStateChanged(async (firebaseUser) => {
     if (firebaseUser && currentUser && currentUser.uid === firebaseUser.uid) return;
     if (firebaseUser) {
@@ -1891,14 +1958,14 @@ document.addEventListener('click', function(e) {
   }
 });
 
-/* ─── Communication avec l'application RAPSOACC (iframe) ─── */
+/* ─── Communication avec RapsoSynthèse (iframe) ─── */
 function postAction(action) {
   const iframe = document.getElementById('synFrame');
   if (iframe && iframe.contentWindow) {
     iframe.contentWindow.postMessage({ type: 'rapso_action', action: action }, '*');
     toast('Action envoyée : ' + action, 'b');
   } else {
-    toast('Impossible de communiquer avec le dossier', 'r');
+    toast('Impossible de communiquer avec le canevas', 'r');
   }
 }
 </script>
@@ -1958,7 +2025,7 @@ async function handleOnlineSync() {
   if (!currentUser) return;
   try {
     // 1. Charger les données fraîches depuis Firebase
-    const snapshot = await db.ref(DB_DOSSIERS).once('value');
+    const snapshot = await db.ref('/canevas').once('value');
     const toArray = v => !v ? [] : Array.isArray(v) ? v : Object.values(v);
     const cloudCanevas = toArray(snapshot.val());
 
@@ -1969,26 +2036,54 @@ async function handleOnlineSync() {
       const cloudCan = cloudCanevas.find(c => String(c.id) === String(localCan.id));
       if (!cloudCan) return; // nouveau canevas local → sera poussé tel quel
 
-      const L = parseSynth(localCan.synthData), C = parseSynth(cloudCan.synthData);
-      if (!(localCan.synthData && localCan.synthData.json)) return;
-      // les champs renseignés localement et vides dans le cloud sont repris ; le cloud l'emporte sinon
-      Object.keys(L.nodes || {}).forEach(k => {
-        const ln = L.nodes[k] || {}; const cn = (C.nodes = C.nodes || {})[k];
-        if (!cn) { C.nodes[k] = ln; changed = true; return; }
-        ['avis', 'obs', 'desc', 'reference', 'libelle', 'article'].forEach(f => { if (ln[f] && !cn[f]) { cn[f] = ln[f]; changed = true; } });
-        if (ln.hm !== undefined && cn.hm === undefined) { cn.hm = ln.hm; changed = true; }
+      const localData  = localCan.synthData  || { v2: [], v1: [] };
+      const cloudData  = cloudCan.synthData  || { v2: [], v1: [] };
+
+      // Fusionner v2 et v1 séparément
+      ['v2', 'v1'].forEach(tab => {
+        const localRows = localData[tab]  || [];
+        const cloudRows = cloudData[tab]  || [];
+
+        // Index des lignes cloud par id
+        const cloudIdx = {};
+        cloudRows.forEach((r, i) => { if (r.id !== undefined) cloudIdx[String(r.id)] = i; });
+
+        // Appliquer les lignes locales modifiées
+        let tabChanged = false;
+        localRows.forEach(localRow => {
+          if (localRow.id === undefined) return;
+          const key = String(localRow.id);
+          if (cloudIdx[key] !== undefined) {
+            const cloudRow = cloudRows[cloudIdx[key]];
+            // Comparer : si la ligne locale a des champs renseignés que le cloud n'a pas → prendre local
+            const fields = ['repK','repL','lots','suivi','rd6','disp','obs'];
+            fields.forEach(f => {
+              if ((localRow[f] !== undefined && localRow[f] !== '' && localRow[f] !== false) &&
+                  (cloudRow[f] === undefined || cloudRow[f] === '' || cloudRow[f] === false)) {
+                cloudRows[cloudIdx[key]][f] = localRow[f];
+                tabChanged = true;
+              }
+            });
+          } else {
+            // Ligne locale non trouvée dans cloud (ajout local hors-ligne)
+            cloudRows.push(localRow);
+            tabChanged = true;
+          }
+        });
+
+        if (tabChanged) {
+          cloudCan.synthData = cloudCan.synthData || {};
+          cloudCan.synthData[tab] = cloudRows;
+          changed = true;
+        }
       });
-      C.points = C.points || [];
-      (L.points || []).forEach(lp => { const cp = C.points.find(p => p.id === lp.id); if (!cp) { C.points.push(lp); changed = true; } else (lp.codes || []).forEach(cd => { if (!(cp.codes || []).includes(cd)) { (cp.codes = cp.codes || []).push(cd); changed = true; } }); });
-      C.info = C.info || {}; Object.keys(L.info || {}).forEach(k => { if (L.info[k] && !C.info[k]) { C.info[k] = L.info[k]; changed = true; } });
-      if (changed) cloudCan.synthData = { v: 3, json: JSON.stringify(C) };
     });
 
     // 3. Si des données locales ont enrichi Firebase → sauvegarder
     if (changed) {
       // Mettre à jour le tableau local avec les données fusionnées
       canevas = cloudCanevas;
-      await db.ref(DB_DOSSIERS).set(cloudCanevas);
+      await db.ref('/canevas').set(cloudCanevas);
       renderCanevas();
       renderArchive();
       console.log('[SYNC] Données locales fusionnées avec Firebase');
@@ -1997,7 +2092,7 @@ async function handleOnlineSync() {
     // 4. Background Sync API (si supportée) pour les prochaines fois
     if ('serviceWorker' in navigator && 'SyncManager' in window) {
       const reg = await navigator.serviceWorker.ready;
-      await reg.sync.register('rapsoacc-sync').catch(() => {});
+      await reg.sync.register('rapsosyn-sync').catch(() => {});
     }
 
   } catch(e) {
